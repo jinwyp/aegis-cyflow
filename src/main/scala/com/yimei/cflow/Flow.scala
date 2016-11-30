@@ -1,7 +1,9 @@
 import java.util.Date
 
-import Flow.Judge
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import Flow.{Command, DataPoint, Judge}
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+
+import scala.concurrent.Future
 
 object Flow {
 
@@ -54,18 +56,17 @@ object Flow {
       if (!in.check(state)) {
         Todo
       } else {
-        decide(state) match {
-          case Left(d) => d
-          case Right((e, j)) =>
-            e.schedule(state) //
-            j
-        }
+        decide(state)
+//        match {
+//          case Left(d) => d
+//          case Right(j) => j
+//        }
       }
     }
 
     // 觉得是走那个分支, 还是返回成功, 失败
-    // def decide(state: State): Either[Decided, Tuple2[Edge, Judge]]
-    def decide(state: State): Either[Decided, Tuple2[Edge, Judge]]
+    // def decide(state: State): Either[Decided, Judge]
+    def decide(state: State):Decision
   }
 }
 
@@ -100,10 +101,15 @@ abstract class Flow extends Actor {
   // 一般actor
   def receive = {
     case Command(name, data) =>
-      update(PointUpdated(name, data));
+      update(PointUpdated(name, data))
       val decidor = state.decision.run(state)
       decidor match {
-        case j: Judge => update(DecisionUpdated(j))
+        case j: Judge =>
+          update(DecisionUpdated(j))
+          j.in.schedule(state)
+        case a =>
+          println(a)
+          println(state.points)
       }
   }
 
@@ -114,7 +120,7 @@ abstract class Flow extends Actor {
 
 }
 
-object CYFlow extends Flow with ActorLogging {
+class CYFlow extends Flow with ActorLogging { outer =>
 
   import DataActors._
   import Flow.{DataPoint, Edge, State}
@@ -129,32 +135,54 @@ object CYFlow extends Flow with ActorLogging {
     "D" -> context.actorOf(Props[D], "D"),
     "E" -> context.actorOf(Props[E], "E"),
     "F" -> context.actorOf(Props[F], "F")
-  );
+  )
 
   object R extends Edge {
     def schedule(state: State) = {
-      actors("R").tell("R", CYFlow.self) // 给R发消息
+      actors("R").tell("R", outer.self) // 给R发消息
     }
 
     def check(state: State) = {
-      CYFlow.state.points("R") // 存在R数据点
-      true
+      if(outer.state.points.contains("R")) // 存在R数据点
+        true
+      else
+        false
     }
   }
 
   object E1 extends Edge {
     def schedule(state: State) = {
-      actors("A").tell("A", CYFlow.self) // 给R发消息
-      actors("B").tell("B", CYFlow.self) // 给R发消息
-      actors("C").tell("C", CYFlow.self) // 给R发消息
+      actors("A").tell("A", outer.self) // 给R发消息
+      actors("B").tell("B", outer.self) // 给R发消息
+      actors("C").tell("C", outer.self) // 给R发消息
     }
 
     def check(state: State) = {
-      true
+      if(outer.state.points.contains("A") &&
+        outer.state.points.contains("B") &&
+        outer.state.points.contains("C"))
+        true
+      else
+        false
     }
   }
 
-  object E2
+  object E2 extends Edge {
+    def schedule(state: State) = {
+      actors("D").tell("D", outer.self) // 给R发消息
+      actors("E").tell("E", outer.self) // 给R发消息
+      actors("F").tell("F", outer.self) // 给R发消息
+    }
+
+    def check(state: State) = {
+      if(outer.state.points.contains("D") &&
+        outer.state.points.contains("E") &&
+        outer.state.points.contains("F"))
+        true
+      else
+        false
+    }
+  }
 
   object E3
 
@@ -162,18 +190,46 @@ object CYFlow extends Flow with ActorLogging {
 
   /////////////////
   object V1 extends Judge {
-    override def in = ???
-    override def decide(state: State) = ???
+    import Flow._
+    override def in = R
+    override def decide(state: State): Decision= {
+      println("V1决策点信息收集R完成,开始决策")
+      if(state.points("R").value==50){
+        println("V1决策完成,结果为:"+V2)
+        V2
+      } else
+        Fail
+    }
   }
 
   object V2 extends Judge {
-    override def in = ???
-    override def decide(state: State) = ???
+    import Flow._
+    override def in = E1
+    override def decide(state: State): Decision = {
+      println("V2决策点信息收集A,B,C完成,开始决策")
+      if(state.points("A").value==50 &&
+         state.points("B").value==50 &&
+         state.points("C").value==50 ) {
+        println("V2决策完成,结果为:"+V3)
+        V3
+      } else
+        Fail
+    }
   }
 
   object V3 extends Judge {
-    override def in = ???
-    override def decide(state: State) = ???
+    import Flow._
+    override def in = E2
+    override def decide(state: State) = {
+      println("V3决策点信息收集D,E,F完成,开始决策")
+      if(state.points("D").value==50 &&
+        state.points("E").value==50 &&
+        state.points("F").value==50 ) {
+        println("V3决策完成,结果为:"+Success)
+        Success
+      } else
+        Fail
+    }
   }
 
   object V4 extends Judge {
@@ -239,4 +295,7 @@ object DataActors {
 
 object Main extends App {
   println("hello world")
+  val system = ActorSystem("Hello")
+  val a: ActorRef = system.actorOf(Props[CYFlow], "CYFlow")
+  a ! Command("R", DataPoint(50, "memo", "hary", null))
 }
