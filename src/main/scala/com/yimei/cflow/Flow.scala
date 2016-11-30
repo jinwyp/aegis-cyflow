@@ -17,7 +17,7 @@ object Flow {
   // 状态
   case class State(points: Map[String, DataPoint], decision: Decision)
 
-  case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date);
+  case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
 
   //
   trait Edge {
