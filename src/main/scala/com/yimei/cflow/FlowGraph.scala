@@ -1,13 +1,13 @@
 package com.yimei.cflow
 
-import com.yimei.cflow.Flow.{Decision, State}
+import com.yimei.cflow.Flow.{Decision, Edge, State}
 
 /**
   * Created by hary on 16/12/1.
   */
 object FlowGraph {
 
-  case class EdgeLine(begin: Decision, end: Decision)
+  case class EdgeLine(begin: Decision, description: Edge, end: Decision)
 
   trait Tree
   case class Node(value: Decision, children: List[Tree]) extends Tree
@@ -30,7 +30,7 @@ object FlowGraph {
 
   implicit val nodeFormat = jsonFormat2(Node)
   implicit val leafFormat = jsonFormat1(Leaf)
-  implicit val edgeLineFormat = jsonFormat2(EdgeLine)
+  implicit val edgeLineFormat = jsonFormat3(EdgeLine)
   implicit val graphFormat = jsonFormat3(Graph)
 
 }

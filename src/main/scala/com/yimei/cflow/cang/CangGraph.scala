@@ -71,9 +71,13 @@ object CangGraph {
 
   object E4 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
-
     def check(state: State) = false
+    override def toString = "D|E|F"
+  }
 
+  object E5 extends Edge {
+    def schedule(self: ActorRef, state: State) = ???
+    def check(state: State) = false
     override def toString = "D|E|F"
   }
 
@@ -122,7 +126,7 @@ object CangGraph {
   }
 
   object V4 extends Judge {
-    override def in = ???
+    override def in = E3
 
     override def decide(state: State) = ???
 
@@ -130,7 +134,7 @@ object CangGraph {
   }
 
   object V5 extends Judge {
-    override def in = ???
+    override def in = E4
 
     override def decide(state: State) = ???
 
@@ -138,7 +142,7 @@ object CangGraph {
   }
 
   object V6 extends Judge {
-    override def in = ???
+    override def in = E5
 
     override def decide(state: State) = ???
 
@@ -157,11 +161,11 @@ object CangGraph {
     val t1 = Node(V1, List(t2, t4))
 
     val edges = List(
-      EdgeLine(V1, V4),
-      EdgeLine(V1, V2),
-      EdgeLine(V4, V5),
-      EdgeLine(V4, V6),
-      EdgeLine(V2, V3)
+      EdgeLine(V1, E3, V4),
+      EdgeLine(V1, E1, V2),
+      EdgeLine(V4, E4, V5),
+      EdgeLine(V4, E5, V6),
+      EdgeLine(V2, E2, V3)
     )
 
     Graph(t1, edges, state)
