@@ -6,15 +6,10 @@ import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern._
 import akka.util.Timeout
 import com.yimei.cflow.Flow.{Command, CommandQuery, DataPoint}
-import com.yimei.cflow.cang.Cang.{
-  CreateFlowRequest => CangRequest,
-  CreateFlowResponse => CangResponse
-}
-import com.yimei.cflow.ying.Ying.{
-  CreateFlowRequest => YingRequest,
-  CreateFlowResponse => YingResponse
-}
+import com.yimei.cflow.cang.Cang.{CreateFlowRequest => CangRequest, CreateFlowResponse => CangResponse}
+import com.yimei.cflow.ying.Ying.{CreateFlowRequest => YingRequest, CreateFlowResponse => YingResponse}
 import com.yimei.cflow.cang.CangSupervisor
+import com.yimei.cflow.point.DataActors
 import com.yimei.cflow.ying.YingSupervisor
 
 import scala.concurrent.duration._

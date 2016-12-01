@@ -2,13 +2,14 @@ package com.yimei.cflow.cang
 
 import akka.actor.ActorRef
 import com.yimei.cflow.Flow._
+import com.yimei.cflow.point.DataActors
 
 /**
   * Created by hary on 16/12/1.
   */
 object CangGraph {
 
-  import com.yimei.cflow.DataActors.actors
+  import DataActors.actors
 
   object R extends Edge {
     def schedule(self: ActorRef, state: State) = {

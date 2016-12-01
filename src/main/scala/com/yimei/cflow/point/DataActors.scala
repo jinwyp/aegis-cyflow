@@ -1,9 +1,8 @@
-package com.yimei.cflow
+package com.yimei.cflow.point
 
-import java.util.{Calendar, Date}
+import java.util.Date
 
 import akka.actor.{Actor, ActorRef, Props, SupervisorStrategy, Terminated}
-import com.yimei.cflow.DataActors.{F, _}
 import com.yimei.cflow.Flow.{Command, DataPoint}
 
 /**
@@ -75,6 +74,8 @@ object DataActors {
 }
 
 class DataActors extends Actor {
+
+  import DataActors._
 
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
 
