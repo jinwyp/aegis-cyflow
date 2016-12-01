@@ -1,50 +1,88 @@
+package com.yimei.cflow
+
+import java.text.SimpleDateFormat
 import java.util.Date
 
-import Flow.{Command, DataPoint, Judge}
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.yimei.cflow.Flow._
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
-import scala.concurrent.Future
+object FlowProtocol extends DefaultJsonProtocol {
+
+  // 日期
+  implicit object DateJsonFormat extends RootJsonFormat[Date] {
+    val formatter = new SimpleDateFormat("yyyyMMdd")
+    override def write(obj: Date) = JsString(formatter.format(obj))
+    override def read(json: JsValue) : Date = json match {
+      case JsString(s) => formatter.parse(s)
+      case _ => throw new DeserializationException("Error info you want here ...")
+    }
+  }
+
+  // 序列化Decision
+  implicit  object DecisionFormat extends RootJsonFormat[Decision] {
+    def write(c: Decision) = JsString(c.toString)
+    def read(value: JsValue) = null
+  }
+
+  // 序列Edge
+  implicit object EdgeFormat extends RootJsonFormat[Edge] {
+    def write(c: Edge) = JsString(c.toString)
+    def read(value: JsValue) = null
+  }
+
+  // 数据点
+  implicit val dataPointFormat = jsonFormat4(DataPoint)
+
+  // 状态
+  implicit val stateFormat = jsonFormat5(State)
+}
+
 
 object Flow {
+  // 数据点: 值, 说明, 谁采集, 采集时间
+  case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
 
+  // 接收消息
   case class Command(name: String, point: DataPoint)
+  case class CommandSeq(commands: Array[Command])
+  case object CommandQuery  // 查询流程
 
-  // 事件
+  // persistent事件
   trait Event
-
   case class PointUpdated(name: String, point: DataPoint) extends Event
-
   case class DecisionUpdated(decision: Decision) extends Event
 
   // 状态
-  case class State(points: Map[String, DataPoint], decision: Decision)
+  case class State(
+    userId: String,
+    orderId: String,
+    points: Map[String, DataPoint],
+    decision: Decision,
+    histories: List[Decision])
 
-  case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
-
-  //
+  // 分支边
   trait Edge {
-    def schedule(state: State): Unit
-
-    // 发起哪些数据采集
+    def schedule(self: ActorRef, state: State): Unit // 发起哪些数据采集
     def check(state: State): Boolean // 如何判断edge完成
+    def description = "todo edge"    // 分支描述
   }
 
   trait Decision {
     def run(state: State): Decision
   }
-
   trait Decided extends Decision
-
-  case object Success extends Decided {
-    def run(state: State) = Success
+  case object FlowSuccess extends Decided {
+    def run(state: State) = FlowSuccess
+    override  def toString = "Success"
   }
-
-  case object Fail extends Decided {
-    def run(state: State) = Fail
+  case object FlowFail extends Decided {
+    def run(state: State) = FlowFail
+    override  def toString = "Fail"
   }
-
-  case object Todo extends Decided {
-    def run(state: State) = Todo
+  case object FlowTodo extends Decided {
+    def run(state: State) = FlowTodo
+    override  def toString = "Todo"
   }
 
   abstract class Judge extends Decision {
@@ -54,24 +92,19 @@ object Flow {
     // 计算结果
     def run(state: State): Decision = {
       if (!in.check(state)) {
-        Todo
+        FlowTodo
       } else {
         decide(state)
-//        match {
-//          case Left(d) => d
-//          case Right(j) => j
-//        }
       }
     }
 
-    // 觉得是走那个分支, 还是返回成功, 失败
-    // def decide(state: State): Either[Decided, Judge]
+    // 依据状态评估分支: 成功, 失败, 或者继续评估
     def decide(state: State):Decision
   }
 }
 
 // 抽象流程
-abstract class Flow extends Actor {
+abstract class Flow extends Actor with ActorLogging{
 
   import Flow._
 
@@ -79,10 +112,13 @@ abstract class Flow extends Actor {
   var state: State
 
   //
+  def queryStatus: String
+
+  //
   def update(ev: Event) = {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
-      case DecisionUpdated(d) => state = state.copy(decision = d)
+      case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision::state.histories)
     }
   }
 
@@ -100,202 +136,60 @@ abstract class Flow extends Actor {
 
   // 一般actor
   def receive = {
-    case Command(name, data) =>
-      update(PointUpdated(name, data))
-      val decidor = state.decision.run(state)
-      decidor match {
-        case j: Judge =>
-          update(DecisionUpdated(j))
-          j.in.schedule(state)
-        case a =>
-          println(a)
-          println(state.points)
-      }
+    case cmd: Command =>
+      log.info(s"收到$cmd")
+      processCommand(cmd)
+
+    case cmds: CommandSeq =>
+      log.info(s"收到$cmds")
+      processCommandSeq(cmds)
+
+    case CommandQuery =>
+      log.info("收到CommandQuery")
+      sender() ! queryStatus
   }
 
-//  // 恢复
-//  def recieveRecover = {
-//    case ev: Event => update(ev)
-//  }
+  // 处理命令
+  protected def processCommand(cmd: Command) = {
+    // 更新状体
+    update(PointUpdated(cmd.name, cmd.point))
 
-}
-
-class CYFlow extends Flow with ActorLogging { outer =>
-
-  import DataActors._
-  import Flow.{DataPoint, Edge, State}
-
-  var state = State(Map[String, DataPoint](), V1)
-
-  val actors = Map[String, ActorRef](
-    "R" -> context.actorOf(Props[A], "R"),
-    "A" -> context.actorOf(Props[A], "A"),
-    "B" -> context.actorOf(Props[B], "B"),
-    "C" -> context.actorOf(Props[C], "C"),
-    "D" -> context.actorOf(Props[D], "D"),
-    "E" -> context.actorOf(Props[E], "E"),
-    "F" -> context.actorOf(Props[F], "F")
-  )
-
-  object R extends Edge {
-    def schedule(state: State) = {
-      actors("R").tell("R", outer.self) // 给R发消息
-    }
-
-    def check(state: State) = {
-      if(outer.state.points.contains("R")) // 存在R数据点
-        true
-      else
-        false
+    // 决策
+    val decidor = state.decision.run(state)
+    decidor match {
+      case j: Judge =>
+        update(DecisionUpdated(decidor))
+        log.info(s"userId[${state.userId}] => 开始决策...")
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: $j\n\n")
+        j.in.schedule(self, state)
+      case FlowTodo =>
+      case FlowSuccess =>
+        update(DecisionUpdated(decidor))
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: 成功")
+      case FlowFail =>
+        update(DecisionUpdated(decidor))
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: 失败")
     }
   }
 
-  object E1 extends Edge {
-    def schedule(state: State) = {
-      actors("A").tell("A", outer.self) // 给R发消息
-      actors("B").tell("B", outer.self) // 给R发消息
-      actors("C").tell("C", outer.self) // 给R发消息
-    }
+  // 处理复合命令
+  protected def processCommandSeq(cmds: CommandSeq) = {
 
-    def check(state: State) = {
-      if(outer.state.points.contains("A") &&
-        outer.state.points.contains("B") &&
-        outer.state.points.contains("C"))
-        true
-      else
-        false
-    }
-  }
+    // 更新所有状态
+    cmds.commands.foreach(x => update(PointUpdated(x.name, x.point)));
 
-  object E2 extends Edge {
-    def schedule(state: State) = {
-      actors("D").tell("D", outer.self) // 给R发消息
-      actors("E").tell("E", outer.self) // 给R发消息
-      actors("F").tell("F", outer.self) // 给R发消息
-    }
-
-    def check(state: State) = {
-      if(outer.state.points.contains("D") &&
-        outer.state.points.contains("E") &&
-        outer.state.points.contains("F"))
-        true
-      else
-        false
-    }
-  }
-
-  object E3
-
-  object E4
-
-  /////////////////
-  object V1 extends Judge {
-    import Flow._
-    override def in = R
-    override def decide(state: State): Decision= {
-      println("V1决策点信息收集R完成,开始决策")
-      if(state.points("R").value==50){
-        println("V1决策完成,结果为:"+V2)
-        V2
-      } else
-        Fail
-    }
-  }
-
-  object V2 extends Judge {
-    import Flow._
-    override def in = E1
-    override def decide(state: State): Decision = {
-      println("V2决策点信息收集A,B,C完成,开始决策")
-      if(state.points("A").value==50 &&
-         state.points("B").value==50 &&
-         state.points("C").value==50 ) {
-        println("V2决策完成,结果为:"+V3)
-        V3
-      } else
-        Fail
-    }
-  }
-
-  object V3 extends Judge {
-    import Flow._
-    override def in = E2
-    override def decide(state: State) = {
-      println("V3决策点信息收集D,E,F完成,开始决策")
-      if(state.points("D").value==50 &&
-        state.points("E").value==50 &&
-        state.points("F").value==50 ) {
-        println("V3决策完成,结果为:"+Success)
-        Success
-      } else
-        Fail
-    }
-  }
-
-  object V4 extends Judge {
-    override def in = ???
-    override def decide(state: State) = ???
-  }
-
-  object V5 extends Judge {
-    override def in = ???
-    override def decide(state: State) = ???
-  }
-
-}
-
-// 数据采集器
-object DataActors {
-
-  import Flow._
-
-  class R extends Actor {
-    override def receive = {
-      case _ => sender() ! Command("R", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class A extends Actor {
-    def receive = {
-      case _ => sender() ! Command("A", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class B extends Actor {
-    def receive = {
-      case _ => sender() ! Command("B", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class C extends Actor {
-    def receive = {
-      case _ => sender() ! Command("C", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class D extends Actor {
-    def receive = {
-      case _ => sender() ! Command("D", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class E extends Actor {
-    def receive = {
-      case _ => sender() ! Command("E", DataPoint(50, "memo", "hary", null))
-    }
-  }
-
-  class F extends Actor {
-    def receive = {
-      case _ => sender() ! Command("F", DataPoint(50, "memo", "hary", null))
+    // 决策
+    state.decision.run(state) match {
+      case j: Judge =>
+        update(DecisionUpdated(j))
+        j.in.schedule(self, state)
+      case a =>
+        println(a)
     }
   }
 
 }
 
-object Main extends App {
-  println("hello world")
-  val system = ActorSystem("Hello")
-  val a: ActorRef = system.actorOf(Props[CYFlow], "CYFlow")
-  a ! Command("R", DataPoint(50, "memo", "hary", null))
-}
