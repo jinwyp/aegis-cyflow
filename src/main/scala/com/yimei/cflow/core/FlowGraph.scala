@@ -1,11 +1,10 @@
-package com.yimei.cflow
-
-import com.yimei.cflow.Flow.{Decision, Edge, State}
+package com.yimei.cflow.core
 
 /**
   * Created by hary on 16/12/1.
   */
 object FlowGraph {
+  import com.yimei.cflow.core.Flow._
 
   case class EdgeLine(begin: Decision, description: Edge, end: Decision)
 
@@ -14,7 +13,7 @@ object FlowGraph {
   case class Leaf(value: Decision) extends Tree
   case class Graph(tree: Tree, edges: List[EdgeLine], state: State)
 
-  import com.yimei.cflow.FlowProtocol._
+  import FlowProtocol._
   import spray.json._
 
   implicit object TreeFormat extends JsonFormat[Tree] {

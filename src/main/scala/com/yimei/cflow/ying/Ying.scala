@@ -1,9 +1,9 @@
 package com.yimei.cflow.ying
 
 import akka.actor.{ActorLogging, ActorRef, Props}
-import com.yimei.cflow.Flow
-import com.yimei.cflow.Flow._
 import com.yimei.cflow.cang.CangGraph.V1
+import com.yimei.cflow.core.Flow
+import com.yimei.cflow.core.Flow.{DataPoint, State}
 
 object Ying {
   def props(userId: String, orderId: String) = Props(new Ying(userId, orderId))

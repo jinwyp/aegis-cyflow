@@ -3,7 +3,7 @@ package com.yimei.cflow.point
 import java.util.Date
 
 import akka.actor.{Actor, ActorRef, Props, SupervisorStrategy, Terminated}
-import com.yimei.cflow.Flow.{Command, DataPoint}
+import com.yimei.cflow.core.Flow.{Command, DataPoint}
 
 /**
   * Created by hary on 16/12/1.

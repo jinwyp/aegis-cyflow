@@ -1,7 +1,8 @@
 package com.yimei.cflow.cang
 
 import akka.actor.ActorRef
-import com.yimei.cflow.Flow._
+import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.{Flow, FlowGraph}
 import com.yimei.cflow.point.DataActors
 
 /**
@@ -154,7 +155,7 @@ object CangGraph {
   ///////////////////////////////////////////////////////////////////
   // FlowGraph
   ///////////////////////////////////////////////////////////////////
-  import com.yimei.cflow.FlowGraph._
+  import FlowGraph._
   import spray.json._
   def cangJsonGraph(state: State) = {
     val t5 = Leaf(V5)

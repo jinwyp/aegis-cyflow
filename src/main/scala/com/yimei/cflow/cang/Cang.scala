@@ -1,9 +1,9 @@
 package com.yimei.cflow.cang
 
 import akka.actor.{ActorLogging, ActorRef, Props}
-import com.yimei.cflow.Flow
-import com.yimei.cflow.Flow._
 import com.yimei.cflow.cang.CangGraph.V1
+import com.yimei.cflow.core.Flow
+import com.yimei.cflow.core.Flow.{DataPoint, State}
 
 object Cang {
   def props(userId: String, orderId: String) = Props(new Cang(userId, orderId))

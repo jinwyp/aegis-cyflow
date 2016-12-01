@@ -1,10 +1,10 @@
-package com.yimei.cflow
+package com.yimei.cflow.core
 
 import java.text.SimpleDateFormat
 import java.util.Date
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.yimei.cflow.Flow._
+import com.yimei.cflow.core.Flow.{DataPoint, Decision, Edge, State}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 object FlowProtocol extends DefaultJsonProtocol {
