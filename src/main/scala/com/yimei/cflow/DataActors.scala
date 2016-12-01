@@ -78,15 +78,17 @@ class DataActors extends Actor {
 
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
 
-  DataActors.actors = Map[String, ActorRef](
-    "R" -> context.actorOf(Props[A], "R"),
-    "A" -> context.actorOf(Props[A], "A"),
-    "B" -> context.actorOf(Props[B], "B"),
-    "C" -> context.actorOf(Props[C], "C"),
-    "D" -> context.actorOf(Props[D], "D"),
-    "E" -> context.actorOf(Props[E], "E"),
-    "F" -> context.actorOf(Props[F], "F")
-  )
+  synchronized {
+    DataActors.actors = Map[String, ActorRef](
+      "R" -> context.actorOf(Props[A], "R"),
+      "A" -> context.actorOf(Props[A], "A"),
+      "B" -> context.actorOf(Props[B], "B"),
+      "C" -> context.actorOf(Props[C], "C"),
+      "D" -> context.actorOf(Props[D], "D"),
+      "E" -> context.actorOf(Props[E], "E"),
+      "F" -> context.actorOf(Props[F], "F")
+    )
+  }
 
   def receive = {
     case Terminated(ref) => ???

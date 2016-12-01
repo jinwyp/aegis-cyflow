@@ -1,0 +1,36 @@
+package com.yimei.cflow
+
+import com.yimei.cflow.Flow.{Decision, State}
+
+/**
+  * Created by hary on 16/12/1.
+  */
+object FlowGraph {
+
+  case class EdgeLine(begin: Decision, end: Decision)
+
+  trait Tree
+  case class Node(value: Decision, children: List[Tree]) extends Tree
+  case class Leaf(value: Decision) extends Tree
+  case class Graph(tree: Tree, edges: List[EdgeLine], state: State)
+
+  import com.yimei.cflow.FlowProtocol._
+  import spray.json._
+
+  implicit object TreeFormat extends JsonFormat[Tree] {
+    def write(obj: Tree) = {
+      obj match {
+        case n: Node => nodeFormat.write(n)
+        case l: Leaf => leafFormat.write(l)
+      }
+    }
+
+    def read(jsValue: JsValue) = ???
+  }
+
+  implicit val nodeFormat = jsonFormat2(Node)
+  implicit val leafFormat = jsonFormat1(Leaf)
+  implicit val edgeLineFormat = jsonFormat2(EdgeLine)
+  implicit val graphFormat = jsonFormat3(Graph)
+
+}

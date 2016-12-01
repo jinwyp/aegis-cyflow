@@ -146,35 +146,8 @@ object CangGraph {
   }
 
 
-  case class EdgeLine(begin: Decision, end: Decision)
-
-  trait Tree
-
-  case class Node(value: Decision, children: List[Tree]) extends Tree
-
-  case class Leaf(vale: Decision) extends Tree
-
-  case class Graph(tree: Tree, edges: List[EdgeLine], state: State)
-
-  import com.yimei.cflow.FlowProtocol._
+  import com.yimei.cflow.FlowGraph._
   import spray.json._
-
-  implicit object TreeFormat extends JsonFormat[Tree] {
-    def write(obj: Tree) = {
-      obj match {
-        case n: Node => nodeFormat.write(n)
-        case l: Leaf => leafFormat.write(l)
-      }
-    }
-
-    def read(jsValue: JsValue) = ???
-  }
-
-  implicit val nodeFormat = jsonFormat2(Node)
-  implicit val leafFormat = jsonFormat1(Leaf)
-  implicit val edgeLineFormat = jsonFormat2(EdgeLine)
-  implicit val graphFormat = jsonFormat3(Graph)
-
   def cangJsonGraph(state: State) = {
     val t5 = Leaf(V5)
     val t6 = Leaf(V6)
