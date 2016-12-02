@@ -39,7 +39,7 @@ object Flow {
   case class DecisionUpdated(decision: Decision) extends Event
 
   // 状态
-  case class State(flowId: String, points: Map[String, DataPoint], decision: Decision, histories: List[Decision])
+  case class State(flowId: String, points: Map[String, DataPoint], decision: Decision, histories: List[String])
 
   // 分支边
   trait Edge {
@@ -110,7 +110,7 @@ abstract class AbstractFlow {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
-      case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision :: state.histories)
+      case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision.toString :: state.histories)
     }
   }
 }
@@ -202,7 +202,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
     case RecoveryCompleted =>
       log.info(s"recover completed")
       log.info(s"current state: $state")
-      if (state.decision == FlowSuccess || state.decision == FlowFail) {
+      if (state.decision.toString == "Success" || state.decision.toString == "Fail") {
       } else {
         log.info("恢复决策")
         makeDecision
