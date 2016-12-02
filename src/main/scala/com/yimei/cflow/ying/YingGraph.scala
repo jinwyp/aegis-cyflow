@@ -23,6 +23,7 @@ object YingGraph {
       else
         false
     }
+    override def toString = "R"
   }
 
   case object E1 extends Edge {
