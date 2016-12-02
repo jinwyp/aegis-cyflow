@@ -15,9 +15,7 @@ object Flow {
   case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
 
   // 接收命令
-  trait Command {
-    def flowId: String
-  }
+  trait Command { def flowId: String }
 
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
 
