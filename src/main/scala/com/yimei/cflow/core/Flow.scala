@@ -2,8 +2,9 @@ package com.yimei.cflow.core
 
 import java.util.Date
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
-
+import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, ReceiveTimeout}
+import akka.cluster.sharding.ShardRegion.Passivate
+import akka.persistence.{PersistentActor, SnapshotOffer}
 
 object Flow {
 
@@ -16,6 +17,8 @@ object Flow {
   case class CommandPoints(flowId: String, points: Map[String, DataPoint])
 
   case class CommandQuery(flowId: String)
+
+  case class CommandSnapshot(flowId: String)
 
   // 查询流程
 
@@ -83,8 +86,7 @@ object Flow {
 
 }
 
-// 抽象流程
-abstract class Flow extends Actor with ActorLogging {
+abstract class AbstractFlow {
 
   import Flow._
 
@@ -95,12 +97,20 @@ abstract class Flow extends Actor with ActorLogging {
   def queryStatus: String
 
   //
-  def update(ev: Event) = {
+  def updateState(ev: Event) = {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision :: state.histories)
     }
   }
+}
+
+
+
+// 抽象流程
+abstract class Flow extends AbstractFlow with Actor with ActorLogging {
+
+  import Flow._
 
   // 一般actor
   def receive = {
@@ -112,7 +122,7 @@ abstract class Flow extends Actor with ActorLogging {
       log.info(s"收到$cmdpoints")
       processCommandPoints(cmdpoints)
 
-    case CommandQuery =>
+    case query: CommandQuery =>
       log.info("收到CommandQuery")
       sender() ! queryStatus
   }
@@ -120,24 +130,24 @@ abstract class Flow extends Actor with ActorLogging {
   // 处理命令
   protected def processCommandPoint(cmd: CommandPoint) = {
     // 更新状体
-    update(PointUpdated(cmd.name, cmd.point))
+    updateState(PointUpdated(cmd.name, cmd.point))
 
     // 决策
     val decidor = state.decision.run(state)
     decidor match {
       case j: Judge =>
-        update(DecisionUpdated(decidor))
+        updateState(DecisionUpdated(decidor))
         log.info(s"userId[${state.userId}] => 开始决策...")
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
         log.info(s"userId[${state.userId}] => 当前决策结果为: $j\n\n")
         j.in.schedule(self, state)
       case FlowTodo =>
       case FlowSuccess =>
-        update(DecisionUpdated(decidor))
+        updateState(DecisionUpdated(decidor))
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
         log.info(s"userId[${state.userId}] => 当前决策结果为: 成功")
       case FlowFail =>
-        update(DecisionUpdated(decidor))
+        updateState(DecisionUpdated(decidor))
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
         log.info(s"userId[${state.userId}] => 当前决策结果为: 失败")
     }
@@ -148,16 +158,113 @@ abstract class Flow extends Actor with ActorLogging {
 
     // 更新所有状态
     for ((name, point) <- cmdpoints.points) {
-      update(PointUpdated(name, point))
+      updateState(PointUpdated(name, point))
     }
 
     // 决策
     state.decision.run(state) match {
       case j: Judge =>
-        update(DecisionUpdated(j))
+        updateState(DecisionUpdated(j))
         j.in.schedule(self, state)
       case a =>
         println(a)
+    }
+  }
+}
+
+abstract class PersistentFlow extends AbstractFlow with PersistentActor with ActorLogging {
+
+  import Flow._
+  // 恢复
+  def receiveRecover = {
+    case ev: Event =>
+      log.info(s"recover with event: $ev")
+      updateState(ev)
+    case SnapshotOffer(_, snapshot: State) =>
+      log.info(s"recover with snapshot: $snapshot")
+      state = snapshot
+  }
+
+  // 命令
+  def receiveCommand = {
+    case cmd: CommandPoint =>
+      log.info(s"收到$cmd")
+      processCommandPoint(cmd)
+
+    case cmds: CommandPoints =>
+      log.info(s"收到$cmds")
+      processCommandPoints(cmds)
+
+    case query: CommandQuery =>
+      log.info("收到CommandQuery")
+      sender() ! queryStatus
+
+    case snapshot: CommandSnapshot =>
+      log.info("收到CommandSnap")
+      saveSnapshot(state)
+
+  }
+
+  override def unhandled(msg: Any): Unit = msg match {
+    case ReceiveTimeout =>
+      log.info(s"${persistenceId}超时, 开始钝化!!!!")
+      context.parent ! Passivate(stopMessage = PoisonPill)
+    case _ =>
+      log.error(s"收到unhandled消息 = $msg")
+      super.unhandled(msg)
+  }
+
+  // 处理命令
+  protected def processCommandPoint(cmd: CommandPoint) = {
+
+    persist(PointUpdated(cmd.name, cmd.point)) { event =>
+
+      // 更新状体
+      log.info(s"持久化${event}成功")
+      updateState(event)
+
+      // 决策
+      val decidor = state.decision.run(state)
+
+      if (decidor != FlowTodo) {
+        persist(DecisionUpdated(decidor)) { event =>
+          log.info(s"持久化${event}成功")
+          updateState(event)
+        }
+      } else {
+
+      }
+      makeDecision  // 作决定!!!
+    }
+  }
+
+  // 处理复合命令
+  protected def processCommandPoints(cmds: CommandPoints) = {
+
+    // 更新所有状态
+    for ( (name, point) <- cmds.points ) {
+      persist(PointUpdated(name, point)) { event =>
+        log.info(s"持久化${event}成功")
+        updateState(event)
+      }
+    }
+    makeDecision // 作决定
+  }
+
+  protected def makeDecision: Unit = {
+    state.decision.run(state) match {
+      case j: Judge =>
+        log.info(s"userId[${state.userId}] => 开始决策...")
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: $j\n\n")
+        j.in.schedule(self, state)
+      case FlowSuccess =>
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: 成功")
+      case FlowFail =>
+        log.info(s"userId[${state.userId}] => 当前状态为: $state")
+        log.info(s"userId[${state.userId}] => 当前决策结果为: 失败")
+      case FlowTodo =>
     }
   }
 }

@@ -12,9 +12,9 @@ object YingGraph {
 
   import DataActors.actors
 
-  object R extends Edge {
+  case object R extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("R").tell("R", self) // 给R发消息
+      actors("R").tell(state.flowId, self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -25,11 +25,11 @@ object YingGraph {
     }
   }
 
-  object E1 extends Edge {
+  case object E1 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("A").tell("A", self) // 给R发消息
-      actors("B").tell("B", self) // 给R发消息
-      actors("C").tell("C", self) // 给R发消息
+      actors("A").tell(state.flowId,  self) // 给R发消息
+      actors("B").tell(state.flowId,  self) // 给R发消息
+      actors("C").tell(state.flowId,  self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -44,11 +44,11 @@ object YingGraph {
     override def toString = "A|B|C"
   }
 
-  object E2 extends Edge {
+  case object E2 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("D").tell("D", self) // 给R发消息
-      actors("E").tell("E", self) // 给R发消息
-      actors("F").tell("F", self) // 给R发消息
+      actors("D").tell(state.flowId,  self) // 给R发消息
+      actors("E").tell(state.flowId,  self) // 给R发消息
+      actors("F").tell(state.flowId,  self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -63,7 +63,7 @@ object YingGraph {
     override def toString = "D|E|F"
   }
 
-  object E3 extends Edge {
+  case object E3 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
 
     def check(state: State) = false
@@ -71,20 +71,20 @@ object YingGraph {
     override def toString = "D|E|F"
   }
 
-  object E4 extends Edge {
+  case object E4 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
     def check(state: State) = false
     override def toString = "D|E|F"
   }
 
-  object E5 extends Edge {
+  case object E5 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
     def check(state: State) = false
     override def toString = "D|E|F"
   }
 
   /////////////////
-  object V1 extends Judge {
+  case object V1 extends Judge {
     override def in = R
 
     override def decide(state: State): Decision = {
@@ -97,7 +97,8 @@ object YingGraph {
     override def toString = "V1"
   }
 
-  object V2 extends Judge {
+  case object V2 extends Judge {
+
     override def in = E1
 
     override def decide(state: State): Decision = {
@@ -112,7 +113,7 @@ object YingGraph {
     override def toString = "V2"
   }
 
-  object V3 extends Judge {
+  case object V3 extends Judge {
     override def in = E2
 
     override def decide(state: State) = {
@@ -127,7 +128,7 @@ object YingGraph {
     override def toString = "V3"
   }
 
-  object V4 extends Judge {
+  case object V4 extends Judge {
     override def in = E3
 
     override def decide(state: State) = ???
@@ -135,7 +136,7 @@ object YingGraph {
     override def toString = "V4"
   }
 
-  object V5 extends Judge {
+  case object V5 extends Judge {
     override def in = E4
 
     override def decide(state: State) = ???
@@ -143,7 +144,7 @@ object YingGraph {
     override def toString = "V5"
   }
 
-  object V6 extends Judge {
+  case object V6 extends Judge {
     override def in = E5
 
     override def decide(state: State) = ???
@@ -157,7 +158,7 @@ object YingGraph {
   ///////////////////////////////////////////////////////////////////
   import FlowGraph._
   import spray.json._
-  def cangJsonGraph(state: State) = {
+  def yingJsonGraph(state: State) = {
     val t5 = Leaf(V5)
     val t6 = Leaf(V6)
     val t3 = Leaf(V3)
