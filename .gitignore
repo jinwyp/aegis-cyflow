@@ -5,6 +5,8 @@
 
 # sbt specific
 .cache
+data/
+logs/
 .history
 .lib/
 dist/*

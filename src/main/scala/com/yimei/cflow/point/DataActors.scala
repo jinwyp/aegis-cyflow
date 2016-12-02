@@ -3,7 +3,7 @@ package com.yimei.cflow.point
 import java.util.Date
 
 import akka.actor.{Actor, ActorRef, Props, SupervisorStrategy, Terminated}
-import com.yimei.cflow.core.Flow.{Command, DataPoint}
+import com.yimei.cflow.core.Flow.{CommandPoint, DataPoint}
 
 /**
   * Created by hary on 16/12/1.
@@ -19,56 +19,57 @@ object DataActors {
   class R extends Actor {
     implicit val dispatcher = context.dispatcher
     override def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(1 seconds, sender(), Command("R", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(
+          1 seconds, sender(), CommandPoint(flowId, "R", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class A extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(2 seconds, sender(), Command("A", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(2 seconds, sender(), CommandPoint(flowId, "A", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class B extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(3 seconds, sender(), Command("B", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(3 seconds, sender(), CommandPoint(flowId, "B", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class C extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(4 seconds, sender(), Command("C", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(4 seconds, sender(), CommandPoint(flowId, "C", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class D extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(5 seconds, sender(), Command("D", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(5 seconds, sender(), CommandPoint(flowId, "D", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class E extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(6 seconds, sender(), Command("E", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(6 seconds, sender(), CommandPoint(flowId, "E", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
   class F extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
-      case _ =>
-        context.system.scheduler.scheduleOnce(7 seconds, sender(), Command("F", DataPoint(50, "memo", "hary", new Date())))
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(7 seconds, sender(), CommandPoint(flowId, "F", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 }

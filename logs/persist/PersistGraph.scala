@@ -1,20 +1,20 @@
-package com.yimei.cflow.cang
+package com.yimei.cflow.persist
 
 import akka.actor.ActorRef
-import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{Flow, FlowGraph}
+import com.yimei.cflow.core.PersistentFlow._
+import com.yimei.cflow.core.PersistentFlowGraph.{EdgeLine, Graph, Leaf, Node}
 import com.yimei.cflow.point.DataActors
 
 /**
   * Created by hary on 16/12/1.
   */
-object CangGraph {
+object PersistGraph {
 
   import DataActors.actors
 
   object R extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("R").tell(state.flowId, self) // 给R发消息
+      actors("R").tell("R", self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -27,9 +27,9 @@ object CangGraph {
 
   object E1 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("A").tell(state.flowId,  self) // 给R发消息
-      actors("B").tell(state.flowId,  self) // 给R发消息
-      actors("C").tell(state.flowId,  self) // 给R发消息
+      actors("A").tell("A", self) // 给R发消息
+      actors("B").tell("B", self) // 给R发消息
+      actors("C").tell("C", self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -46,9 +46,9 @@ object CangGraph {
 
   object E2 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("D").tell(state.flowId,  self) // 给R发消息
-      actors("E").tell(state.flowId,  self) // 给R发消息
-      actors("F").tell(state.flowId,  self) // 给R发消息
+      actors("D").tell("D", self) // 给R发消息
+      actors("E").tell("E", self) // 给R发消息
+      actors("F").tell("F", self) // 给R发消息
     }
 
     def check(state: State) = {
@@ -73,13 +73,17 @@ object CangGraph {
 
   object E4 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
+
     def check(state: State) = false
+
     override def toString = "D|E|F"
   }
 
   object E5 extends Edge {
     def schedule(self: ActorRef, state: State) = ???
+
     def check(state: State) = false
+
     override def toString = "D|E|F"
   }
 
@@ -155,9 +159,9 @@ object CangGraph {
   ///////////////////////////////////////////////////////////////////
   // FlowGraph
   ///////////////////////////////////////////////////////////////////
-  import FlowGraph._
   import spray.json._
-  def cangJsonGraph(state: State) = {
+
+  def persistJsonGraph(state: State) = {
     val t5 = Leaf(V5)
     val t6 = Leaf(V6)
     val t3 = Leaf(V3)
