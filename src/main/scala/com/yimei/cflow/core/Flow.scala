@@ -4,7 +4,7 @@ import java.util.Date
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, ReceiveTimeout}
 import akka.cluster.sharding.ShardRegion.Passivate
-import akka.persistence.{PersistentActor, SnapshotOffer}
+import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 
 object Flow {
 
@@ -26,6 +26,7 @@ object Flow {
   trait Event
 
   case class PointUpdated(name: String, point: DataPoint) extends Event
+  case class PointsUpdated(pionts: Map[String, DataPoint]) extends Event
 
   case class DecisionUpdated(decision: Decision) extends Event
 
@@ -100,6 +101,7 @@ abstract class AbstractFlow {
   def updateState(ev: Event) = {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
+      case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision :: state.histories)
     }
   }
@@ -183,6 +185,13 @@ abstract class PersistentFlow extends AbstractFlow with PersistentActor with Act
     case SnapshotOffer(_, snapshot: State) =>
       log.info(s"recover with snapshot: $snapshot")
       state = snapshot
+    case RecoveryCompleted =>
+      log.info(s"recover completed")
+      log.info(s"current state: $state\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!恢复决策!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      if (state.decision == FlowSuccess || state.decision == FlowFail) {
+      } else {
+        makeDecision
+      }
   }
 
   // 命令
@@ -240,13 +249,9 @@ abstract class PersistentFlow extends AbstractFlow with PersistentActor with Act
 
   // 处理复合命令
   protected def processCommandPoints(cmds: CommandPoints) = {
-
-    // 更新所有状态
-    for ( (name, point) <- cmds.points ) {
-      persist(PointUpdated(name, point)) { event =>
-        log.info(s"持久化${event}成功")
-        updateState(event)
-      }
+    persist(PointsUpdated(cmds.points)) { event =>
+      log.info(s"持久化${event}成功")
+      updateState(event)
     }
     makeDecision // 作决定
   }
@@ -256,15 +261,24 @@ abstract class PersistentFlow extends AbstractFlow with PersistentActor with Act
       case j: Judge =>
         log.info(s"userId[${state.userId}] => 开始决策...")
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
-        log.info(s"userId[${state.userId}] => 当前决策结果为: $j\n\n")
+        log.info(s"userId[${state.userId}] => 当前决策[${state.decision}]结果为: $j\n\n")
         j.in.schedule(self, state)
       case FlowSuccess =>
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
-        log.info(s"userId[${state.userId}] => 当前决策结果为: 成功")
+        log.info(s"userId[${state.userId}] => 当前决策[${state.decision}]结果为: 成功")
+        persist(DecisionUpdated(FlowSuccess)) { event =>
+          log.info(s"持久化${event}成功")
+          updateState(event)
+        }
       case FlowFail =>
         log.info(s"userId[${state.userId}] => 当前状态为: $state")
-        log.info(s"userId[${state.userId}] => 当前决策结果为: 失败")
+        log.info(s"userId[${state.userId}] => 当前决策[${state.decision}]结果为: 失败")
+        persist(DecisionUpdated(FlowFail)) { event =>
+          log.info(s"持久化${event}失败")
+          updateState(event)
+        }
       case FlowTodo =>
+        log.info(s"userId[${state.userId}] -> 当前决策[${state.decision}]结果为: FlowTodo")
     }
   }
 }

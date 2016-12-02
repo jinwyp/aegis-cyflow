@@ -3,7 +3,7 @@ package com.yimei.cflow.point
 import java.util.Date
 
 import akka.actor.{Actor, ActorRef, Props, SupervisorStrategy, Terminated}
-import com.yimei.cflow.core.Flow.{CommandPoint, DataPoint}
+import com.yimei.cflow.core.Flow.{CommandPoint, CommandPoints, DataPoint}
 
 /**
   * Created by hary on 16/12/1.
@@ -72,6 +72,23 @@ object DataActors {
         context.system.scheduler.scheduleOnce(7 seconds, sender(), CommandPoint(flowId, "F", DataPoint(50, "memo", "hary", new Date())))
     }
   }
+
+  // 同时采集DEF
+  class DEF extends Actor {
+    implicit val dispatcher = context.dispatcher
+    def receive = {
+      case flowId: String =>
+        context.system.scheduler.scheduleOnce(7 seconds, sender(),
+          CommandPoints(flowId,
+            Map(
+              "D" -> DataPoint(50, "memo", "hary", new Date()),
+              "E" -> DataPoint(50, "memo", "hary", new Date()),
+              "F" -> DataPoint(50, "memo", "hary", new Date())
+            )
+          )
+        )
+    }
+  }
 }
 
 class DataActors extends Actor {
@@ -88,7 +105,8 @@ class DataActors extends Actor {
       "C" -> context.actorOf(Props[C], "C"),
       "D" -> context.actorOf(Props[D], "D"),
       "E" -> context.actorOf(Props[E], "E"),
-      "F" -> context.actorOf(Props[F], "F")
+      "F" -> context.actorOf(Props[F], "F"),
+      "DEF" -> context.actorOf(Props[DEF], "DEF")
     )
   }
 

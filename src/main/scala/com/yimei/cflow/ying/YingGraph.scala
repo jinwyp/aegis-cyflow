@@ -1,6 +1,6 @@
 package com.yimei.cflow.ying
 
-import akka.actor.ActorRef
+import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.{Flow, FlowGraph}
 import com.yimei.cflow.point.DataActors
@@ -33,12 +33,10 @@ object YingGraph {
     }
 
     def check(state: State) = {
-      if (state.points.contains("A") &&
-        state.points.contains("B") &&
-        state.points.contains("C"))
-        true
-      else
-        false
+      if (! state.points.contains("A") ) { println("need A!!!!"); false }
+      if (! state.points.contains("B") ) { println("need B!!!!"); false }
+      if (! state.points.contains("C"))  { println("need C!!!!"); false }
+      else true
     }
 
     override def toString = "A|B|C"
@@ -46,18 +44,21 @@ object YingGraph {
 
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("D").tell(state.flowId,  self) // 给R发消息
-      actors("E").tell(state.flowId,  self) // 给R发消息
-      actors("F").tell(state.flowId,  self) // 给R发消息
+
+//      actors("D").tell(state.flowId,  self)
+//      actors("E").tell(state.flowId,  self)
+//      actors("F").tell(state.flowId,  self)
+
+      actors("DEF").tell(state.flowId,  self)
+
     }
 
     def check(state: State) = {
-      if (state.points.contains("D") &&
-        state.points.contains("E") &&
-        state.points.contains("F"))
-        true
+      if (! state.points.contains("D") ) { println("need D!!!!"); false }
+      if (! state.points.contains("E") ) { println("need E!!!!"); false }
+      if (! state.points.contains("F"))  { println("need F!!!!"); false }
       else
-        false
+        true
     }
 
     override def toString = "D|E|F"

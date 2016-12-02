@@ -10,6 +10,7 @@ object Ying {
 
   // 请求创建应收流程
   case class CreateFlowRequest(userId: String)
+  case class StartFlowRequestWithFlowId(userId: String, flowId: String)
   case class CreateFlowResponse(flowId: String, flowRef: ActorRef)
 
 }
