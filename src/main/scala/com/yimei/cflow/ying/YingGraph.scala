@@ -34,8 +34,8 @@ object YingGraph {
 
     def check(state: State) = {
       if (! state.points.contains("A") ) { println("need A!!!!"); false }
-      if (! state.points.contains("B") ) { println("need B!!!!"); false }
-      if (! state.points.contains("C"))  { println("need C!!!!"); false }
+      else if (! state.points.contains("B") ) { println("need B!!!!"); false }
+      else if (! state.points.contains("C"))  { println("need C!!!!"); false }
       else true
     }
 
@@ -55,10 +55,9 @@ object YingGraph {
 
     def check(state: State) = {
       if (! state.points.contains("D") ) { println("need D!!!!"); false }
-      if (! state.points.contains("E") ) { println("need E!!!!"); false }
-      if (! state.points.contains("F"))  { println("need F!!!!"); false }
-      else
-        true
+      else if (! state.points.contains("E") ) { println("need E!!!!"); false }
+      else if (! state.points.contains("F"))  { println("need F!!!!"); false }
+      else true
     }
 
     override def toString = "D|E|F"
