@@ -12,19 +12,18 @@ object YingGraph {
 
   import DataActors.actors
 
-  case object R extends Edge {
-    def schedule(self: ActorRef, state: State) = {
-      actors("R").tell(state.flowId, self) // 给R发消息
-    }
-
-    def check(state: State) = {
-      if (state.points.contains("R")) // 存在R数据点
-        true
-      else
-        false
-    }
-    override def toString = "R"
-  }
+//  case object R extends Edge {
+//    def schedule(self: ActorRef, state: State) = {
+//      actors("R").tell(state.flowId, self) // 给R发消息
+//    }
+//    def check(state: State) = {
+//      if (state.points.contains("R")) // 存在R数据点
+//        true
+//      else
+//        false
+//    }
+//    override def toString = "R"
+//  }
 
   case object E1 extends Edge {
     def schedule(self: ActorRef, state: State) = {
@@ -52,6 +51,7 @@ object YingGraph {
 
       actors("DEF").tell(state.flowId,  self)
 
+      // 用户采集!!!!
     }
 
     def check(state: State) = {
@@ -86,15 +86,10 @@ object YingGraph {
 
   /////////////////
   case object V1 extends Judge {
-    override def in = R
-
+    override def in = InitialEdge
     override def decide(state: State): Decision = {
-      if (state.points("R").value == 50) {
         V2
-      } else
-        FlowFail
     }
-
     override def toString = "V1"
   }
 

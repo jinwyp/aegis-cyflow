@@ -19,8 +19,8 @@ object Main extends App {
 
 
   // 运行cang demo
-  // cangDemo()
-  yingDemo()
+  cangDemo()
+  // yingDemo()
   // yingDemo("0406c0df-d13a-4711-90f0-9ed6c16eff05")
 
   ////////////////////////////////////////////////////////////////////////////

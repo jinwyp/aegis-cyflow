@@ -17,6 +17,8 @@ object Flow {
   // 接收命令
   trait Command { def flowId: String }
 
+  case object CommandInitiation  // 流程启动
+
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
 
   case class CommandPoints(flowId: String, points: Map[String, DataPoint]) extends Command
@@ -50,6 +52,13 @@ object Flow {
 
     // 如何判断edge完成
     def description = "todo edge" // 分支描述
+  }
+
+  // 初始变是用来填充用户信息的
+  object InitialEdge extends Edge {
+    def schedule(self: ActorRef, state: State) = self ! Flow.CommandInitiation;
+    def check(state: State): Boolean = true   // 自启动, 当然为true
+    override def description = "initial edge" // 分支描述
   }
 
   trait Decision {
@@ -123,6 +132,11 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
 
   // 一般actor
   def receive = {
+    // 启动流程
+    case CommandInitiation =>
+      log.info(s"收到CommandInitial, 启动流程")
+      state.decision.run(state).asInstanceOf[Judge].in.schedule(self, state)
+
     case cmdpoint: CommandPoint =>
       log.info(s"收到$cmdpoint")
       processCommandPoint(cmdpoint)
@@ -209,8 +223,13 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
       }
   }
 
-  // 命令
+  // 命令处理
   def receiveCommand = {
+    // 流程自启动
+    case CommandInitiation =>
+      log.info(s"收到CommandInitial, 启动流程")
+      state.decision.run(state).asInstanceOf[Judge].in.schedule(self, state)
+
     case cmd: CommandPoint =>
       log.info(s"收到$cmd")
       processCommandPoint(cmd)
