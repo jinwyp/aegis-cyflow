@@ -79,7 +79,7 @@ object CangGraph {
 
   /////////////////
   case object V0 extends Judge {
-    override def in = InitialEdge
+    override def in = VoidEdge
 
     override def decide(state: State): Decision = V1
 

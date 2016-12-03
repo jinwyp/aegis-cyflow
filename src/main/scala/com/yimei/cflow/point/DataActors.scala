@@ -13,6 +13,8 @@ object DataActors {
 
   import scala.concurrent.duration._
 
+  def props(flowMaster: ActorRef) = Props(new DataActors(flowMaster))
+
   @volatile
   var actors: Map[String, ActorRef] = null
 
@@ -20,7 +22,11 @@ object DataActors {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(2 seconds, sender(), CommandPoint(flowId, "A", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(
+          100 micros,
+          sender(),
+          CommandPoint(flowId, "A", DataPoint(50, "memo", "hary", new Date()))
+        )
     }
   }
 
@@ -28,7 +34,7 @@ object DataActors {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(3 seconds, sender(), CommandPoint(flowId, "B", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(200 micros, sender(), CommandPoint(flowId, "B", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
@@ -36,7 +42,7 @@ object DataActors {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(4 seconds, sender(), CommandPoint(flowId, "C", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(300 micros, sender(), CommandPoint(flowId, "C", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
@@ -44,7 +50,7 @@ object DataActors {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(5 seconds, sender(), CommandPoint(flowId, "D", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(100 micros, sender(), CommandPoint(flowId, "D", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
@@ -52,15 +58,18 @@ object DataActors {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(6 seconds, sender(), CommandPoint(flowId, "E", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(200 micros, sender(), CommandPoint(flowId, "E", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
-  class F extends Actor {
+  class F(flowMaster: ActorRef) extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
       case flowId: String =>
-        context.system.scheduler.scheduleOnce(7 seconds, sender(), CommandPoint(flowId, "F", DataPoint(50, "memo", "hary", new Date())))
+        context.system.scheduler.scheduleOnce(
+          5 seconds,
+          flowMaster,
+          CommandPoint(flowId, "F", DataPoint(50, "memo", "hary", new Date())))
     }
   }
 
@@ -82,7 +91,7 @@ object DataActors {
   }
 }
 
-class DataActors extends Actor {
+class DataActors(flowMaster: ActorRef) extends Actor {
 
   import DataActors._
 
@@ -95,7 +104,7 @@ class DataActors extends Actor {
       "C" -> context.actorOf(Props[C], "C"),
       "D" -> context.actorOf(Props[D], "D"),
       "E" -> context.actorOf(Props[E], "E"),
-      "F" -> context.actorOf(Props[F], "F"),
+      "F" -> context.actorOf(Props(new F(flowMaster)), "F"),
       "DEF" -> context.actorOf(Props[DEF], "DEF")
     )
   }

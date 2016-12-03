@@ -51,17 +51,14 @@ object Flow {
     def check(state: State): Boolean
 
     // 如何判断edge完成
-    def description = "todo edge" // 分支描述
+    override def toString = "todo edge" // 分支描述
   }
 
-  // 初始变是用来填充用户信息的
-  object InitialEdge extends Edge {
-    def schedule(self: ActorRef, state: State) = self ! CommandPoint(null, "root", DataPoint(100, "root", "system", new Date()))
-
-    def check(state: State): Boolean = true
-
-    // 自启动, 当然为true
-    override def description = "initial edge" // 分支描述
+  // 直通边
+  object VoidEdge extends Edge {
+    def schedule(self: ActorRef, state: State) = throw new IllegalArgumentException("VoidEdge can not be scheduled")
+    def check(state: State) = true
+    override def toString = "void edge"
   }
 
   trait Decision {
@@ -133,16 +130,22 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
 
   import Flow._
 
-  InitialEdge.schedule(self, state)
+
+
+  @scala.throws[Exception](classOf[Exception])
+  override def preStart(): Unit = {
+    super.preStart()
+    makeDecision()
+  }
 
   // 一般actor
   def receive = {
     case cmdpoint: CommandPoint =>
-      log.info(s"收到$cmdpoint")
+      log.info(s"收到${cmdpoint.name}")
       processCommandPoint(cmdpoint)
 
     case cmdpoints: CommandPoints =>
-      log.info(s"收到$cmdpoints")
+      log.info(s"收到${cmdpoints.points.map(_._1).mkString("[", ",", "]")}")
       processCommandPoints(cmdpoints)
 
     case query: CommandQuery =>
@@ -170,8 +173,7 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
     decidor match {
       case j: Judge =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策结果为: $j")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
         log.info(s"调度 = ${j.in}")
         if ( j.in.check(state) ) {    // 尝试再次计算, 因为有可能已经满足条件了
           makeDecision()
@@ -181,12 +183,10 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
       case FlowTodo =>
       case FlowSuccess =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策结果为: FlowSuccess")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
       case FlowFail =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策结果为: FlowFail")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
     }
   }
 }
@@ -204,34 +204,37 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
   // 恢复
   def receiveRecover = {
     case ev: Event =>
-      log.info(s"recover with event: $ev")
+     // log.info(s"recover with event: $ev")
       updateState(ev)
     case SnapshotOffer(_, snapshot: State) =>
-      log.info(s"recover with snapshot: $snapshot")
       state = snapshot
+      log.info(s"snapshot recovery")
+//      log.info(s"current state: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
     case RecoveryCompleted =>
       log.info(s"recover completed")
-      log.info(s"current state: $state")
+      log.info(s"current state: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
       if (state.decision.toString == "Success" || state.decision.toString == "Fail") {
       } else {
-        if (state.histories.size == 0) {
-          log.info("流程init!!!")
-          InitialEdge.schedule(self, state)
-        } else {
-          log.info("恢复决策")
-          makeDecision
-        }
+        makeDecision
+
+//        if (state.histories.size == 0) {
+//          log.info("流程init!!!")
+//          InitialEdge.schedule(self, state)
+//        } else {
+//          log.info("恢复决策")
+//          makeDecision
+//        }
       }
   }
 
   // 命令处理
   def receiveCommand = {
     case cmd: CommandPoint =>
-      log.info(s"收到$cmd")
+      log.info(s"收到${cmd.name}")
       processCommandPoint(cmd)
 
     case cmds: CommandPoints =>
-      log.info(s"收到$cmds")
+      log.info(s"收到${cmds.points.map(_._1)}")
       processCommandPoints(cmds)
 
     case query: CommandQuery =>
@@ -262,7 +265,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
     persist(PointUpdated(cmd.name, cmd.point)) { event =>
 
       // 更新状体
-      log.info(s"持久化${event}成功")
+      log.info(s"持久化${event.name}成功")
       updateState(event)
 
       // 作决定!!!
@@ -273,7 +276,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
   // 处理复合命令
   protected def processCommandPoints(cmds: CommandPoints) = {
     persist(PointsUpdated(cmds.points)) { event =>
-      log.info(s"持久化${event}成功")
+      log.info(s"持久化${event.pionts.map(_._1)}成功")
       updateState(event)
       makeDecision // 作决定
     }
@@ -282,10 +285,9 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
   protected def makeDecision(): Unit = {
     state.decision.run(state) match {
       case j: Judge =>
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策[${state.decision}]结果为: $j")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
         persist(DecisionUpdated(j)){ event =>
-          log.info(s"持久化${event}成功")
+          log.info(s"持久化${event.decision}成功")
           updateState(event)
           log.info(s"调度 = ${j.in}")
           if( j.in.check(state)) {
@@ -295,18 +297,16 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
           }
         }
       case FlowSuccess =>
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策[${state.decision}]结果为: FlowSuccess")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
         persist(DecisionUpdated(FlowSuccess)) { event =>
-          log.info(s"持久化${event}成功")
+          log.info(s"持久化${event.decision}成功")
           updateState(event)
           self ! CommandSnapshot(persistenceId) // snapshot
         }
       case FlowFail =>
-        log.info(s"当前状态为: $state")
-        log.info(s"当前决策[${state.decision}]结果为: FlowFail")
+        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
         persist(DecisionUpdated(FlowFail)) { event =>
-          log.info(s"持久化${event}失败")
+          log.info(s"持久化${event.decision}成功")
           updateState(event)
           self ! CommandSnapshot(persistenceId) // snapshot
         }

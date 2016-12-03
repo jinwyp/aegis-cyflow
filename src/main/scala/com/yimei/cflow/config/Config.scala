@@ -1,7 +1,5 @@
 package com.yimei.cflow.config
 
-import akka.actor.ActorSystem
-import com.typesafe.config.Config
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 import org.flywaydb.core.Flyway
 
@@ -9,7 +7,7 @@ import org.flywaydb.core.Flyway
   * Created by hary on 16/12/2.
   */
 
-trait FlywayConfig extends Core{
+trait FlywayConfig extends Core {
 
   private val flyway = new Flyway()
   flyway.setDataSource(

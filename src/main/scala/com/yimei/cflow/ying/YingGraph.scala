@@ -39,7 +39,10 @@ object YingGraph {
 
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State) = {
-      actors("DEF").tell(state.flowId, self)
+      actors("D").tell(state.flowId, self) // 给R发消息
+      actors("E").tell(state.flowId, self) // 给R发消息
+      actors("F").tell(state.flowId, self) // 给R发消息
+      // actors("DEF").tell(state.flowId, self)
     }
 
     def check(state: State) = {
@@ -76,9 +79,8 @@ object YingGraph {
     override def toString = "D|E|F"
   }
 
-  /////////////////
   case object V0 extends Judge {
-    override def in = InitialEdge
+    override def in = VoidEdge
 
     override def decide(state: State): Decision = V1
 
@@ -126,7 +128,7 @@ object YingGraph {
   case object V4 extends Judge {
     override def in = E4
 
-    override def decide(state: State) = V5
+    override def decide(state: State) = V7
 
     override def toString = "V4"
   }
@@ -141,12 +143,35 @@ object YingGraph {
 
   case object V6 extends Judge {
     override def in = E6
-
     override def decide(state: State) = FlowSuccess
-
     override def toString = "V6"
   }
 
+  //////////////////////////////////////////////
+  //       V1
+  //         \
+  //         v2
+  //          \
+  //          V3
+  //           \
+  //            V4
+  //           /  \
+  //          V7   V5
+  //         /      \
+  //        V8       V6
+  //////////////////////////////////////////////
+
+  case object V7 extends Judge {
+    override def in = VoidEdge
+    override def decide(state: State) = V8
+    override def toString = "V7"
+  }
+
+  case object V8 extends Judge {
+    override def in = VoidEdge
+    override def decide(state: State) = FlowSuccess
+    override def toString = "V6"
+  }
 }
 
 
