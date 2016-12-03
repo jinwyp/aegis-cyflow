@@ -1,16 +1,17 @@
 package com.yimei.cflow.cang
 
-import akka.actor.{ActorLogging, Props}
+import akka.actor.{ActorLogging, ActorRef, Props}
 import com.yimei.cflow.core.{Flow, GraphBuilder}
 import com.yimei.cflow.core.Flow.{DataPoint, State}
 import com.yimei.cflow.cang.CangGraph._
 import GraphBuilder._
 
 object Cang {
-  def props(flowId: String) = Props(new Cang(flowId))
+  def props(flowId: String, modules: Map[String, ActorRef]) = Props(new Cang(flowId, modules))
 }
 
-class Cang(flowId: String) extends Flow with ActorLogging {
+class Cang(flowId: String, modules: Map[String, ActorRef]) extends Flow(modules) with ActorLogging {
+
   override var state = State(flowId, Map[String, DataPoint](), V0, Nil)
 
   // 查询图

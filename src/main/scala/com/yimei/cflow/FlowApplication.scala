@@ -1,13 +1,15 @@
 package com.yimei.cflow
 
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import akka.http.scaladsl.Http
-import com.yimei.cflow.cang.CangSupervisor
+import com.yimei.cflow.cang.CangFlowMaster
 import com.yimei.cflow.config.{ApplicationConfig, Core}
+import com.yimei.cflow.data.DataMaster
+import com.yimei.cflow.integration.DaemonMaster
 import com.yimei.cflow.operation.OperationRoute
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
-import com.yimei.cflow.user.{UserRoute, UserSupervisor}
-import com.yimei.cflow.ying.YingSupervisor
+import com.yimei.cflow.user.{UserMaster, UserRoute}
+import com.yimei.cflow.ying.YingFlowMaster
 
 
 /**
@@ -15,22 +17,26 @@ import com.yimei.cflow.ying.YingSupervisor
   */
 object FlowApplication extends App with ApplicationConfig with CorsSupport with Core {
 
-  import akka.http.scaladsl.server.Directives._
+  // 仓押, 应收, 数据, 用户 4大模块
+  var moduleProps = Map[String, Props](
+    module_ying -> YingFlowMaster.props(),
+    module_cang -> CangFlowMaster.props(),
+    module_user -> UserMaster.props(),
+    module_data -> DataMaster.props()
+  )
 
-  // 仓押与应收
-  val ying = system.actorOf(Props[YingSupervisor], "YingSupervisor")
-  val cang = system.actorOf(Props[CangSupervisor], "CangSupervisor")
-
-  // 用户, 运营, 资金方
-  val user = system.actorOf(Props[UserSupervisor], "UserSupervisor")
-  //  val operation = system.actorOf(Props[CangSupervisor], "CangSupervisor")
-  //  val capital = system.actorOf(Props[CangSupervisor], "CangSupervisor")
+  // 启动daemon master
+  system.actorOf(DaemonMaster.props(moduleProps), "DaemonMaster")
 
   // 路由, 服务启动
+  import akka.http.scaladsl.server.Directives._
+
   val routes = UserRoute.route ~
     OperationRoute.route ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(system).routes)
   Http().bindAndHandle(routes, "0.0.0.0", system.settings.config.getInt("http.port"))
+
+
 
 }

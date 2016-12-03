@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 /**
   * Created by hary on 16/12/3.
   */
-object CangTest extends App with Core {
+object YingTest extends App with Core {
 
   // 仓押, 应收, 数据, 用户 4大模块
   var moduleProps = Map[String, Props](
@@ -28,7 +28,7 @@ object CangTest extends App with Core {
   val daemon = system.actorOf(DaemonMaster.props(moduleProps), "DaemonMaster")
 
   val queryActor = system.actorOf(Props(new QueryActor(daemon)), "queryActor")
-  system.scheduler.schedule(2 seconds, 13 seconds, queryActor, QueryTest(module_cang, UUID.randomUUID().toString))
+  system.scheduler.schedule(2 seconds, 13 seconds, queryActor, QueryTest(module_ying, UUID.randomUUID().toString))
 }
 
 class QueryActor(daemon: ActorRef) extends Actor {

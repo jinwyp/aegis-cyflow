@@ -1,24 +1,22 @@
 package com.yimei.cflow.user
 
-import akka.actor.{Actor, ActorLogging, Props, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorLogging, Props, Terminated}
+import com.yimei.cflow._
+import com.yimei.cflow.config.Core
+import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.user.User.{HierarchyInfo, StartUser}
 
 
-object UserSupervisor {
-
+object UserMaster extends Core {
+  def props() = Props(new UserMaster)
 }
 
-/**
-  * Created by hary on 16/12/2.
-  */
-class UserSupervisor  extends Actor with ActorLogging {
-  override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
-
-  def receive = {
+trait UserMasterBehavior extends Actor with ServicableBehavior with ActorLogging {
+  override def serving: Receive = {
     case StartUser(userId) =>
       val hierarchyInfo = HierarchyInfo(None, None)
       context.child(userId).fold(create(userId, hierarchyInfo))(identity)
-      // todo 王琦把这个改为从数据库读取用户的关系, 通过future来创建
+    // todo 王琦把这个改为从数据库读取用户的关系, 通过future来创建
 
     case command: User.Command =>
       val child = context.child(command.userId).fold {
@@ -34,7 +32,14 @@ class UserSupervisor  extends Actor with ActorLogging {
       log.info(s"${child.path.name} terminated")
   }
 
-  def create(userId: String, hierarchyInfo: HierarchyInfo) = {
+  private def create(userId: String, hierarchyInfo: HierarchyInfo) = {
     context.actorOf(Props(new User(userId, hierarchyInfo, 40)), userId)
   }
 }
+
+/**
+  * Created by hary on 16/12/2.
+  */
+class UserMaster extends ModuleMaster(module_user, List(module_ying, module_cang)) with UserMasterBehavior
+
+

@@ -1,17 +1,16 @@
 package com.yimei.cflow.ying
 
-import akka.actor.{ActorLogging, Props}
+import akka.actor.{ActorLogging, ActorRef, Props}
 import com.yimei.cflow.config.Core
 import com.yimei.cflow.core.Flow.{DataPoint, State, VoidEdge}
 import com.yimei.cflow.core.{GraphBuilder, PersistentFlow}
 import com.yimei.cflow.ying.YingGraph._
 
 object Ying extends Core {
-  def props(flowId: String) = Props(new Ying(flowId, config.getInt("flow.ying.timeout")))
+  def props(flowId: String, modules: Map[String, ActorRef]) = Props(new Ying(flowId, modules, config.getInt("flow.ying.timeout")))
 }
 
-// 10秒钝化
-class Ying(flowId: String, timeout: Int) extends PersistentFlow(timeout) with ActorLogging {
+class Ying(flowId: String, modules: Map[String, ActorRef], timeout: Int) extends PersistentFlow(modules, timeout) with ActorLogging {
 
   override val persistenceId = flowId
 

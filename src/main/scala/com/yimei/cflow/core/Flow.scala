@@ -2,9 +2,10 @@ package com.yimei.cflow.core
 
 import java.util.Date
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, Terminated}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.core.Flow.{Command, StartFlow}
+import com.yimei.cflow.integration.ServicableBehavior
 
 object Flow {
 
@@ -45,7 +46,7 @@ object Flow {
 
   // 分支边
   trait Edge {
-    def schedule(self: ActorRef, state: State): Unit
+    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]): Unit
 
     // 发起哪些数据采集
     def check(state: State): Boolean
@@ -56,7 +57,8 @@ object Flow {
 
   // 直通边
   object VoidEdge extends Edge {
-    def schedule(self: ActorRef, state: State) = throw new IllegalArgumentException("VoidEdge can not be scheduled")
+    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) =
+      throw new IllegalArgumentException("VoidEdge can not be scheduled")
     def check(state: State) = true
     override def toString = "void edge"
   }
@@ -104,7 +106,7 @@ object Flow {
 
 }
 
-abstract class AbstractFlow {
+abstract class AbstractFlow(modules: Map[String, ActorRef]){
 
   import Flow._
 
@@ -126,11 +128,9 @@ abstract class AbstractFlow {
 
 
 // 抽象流程
-abstract class Flow extends AbstractFlow with Actor with ActorLogging {
+abstract class Flow(modules: Map[String, ActorRef]) extends AbstractFlow(modules) with Actor with ActorLogging {
 
   import Flow._
-
-
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
@@ -138,7 +138,6 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
     makeDecision()
   }
 
-  // 一般actor
   def receive = {
     case cmdpoint: CommandPoint =>
       log.info(s"收到${cmdpoint.name}")
@@ -178,7 +177,7 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
         if ( j.in.check(state) ) {    // 尝试再次计算, 因为有可能已经满足条件了
           makeDecision()
         } else {
-          j.in.schedule(self, state)
+          j.in.schedule(self, state, modules)
         }
       case FlowTodo =>
       case FlowSuccess =>
@@ -191,7 +190,8 @@ abstract class Flow extends AbstractFlow with Actor with ActorLogging {
   }
 }
 
-abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with PersistentActor with ActorLogging {
+abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: Long) extends AbstractFlow(modules)
+  with PersistentActor with ActorLogging {
 
   import Flow._
 
@@ -208,22 +208,13 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
       updateState(ev)
     case SnapshotOffer(_, snapshot: State) =>
       state = snapshot
-      log.info(s"snapshot recovery")
-//      log.info(s"current state: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
+      log.info(s"snapshot recovered")
     case RecoveryCompleted =>
       log.info(s"recover completed")
       log.info(s"current state: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
       if (state.decision.toString == "Success" || state.decision.toString == "Fail") {
       } else {
         makeDecision
-
-//        if (state.histories.size == 0) {
-//          log.info("流程init!!!")
-//          InitialEdge.schedule(self, state)
-//        } else {
-//          log.info("恢复决策")
-//          makeDecision
-//        }
       }
   }
 
@@ -293,7 +284,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
           if( j.in.check(state)) {
             makeDecision()
           } else {
-            j.in.schedule(self, state)
+            j.in.schedule(self, state, modules)
           }
         }
       case FlowSuccess =>
@@ -316,25 +307,26 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow with 
   }
 }
 
-trait Supervisor extends Actor with ActorLogging {
-  override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
+trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior {
 
-  def receive = {
+  def serving: Receive = {
     case StartFlow(flowId) =>
-      context.child(flowId).fold(create(flowId))(identity)
+      context.child(flowId).fold(create(flowId, getModules()))(identity)
 
     case command: Command =>
-      val child = context.child(command.flowId).fold(create(command.flowId))(identity)
+      val child = context.child(command.flowId).fold(create(command.flowId, getModules()))(identity)
       child forward command
 
     case Terminated(child) =>
       log.info(s"${child.path.name} terminated")
   }
 
-  def create(flowId: String) = {
-    context.actorOf(flowProp(flowId), flowId)
+  def create(flowId: String, modules: Map[String, ActorRef]) = {
+    context.actorOf(flowProp(flowId, modules), flowId)
   }
 
-  def flowProp(flowId: String): Props
+  def flowProp(flowId: String, modules: Map[String, ActorRef]): Props
+
+  def getModules(): Map[String, ActorRef]
 }
 

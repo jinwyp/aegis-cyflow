@@ -1,16 +1,4 @@
-package com.yimei.cflow
-
-import java.util.UUID
-
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.util.Timeout
-import com.yimei.cflow.config.Core
-import com.yimei.cflow.core.Flow.CommandQuery
-import com.yimei.cflow.point.DataActors
-import com.yimei.cflow.ying.YingSupervisor
-
-import scala.concurrent.duration._
-
+package com.yimei.cflow;
 
 /**
   * Created by hary on 16/12/1.
