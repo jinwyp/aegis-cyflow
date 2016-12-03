@@ -1,7 +1,6 @@
 package com.yimei.cflow.ying
 
-import akka.actor.{Actor, ActorLogging, Props, SupervisorStrategy, Terminated}
-import com.yimei.cflow.core.Flow.{Command, StartFlow}
+import akka.actor.SupervisorStrategy
 import com.yimei.cflow.core.Supervisor
 
 /**
@@ -9,6 +8,7 @@ import com.yimei.cflow.core.Supervisor
   */
 class YingSupervisor extends Supervisor {
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
+
   override def flowProp(flowId: String) = Ying.props(flowId)
 }
 

@@ -16,15 +16,6 @@ object DataActors {
   @volatile
   var actors: Map[String, ActorRef] = null
 
-  class R extends Actor {
-    implicit val dispatcher = context.dispatcher
-    override def receive = {
-      case flowId: String =>
-        context.system.scheduler.scheduleOnce(
-          1 seconds, sender(), CommandPoint(flowId, "R", DataPoint(50, "memo", "hary", new Date())))
-    }
-  }
-
   class A extends Actor {
     implicit val dispatcher = context.dispatcher
     def receive = {
@@ -99,7 +90,6 @@ class DataActors extends Actor {
 
   synchronized {
     DataActors.actors = Map[String, ActorRef](
-      "R" -> context.actorOf(Props[A], "R"),
       "A" -> context.actorOf(Props[A], "A"),
       "B" -> context.actorOf(Props[B], "B"),
       "C" -> context.actorOf(Props[C], "C"),
