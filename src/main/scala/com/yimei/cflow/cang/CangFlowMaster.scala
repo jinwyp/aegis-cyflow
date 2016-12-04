@@ -14,7 +14,8 @@ object CangFlowMaster extends Core {
 /**
   * Created by hary on 16/12/1.
   */
-class CangFlowMaster extends ModuleMaster(module_cang, List(module_data)) with FlowMasterBehavior {
-  override def flowProp(flowId: String, modules: Map[String, ActorRef]): Props = Cang.props(flowId, getModules())
+class CangFlowMaster extends ModuleMaster(module_cang, List(module_data, module_user)) with FlowMasterBehavior {
+  override def flowProp(flowId: String, modules: Map[String, ActorRef], userId: Option[String], parties: Map[String, String]): Props =
+    Cang.props(flowId, getModules(), userId, parties)
   override def getModules(): Map[String, ActorRef] = modules
 }

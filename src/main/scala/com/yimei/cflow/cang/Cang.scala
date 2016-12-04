@@ -7,12 +7,27 @@ import com.yimei.cflow.cang.CangGraph._
 import GraphBuilder._
 
 object Cang {
-  def props(flowId: String, modules: Map[String, ActorRef]) = Props(new Cang(flowId, modules))
+  /**
+    *
+    * @param flowId
+    * @param modules
+    * @param userId
+    * @param parties
+    * @return
+    */
+  def props(flowId: String,
+            modules: Map[String, ActorRef],
+            userId: Option[String],
+            parties: Map[String, String]) =
+    Props(new Cang(flowId, modules, userId, parties))
 }
 
-class Cang(flowId: String, modules: Map[String, ActorRef]) extends Flow(modules) with ActorLogging {
+class Cang(flowId: String,
+           modules: Map[String, ActorRef],
+           userId: Option[String],
+           parties: Map[String, String] = Map()) extends Flow(modules) with ActorLogging {
 
-  override var state = State(flowId, Map[String, DataPoint](), V0, Nil)
+  override var state = State(flowId, userId, Map[String, String](), Map[String, DataPoint](), V0, Nil)
 
   // 查询图
   override def queryStatus =

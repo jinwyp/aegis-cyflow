@@ -33,12 +33,13 @@ trait DatabaseConfig extends Core {
   hikariConfig.setJdbcUrl(config.getString("database.url"))
   hikariConfig.setUsername(config.getString("database.user"))
   hikariConfig.setPassword(config.getString("database.password"))
+
   private val dataSource = new HikariDataSource(hikariConfig)
   val driver = slick.driver.MySQLDriver;
-
   import driver.api.Database;
   val db = Database.forDataSource(dataSource)
   db.createSession()
+
 }
 
 trait ApplicationConfig extends DatabaseConfig with FlywayConfig with Core

@@ -1,8 +1,7 @@
 package com.yimei.cflow.cang
 
-import akka.actor.{ActorLogging, ActorRef}
+import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.data.DataMaster.GetPoint
 
 /**
   * Created by hary on 16/12/1.
@@ -11,17 +10,14 @@ object CangGraph {
 
   import com.yimei.cflow._
 
-
-  def getData(name: String, self: ActorRef, state:State, modules: Map[String, ActorRef]) = {
-    modules(module_data).tell(GetPoint(modules(module_cang), state.flowId, name), modules(module_cang))
-  }
-
-
   case object E1 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      getData(data_A, self, state, modules)
-      getData(data_B, self, state, modules)
-      getData(data_C, self, state, modules)
+      fetch(data_A, state, modules(module_cang), modules(module_data))
+      fetch(data_B, state, modules(module_cang), modules(module_data))
+      fetch(data_C, state, modules(module_cang), modules(module_data))
+
+      // fetch user data
+      fetch(data_C, state, modules(module_cang), modules(module_user))
     }
 
     def check(state: State) = {
@@ -46,21 +42,25 @@ object CangGraph {
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
 
-//      modules(module_data).tell(GetPoint(modules(module_cang), state.flowId, data_D), modules(module_cang))
-//      modules(module_data).tell(GetPoint(modules(module_cang), state.flowId, data_E), modules(module_cang))
-//      modules(module_data).tell(GetPoint(modules(module_cang), state.flowId, data_F), modules(module_cang))
-      getData(data_DEF, self, state, modules)
+//      fetch(data_D, state, modules(module_cang), modules(module_data))
+//      fetch(data_E, state, modules(module_cang), modules(module_data))
+//      fetch(data_F, state, modules(module_cang), modules(module_data))
+
+      fetchM(data_DEF, state, modules(module_cang), modules(module_data), Array(data_D, data_E, data_F))
     }
 
     def check(state: State) = {
       if (!state.points.contains(data_D)) {
-        println("need D!!!!"); false
+        println("need D!!!!");
+        false
       }
       else if (!state.points.contains(data_E)) {
-        println("need E!!!!"); false
+        println("need E!!!!");
+        false
       }
       else if (!state.points.contains(data_F)) {
-        println("need F!!!!"); false
+        println("need F!!!!");
+        false
       }
       else true
     }

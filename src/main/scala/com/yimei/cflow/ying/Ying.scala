@@ -7,14 +7,22 @@ import com.yimei.cflow.core.{GraphBuilder, PersistentFlow}
 import com.yimei.cflow.ying.YingGraph._
 
 object Ying extends Core {
-  def props(flowId: String, modules: Map[String, ActorRef]) = Props(new Ying(flowId, modules, config.getInt("flow.ying.timeout")))
+  def props(flowId: String, modules: Map[String, ActorRef],
+            userId: Option[String] = None,
+            parties: Map[String, String] = Map()
+           ) =
+    Props(new Ying(flowId, modules, userId, parties, config.getInt("flow.ying.timeout")))
 }
 
-class Ying(flowId: String, modules: Map[String, ActorRef], timeout: Int) extends PersistentFlow(modules, timeout) with ActorLogging {
+class Ying(flowId: String,
+           modules: Map[String, ActorRef],
+           userId: Option[String],
+           parties: Map[String, String],
+           timeout: Int) extends PersistentFlow(modules, timeout) with ActorLogging {
 
   override val persistenceId = flowId
 
-  override var state = State(flowId, Map[String, DataPoint](), V0, Nil)
+  override var state = State(flowId, userId, parties, Map[String, DataPoint](), V0, Nil)
 
   import GraphBuilder._
 

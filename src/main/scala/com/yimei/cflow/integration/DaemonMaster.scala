@@ -16,7 +16,7 @@ object DaemonMaster {
 
   def props(moduleProps: Map[String, Props]) = Props(new DaemonMaster(moduleProps))
 
-  case class QueryTest(flowName: String, flowId: String)
+  case class QueryTest(flowName: String, flowId: String, userId: Option[String] = None)
 
 }
 
@@ -43,9 +43,9 @@ class DaemonMaster(moduleProps: Map[String, Props]) extends Actor with ActorLogg
       modules.get(name).foreach(org ! RegisterModule(name, _) )
 
     // 测试查询消息
-    case QueryTest(flowName, flowId) =>
+    case QueryTest(flowName, flowId, userId) =>
       log.info(s"收到QueryTest(${flowName}, ${flowId})")
-      modules.get(flowName).foreach( _ forward CommandQuery(flowId))
+      modules.get(flowName).foreach( _ forward CommandQuery(flowId, userId))
 
     case Terminated(ref) =>
       val (died, rest) = modules.span(entry => entry._2 == ref);

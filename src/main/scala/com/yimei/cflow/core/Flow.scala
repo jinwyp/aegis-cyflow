@@ -2,15 +2,29 @@ package com.yimei.cflow.core
 
 import java.util.Date
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
-import com.yimei.cflow.core.Flow.{Command, StartFlow}
-import com.yimei.cflow.integration.ServicableBehavior
+import com.yimei.cflow.data.DataMaster.GetPoint
+
+import concurrent.duration._
 
 object Flow {
 
+  // get data from data master
+  def fetch(name: String, state: State, flowMaster: ActorRef, source: ActorRef) = {
+    if (!state.points.contains(name)) {
+      source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+    }
+  }
+
+  def fetchM(name: String, state: State, flowMaster: ActorRef, source: ActorRef, points: Array[String]) = {
+    if (points.filter(!state.points.contains(_)).length > 0) {
+      source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+    }
+  }
+
   // 启动流程
-  case class StartFlow(flowId: String)
+  // case class StartFlow(flowId: String, userId: String)
 
   // 数据点: 值, 说明, 谁采集, 采集时间
   case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
@@ -20,11 +34,13 @@ object Flow {
     def flowId: String
   }
 
+  case class CommandStarting(userId: Option[String])
+
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
 
   case class CommandPoints(flowId: String, points: Map[String, DataPoint]) extends Command
 
-  case class CommandQuery(flowId: String) extends Command
+  case class CommandQuery(flowId: String, userId: Option[String] = None) extends Command
 
   case class CommandSnapshot(flowId: String) extends Command
 
@@ -41,8 +57,10 @@ object Flow {
 
   case class DecisionUpdated(decision: Decision) extends Event
 
+  case class UserUpdated(userid: String) extends Event
+
   // 状态
-  case class State(flowId: String, points: Map[String, DataPoint], decision: Decision, histories: List[String])
+  case class State(flowId: String, userId: Option[String], parties: Map[String, String], points: Map[String, DataPoint], decision: Decision, histories: List[String])
 
   // 分支边
   trait Edge {
@@ -59,7 +77,9 @@ object Flow {
   object VoidEdge extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) =
       throw new IllegalArgumentException("VoidEdge can not be scheduled")
+
     def check(state: State) = true
+
     override def toString = "void edge"
   }
 
@@ -106,7 +126,7 @@ object Flow {
 
 }
 
-abstract class AbstractFlow(modules: Map[String, ActorRef]){
+abstract class AbstractFlow(modules: Map[String, ActorRef]) extends Actor with ActorLogging {
 
   import Flow._
 
@@ -119,24 +139,31 @@ abstract class AbstractFlow(modules: Map[String, ActorRef]){
   //
   def updateState(ev: Event) = {
     ev match {
+      case UserUpdated(newUserId) => state = state.copy(userId = Some(newUserId))
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision.toString :: state.histories)
     }
   }
+
+  def logState(mark: String = ""): Unit = {
+    log.info(s"<$mark>当前状态为: {${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId.getOrElse("")}}")
+  }
 }
 
 
 // 抽象流程
-abstract class Flow(modules: Map[String, ActorRef]) extends AbstractFlow(modules) with Actor with ActorLogging {
+abstract class Flow(modules: Map[String, ActorRef]) extends AbstractFlow(modules) {
 
   import Flow._
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
+    log.info("class Flow preStart")
+    makeDecision() // 注意顺序
     super.preStart()
-    makeDecision()
   }
+
 
   def receive = {
     case cmdpoint: CommandPoint =>
@@ -172,9 +199,9 @@ abstract class Flow(modules: Map[String, ActorRef]) extends AbstractFlow(modules
     decidor match {
       case j: Judge =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
         log.info(s"调度 = ${j.in}")
-        if ( j.in.check(state) ) {    // 尝试再次计算, 因为有可能已经满足条件了
+        if (j.in.check(state)) {
+          // 尝试再次计算, 因为有可能已经满足条件了
           makeDecision()
         } else {
           j.in.schedule(self, state, modules)
@@ -182,44 +209,51 @@ abstract class Flow(modules: Map[String, ActorRef]) extends AbstractFlow(modules
       case FlowTodo =>
       case FlowSuccess =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
+        logState("FlowSuccess")
       case FlowFail =>
         updateState(DecisionUpdated(decidor))
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString(",")} | ${state.points.map(_._1).mkString( ",")}")
+        logState("FlowFail")
     }
   }
 }
 
 abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: Long) extends AbstractFlow(modules)
-  with PersistentActor with ActorLogging {
+  with PersistentActor {
 
   import Flow._
 
-  import concurrent.duration._
-
-  context.setReceiveTimeout(passivateTimeout seconds)
-
   // 钝化超时时间
+  context.setReceiveTimeout(passivateTimeout seconds)
 
   // 恢复
   def receiveRecover = {
+
     case ev: Event =>
-     // log.info(s"recover with event: $ev")
+      log.info(s"recover with event: $ev")
       updateState(ev)
     case SnapshotOffer(_, snapshot: State) =>
       state = snapshot
       log.info(s"snapshot recovered")
     case RecoveryCompleted =>
-      log.info(s"recover completed")
-      log.info(s"current state: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
-      if (state.decision.toString == "Success" || state.decision.toString == "Fail") {
-      } else {
-        makeDecision
-      }
+      logState("recovery completed")
+
   }
 
   // 命令处理
   def receiveCommand = {
+    case CommandStarting(userId) =>
+      log.info(s"收到CommandStarting")
+      userId match {
+        case Some(uid) =>
+          persist(UserUpdated(uid)) { event =>
+            log.info(s"持久化${event}成功")
+            updateState(event)
+          }
+        case _ =>
+          log.info("started with no user id")
+      }
+      makeDecision
+
     case cmd: CommandPoint =>
       log.info(s"收到${cmd.name}")
       processCommandPoint(cmd)
@@ -276,26 +310,26 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
   protected def makeDecision(): Unit = {
     state.decision.run(state) match {
       case j: Judge =>
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
-        persist(DecisionUpdated(j)){ event =>
+        logState("begin judge")
+        persist(DecisionUpdated(j)) { event =>
           log.info(s"持久化${event.decision}成功")
           updateState(event)
           log.info(s"调度 = ${j.in}")
-          if( j.in.check(state)) {
+          if (j.in.check(state)) {
             makeDecision()
           } else {
             j.in.schedule(self, state, modules)
           }
         }
       case FlowSuccess =>
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
+        logState("FlowSuccess")
         persist(DecisionUpdated(FlowSuccess)) { event =>
           log.info(s"持久化${event.decision}成功")
           updateState(event)
           self ! CommandSnapshot(persistenceId) // snapshot
         }
       case FlowFail =>
-        log.info(s"当前状态为: [${state.decision}] ${state.histories.mkString("-")} | ${state.points.map(_._1).mkString("-")}")
+        logState("FlowFail")
         persist(DecisionUpdated(FlowFail)) { event =>
           log.info(s"持久化${event.decision}成功")
           updateState(event)
@@ -307,26 +341,5 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
   }
 }
 
-trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior {
 
-  def serving: Receive = {
-    case StartFlow(flowId) =>
-      context.child(flowId).fold(create(flowId, getModules()))(identity)
-
-    case command: Command =>
-      val child = context.child(command.flowId).fold(create(command.flowId, getModules()))(identity)
-      child forward command
-
-    case Terminated(child) =>
-      log.info(s"${child.path.name} terminated")
-  }
-
-  def create(flowId: String, modules: Map[String, ActorRef]) = {
-    context.actorOf(flowProp(flowId, modules), flowId)
-  }
-
-  def flowProp(flowId: String, modules: Map[String, ActorRef]): Props
-
-  def getModules(): Map[String, ActorRef]
-}
 

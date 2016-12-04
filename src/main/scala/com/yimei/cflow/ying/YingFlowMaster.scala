@@ -12,11 +12,15 @@ object YingFlowMaster {
 /**
   * Created by hary on 16/12/1.
   */
-class YingFlowMaster extends ModuleMaster(module_ying, List(module_data)) with FlowMasterBehavior {
+class YingFlowMaster extends ModuleMaster(module_ying, List(module_data, module_user)) with FlowMasterBehavior {
 
   override def getModules(): Map[String, ActorRef] = modules
 
-  override def flowProp(flowId: String, modules: Map[String, ActorRef]): Props = Ying.props(flowId, getModules())
+  override def flowProp(flowId: String,
+                        modules: Map[String, ActorRef],
+                        userId: Option[String],
+                        parties: Map[String, String]): Props =
+    Ying.props(flowId, getModules(), userId, parties)
 }
 
 

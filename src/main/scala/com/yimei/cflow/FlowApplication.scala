@@ -15,14 +15,14 @@ import com.yimei.cflow.ying.YingFlowMaster
 /**
   * Created by hary on 16/12/2.
   */
-object FlowApplication extends App with ApplicationConfig with CorsSupport with Core {
+object FlowApplication extends App with ApplicationConfig with CorsSupport {
 
   // 仓押, 应收, 数据, 用户 4大模块
   var moduleProps = Map[String, Props](
     module_ying -> YingFlowMaster.props(),
     module_cang -> CangFlowMaster.props(),
-    module_user -> UserMaster.props(),
-    module_data -> DataMaster.props()
+    module_data -> DataMaster.props(),
+    module_user -> UserMaster.props()
   )
 
   // 启动daemon master
@@ -31,12 +31,12 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport with 
   // 路由, 服务启动
   import akka.http.scaladsl.server.Directives._
 
+  // route assembly
   val routes = UserRoute.route ~
     OperationRoute.route ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(system).routes)
+
+  // start server
   Http().bindAndHandle(routes, "0.0.0.0", system.settings.config.getInt("http.port"))
-
-
-
 }

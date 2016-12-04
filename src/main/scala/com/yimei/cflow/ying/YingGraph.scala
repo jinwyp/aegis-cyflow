@@ -2,7 +2,6 @@ package com.yimei.cflow.ying
 
 import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.data.DataMaster.GetPoint
 
 /**
   * Created by hary on 16/12/1.
@@ -11,16 +10,15 @@ object YingGraph {
 
   import com.yimei.cflow._
 
-  def getData(name: String, self: ActorRef, state:State, modules: Map[String, ActorRef]) = {
-    modules(module_data).tell(GetPoint(modules(module_ying), state.flowId, name), modules(module_ying))
-  }
-
 
   case object E1 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      getData(data_A, self, state, modules)
-      getData(data_B, self, state, modules)
-      getData(data_C, self, state, modules)
+      fetch(data_A, state, modules(module_ying), modules(module_data))
+      fetch(data_B, state, modules(module_ying), modules(module_data))
+      fetch(data_C, state, modules(module_ying), modules(module_data))
+
+      // get data from user
+      fetch(data_C, state, modules(module_ying), modules(module_user))
     }
 
     def check(state: State) = {
@@ -44,9 +42,9 @@ object YingGraph {
 
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      getData(data_D, self, state, modules)
-      getData(data_E, self, state, modules)
-      getData(data_F, self, state, modules)
+      fetch(data_D, state, modules(module_ying), modules(module_data))
+      fetch(data_E, state, modules(module_ying), modules(module_data))
+      fetch(data_F, state, modules(module_ying), modules(module_data))
       // modules("DEF").tell(state.flowId, self)
     }
 
