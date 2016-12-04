@@ -11,15 +11,33 @@ import concurrent.duration._
 object Flow {
 
   // get data from data master
-  def fetch(name: String, state: State, flowMaster: ActorRef, source: ActorRef) = {
-    if (!state.points.contains(name)) {
+  def fetch(name: String, state: State, flowMaster: ActorRef, source: ActorRef, refetchIfExists: Boolean = false) = {
+    if ( refetchIfExists )
       source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+    else {
+      if (!state.points.contains(name)) {
+        source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+      }
     }
   }
 
-  def fetchM(name: String, state: State, flowMaster: ActorRef, source: ActorRef, points: Array[String]) = {
-    if (points.filter(!state.points.contains(_)).length > 0) {
+  /**
+    *
+    * @param name
+    * @param state
+    * @param flowMaster
+    * @param source
+    * @param points
+    * @param refetchIfExists  should be refetched if the datapoint already exists
+    */
+  def fetchM(name: String, state: State, flowMaster: ActorRef, source: ActorRef, points: Array[String], refetchIfExists: Boolean = false) = {
+    if ( refetchIfExists ) {
       source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+    }
+    else {
+      if (points.filter(!state.points.contains(_)).length > 0) {
+        source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
+      }
     }
   }
 

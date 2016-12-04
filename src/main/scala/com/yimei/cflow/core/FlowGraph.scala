@@ -1,5 +1,6 @@
 package com.yimei.cflow.core
 
+import com.yimei.cflow
 import com.yimei.cflow.core.Flow.Decision
 import spray.json.{JsValue, JsonFormat}
 
@@ -12,12 +13,12 @@ object FlowGraph {
 
   case class EdgeLine(begin: Decision, description: Edge, end: Decision)
 
-  case class Graph(edges: List[EdgeLine], state: State)
+  case class Graph(edges: List[EdgeLine], state: State, dataDescription: Map[String, String])
 
   import FlowProtocol._
 
   implicit val edgeLineFormat = jsonFormat3(EdgeLine)
-  implicit val graphFormat = jsonFormat2(Graph)
+  implicit val graphFormat = jsonFormat3(Graph)
 }
 
 /**
@@ -47,10 +48,11 @@ object GraphBuilder {
 
   def jsonGraph(state: State)(routine: GraphBuilder => GraphBuilder): String = {
     import spray.json._
+    import cflow._
 
     val builder = new GraphBuilder(List.empty[EdgeLine]);
     routine(builder)
-    Graph(builder.lines, state).toJson.toString
+    Graph(builder.lines, state, dataDescription).toJson.toString
   }
 
   class GraphBuilder(var lines: List[EdgeLine])
