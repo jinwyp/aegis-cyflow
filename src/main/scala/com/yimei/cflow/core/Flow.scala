@@ -26,8 +26,8 @@ object Flow {
   // 启动流程
   // case class StartFlow(flowId: String, userId: String)
 
-  // 数据点: 值, 说明, 谁采集, 采集时间
-  case class DataPoint(value: Int, memo: String, operator: String, timestamp: Date)
+  // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
+  case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
 
   // 接收命令
   trait Command {

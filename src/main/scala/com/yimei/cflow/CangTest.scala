@@ -2,7 +2,7 @@ package com.yimei.cflow
 
 import java.util.UUID
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.Props
 import com.yimei.cflow.cang.CangFlowMaster
 import com.yimei.cflow.config.Core
 import com.yimei.cflow.data.DataMaster

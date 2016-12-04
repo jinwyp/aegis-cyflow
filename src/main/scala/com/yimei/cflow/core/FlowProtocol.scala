@@ -34,7 +34,7 @@ object FlowProtocol extends DefaultJsonProtocol {
   }
 
   // 数据点
-  implicit val dataPointFormat = jsonFormat4(DataPoint)
+  implicit val dataPointFormat = jsonFormat5(DataPoint)
 
   // 状态
   implicit val stateFormat = jsonFormat6(State)
