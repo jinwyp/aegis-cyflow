@@ -50,11 +50,12 @@ abstract class ModuleMaster(moduleName: String, dependOn: List[String])
         context.become(serving)
         context.setReceiveTimeout(Duration.Undefined)
       } else {
-        context.setReceiveTimeout(10 millis)
+        context.setReceiveTimeout(20 millis)
       }
 
     // 没有收到, 看还有那些模块没有拿到, 就重新请求parent
     case ReceiveTimeout =>
+
       if (!modules.contains(module_user)) {
         context.parent ! GiveMeModule(module_user)
       }

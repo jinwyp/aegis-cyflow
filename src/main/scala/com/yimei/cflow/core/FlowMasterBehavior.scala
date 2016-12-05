@@ -22,7 +22,7 @@ trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior
     case command: Command =>
       log.info(s"get command $command and forward to child!!!!")
       val child = context.child(command.flowId).fold(create(command.flowId, getModules()))(identity)
-      child ! command
+      child forward command
 
     case Terminated(child) =>
       log.info(s"${child.path.name} terminated")

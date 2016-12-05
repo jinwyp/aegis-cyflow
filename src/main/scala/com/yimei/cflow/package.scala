@@ -1,7 +1,5 @@
 package com.yimei
 
-import akka.actor.ActorRef
-
 /**
   * Created by hary on 16/12/3.
   */
@@ -18,17 +16,18 @@ package object cflow {
   /**
     * 所有的数据点名称
     */
-  val  point_A = "A"
-  val  point_B = "B"
-  val  point_C = "C"
-  val  point_D = "D"
-  val  point_E = "E"
-  val  point_F = "F"
-  val  point_G = "G"
-  val  point_H = "H"
-  val  point_K = "K"
-  val  point_U_A1 = "UA1"   // 用户采集
-  val  point_U_A2 = "UA2"   // 用户采集
+  val point_A = "A"
+  val point_B = "B"
+  val point_C = "C"
+  val point_D = "D"
+  val point_E = "E"
+  val point_F = "F"
+  val point_G = "G"
+  val point_H = "H"
+  val point_K = "K"
+  val point_U_A1 = "UA1"
+  // 用户采集
+  val point_U_A2 = "UA2" // 用户采集
 
   /**
     * 数据采集点Actor名称
@@ -68,7 +67,7 @@ package object cflow {
 
   // 用户任务与采集点的对应关系
   val taskPointMap = Map[String, Array[String]](
-    task_A  -> Array(point_U_A1, point_U_A2)
+    task_A -> Array(point_U_A1, point_U_A2)
   )
 
 }

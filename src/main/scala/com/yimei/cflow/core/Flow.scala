@@ -9,22 +9,21 @@ import scala.concurrent.duration._
 
 object Flow {
 
-
-  // 启动流程
-  // case class StartFlow(flowId: String, userId: String)
+  case class FlowGraphJson(json: String)
 
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
   case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
 
   // 这两个命令式给flowmaster用的
-  case class CommandCreateFlow(flowId: String, userId: String)
+  case class  CommandCreateFlow(flowId: String, userId: String)
+  case object CreateSuccess
   case object CommandRunFlow
+  case class  CommandShutdown(flowId: String) extends Command
 
   // 接收命令
   trait Command {
     def flowId: String
   }
-
 
   // 收到采集结果,  flowId是用来分片的
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
@@ -34,11 +33,6 @@ object Flow {
 
   case class CommandQuery(flowId: String) extends Command
 
-  case class CommandShutdown(flowId: String) extends Command
-
-  case object CreateSuccess
-
-  // 查询流程
 
   // persistent事件
   trait Event
@@ -258,7 +252,7 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
 
     case query: CommandQuery =>
       log.info("收到CommandQuery")
-      sender() ! queryStatus
+      sender() ! FlowGraphJson(queryStatus)
 
     case shutdown: CommandShutdown =>
       log.info("收到CommandShutdown")
@@ -295,9 +289,7 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
   protected def processCommandPoints(cmds: CommandPoints) = {
     persist(PointsUpdated(cmds.points)) {
       event =>
-        log.info(s"持久化${
-          event.pionts.map(_._1)
-        }成功")
+        log.info(s"持久化${event.pionts.map(_._1)}成功")
         updateState(event)
         makeDecision // 作决定
     }
@@ -340,6 +332,3 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
     }
   }
 }
-
-
-

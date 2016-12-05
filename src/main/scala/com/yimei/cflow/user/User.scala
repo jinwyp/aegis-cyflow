@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
-import com.yimei.cflow.core.Flow.{CommandQuery, CommandShutdown, DataPoint}
+import com.yimei.cflow.core.Flow.{CommandPoints, CommandQuery, CommandShutdown, DataPoint}
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 /**
@@ -20,16 +20,15 @@ object User {
   case class CommandStartUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None)
 
 
-
+  // 用户提交任务
   case class CommandTaskSubmit(userId: String, taskId: String, points: Map[String, DataPoint]) extends Command
 
-  // 用户提交数据点
+  // shutdown用户
   case class CommandShutDown(userId: String) extends Command
 
-  // shutdown用户
+  // 手机登录成功
   case class CommandMobileCome(userId: String, mobile: ActorRef) extends Command
 
-  // 手机登录成功
   case class CommandDesktopCome(userId: String, desktop: ActorRef) extends Command
 
   // 添加参与方
@@ -43,13 +42,11 @@ object User {
   case class HierarchyInfoUpdated(hierarchyInfo: HierarchyInfo) extends Event
   case class PartiesAdded(parties: Map[String, Array[String]]) extends Event
 
-  //
+  // 将采集任务保存
   case class TaskEnqueue(taskId: String, task: GetUserData) extends Event
 
-  // 将采集任务保存
-  case class TaskDequeue(taskId: String) extends Event
-
   // 将采集任务删除
+  case class TaskDequeue(taskId: String) extends Event
 
   // 用户的session状态
   case class State(hierarchyInfo: Option[HierarchyInfo], tasks: Map[String, GetUserData])
@@ -129,16 +126,16 @@ class User(
       val taskId = uuid;  // 生成任务id, 将任务保存
       persist(TaskEnqueue(taskId, command)) { event =>
         updateState(event)
-        // 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
+        // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
       }
 
     // 收到用户提交的采集数据
-    case command@CommandTaskSubmit(userId, taskId, points) =>
+    case command@CommandTaskSubmit(userId, taskId, points: Map[String, DataPoint]) =>
       log.info(s"收到采集提交: $command")
       val task = state.tasks(taskId)
       persist(TaskDequeue(taskId)) { event =>
         updateState(event)
-        modules(task.flowName) ! 1
+        modules(task.flowName) ! CommandPoints(task.flowId, points)
       }
 
     // 用户查询
