@@ -16,11 +16,20 @@ class YingFlowMaster extends ModuleMaster(module_ying, List(module_data, module_
 
   override def getModules(): Map[String, ActorRef] = modules
 
+  /**
+    *
+    * @param flowId
+    * @param modules
+    * @param userId
+    * @param parties
+    * @return
+    */
   override def flowProp(flowId: String,
                         modules: Map[String, ActorRef],
-                        userId: Option[String],
+                        userId: String,
                         parties: Map[String, String]): Props =
     Ying.props(flowId, getModules(), userId, parties)
+
 }
 
 

@@ -9,27 +9,26 @@ import com.yimei.cflow.core.Flow._
 object CangGraph {
 
   import com.yimei.cflow._
+  import com.yimei.cflow.data.DataMaster._
+//  import com.yimei.cflow.user.UserMaster._
 
   case object E1 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_A, state, modules(module_cang), modules(module_data))
-      fetch(data_B, state, modules(module_cang), modules(module_data))
-      fetch(data_C, state, modules(module_cang), modules(module_data))
-
-      // fetch user data
-      fetch(data_C, state, modules(module_cang), modules(module_user))
+      fetch(data_A, state, module_cang, modules(module_data))
+      fetch(data_B, state, module_cang, modules(module_data))
+      fetch(data_C, state, module_cang, modules(module_data))
     }
 
     def check(state: State) = {
-      if (!state.points.contains(data_A)) {
+      if (!state.points.contains(point_A)) {
         println("need A!!!!");
         false
       }
-      else if (!state.points.contains(data_B)) {
+      else if (!state.points.contains(point_B)) {
         println("need B!!!!");
         false
       }
-      else if (!state.points.contains(data_C)) {
+      else if (!state.points.contains(point_C)) {
         println("need C!!!!");
         false
       }
@@ -41,24 +40,19 @@ object CangGraph {
 
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-
-//      fetch(data_D, state, modules(module_cang), modules(module_data))
-//      fetch(data_E, state, modules(module_cang), modules(module_data))
-//      fetch(data_F, state, modules(module_cang), modules(module_data))
-
-      fetchM(data_DEF, state, modules(module_cang), modules(module_data), Array(data_D, data_E, data_F))
+      fetch(data_DEF, state, module_cang, modules(module_data))
     }
 
     def check(state: State) = {
-      if (!state.points.contains(data_D)) {
+      if (!state.points.contains(point_D)) {
         println("need D!!!!");
         false
       }
-      else if (!state.points.contains(data_E)) {
+      else if (!state.points.contains(point_E)) {
         println("need E!!!!");
         false
       }
-      else if (!state.points.contains(data_F)) {
+      else if (!state.points.contains(point_F)) {
         println("need F!!!!");
         false
       }
@@ -121,9 +115,9 @@ object CangGraph {
     override def in = E2
 
     override def decide(state: State): Decision = {
-      if (state.points(data_A).value == 50 &&
-        state.points(data_B).value == 50 &&
-        state.points(data_C).value == 50) {
+      if (state.points(point_A).value == 50 &&
+        state.points(point_B).value == 50 &&
+        state.points(point_C).value == 50) {
         V3
       } else
         FlowFail
@@ -136,9 +130,9 @@ object CangGraph {
     override def in = E3
 
     override def decide(state: State) = {
-      if (state.points(data_D).value == 50 &&
-        state.points(data_E).value == 50 &&
-        state.points(data_F).value == 50) {
+      if (state.points(point_D).value == 50 &&
+        state.points(point_E).value == 50 &&
+        state.points(point_F).value == 50) {
         V4
       } else
         FlowFail

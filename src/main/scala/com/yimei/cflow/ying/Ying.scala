@@ -8,15 +8,19 @@ import com.yimei.cflow.ying.YingGraph._
 
 object Ying extends Core {
   def props(flowId: String, modules: Map[String, ActorRef],
-            userId: Option[String] = None,
+            userId: String,
             parties: Map[String, String] = Map()
            ) =
     Props(new Ying(flowId, modules, userId, parties, config.getInt("flow.ying.timeout")))
+
+  def postProps(flowId: String, modules: Map[String, ActorRef]) =
+    Props(new Ying(flowId, modules, "", Map(), config.getInt("flow.ying.timeout")))
+
 }
 
 class Ying(flowId: String,
            modules: Map[String, ActorRef],
-           userId: Option[String],
+           userId: String,
            parties: Map[String, String],
            timeout: Int) extends PersistentFlow(modules, timeout) with ActorLogging {
 

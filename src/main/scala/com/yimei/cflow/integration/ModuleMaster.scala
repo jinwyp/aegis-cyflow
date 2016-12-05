@@ -17,12 +17,12 @@ abstract class ModuleMaster(moduleName: String, dependOn: List[String])
 
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
 
-  // 向关联的模块
-  var modules: Map[String, ActorRef] = Map(moduleName -> self)
+  // 相关联的模块
+  var modules: Map[String, ActorRef] = Map(moduleName -> self)   // 自己也在里面
 
   // 请求父亲告知其他模块
   dependOn.foreach { name =>
-    log.info(s"${moduleName} 请求获取${context.parent.path} ${name}")
+    log.info(s"${moduleName} 请求获取 ${name}")
     context.parent ! GiveMeModule(name)
   }
 
@@ -30,6 +30,10 @@ abstract class ModuleMaster(moduleName: String, dependOn: List[String])
   context.setReceiveTimeout(20 millis)
 
   override def receive = identify
+
+  def initHook(): Unit = {
+    log.info("initHook is void")
+  }
 
   def identify: Receive = {
 
@@ -42,21 +46,12 @@ abstract class ModuleMaster(moduleName: String, dependOn: List[String])
       // 如果所有模块都拿到, 就进入服务态
       if (check) {
         log.info(s"${moduleName} is servicable now")
+        initHook()
         context.become(serving)
         context.setReceiveTimeout(Duration.Undefined)
       } else {
         context.setReceiveTimeout(10 millis)
       }
-
-    case Terminated(ref) =>
-      log.error(s"${ref.path.name} died")
-      sender() ! UnderIdentify
-      context.setReceiveTimeout(20 millis)
-
-      // 重新向parent要模块
-      modules.find(entry => entry._2 == ref).foreach(t =>
-        context.parent ! GiveMeModule(t._1)
-      )
 
     // 没有收到, 看还有那些模块没有拿到, 就重新请求parent
     case ReceiveTimeout =>
@@ -78,6 +73,26 @@ abstract class ModuleMaster(moduleName: String, dependOn: List[String])
   def check() = dependOn.find(!modules.contains(_)) match {
     case Some(_) => false
     case None => true
+  }
+
+  override def unhandled(message: Any): Unit = {
+    message match {
+        // 依赖死亡
+      case Terminated(ref) =>
+        log.error(s"$moduleName restart because of ${ref.path.name} died")
+        context.setReceiveTimeout(20 millis)
+        context.become(identify)  // 重新变为identify阶段
+        context.children.foreach(context.stop(_))  // 停止所有的child
+
+        // 重新获取依赖的模块
+        modules.find(entry => entry._2 == ref).foreach(t =>
+          context.parent ! GiveMeModule(t._1)
+        )
+
+      case _ =>
+        log.error(s"无法处理消息$message")
+        super.unhandled(message)
+    }
   }
 
 }

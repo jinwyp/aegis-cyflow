@@ -17,14 +17,14 @@ object Cang {
     */
   def props(flowId: String,
             modules: Map[String, ActorRef],
-            userId: Option[String],
+            userId: String,
             parties: Map[String, String]) =
     Props(new Cang(flowId, modules, userId, parties))
 }
 
 class Cang(flowId: String,
            modules: Map[String, ActorRef],
-           userId: Option[String],
+           userId: String,
            parties: Map[String, String] = Map()) extends Flow(modules) with ActorLogging {
 
   override var state = State(flowId, userId, Map[String, String](), Map[String, DataPoint](), V0, Nil)

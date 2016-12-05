@@ -4,42 +4,11 @@ import java.util.Date
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
-import com.yimei.cflow.data.DataMaster.GetPoint
 
-import concurrent.duration._
+import scala.concurrent.duration._
 
 object Flow {
 
-  // get data from data master
-  def fetch(name: String, state: State, flowMaster: ActorRef, source: ActorRef, refetchIfExists: Boolean = false) = {
-    if ( refetchIfExists )
-      source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
-    else {
-      if (!state.points.contains(name)) {
-        source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
-      }
-    }
-  }
-
-  /**
-    *
-    * @param name
-    * @param state
-    * @param flowMaster
-    * @param source
-    * @param points
-    * @param refetchIfExists  should be refetched if the datapoint already exists
-    */
-  def fetchM(name: String, state: State, flowMaster: ActorRef, source: ActorRef, points: Array[String], refetchIfExists: Boolean = false) = {
-    if ( refetchIfExists ) {
-      source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
-    }
-    else {
-      if (points.filter(!state.points.contains(_)).length > 0) {
-        source.tell(GetPoint(flowMaster, state.flowId, name), flowMaster)
-      }
-    }
-  }
 
   // 启动流程
   // case class StartFlow(flowId: String, userId: String)
@@ -47,22 +16,27 @@ object Flow {
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
   case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
 
+  // 这两个命令式给flowmaster用的
+  case class CommandCreateFlow(flowId: String, userId: String)
+  case object CommandRunFlow
+
   // 接收命令
   trait Command {
     def flowId: String
   }
 
-  case class CommandStarting(userId: Option[String])
 
+  // 收到采集结果,  flowId是用来分片的
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
 
+  // 收到采集结果,  flowId是用来分片的
   case class CommandPoints(flowId: String, points: Map[String, DataPoint]) extends Command
 
-  case class CommandQuery(flowId: String, userId: Option[String] = None) extends Command
-
-  case class CommandSnapshot(flowId: String) extends Command
+  case class CommandQuery(flowId: String) extends Command
 
   case class CommandShutdown(flowId: String) extends Command
+
+  case object CreateSuccess
 
   // 查询流程
 
@@ -78,10 +52,15 @@ object Flow {
   case class UserUpdated(userid: String) extends Event
 
   // 状态
-  case class State(flowId: String, userId: Option[String], parties: Map[String, String], points: Map[String, DataPoint], decision: Decision, histories: List[String])
+  case class State(flowId: String, userId: String, parties: Map[String, String], points: Map[String, DataPoint], decision: Decision, histories: List[String])
 
   // 分支边
   trait Edge {
+    /**
+      * @param self    流程actor
+      * @param state   流程状态
+      * @param modules 这个流程依赖的模块
+      */
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]): Unit
 
     // 发起哪些数据采集
@@ -157,7 +136,7 @@ abstract class AbstractFlow(modules: Map[String, ActorRef]) extends Actor with A
   //
   def updateState(ev: Event) = {
     ev match {
-      case UserUpdated(newUserId) => state = state.copy(userId = Some(newUserId))
+      case UserUpdated(newUserId) => state = state.copy(userId = newUserId)
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision.toString :: state.histories)
@@ -165,7 +144,7 @@ abstract class AbstractFlow(modules: Map[String, ActorRef]) extends Actor with A
   }
 
   def logState(mark: String = ""): Unit = {
-    log.info(s"<$mark>当前状态为: {${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId.getOrElse("")}}")
+    log.info(s"<$mark>当前状态为: {${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId}}")
   }
 }
 
@@ -259,18 +238,15 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
 
   // 命令处理
   def receiveCommand = {
-    case CommandStarting(userId) =>
-      log.info(s"收到CommandStarting")
-      userId match {
-        case Some(uid) =>
-          persist(UserUpdated(uid)) { event =>
-            log.info(s"持久化${event}成功")
-            updateState(event)
-          }
-        case _ =>
-          log.info("started with no user id")
+    case k : CommandRunFlow.type =>
+      log.info(s"收到$k")
+      val src = sender()
+      persist(UserUpdated(state.userId)) { event =>
+        updateState(event)
+        src ! CreateSuccess
+        log.info(s"持久化${event}成功")
+        makeDecision
       }
-      makeDecision
 
     case cmd: CommandPoint =>
       log.info(s"收到${cmd.name}")
@@ -283,10 +259,6 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
     case query: CommandQuery =>
       log.info("收到CommandQuery")
       sender() ! queryStatus
-
-    case snapshot: CommandSnapshot =>
-      log.info("收到CommandSnapshot")
-      saveSnapshot(state)
 
     case shutdown: CommandShutdown =>
       log.info("收到CommandShutdown")
@@ -305,23 +277,29 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
   // 处理命令
   protected def processCommandPoint(cmd: CommandPoint) = {
 
-    persist(PointUpdated(cmd.name, cmd.point)) { event =>
+    persist(PointUpdated(cmd.name, cmd.point)) {
+      event =>
 
-      // 更新状体
-      log.info(s"持久化${event.name}成功")
-      updateState(event)
+        // 更新状体
+        log.info(s"持久化${
+          event.name
+        }成功")
+        updateState(event)
 
-      // 作决定!!!
-      makeDecision
+        // 作决定!!!
+        makeDecision
     }
   }
 
   // 处理复合命令
   protected def processCommandPoints(cmds: CommandPoints) = {
-    persist(PointsUpdated(cmds.points)) { event =>
-      log.info(s"持久化${event.pionts.map(_._1)}成功")
-      updateState(event)
-      makeDecision // 作决定
+    persist(PointsUpdated(cmds.points)) {
+      event =>
+        log.info(s"持久化${
+          event.pionts.map(_._1)
+        }成功")
+        updateState(event)
+        makeDecision // 作决定
     }
   }
 
@@ -329,32 +307,36 @@ abstract class PersistentFlow(modules: Map[String, ActorRef], passivateTimeout: 
     state.decision.run(state) match {
       case j: Judge =>
         logState("begin judge")
-        persist(DecisionUpdated(j)) { event =>
-          log.info(s"持久化${event.decision}成功")
-          updateState(event)
-          log.info(s"调度 = ${j.in}")
-          if (j.in.check(state)) {
-            makeDecision()
-          } else {
-            j.in.schedule(self, state, modules)
-          }
+        persist(DecisionUpdated(j)) {
+          event =>
+            log.info(s"持久化${ event.decision }成功")
+            updateState(event)
+            log.info(s"调度 = ${ j.in }")
+            if (j.in.check(state)) {
+              // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
+              makeDecision()
+            } else {
+              j.in.schedule(self, state, modules)
+            }
         }
       case FlowSuccess =>
         logState("FlowSuccess")
-        persist(DecisionUpdated(FlowSuccess)) { event =>
-          log.info(s"持久化${event.decision}成功")
-          updateState(event)
-          self ! CommandSnapshot(persistenceId) // snapshot
+        persist(DecisionUpdated(FlowSuccess)) {
+          event =>
+            log.info(s"持久化${ event.decision }成功, begin snapshot")
+            updateState(event)
+            saveSnapshot(state)
         }
       case FlowFail =>
         logState("FlowFail")
-        persist(DecisionUpdated(FlowFail)) { event =>
-          log.info(s"持久化${event.decision}成功")
-          updateState(event)
-          self ! CommandSnapshot(persistenceId) // snapshot
+        persist(DecisionUpdated(FlowFail)) {
+          event =>
+            log.info(s"持久化${ event.decision }成功, begin snapshot")
+            updateState(event)
+            saveSnapshot(state)
         }
       case FlowTodo =>
-        log.info(s"当前决策[${state.decision}]结果为: FlowTodo")
+        log.info(s"当前决策[${ state.decision }]结果为: FlowTodo")
     }
   }
 }

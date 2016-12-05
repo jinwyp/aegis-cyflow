@@ -31,7 +31,9 @@ object CangTest extends App with Core {
   val daemon = system.actorOf(DaemonMaster.props(moduleProps), "DaemonMaster")
 
   val queryActor = system.actorOf(Props(new QueryActor(daemon)), "queryActor")
-  system.scheduler.schedule(2 seconds, 13 seconds, queryActor, QueryTest(module_cang, UUID.randomUUID().toString, Some("hary")))
+
+  val flowId = UUID.randomUUID().toString
+  system.scheduler.schedule(2 seconds, 13 seconds, queryActor, QueryTest(module_cang, flowId, "hary"))
 }
 
 

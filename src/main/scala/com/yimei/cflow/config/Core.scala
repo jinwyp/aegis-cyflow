@@ -13,5 +13,6 @@ trait Core {
   implicit val timeout = Timeout(5 seconds)
   implicit val executionContext = system.dispatcher
   implicit val materializer = ActorMaterializer()
+
   val config = system.settings.config
 }

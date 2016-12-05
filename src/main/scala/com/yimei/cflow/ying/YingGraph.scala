@@ -1,6 +1,7 @@
 package com.yimei.cflow.ying
 
-import akka.actor.ActorRef
+import akka.actor.{ActorLogging, ActorRef}
+import com.yimei.cflow.config.Core
 import com.yimei.cflow.core.Flow._
 
 /**
@@ -10,27 +11,28 @@ object YingGraph {
 
   import com.yimei.cflow._
 
+  import com.yimei.cflow.data.DataMaster.{fetch}
+  import com.yimei.cflow.user.UserMaster._
 
-  case object E1 extends Edge {
+  case object E1 extends Edge with Core {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_A, state, modules(module_ying), modules(module_data))
-      fetch(data_B, state, modules(module_ying), modules(module_data))
-      fetch(data_C, state, modules(module_ying), modules(module_data))
 
-      // get data from user
-      fetch(data_C, state, modules(module_ying), modules(module_user))
+      system.log.info(s"E1开始调度${data_A}, ${data_B}, ${data_C}")
+      fetch(data_A, state, module_ying, modules(module_data))
+      fetch(data_B, state, module_ying, modules(module_data))
+      fetch(data_C, state, module_ying, modules(module_data))
     }
 
     def check(state: State) = {
-      if (!state.points.contains(data_A)) {
+      if (!state.points.contains(point_A)) {
         println("need A!!!!");
         false
       }
-      else if (!state.points.contains(data_B)) {
+      else if (!state.points.contains(point_B)) {
         println("need B!!!!");
         false
       }
-      else if (!state.points.contains(data_C)) {
+      else if (!state.points.contains(point_C)) {
         println("need C!!!!");
         false
       }
@@ -42,22 +44,19 @@ object YingGraph {
 
   case object E2 extends Edge {
     def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_D, state, modules(module_ying), modules(module_data))
-      fetch(data_E, state, modules(module_ying), modules(module_data))
-      fetch(data_F, state, modules(module_ying), modules(module_data))
-      // modules("DEF").tell(state.flowId, self)
+      fetch(data_DEF, state, module_ying, modules(module_data))
     }
 
     def check(state: State) = {
-      if (!state.points.contains(data_D)) {
+      if (!state.points.contains(point_D)) {
         println("need D!!!!");
         false
       }
-      else if (!state.points.contains(data_E)) {
+      else if (!state.points.contains(point_E)) {
         println("need E!!!!");
         false
       }
-      else if (!state.points.contains(data_F)) {
+      else if (!state.points.contains(point_F)) {
         println("need F!!!!");
         false
       }
@@ -120,9 +119,9 @@ object YingGraph {
     override def in = E2
 
     override def decide(state: State): Decision = {
-      if (state.points(data_A).value == 50 &&
-        state.points(data_B).value == 50 &&
-        state.points(data_C).value == 50) {
+      if (state.points(point_A).value == 50 &&
+        state.points(point_B).value == 50 &&
+        state.points(point_C).value == 50) {
         V3
       } else
         FlowFail
@@ -135,9 +134,9 @@ object YingGraph {
     override def in = E3
 
     override def decide(state: State) = {
-      if (state.points(data_D).value == 50 &&
-        state.points(data_E).value == 50 &&
-        state.points(data_F).value == 50) {
+      if (state.points(point_D).value == 50 &&
+        state.points(point_E).value == 50 &&
+        state.points(point_F).value == 50) {
         V4
       } else
         FlowFail

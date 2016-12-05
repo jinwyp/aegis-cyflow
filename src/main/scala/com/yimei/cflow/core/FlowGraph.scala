@@ -52,7 +52,7 @@ object GraphBuilder {
 
     val builder = new GraphBuilder(List.empty[EdgeLine]);
     routine(builder)
-    Graph(builder.lines, state, dataDescription).toJson.toString
+    Graph(builder.lines, state, pointDescription).toJson.toString
   }
 
   class GraphBuilder(var lines: List[EdgeLine])

@@ -2,8 +2,8 @@ package com.yimei.cflow.integration
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.Core
-import com.yimei.cflow.core.Flow.CommandQuery
-import com.yimei.cflow.integration.DaemonMaster.{GiveMeModule, QueryTest, RegisterModule}
+import com.yimei.cflow.core.Flow.{CommandCreateFlow, CommandQuery}
+import com.yimei.cflow.integration.DaemonMaster._
 
 // 模块注册于协商
 object DaemonMaster {
@@ -16,7 +16,10 @@ object DaemonMaster {
 
   def props(moduleProps: Map[String, Props]) = Props(new DaemonMaster(moduleProps))
 
-  case class QueryTest(flowName: String, flowId: String, userId: Option[String] = None)
+  // 测试用
+  case class QueryTest(flowName: String, flowId: String, userId: String)
+  case class CreateFlow(flowName: String, commandCreateFlow: CommandCreateFlow)
+  case class QueryFlow(flowName: String, commandQuery: CommandQuery)
 
 }
 
@@ -42,10 +45,15 @@ class DaemonMaster(moduleProps: Map[String, Props]) extends Actor with ActorLogg
       val org = sender()
       modules.get(name).foreach(org ! RegisterModule(name, _) )
 
-    // 测试查询消息
-    case QueryTest(flowName, flowId, userId) =>
-      log.info(s"收到QueryTest(${flowName}, ${flowId})")
-      modules.get(flowName).foreach( _ forward CommandQuery(flowId, userId))
+    // 测试创建流程
+    case CreateFlow(flowName, cmd) =>
+      log.info(s"收到QueryTest(${flowName}, ${cmd.flowId})")
+      modules.get(flowName).foreach( _ forward cmd)
+
+    // 测试查询流程
+    case QueryFlow(flowName, cmd) =>
+      log.info(s"收到QueryTest(${flowName}, ${cmd.flowId})")
+      modules.get(flowName).foreach( _ forward cmd)
 
     case Terminated(ref) =>
       val (died, rest) = modules.span(entry => entry._2 == ref);

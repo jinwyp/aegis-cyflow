@@ -2,7 +2,7 @@ package com.yimei.cflow
 
 import java.util.UUID
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.Props
 import com.yimei.cflow.cang.CangFlowMaster
 import com.yimei.cflow.config.Core
 import com.yimei.cflow.data.DataMaster
@@ -33,7 +33,7 @@ object YingTest extends App with Core {
   val queryActor = system.actorOf(Props(new QueryActor(daemon)), "queryActor")
 
   val flowId = UUID.randomUUID().toString
-  system.scheduler.schedule(2 seconds, 13 seconds, queryActor, QueryTest(module_ying, flowId, Some("hary")))
+  system.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(module_ying, flowId, "hary"))
 }
 
 
