@@ -13,7 +13,6 @@ import com.yimei.cflow.user.UserMaster.ufetch
   */
 object YingGraph extends FlowGraph {
 
-
   def getFlowInitial: Decision = V0
 
   def getFlowJson(state: State) =

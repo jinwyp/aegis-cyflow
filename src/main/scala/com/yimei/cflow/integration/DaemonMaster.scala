@@ -3,7 +3,7 @@ package com.yimei.cflow.integration
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandCreateFlow, CommandQueryFlow}
-import com.yimei.cflow.core.{PersistentEngineMaster, Flow, FlowGraph}
+import com.yimei.cflow.core.{EngineMaster, Flow, FlowGraph, PersistentEngineMaster}
 import com.yimei.cflow.data.DataMaster
 import com.yimei.cflow.user.User.{CommandStartUser, CommandTaskSubmit}
 import com.yimei.cflow.user.{User, UserMaster}
@@ -22,45 +22,52 @@ object DaemonMaster {
 
   case class QueryUser(userId: String, commandQuery: User.CommandQuery)
 
-  // 仓押, 应收, 数据, 用户 4大模块
-  def moduleProps(name: String): Props = {
+  /**
+    * 采用持久化流程还是非持久化流程
+    * @param name
+    * @param persist
+    * @return
+    */
+  def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_engine` => PersistentEngineMaster.props(module_engine, Array(module_user, module_data))
+      case `module_engine` =>
+        println(s"${name}  persist = ${persist}")
+        persist match {
+          case true =>  PersistentEngineMaster.props(module_engine, Array(module_user, module_data))
+          case false => EngineMaster.props(module_engine, Array(module_user, module_data))
+        }
       case `module_data` => DataMaster.props()
       case `module_user` => UserMaster.props()
     }
   }
 
-  def props(names: Array[String]) = Props(new DaemonMaster(names))
+  def props(names: Array[String], persist: Boolean = true) = Props(new DaemonMaster(names, persist))
 
 }
 
-
 /**
-  * Created by hary on 16/12/3.
+  *
+  * @param names
+  * @param persist  是否为持久化流程
   */
-class DaemonMaster(names: Array[String]) extends Actor with ActorLogging {
+class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor with ActorLogging {
 
   import DaemonMaster._
 
-  // start all modules
   var modules = names.map { name =>
-    val m = context.actorOf(moduleProps(name), name)
+    val m = context.actorOf(moduleProps(name, persist), name)
     context.watch(m)
     (name, m)
   }.toMap
 
   override def receive = {
-    // 谁找我要模块, 我就给谁模块
     case GiveMeModule(name) =>
       log.debug(s"收到GiveMeModule(${name}) from [${sender().path}]")
-      val org = sender()
-      modules.get(name).foreach(org ! RegisterModule(name, _))
+      modules.get(name).foreach(sender() ! RegisterModule(name, _))
 
     ////////////////////////////////////////////////////////////////////////
+    // 测试用
     ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    // 测试创建流程
     case cmd : CommandCreateFlow =>
       log.info(s"收到${cmd}")
       modules.get(module_engine).foreach(_ forward cmd)
@@ -86,7 +93,10 @@ class DaemonMaster(names: Array[String]) extends Actor with ActorLogging {
       val (died, rest) = modules.span(entry => entry._2 == ref);
       modules = rest
       died.foreach { entry =>
-        log.warning(s"!!!!!!!!!!!!!!!!!!${entry._1} died")
+        log.warning(s"!!!!!!!!!!!!!!!!!!${entry._1} died, restarting...")
+        val m = context.actorOf(moduleProps(entry._1, persist), entry._1)
+        context.watch(m)
+        modules = modules + (entry._1 -> m)
       }
   }
 }

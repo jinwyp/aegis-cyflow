@@ -23,11 +23,11 @@ object EngineTest extends App with ApplicationConfig with CorsSupport {
 
   // daemon master and
   val names = Array(module_data, module_user, module_engine)
-  val daemon = coreSystem.actorOf(DaemonMaster.props(names), "DaemonMaster")
+  val daemon = coreSystem.actorOf(DaemonMaster.props(names, false), "DaemonMaster") //  non-persistent flow
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
 
   // 测试用的actor
-  val queryActor = coreSystem.actorOf(Props(new QueryActor(daemon)), "queryActor")
+  val queryActor = coreSystem.actorOf(Props(new QueryActor(daemon)), "QueryActor")
 
   // route assembly
   val routes: Route = UserRoute.route(proxy) ~

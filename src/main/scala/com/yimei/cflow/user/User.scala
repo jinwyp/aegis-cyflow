@@ -1,45 +1,48 @@
 package com.yimei.cflow.user
 
 import java.util.UUID
-
 import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
+import com.yimei.cflow.user.User.HierarchyInfo
 import com.yimei.cflow.user.UserMaster.GetUserData
+import concurrent.duration._
 
 /**
   * Created by hary on 16/12/2.
   */
 object User {
 
+  // 启动用户
+  case class CommandStartUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None)
   case object CreateUserSuccess
 
+  ////////////////////////////////////////////////////
   // 命令
+  ////////////////////////////////////////////////////
   trait Command {
     def userId: String
   }
 
-  case class CommandStartUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None)
-
-  // 用户提交任务
+  // 1. 用户提交任务
   case class CommandTaskSubmit(userId: String, taskId: String, points: Map[String, DataPoint]) extends Command
 
-  // shutdown用户
+  // 2. shutdown用户
   case class CommandShutDown(userId: String) extends Command
 
-  // 手机登录成功
+  // 3. 手机登录成功
   case class CommandMobileCome(userId: String, mobile: ActorRef) extends Command
 
-  // 电脑登录
+  // 4. 电脑登录
   case class CommandDesktopCome(userId: String, desktop: ActorRef) extends Command
 
-  // 查询用户信息
+  // 5. 查询用户信息
   case class CommandQuery(userId: String) extends Command
 
-  // 电脑登录成功
-
+  ////////////////////////////////////////////////////
   // 事件
+  ////////////////////////////////////////////////////
   trait Event
 
   //  用户组织信息更新
@@ -51,7 +54,9 @@ object User {
   // 将采集任务删除
   case class TaskDequeue(taskId: String) extends Event
 
-  // 用户的session状态
+  ////////////////////////////////////////////////////
+  // 状态
+  ////////////////////////////////////////////////////
   case class State(hierarchyInfo: Option[HierarchyInfo], tasks: Map[String, GetUserData])
 
   // 人在组织中的位置
@@ -59,15 +64,13 @@ object User {
 
 }
 
-import com.yimei.cflow.user.User._
 
-class User(
-            userId: String,
+class User( userId: String,
             hierarchyInfo: Option[HierarchyInfo],
             modules: Map[String, ActorRef],
             passivateTimeout: Long) extends PersistentActor with ActorLogging {
 
-  import concurrent.duration._
+  import com.yimei.cflow.user.User._
 
   override def persistenceId = userId
 
@@ -156,3 +159,4 @@ class User(
     super.unhandled(message)
   }
 }
+

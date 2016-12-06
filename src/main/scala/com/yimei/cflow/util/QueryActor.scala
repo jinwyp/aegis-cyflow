@@ -76,7 +76,6 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
   }
 
   def processTask(taskId: String, task: GetUserData) = {
-    val point = DataPoint(50, "userdata", "hary", uuid, new Date())
     log.info(s"处理用户任务: ${
       taskId
     }")

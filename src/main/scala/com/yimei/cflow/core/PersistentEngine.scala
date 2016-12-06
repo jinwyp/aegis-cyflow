@@ -7,8 +7,17 @@ import com.yimei.cflow.core.Flow.{DataPoint, State}
 object PersistentEngine extends CoreConfig {
   def props[T <: FlowGraph](graph: T, flowId: String, modules: Map[String, ActorRef],
                            userId: String,
-                           parties: Map[String, String] = Map()) =
-    Props(new PersistentEngine[T](graph, flowId, modules, userId, parties, config.getInt(s"flow.${graph.getFlowName}.timeout")))
+                           parties: Map[String, String] = Map()) = {
+    coreSystem.log.info(s"!!!!!!!!!! graph here ${graph.getFlowName}")
+    Props(
+      new PersistentEngine[T](
+        graph,
+        flowId,
+        modules,
+        userId,
+        parties,
+        config.getInt(s"flow.${graph.getFlowName}.timeout")))
+  }
 }
 
 /**

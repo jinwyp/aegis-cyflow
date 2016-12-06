@@ -19,10 +19,10 @@ object Engine extends CoreConfig {
 }
 
 /**
-  * @param graph
-  * @param flowId
-  * @param userId
-  * @param parties
+  * @param graph    flow graph
+  * @param flowId   流程id
+  * @param userId   用户id
+  * @param parties  参与方消息
   * @param timeout
   * @tparam T
   */
