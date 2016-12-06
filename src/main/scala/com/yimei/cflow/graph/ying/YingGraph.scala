@@ -147,7 +147,7 @@ object YingGraph extends FlowGraph {
     override def in = E4
 
     override def decide(state: State) = {
-      println(s"V4 state = $state")
+      // println(s"V4 state = $state")
       state.points.filter(entry => dataPointMap(data_GHK).contains(entry._1)).foldLeft(0){ (acc, entry) =>
         acc +  entry._2.value
       } match {

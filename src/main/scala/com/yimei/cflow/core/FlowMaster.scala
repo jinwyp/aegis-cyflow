@@ -4,14 +4,14 @@ package com.yimei.cflow.core
 import akka.actor.Props
 import com.yimei.cflow.integration.{DependentModule, ModuleMaster}
 
-object EngineMaster {
-  def props(name: String, dependOn: Array[String]): Props = Props(new EngineMaster(name, dependOn))
+object FlowMaster {
+  def props(name: String, dependOn: Array[String], persist: Boolean = true): Props = Props(new FlowMaster(name, dependOn, persist))
 }
 
 /**
   * Created by hary on 16/12/1.
   */
-class EngineMaster(name: String, dependOn: Array[String]) extends ModuleMaster(name, dependOn)
+class FlowMaster(name: String, dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(name, dependOn)
   with FlowMasterBehavior
   with DependentModule {
 
@@ -26,7 +26,10 @@ class EngineMaster(name: String, dependOn: Array[String]) extends ModuleMaster(n
                         flowId: String,
                         userId: String,
                         parties: Map[String, String] = Map()): Props =
-    Engine.props(graph, flowId, modules, userId, parties)
+    if (persist)
+      Engine.props(graph, flowId, modules, userId, parties)
+    else
+      PersistentEngine.props(graph, flowId, modules, userId, parties)
 }
 
 

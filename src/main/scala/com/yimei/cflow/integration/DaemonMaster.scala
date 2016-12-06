@@ -3,10 +3,10 @@ package com.yimei.cflow.integration
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandCreateFlow, CommandQueryFlow}
-import com.yimei.cflow.core.{EngineMaster, Flow, FlowGraph, PersistentEngineMaster}
+import com.yimei.cflow.core.FlowMaster
 import com.yimei.cflow.data.DataMaster
-import com.yimei.cflow.user.User.{CommandStartUser, CommandTaskSubmit}
-import com.yimei.cflow.user.{User, UserMaster}
+import com.yimei.cflow.user.User.{CommandQueryUser, CommandStartUser, CommandTaskSubmit}
+import com.yimei.cflow.user.UserMaster
 
 // 模块注册于协商
 object DaemonMaster {
@@ -17,27 +17,18 @@ object DaemonMaster {
 
   case class UnderIdentify()
 
-  // 测试用
-  case class CreateUser(userId: String, commandCreateUser: CommandStartUser)
-
-  case class QueryUser(userId: String, commandQuery: User.CommandQuery)
-
   /**
     * 采用持久化流程还是非持久化流程
+    *
     * @param name
     * @param persist
     * @return
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_engine` =>
-        println(s"${name}  persist = ${persist}")
-        persist match {
-          case true =>  PersistentEngineMaster.props(module_engine, Array(module_user, module_data))
-          case false => EngineMaster.props(module_engine, Array(module_user, module_data))
-        }
+      case `module_flow` => FlowMaster.props(module_flow, Array(module_user, module_data), persist)
+      case `module_user` => UserMaster.props(persist)
       case `module_data` => DataMaster.props()
-      case `module_user` => UserMaster.props()
     }
   }
 
@@ -48,7 +39,7 @@ object DaemonMaster {
 /**
   *
   * @param names
-  * @param persist  是否为持久化流程
+  * @param persist 是否为持久化流程
   */
 class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor with ActorLogging {
 
@@ -68,21 +59,21 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
     ////////////////////////////////////////////////////////////////////////
     // 测试用
     ////////////////////////////////////////////////////////////////////////
-    case cmd : CommandCreateFlow =>
+    case cmd: CommandCreateFlow =>
       log.info(s"收到${cmd}")
-      modules.get(module_engine).foreach(_ forward cmd)
+      modules.get(module_flow).foreach(_ forward cmd)
 
     // 测试查询流程
-    case cmd : CommandQueryFlow =>
+    case cmd: CommandQueryFlow =>
       log.info(s"收到${cmd}")
-      modules.get(module_engine).foreach(_ forward cmd)
+      modules.get(module_flow).foreach(_ forward cmd)
 
     case cmd@CommandStartUser(userId, _) =>
       log.info(s"收到CreateUser(${userId}, ${cmd})")
       modules.get(module_user).foreach(_ forward cmd)
 
-    case QueryUser(userId, cmd) =>
-      log.info(s"收到QueryUser(${userId}, ${cmd})")
+    case cmd : CommandQueryUser =>
+      log.info(s"收到${cmd}")
       modules.get(module_user).foreach(_ forward cmd)
 
     case cmd@CommandTaskSubmit(userId, _, _) =>

@@ -1,13 +1,14 @@
 package com.yimei.cflow.user
 
 import java.util.UUID
-import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
-import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
+
+import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
 import com.yimei.cflow.user.User.HierarchyInfo
 import com.yimei.cflow.user.UserMaster.GetUserData
-import concurrent.duration._
+
+import scala.concurrent.duration._
 
 /**
   * Created by hary on 16/12/2.
@@ -16,6 +17,7 @@ object User {
 
   // 启动用户
   case class CommandStartUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None)
+
   case object CreateUserSuccess
 
   ////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ object User {
   case class CommandDesktopCome(userId: String, desktop: ActorRef) extends Command
 
   // 5. 查询用户信息
-  case class CommandQuery(userId: String) extends Command
+  case class CommandQueryUser(userId: String) extends Command
 
   ////////////////////////////////////////////////////
   // 事件
@@ -64,15 +66,12 @@ object User {
 
 }
 
-
-class User( userId: String,
-            hierarchyInfo: Option[HierarchyInfo],
-            modules: Map[String, ActorRef],
-            passivateTimeout: Long) extends PersistentActor with ActorLogging {
+class User(userId: String,
+           hierarchyInfo: Option[HierarchyInfo],
+           modules: Map[String, ActorRef],
+           passivateTimeout: Long) extends Actor with ActorLogging {
 
   import com.yimei.cflow.user.User._
-
-  override def persistenceId = userId
 
   var state: State = State(hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
 
@@ -93,52 +92,33 @@ class User( userId: String,
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
 
-  // 恢复
-  def receiveRecover = {
-    case ev: Event =>
-      log.info(s"recover with event: $ev")
-      updateState(ev)
-    case SnapshotOffer(_, snapshot: State) =>
-      log.info(s"recover with snapshot: $snapshot")
-      state = snapshot
-    case RecoveryCompleted =>
-      log.info(s"recover completed")
-  }
-
   // 生成任务id
   def uuid() = UUID.randomUUID().toString;
 
-  //
-  def receiveCommand = {
+  def receive = {
 
     // 启动用户时, 需要更新用户的组织机构关系
     case cmd@CommandStartUser(userId, hierarchyInfo) =>
       log.info(s"收到用户 ${cmd}")
-      persist(HierarchyInfoUpdated(hierarchyInfo)) { event =>
-        updateState(event)
-        sender() ! CreateUserSuccess
-      }
+      updateState(HierarchyInfoUpdated(hierarchyInfo))
+      sender() ! CreateUserSuccess
 
     // 采集数据请求
     case command: GetUserData =>
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
-      persist(TaskEnqueue(taskId, command)) { event =>
-        updateState(event)
-        // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
-      }
+      updateState(TaskEnqueue(taskId, command))
+    // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
 
     // 收到用户提交的采集数据
-    case command@CommandTaskSubmit(userId, taskId, points: Map[String, DataPoint]) =>
+    case command@CommandTaskSubmit(userId, taskId, points) =>
       log.info(s"收到采集提交: $command")
       val task = state.tasks(taskId)
-      persist(TaskDequeue(taskId)) { event =>
-        updateState(event)
-        modules(module_engine) ! CommandPoints(task.flowId, points)
-      }
+      updateState(TaskDequeue(taskId))
+      modules(module_flow) ! CommandPoints(task.flowId, points)
 
     // 用户查询
-    case command: CommandQuery =>
+    case command: CommandQueryUser =>
       log.info(s"收到用户查询: $command")
       sender() ! state
 
@@ -147,11 +127,6 @@ class User( userId: String,
 
     // 电脑登录成功
     case command: CommandDesktopCome =>
-
-    // 收到超时
-    case ReceiveTimeout =>
-      log.info(s"${persistenceId}超时, 开始钝化!!!!")
-      context.stop(self)
   }
 
   override def unhandled(message: Any): Unit = {
@@ -159,4 +134,5 @@ class User( userId: String,
     super.unhandled(message)
   }
 }
+
 

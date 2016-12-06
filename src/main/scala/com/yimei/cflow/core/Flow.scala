@@ -20,12 +20,15 @@ object Flow {
 
   // response of CommandCreateFlow
   case object CreateFlowSuccess
+  case object ShutDownSuccess
 
   // shutdown the flow
-  case class  CommandShutdown(flowId: String) extends Command
 
   // 接收命令
-  trait Command { def flowId: String }
+  trait Command {
+    def flowId: String
+  }
+  case class  CommandShutdown(flowId: String) extends Command
 
   // received gathering, flowId is used for cluster-sharding
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
@@ -130,13 +133,17 @@ abstract class Flow extends AbstractFlow with DependentModule {
   }
 
   def receive = {
-    case cmdpoint: CommandPoint =>
-      log.info(s"received ${cmdpoint.name}")
-      processCommandPoint(cmdpoint)
+    case CommandRunFlow =>
+      log.info(s"收到${CommandRunFlow}")
+      makeDecision() // 注意顺序
 
-    case cmdpoints: CommandPoints =>
-      log.info(s"received ${cmdpoints.points.map(_._1).mkString("[", ",", "]")}")
-      processCommandPoints(cmdpoints)
+    case cmd: CommandPoint =>
+      log.info(s"received ${cmd.name}")
+      processCommandPoint(cmd)
+
+    case cmd: CommandPoints =>
+      log.info(s"received ${cmd.points.map(_._1).mkString("[", ",", "]")}")
+      processCommandPoints(cmd)
 
     case query: CommandQueryFlow =>
       log.info("received CommandQuery")
@@ -164,13 +171,15 @@ abstract class Flow extends AbstractFlow with DependentModule {
       case j: Judge =>
         updateState(DecisionUpdated(decidor))
         log.info(s"调度 = ${j.in}")
+
+        // 尝试再次计算, 因为有可能已经满足条件了
         if (j.in.check(state)) {
-          // 尝试再次计算, 因为有可能已经满足条件了
           makeDecision()
         } else {
           j.in.schedule(state, modules)
         }
       case FlowTodo =>
+        logState("FlowTodo")
       case FlowSuccess =>
         updateState(DecisionUpdated(decidor))
         logState("FlowSuccess")

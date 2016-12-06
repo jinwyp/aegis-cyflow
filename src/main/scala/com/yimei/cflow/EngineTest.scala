@@ -9,9 +9,9 @@ import Directives._
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
-import com.yimei.cflow.user.UserRoute
 import com.yimei.cflow.util.{QueryActor, QueryTest}
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.http.UserRoute
 
 import scala.concurrent.duration._
 
@@ -20,9 +20,8 @@ import scala.concurrent.duration._
   */
 object EngineTest extends App with ApplicationConfig with CorsSupport {
 
-
   // daemon master and
-  val names = Array(module_data, module_user, module_engine)
+  val names = Array(module_data, module_user, module_flow)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, false), "DaemonMaster") //  non-persistent flow
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
 
@@ -36,11 +35,7 @@ object EngineTest extends App with ApplicationConfig with CorsSupport {
   implicit val mysystem = coreSystem  // @todo fixme
   Http().bindAndHandle(routes, "0.0.0.0", config.getInt("http.port"))
 
-
   val flowId = UUID.randomUUID().toString
-  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(module_engine, flowId, "hary"))
+  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "hary"))
 }
-
-
-
 

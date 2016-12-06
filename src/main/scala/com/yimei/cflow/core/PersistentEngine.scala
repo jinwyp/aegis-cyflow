@@ -8,7 +8,6 @@ object PersistentEngine extends CoreConfig {
   def props[T <: FlowGraph](graph: T, flowId: String, modules: Map[String, ActorRef],
                            userId: String,
                            parties: Map[String, String] = Map()) = {
-    coreSystem.log.info(s"!!!!!!!!!! graph here ${graph.getFlowName}")
     Props(
       new PersistentEngine[T](
         graph,

@@ -4,11 +4,21 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.core.Flow.{Command, CommandCreateFlow, CommandRunFlow}
 import com.yimei.cflow.integration.{DependentModule, ServicableBehavior}
 
+
 /**
   * Created by hary on 16/12/4.
   */
 
-trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior with DependentModule {
+trait FlowMasterBehavior extends Actor
+  with ActorLogging
+  with ServicableBehavior
+  with DependentModule {
+
+  /**
+    * @param flowId
+    * @return (graph, userId)
+    */
+  def getFlowInfo(flowId: String): (FlowGraph, String) = ???
 
   def serving: Receive = {
 
@@ -19,7 +29,7 @@ trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior
     // 这里是没有uid的, 就是recovery回来的
     case command: Command =>
       log.debug(s"get command $command and forward to child!!!!")
-      val child = context.child(command.flowId).fold(create(command.flowId))(identity)
+      val child = context.child(command.flowId).fold(create(command.flowId, null))(identity)
       child forward command
 
     case Terminated(child) =>
@@ -36,7 +46,7 @@ trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior
     */
   def create(
              flowId: String,
-             graph: FlowGraph = null,
+             graph: FlowGraph,
              userId: String = "",
              parties: Map[String, String] = Map()): ActorRef = {
     // log.info(s"创建流程:($flowId, $modules, $userId, $parties")

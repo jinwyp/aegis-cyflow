@@ -9,14 +9,13 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.graph.ying.YingGraph
-import com.yimei.cflow.integration.DaemonMaster.QueryUser
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandStartUser, CommandTaskSubmit, CreateUserSuccess, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 import scala.concurrent.duration._
 
-case class QueryTest(flowName: String, flowId: String, userId: String)
+case class QueryTest(flowId: String, userId: String)
 
 /**
   * Created by hary on 16/12/4.
@@ -29,7 +28,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
   def uuid() = UUID.randomUUID().toString
 
   def receive = {
-    case test@QueryTest(flowName, flowId, userId) =>
+    case test@QueryTest(flowId, userId) =>
 
       // 创建用户
       val f1 = daemon ? CommandStartUser(userId, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
@@ -43,7 +42,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
             1 seconds,
             5 seconds,
             daemon,
-            QueryUser(userId, User.CommandQuery(userId))
+            User.CommandQueryUser(userId)
           )
       }
 
@@ -54,9 +53,8 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
       val f2 = daemon ? cmd
       f2 onSuccess {
         case CreateFlowSuccess =>
-          //  然后发起查询
-          log.info(s"定期发起流程查询${flowName} ${flowId} ${userId}")
-
+          //  创建成功后, 发起定时查询
+          log.info(s"定期发起流程查询${flowId}")
           context.system.scheduler.schedule(
             1 seconds,
             13 seconds,

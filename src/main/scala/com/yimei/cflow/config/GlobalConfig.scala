@@ -9,7 +9,7 @@ object GlobalConfig {
     * 全局模块名称
     */
   val module_user   = "UserMaster"
-  val module_engine = "EngineMaster"
+  val module_flow = "EngineMaster"
   val module_data   = "DataMaster"
 
   /**
