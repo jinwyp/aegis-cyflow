@@ -1,35 +1,27 @@
 package com.yimei.cflow.user
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
-import com.yimei.cflow._
-import com.yimei.cflow.config.Core
+import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.user.User.{CommandStartUser, HierarchyInfo}
-import com.yimei.cflow.user.UserMaster.{CommandStart, GetUserData}
+import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.config.GlobalConfig._
 
 
-object UserMaster extends Core {
+object UserMaster extends CoreConfig {
 
-  // 采集用户数据
-  case class GetUserData(flowName: String, flowId: String, userId: String, taskName: String)
-
-  case class CommandStart(userId: String)
-
-  /**
-    *
-    * @param taskName         调用那个用户任务
-    * @param state
-    * @param flowName
-    * @param userMaster
-    * @param refetchIfExists
-    */
-  def ufetch(taskName: String, state: State, flowName: String, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
-    val points = taskPointMap(taskName)
-    if (refetchIfExists || points.filter(!state.points.contains(_)).length > 0) {
-      userMaster ! GetUserData(flowName, state.flowId, state.userId, taskName)
+  //
+  def ufetch(taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
+    if ( refetchIfExists ||
+      taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
+    ) {
+      userMaster ! GetUserData(state.flowId, state.userId, taskName)
     }
   }
+
+  // 采集用户数据
+  case class GetUserData(flowId: String, userId: String, taskName: String)
 
   def props() = Props(new UserMaster)
 }
@@ -38,9 +30,9 @@ trait UserMasterBehavior extends Actor with ServicableBehavior with ActorLogging
   override def serving: Receive = {
 
     // 必须要被先调用, 用来创建用户!!!!!!!!
-    case CommandStart(userId) =>
-      val hierarchyInfo = HierarchyInfo(None, None)   // todo 王琦把这个改为从数据库读取用户的关系, 通过future来创建
-      context.child(userId).fold(create(userId, Some(hierarchyInfo)))(identity)
+    case cmd @ CommandStartUser(userId, hierarchyInfo) =>
+      val child = context.child(userId).fold(create(userId, hierarchyInfo))(identity)
+      child forward cmd
 
       // 收到流程过来的任务
     case command: GetUserData =>
@@ -54,8 +46,6 @@ trait UserMasterBehavior extends Actor with ServicableBehavior with ActorLogging
       val child = context.child(command.userId).fold {
         create(command.userId, None)
       }(identity)
-
-      // 转发消息
       child forward command
 
     case Terminated(child) =>
@@ -72,7 +62,7 @@ trait UserMasterBehavior extends Actor with ServicableBehavior with ActorLogging
 /**
   * Created by hary on 16/12/2.
   */
-class UserMaster extends ModuleMaster(module_user, List(module_ying, module_cang)) with UserMasterBehavior {
+class UserMaster extends ModuleMaster(module_user, Array(module_engine)) with UserMasterBehavior {
   override def getModules(): Map[String, ActorRef] = modules
 }
 

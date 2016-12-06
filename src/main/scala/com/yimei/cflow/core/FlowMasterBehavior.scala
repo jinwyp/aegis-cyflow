@@ -10,17 +10,15 @@ import com.yimei.cflow.integration.ServicableBehavior
 
 trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior {
 
-
-
   def serving: Receive = {
 
     // 创建, 并运行流程
-    case command @ CommandCreateFlow(flowId, userId) =>
-      create(flowId, getModules(), userId) forward  CommandRunFlow
+    case command @ CommandCreateFlow(graph, flowId, userId) =>
+      create(flowId, getModules(), graph, userId) forward  CommandRunFlow
 
     // 这里是没有uid的, 就是recovery回来的
     case command: Command =>
-      log.info(s"get command $command and forward to child!!!!")
+      log.debug(s"get command $command and forward to child!!!!")
       val child = context.child(command.flowId).fold(create(command.flowId, getModules()))(identity)
       child forward command
 
@@ -37,12 +35,14 @@ trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior
     * @param parties     相关方如: 港口 -> 赫萝
     * @return
     */
-  def create(flowId: String,
+  def create(
+             flowId: String,
              modules: Map[String, ActorRef],
+             graph: FlowGraph = null,
              userId: String = "",
              parties: Map[String, String] = Map()): ActorRef = {
     // log.info(s"创建流程:($flowId, $modules, $userId, $parties")
-    context.actorOf(flowProp(flowId, modules, userId, parties), flowId)
+    context.actorOf(flowProp(graph, flowId, modules, userId, parties), flowId)
   }
 
   /**
@@ -54,7 +54,8 @@ trait FlowMasterBehavior extends Actor with ActorLogging with ServicableBehavior
     * @param parties   相关方
     * @return
     */
-  def flowProp(flowId: String,
+  def flowProp(graph: FlowGraph,
+               flowId: String,
                modules: Map[String, ActorRef],
                userId: String,
                parties: Map[String, String]): Props

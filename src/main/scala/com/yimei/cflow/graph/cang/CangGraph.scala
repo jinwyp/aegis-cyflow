@@ -1,39 +1,52 @@
-package com.yimei.cflow.ying
+package com.yimei.cflow.graph.cang
 
-import akka.actor.{ActorLogging, ActorRef}
-import com.yimei.cflow.config.Core
+import akka.actor.ActorRef
+import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
+import com.yimei.cflow.data.DataMaster._
+import com.yimei.cflow.config.GlobalConfig._
+
 
 /**
   * Created by hary on 16/12/1.
   */
-object YingGraph {
+object CangGraph extends FlowGraph with CoreConfig {
 
-  import com.yimei.cflow._
 
-  import com.yimei.cflow.data.DataMaster.{fetch}
-  import com.yimei.cflow.user.UserMaster._
+  override def getFlowInitial: Decision = V0
 
-  case object E1 extends Edge with Core {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
+  override def getFlowJson(state: State): String =
+    GraphBuilder.jsonGraph(state) { implicit builder =>
+      import GraphBuilder._
+      V1 ~> E3 ~> V4
+      V1 ~> E1 ~> V2
+      V4 ~> E4 ~> V5
+      V4 ~> E5 ~> V6
+      V2 ~> E2 ~> V3
+      builder
+    }
 
-      system.log.info(s"E1开始调度${data_A}, ${data_B}, ${data_C}")
-      fetch(data_A, state, module_ying, modules(module_data))
-      fetch(data_B, state, module_ying, modules(module_data))
-      fetch(data_C, state, module_ying, modules(module_data))
+  override def getFlowName: String = "cang"
+
+  case object E1 extends Edge {
+    def schedule(state: State, modules: Map[String, ActorRef]) = {
+      fetch(data_A, state, modules(module_data))
+      fetch(data_B, state, modules(module_data))
+      fetch(data_C, state, modules(module_data))
     }
 
     def check(state: State) = {
       if (!state.points.contains(point_A)) {
-        println("need A!!!!");
+        coreSystem.log.debug("E1 need A!!!!");
         false
       }
       else if (!state.points.contains(point_B)) {
-        println("need B!!!!");
+        coreSystem.log.debug("need B!!!!");
         false
       }
       else if (!state.points.contains(point_C)) {
-        println("need C!!!!");
+        coreSystem.log.debug("need C!!!!");
         false
       }
       else true
@@ -43,21 +56,21 @@ object YingGraph {
   }
 
   case object E2 extends Edge {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_DEF, state, module_ying, modules(module_data))
+    def schedule(state: State, modules: Map[String, ActorRef]) = {
+      fetch(data_DEF, state, modules(module_data))
     }
 
     def check(state: State) = {
       if (!state.points.contains(point_D)) {
-        println("need D!!!!");
+        coreSystem.log.debug("need D!!!!");
         false
       }
       else if (!state.points.contains(point_E)) {
-        println("need E!!!!");
+        coreSystem.log.debug("need E!!!!");
         false
       }
       else if (!state.points.contains(point_F)) {
-        println("need F!!!!");
+        coreSystem.log.debug("need F!!!!");
         false
       }
       else true
@@ -67,7 +80,7 @@ object YingGraph {
   }
 
   case object E3 extends Edge {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = ???
+    def schedule(state: State, modules: Map[String, ActorRef]) = ???
 
     def check(state: State) = true
 
@@ -75,7 +88,7 @@ object YingGraph {
   }
 
   case object E4 extends Edge {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = ???
+    def schedule(state: State, modules: Map[String, ActorRef]) = ???
 
     def check(state: State) = true
 
@@ -83,7 +96,7 @@ object YingGraph {
   }
 
   case object E5 extends Edge {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = ???
+    def schedule(state: State, modules: Map[String, ActorRef]) = ???
 
     def check(state: State) = true
 
@@ -91,7 +104,7 @@ object YingGraph {
   }
 
   case object E6 extends Edge {
-    def schedule(self: ActorRef, state: State, modules: Map[String, ActorRef]) = ???
+    def schedule(state: State, modules: Map[String, ActorRef]) = ???
 
     def check(state: State) = true
 
@@ -102,7 +115,10 @@ object YingGraph {
   case object V0 extends Judge {
     override def in = VoidEdge
 
-    override def decide(state: State): Decision = V1
+    override def decide(state: State): Decision = {
+      coreSystem.log.info("V0 judge to V1")
+      V1
+    }
 
     override def toString = "V0"
   }
@@ -122,6 +138,7 @@ object YingGraph {
       if (state.points(point_A).value == 50 &&
         state.points(point_B).value == 50 &&
         state.points(point_C).value == 50) {
+        coreSystem.log.info("V2 judge to V3")
         V3
       } else
         FlowFail
@@ -137,6 +154,7 @@ object YingGraph {
       if (state.points(point_D).value == 50 &&
         state.points(point_E).value == 50 &&
         state.points(point_F).value == 50) {
+        coreSystem.log.info("V3 judge to V4")
         V4
       } else
         FlowFail
@@ -169,36 +187,4 @@ object YingGraph {
     override def toString = "V6"
   }
 
-  //////////////////////////////////////////////
-  //       V1
-  //         \
-  //         v2
-  //          \
-  //          V3
-  //           \
-  //            V4
-  //           /  \
-  //          V7   V5
-  //         /      \
-  //        V8       V6
-  //////////////////////////////////////////////
-
-  case object V7 extends Judge {
-    override def in = VoidEdge
-
-    override def decide(state: State) = V8
-
-    override def toString = "V7"
-  }
-
-  case object V8 extends Judge {
-    override def in = VoidEdge
-
-    override def decide(state: State) = FlowSuccess
-
-    override def toString = "V6"
-  }
-
 }
-
-

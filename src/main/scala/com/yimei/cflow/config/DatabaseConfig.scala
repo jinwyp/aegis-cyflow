@@ -1,33 +1,11 @@
 package com.yimei.cflow.config
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import org.flywaydb.core.Flyway
 
 /**
-  * Created by hary on 16/12/2.
+  * Created by hary on 16/12/6.
   */
-
-trait FlywayConfig extends Core {
-
-  private val flyway = new Flyway()
-  flyway.setDataSource(
-    config.getString("database.url"),
-    config.getString("database.user"),
-    config.getString("database.password")
-  )
-
-  def migrate = {
-    flyway.migrate()
-    this
-  }
-
-  def drop = {
-    flyway.clean()
-    this
-  }
-}
-
-trait DatabaseConfig extends Core {
+trait DatabaseConfig extends CoreConfig {
 
   private val hikariConfig = new HikariConfig()
   hikariConfig.setJdbcUrl(config.getString("database.url"))
@@ -41,6 +19,3 @@ trait DatabaseConfig extends Core {
   db.createSession()
 
 }
-
-trait ApplicationConfig extends DatabaseConfig with FlywayConfig with Core
-

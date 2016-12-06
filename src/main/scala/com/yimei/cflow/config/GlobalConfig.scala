@@ -1,17 +1,16 @@
-package com.yimei
+package com.yimei.cflow.config
 
 /**
-  * Created by hary on 16/12/3.
+  * Created by hary on 16/12/6.
   */
-package object cflow {
+object GlobalConfig {
 
   /**
     * 全局模块名称
     */
-  val module_user = "UserMaster"
-  val module_cang = "CangMaster"
-  val module_ying = "YingMaster"
-  val module_data = "DataMaster"
+  val module_user   = "UserMaster"
+  val module_engine = "EngineMaster"
+  val module_data   = "DataMaster"
 
   /**
     * 所有的数据点名称
@@ -26,8 +25,9 @@ package object cflow {
   val point_H = "H"
   val point_K = "K"
   val point_U_A1 = "UA1"
-  // 用户采集
-  val point_U_A2 = "UA2" // 用户采集
+  val point_U_A2 = "UA2"
+  val point_U_B1 = "UB1"
+  val point_U_B2 = "UB2"
 
   /**
     * 数据采集点Actor名称
@@ -58,16 +58,20 @@ package object cflow {
     point_G -> "征信平分7",
     point_H -> "征信平分9",
     point_K -> "征信平分9",
-    point_U_A1 -> "用户提交1",
-    point_U_A2 -> "用户提交2"
+    point_U_A1 -> "用户提交A1",
+    point_U_A2 -> "用户提交A2",
+    point_U_B1 -> "用户提交A1",
+    point_U_B2 -> "用户提交A2"
   )
 
   // 用户任务列表
-  val task_A = "A"
+  val task_A = "UA"
+  val task_B = "UB"
 
   // 用户任务与采集点的对应关系
   val taskPointMap = Map[String, Array[String]](
-    task_A -> Array(point_U_A1, point_U_A2)
+    task_A -> Array(point_U_A1, point_U_A2),
+    task_B -> Array(point_U_B1, point_U_B2)
   )
 
 }
