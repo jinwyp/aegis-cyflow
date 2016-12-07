@@ -15,7 +15,9 @@ import scala.concurrent.duration._
 class PersistentUser(userId: String,
                      hierarchyInfo: Option[HierarchyInfo],
                      modules: Map[String, ActorRef],
-                     passivateTimeout: Long) extends PersistentActor with ActorLogging {
+                     passivateTimeout: Long) extends AbstractUser
+  with PersistentActor
+  with ActorLogging {
 
   import com.yimei.cflow.user.User._
 
@@ -23,19 +25,6 @@ class PersistentUser(userId: String,
 
   var state: State = State(hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
 
-  // 多终端在线
-  var mobile: ActorRef = null
-  var desktop: ActorRef = null
-
-  // 更新用户状态
-  def updateState(ev: Event) = {
-    ev match {
-      case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
-      case TaskEnqueue(taskId, task) => state = state.copy(tasks = state.tasks + (taskId -> task))
-      case HierarchyInfoUpdated(hinfo) => state = state.copy(hierarchyInfo = hinfo)
-    }
-    log.info(s"${ev} persisted")
-  }
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -55,17 +44,9 @@ class PersistentUser(userId: String,
   // 生成任务id
   def uuid() = UUID.randomUUID().toString;
 
-  //
-  def receiveCommand = {
+  override def receiveCommand: Receive = commonBehavior orElse serving
 
-    // 启动用户时, 需要更新用户的组织机构关系
-    case cmd@CommandStartUser(userId, hierarchyInfo) =>
-      log.info(s"收到用户 ${cmd}")
-      persist(HierarchyInfoUpdated(hierarchyInfo)) { event =>
-        updateState(event)
-        sender() ! CreateUserSuccess
-      }
-
+  def serving: Receive =  {
     // 采集数据请求
     case command: GetUserData =>
       log.info(s"收到采集任务: $command")
@@ -83,17 +64,6 @@ class PersistentUser(userId: String,
         updateState(event)
         modules(module_flow) ! CommandPoints(task.flowId, points)
       }
-
-    // 用户查询
-    case command: CommandQueryUser =>
-      log.info(s"收到用户查询: $command")
-      sender() ! state
-
-    // 手机登录成功
-    case command: CommandMobileCome =>
-
-    // 电脑登录成功
-    case command: CommandDesktopCome =>
 
     // 收到超时
     case ReceiveTimeout =>

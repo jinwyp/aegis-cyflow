@@ -2,23 +2,19 @@ package com.yimei.cflow.user
 
 import java.util.UUID
 
-import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout}
+import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
 import com.yimei.cflow.user.User.HierarchyInfo
 import com.yimei.cflow.user.UserMaster.GetUserData
-
-import scala.concurrent.duration._
 
 /**
   * Created by hary on 16/12/2.
   */
 object User {
 
-  // 启动用户
-  case class CommandStartUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None)
-
-  case object CreateUserSuccess
+  // 创建用户的反馈
+  case class CreateUserSuccess(userId: String)
 
   ////////////////////////////////////////////////////
   // 命令
@@ -26,6 +22,9 @@ object User {
   trait Command {
     def userId: String
   }
+
+  // 0. 创建用户 for UserMaster
+  case class CommandCreateUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None) extends Command
 
   // 1. 用户提交任务
   case class CommandTaskSubmit(userId: String, taskId: String, points: Map[String, DataPoint]) extends Command
@@ -64,44 +63,22 @@ object User {
   // 人在组织中的位置
   case class HierarchyInfo(superior: Option[String], subordinates: Option[List[String]])
 
+
 }
 
-class User(userId: String,
-           hierarchyInfo: Option[HierarchyInfo],
-           modules: Map[String, ActorRef],
-           passivateTimeout: Long) extends Actor with ActorLogging {
+class User(userId: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[String, ActorRef]) extends AbstractUser with ActorLogging {
 
-  import com.yimei.cflow.user.User._
+  import User._
 
   var state: State = State(hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
-
-  // 多终端在线
-  var mobile: ActorRef = null
-  var desktop: ActorRef = null
-
-  // 更新用户状态
-  def updateState(ev: Event) = {
-    ev match {
-      case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
-      case TaskEnqueue(taskId, task) => state = state.copy(tasks = state.tasks + (taskId -> task))
-      case HierarchyInfoUpdated(hinfo) => state = state.copy(hierarchyInfo = hinfo)
-    }
-    log.info(s"${ev} persisted")
-  }
-
-  // 超时
-  context.setReceiveTimeout(passivateTimeout seconds)
 
   // 生成任务id
   def uuid() = UUID.randomUUID().toString;
 
-  def receive = {
 
-    // 启动用户时, 需要更新用户的组织机构关系
-    case cmd@CommandStartUser(userId, hierarchyInfo) =>
-      log.info(s"收到用户 ${cmd}")
-      updateState(HierarchyInfoUpdated(hierarchyInfo))
-      sender() ! CreateUserSuccess
+  override def receive: Receive = commonBehavior orElse serving
+
+  def serving: Receive = {
 
     // 采集数据请求
     case command: GetUserData =>
@@ -116,17 +93,6 @@ class User(userId: String,
       val task = state.tasks(taskId)
       updateState(TaskDequeue(taskId))
       modules(module_flow) ! CommandPoints(task.flowId, points)
-
-    // 用户查询
-    case command: CommandQueryUser =>
-      log.info(s"收到用户查询: $command")
-      sender() ! state
-
-    // 手机登录成功
-    case command: CommandMobileCome =>
-
-    // 电脑登录成功
-    case command: CommandDesktopCome =>
   }
 
   override def unhandled(message: Any): Unit = {

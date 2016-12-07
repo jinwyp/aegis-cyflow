@@ -3,33 +3,39 @@ package com.yimei.cflow.core
 
 import akka.actor.Props
 import com.yimei.cflow.integration.{DependentModule, ModuleMaster}
+import com.yimei.cflow.config.GlobalConfig._
 
 object FlowMaster {
-  def props(name: String, dependOn: Array[String], persist: Boolean = true): Props = Props(new FlowMaster(name, dependOn, persist))
+  def props(dependOn: Array[String], persist: Boolean = true): Props = Props(new FlowMaster(dependOn, persist))
 }
 
 /**
   * Created by hary on 16/12/1.
   */
-class FlowMaster(name: String, dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(name, dependOn)
+class FlowMaster(dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(module_flow, dependOn)
   with FlowMasterBehavior
   with DependentModule {
 
   /**
     *
     * @param flowId  流程id
-    * @param userId  用户id
     * @param parties 参与方用户
     * @return
     */
-  override def flowProp(graph: FlowGraph,
-                        flowId: String,
-                        userId: String,
-                        parties: Map[String, String] = Map()): Props =
-    if (persist)
-      Engine.props(graph, flowId, modules, userId, parties)
-    else
-      PersistentEngine.props(graph, flowId, modules, userId, parties)
+  override def flowProp(flowId: String, parties: Map[String, String] = Map()): Props = {
+    val regex = "(\\w+)-(\\w+)-(.*)".r
+    flowId match {
+      case regex(flowType, userId, persistenceId) =>
+        val graph = FlowRegistry.getFlowGraph(flowType)
+        if (persist) {
+          log.info(s"创建persistent flow..........")
+          PersistentEngine.props(graph, flowId, persistenceId, modules, userId, parties)
+        } else {
+          log.info(s"创建non-persistent flow..........")
+          Engine.props(graph, flowId, modules, userId, parties)
+        }
+    }
+  }
 }
 
 

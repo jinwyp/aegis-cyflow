@@ -1,8 +1,8 @@
 package com.yimei.cflow.user
 
-import akka.actor.{Actor, ActorLogging, Props, Terminated}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.integration.{DependentModule, ServicableBehavior}
-import com.yimei.cflow.user.User.{CommandStartUser, HierarchyInfo}
+import com.yimei.cflow.user.User.{CommandCreateUser, CreateUserSuccess, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 /**
@@ -14,10 +14,10 @@ trait UserMasterBehavior extends Actor
   with ActorLogging {
   override def serving: Receive = {
 
-    // 必须要被先调用, 用来创建用户!!!!!!!!
-    case cmd@CommandStartUser(userId, hierarchyInfo) =>
-      val child = context.child(userId).fold(create(userId, hierarchyInfo))(identity)
-      child forward cmd
+    case cmd@CommandCreateUser(userId, hierarchyInfo) =>
+      log.info(s"UserMaster 收到消息${cmd}")
+      context.child(userId).fold(create(userId, hierarchyInfo))(identity)
+      sender() ! CreateUserSuccess(userId)
 
     // 收到流程过来的任务
     case command: GetUserData =>
@@ -38,6 +38,9 @@ trait UserMasterBehavior extends Actor
   }
 
   private def create(userId: String, hierarchyInfo: Option[HierarchyInfo]) = {
-    context.actorOf(Props(new PersistentUser(userId, hierarchyInfo, modules, 40)), userId)
+    context.actorOf(props(userId, hierarchyInfo), userId)
   }
+
+  def props(userId: String, hierarchyInfo: Option[HierarchyInfo]): Props
+
 }

@@ -18,7 +18,6 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   //
   def updateState(ev: Event) = {
     ev match {
-      case UserUpdated(newUserId) => state = state.copy(userId = newUserId)
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision.toString :: state.histories)
@@ -27,5 +26,15 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
   def logState(mark: String = ""): Unit = {
     log.info(s"<$mark>current state: {${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId}}")
+  }
+
+  def commonBehavior: Receive = {
+    case query: CommandQueryFlow =>
+      log.info(s"received ${query}")
+      sender() ! FlowGraphJson(queryStatus(state))
+
+    case shutdown: CommandShutdown =>
+      log.info("received CommandShutdown")
+      context.stop(self)
   }
 }

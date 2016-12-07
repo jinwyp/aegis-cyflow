@@ -31,17 +31,13 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
 
   }
 
+  override def receiveCommand: Receive = serving orElse commonBehavior
+
   // 命令处理
-  def receiveCommand = {
-    case k : CommandRunFlow.type =>
-      log.info(s"received $k")
-      val src = sender()
-      persist(UserUpdated(state.userId)) { event =>
-        updateState(event)
-        src ! CreateFlowSuccess
-        log.info(s"persist ${event} success")
-        makeDecision
-      }
+  val serving :Receive = {
+    case cmd @ CommandRunFlow(flowId) =>
+      log.info(s"received ${cmd}")
+      makeDecision
 
     case cmd: CommandPoint =>
       log.info(s"received ${cmd.name}")
@@ -50,14 +46,6 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     case cmds: CommandPoints =>
       log.info(s"received ${cmds.points.map(_._1)}")
       processCommandPoints(cmds)
-
-    case query: CommandQueryFlow =>
-      log.info("received CommandQuery")
-      sender() ! FlowGraphJson(queryStatus(state))
-
-    case shutdown: CommandShutdown =>
-      log.info("received CommandShutdown")
-      context.stop(self)
 
     // received 超时
     case ReceiveTimeout =>
@@ -76,7 +64,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       event =>
 
         // 更新状体
-        log.info(s"persist ${event.name} success")
+        log.info(s"${event} persisted")
         updateState(event)
 
         // 作决定!!!
@@ -88,7 +76,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
   protected def processCommandPoints(cmds: CommandPoints) = {
     persist(PointsUpdated(cmds.points)) {
       event =>
-        log.info(s"persist ${event.pionts.map(_._1)} success")
+        log.info(s"${event} persisted")
         updateState(event)
         makeDecision // 作决定
     }
@@ -103,7 +91,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
         logState("before judge")
         persist(DecisionUpdated(j)) {
           event =>
-            log.info(s"persist ${event.decision} success")
+            log.info(s"${event} persisted")
             updateState(event)
             logState("after judge")
             log.info(s"check ${j.in}")
@@ -129,7 +117,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
         logState("FlowSuccess")
         persist(DecisionUpdated(FlowSuccess)) {
           event =>
-            log.info(s"persist ${ event.decision } success, begin snapshot")
+            log.info(s"${event.decision} persisted, begin snapshot")
             updateState(event)
             saveSnapshot(state)
         }
@@ -137,12 +125,12 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
         logState("FlowFail")
         persist(DecisionUpdated(FlowFail)) {
           event =>
-            log.info(s"persist ${ event.decision } success, begin snapshot")
+            log.info(s"${event.decision} persisted, begin snapshot")
             updateState(event)
             saveSnapshot(state)
         }
       case FlowTodo =>
-        log.info(s"current decision [${ state.decision }] result: FlowTodo")
+        log.info(s"current decision [${state.decision}] result: FlowTodo")
     }
   }
 }

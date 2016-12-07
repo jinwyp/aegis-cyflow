@@ -7,10 +7,9 @@ import akka.pattern._
 import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
-import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandStartUser, CommandTaskSubmit, CreateUserSuccess, HierarchyInfo}
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, CreateUserSuccess, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 import scala.concurrent.duration._
@@ -31,13 +30,13 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
     case test@QueryTest(flowId, userId) =>
 
       // 创建用户
-      val f1 = daemon ? CommandStartUser(userId, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
+      val f1 = daemon ? CommandCreateUser(userId, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
 
       f1 onSuccess {
-        case CreateUserSuccess =>
+        case CreateUserSuccess(userId) =>
 
           // 发起用户查询
-          log.info(s"定期发起查询${userId}")
+          log.info(s"定期发起用户查询${userId}")
           context.system.scheduler.schedule(
             1 seconds,
             5 seconds,
@@ -46,14 +45,21 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
           )
       }
 
+      f1 onFailure {
+        case ex => log.info(s"用户创建失败, ex = ${ex}")
+      }
+
 
       // 先创建流程
-      val cmd = CommandCreateFlow(YingGraph, flowId, userId)
+      val cmd = CommandCreateFlow("ying", userId)
       log.info(s"发起创建流程${cmd}")
       val f2 = daemon ? cmd
       f2 onSuccess {
-        case CreateFlowSuccess =>
-          //  创建成功后, 发起定时查询
+        case CreateFlowSuccess(flowId) =>
+          // 1> 启动流程
+          daemon ! CommandRunFlow(flowId)
+
+          // 2> 发起定时查询
           log.info(s"定期发起流程查询${flowId}")
           context.system.scheduler.schedule(
             1 seconds,
@@ -69,7 +75,8 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
     case state: User.State =>
       log.info(s"收到消息 = $state")
       // 处理用户任务
-      state.tasks.foreach { entry => processTask(entry._1, entry._2)
+      state.tasks.foreach { entry =>
+        processTask(entry._1, entry._2)
       }
   }
 

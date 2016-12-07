@@ -6,11 +6,17 @@ package com.yimei.cflow.config
 object GlobalConfig {
 
   /**
+    * 流程类型
+    */
+  val flow_ying = "ying"
+  val flow_cang = "cang"
+
+  /**
     * 全局模块名称
     */
-  val module_user   = "UserMaster"
-  val module_flow = "EngineMaster"
-  val module_data   = "DataMaster"
+  val module_user = "UserMaster"
+  val module_flow = "FlowMaster"
+  val module_data = "DataMaster"
 
   /**
     * 所有的数据点名称

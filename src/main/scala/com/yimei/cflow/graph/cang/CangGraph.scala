@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
+import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
 import com.yimei.cflow.data.DataMaster.fetch
 import com.yimei.cflow.user.UserMaster.ufetch
 
@@ -12,6 +12,8 @@ import com.yimei.cflow.user.UserMaster.ufetch
   * Created by hary on 16/12/1.
   */
 object CangGraph extends FlowGraph {
+
+  FlowRegistry.register(flow_cang, CangGraph)
 
   def getFlowInitial: Decision = V0
 
@@ -27,7 +29,7 @@ object CangGraph extends FlowGraph {
       builder
     }
 
-  override def getFlowName: String = "ying"
+  override def getFlowType: String = "ying"
 
   case object E1 extends Edge with CoreConfig {
     def schedule(state: State, modules: Map[String, ActorRef]) = {

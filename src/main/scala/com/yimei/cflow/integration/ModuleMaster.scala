@@ -53,7 +53,7 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
     // 拿到模块
     case RegisterModule(name, ref) =>
       modules = modules + (name -> ref)
-      log.info(s"get module $name")
+      log.debug(s"get module $name")
       context.watch(ref)
 
       // 如果所有模块都拿到, 就进入服务态

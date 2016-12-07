@@ -13,28 +13,34 @@ object Flow {
   case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
 
   // create flow, but not run it
-  case class  CommandCreateFlow(graph: FlowGraph, flowId: String, userId: String)
+  case class CommandCreateFlow(flowType: String, userId: String, parties: Map[String, String] = Map())
 
-  // run the flow
-  case object CommandRunFlow
 
   // response of CommandCreateFlow
-  case object CreateFlowSuccess
+  case class CreateFlowSuccess(flowId: String)
+
   case object ShutDownSuccess
 
   // shutdown the flow
 
   // 接收命令
   trait Command {
-    def flowId: String
+    def flowId: String // flowType-userId-uuid
   }
-  case class  CommandShutdown(flowId: String) extends Command
 
-  // received gathering, flowId is used for cluster-sharding
+  // 启动流程
+  case class CommandRunFlow(flowId: String) extends Command
+
+  // 停止流程
+  case class CommandShutdown(flowId: String) extends Command
+
+  // 收到数据点
   case class CommandPoint(flowId: String, name: String, point: DataPoint) extends Command
 
+  // 收到数据点集合
   case class CommandPoints(flowId: String, points: Map[String, DataPoint]) extends Command
 
+  // 查询流程
   case class CommandQueryFlow(flowId: String) extends Command
 
 
@@ -46,8 +52,6 @@ object Flow {
   case class PointsUpdated(pionts: Map[String, DataPoint]) extends Event
 
   case class DecisionUpdated(decision: Decision) extends Event
-
-  case class UserUpdated(userid: String) extends Event
 
   // 状态
   case class State(flowId: String, userId: String, parties: Map[String, String], points: Map[String, DataPoint], decision: Decision, histories: List[String])
@@ -125,16 +129,11 @@ abstract class Flow extends AbstractFlow with DependentModule {
 
   import Flow._
 
-  @scala.throws[Exception](classOf[Exception])
-  override def preStart(): Unit = {
-    log.info("ActorFlow preStart")
-    makeDecision() // 注意顺序
-    super.preStart()
-  }
+  override def receive: Receive = commonBehavior orElse serving
 
-  def receive = {
-    case CommandRunFlow =>
-      log.info(s"收到${CommandRunFlow}")
+  val serving: Receive = {
+    case cmd@CommandRunFlow(flowId) =>
+      log.info(s"收到${cmd}")
       makeDecision() // 注意顺序
 
     case cmd: CommandPoint =>
@@ -144,10 +143,6 @@ abstract class Flow extends AbstractFlow with DependentModule {
     case cmd: CommandPoints =>
       log.info(s"received ${cmd.points.map(_._1).mkString("[", ",", "]")}")
       processCommandPoints(cmd)
-
-    case query: CommandQueryFlow =>
-      log.info("received CommandQuery")
-      sender() ! queryStatus(state)
   }
 
   // 处理命令

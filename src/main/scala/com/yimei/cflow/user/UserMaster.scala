@@ -5,6 +5,7 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.ModuleMaster
+import com.yimei.cflow.user.User.HierarchyInfo
 
 
 object UserMaster extends CoreConfig {
@@ -20,14 +21,27 @@ object UserMaster extends CoreConfig {
   // 采集用户数据
   case class GetUserData(flowId: String, userId: String, taskName: String)
 
-  def props(persist: Boolean = true) = Props(new UserMaster(persist))
+  def props(dependOn: Array[String], persist: Boolean = true) = Props(new UserMaster(dependOn, persist))
+
 }
 
 /**
   * Created by hary on 16/12/2.
   */
-class UserMaster(persist: Boolean = true) extends ModuleMaster(module_user, Array(module_flow)) with UserMasterBehavior {
+class UserMaster(dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(module_user, dependOn) with UserMasterBehavior {
 
+  override def props(userId: String, hierarchyInfo: Option[HierarchyInfo]): Props = {
+    persist match {
+      case true  =>  {
+        log.info(s"创建persistent user")
+        Props(new PersistentUser(userId, hierarchyInfo, modules, 20))
+      }
+      case false => {
+        log.info(s"创建non-persistent user")
+        Props(new User(userId, hierarchyInfo, modules))
+      }
+    }
+  }
 }
 
 

@@ -23,7 +23,7 @@ object FlowGraph {
 trait FlowGraph {
   def getFlowInitial: Decision
   def getFlowJson(state: State): String
-  def getFlowName: String
+  def getFlowType: String
 }
 
 

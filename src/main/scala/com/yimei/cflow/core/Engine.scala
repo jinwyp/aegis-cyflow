@@ -10,24 +10,23 @@ import com.yimei.cflow.core.Flow.{DataPoint, State}
 
 object Engine extends CoreConfig {
 
-  import akka.actor.ActorRef
+
 
   def props[T <: FlowGraph](graph: T, flowId: String, modules: Map[String, ActorRef],
                             userId: String,
-                            parties: Map[String, String] = Map()) =
-    Props(new Engine[T](graph, flowId, modules, userId, parties, config.getInt(s"flow.${graph.getFlowName}.timeout")))
+                            parties: Map[String, String] = Map()) = {
+    Props(new Engine[T](graph, flowId, modules, userId, parties, config.getInt(s"flow.${graph.getFlowType}.timeout")))
+  }
 }
 
 /**
   * @param graph    flow graph
-  * @param flowId   流程id
   * @param userId   用户id
   * @param parties  参与方消息
   * @param timeout
   * @tparam T
   */
-class Engine[T <: FlowGraph](
-                              graph: T,
+class Engine[T <: FlowGraph]( graph: T,
                               flowId: String,
                               dependOn: Map[String, ActorRef],
                               userId: String,

@@ -2,11 +2,12 @@ package com.yimei.cflow.integration
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.{CommandCreateFlow, CommandQueryFlow}
-import com.yimei.cflow.core.FlowMaster
+import com.yimei.cflow.core.Flow.CommandCreateFlow
+import com.yimei.cflow.core.{Flow, FlowMaster}
 import com.yimei.cflow.data.DataMaster
-import com.yimei.cflow.user.User.{CommandQueryUser, CommandStartUser, CommandTaskSubmit}
-import com.yimei.cflow.user.UserMaster
+import com.yimei.cflow.graph.cang.CangGraph
+import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.user.{User, UserMaster}
 
 // 模块注册于协商
 object DaemonMaster {
@@ -26,9 +27,9 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_flow` => FlowMaster.props(module_flow, Array(module_user, module_data), persist)
-      case `module_user` => UserMaster.props(persist)
-      case `module_data` => DataMaster.props()
+      case `module_flow` => FlowMaster.props(Array(module_user, module_data), persist)
+      case `module_user` => UserMaster.props(Array(module_flow, module_data), persist)
+      case `module_data` => DataMaster.props(Array(module_user, module_flow))
     }
   }
 
@@ -46,39 +47,20 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
   import DaemonMaster._
 
   var modules = names.map { name =>
+    log.debug(s"开始创建${name} with persist = ${persist}")
     val m = context.actorOf(moduleProps(name, persist), name)
     context.watch(m)
     (name, m)
   }.toMap
 
+  // 注册Graph!!!!!!
+  CangGraph
+  YingGraph
+
   override def receive = {
     case GiveMeModule(name) =>
       log.debug(s"收到GiveMeModule(${name}) from [${sender().path}]")
       modules.get(name).foreach(sender() ! RegisterModule(name, _))
-
-    ////////////////////////////////////////////////////////////////////////
-    // 测试用
-    ////////////////////////////////////////////////////////////////////////
-    case cmd: CommandCreateFlow =>
-      log.info(s"收到${cmd}")
-      modules.get(module_flow).foreach(_ forward cmd)
-
-    // 测试查询流程
-    case cmd: CommandQueryFlow =>
-      log.info(s"收到${cmd}")
-      modules.get(module_flow).foreach(_ forward cmd)
-
-    case cmd@CommandStartUser(userId, _) =>
-      log.info(s"收到CreateUser(${userId}, ${cmd})")
-      modules.get(module_user).foreach(_ forward cmd)
-
-    case cmd : CommandQueryUser =>
-      log.info(s"收到${cmd}")
-      modules.get(module_user).foreach(_ forward cmd)
-
-    case cmd@CommandTaskSubmit(userId, _, _) =>
-      log.info(s"收到${cmd}")
-      modules.get(module_user).foreach(_ forward cmd)
 
     case Terminated(ref) =>
       val (died, rest) = modules.span(entry => entry._2 == ref);
@@ -89,6 +71,24 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
         context.watch(m)
         modules = modules + (entry._1 -> m)
       }
+
+    ////////////////////////////////////////////////////////////////////////
+    // 测试Flow
+    ////////////////////////////////////////////////////////////////////////
+    case cmd: CommandCreateFlow =>
+      log.debug(s"收到${cmd}")
+      modules.get(module_flow).foreach(_ forward cmd)
+
+    case cmd: Flow.Command =>
+      log.debug(s"收到${cmd}")
+      modules.get(module_flow).foreach(_ forward cmd)
+
+    ////////////////////////////////////////////////////////////////////////
+    // 测试user
+    ////////////////////////////////////////////////////////////////////////
+    case cmd: User.Command =>
+      log.debug(s"收到$cmd")
+      modules.get(module_user).foreach(_ forward cmd)
   }
 }
 
