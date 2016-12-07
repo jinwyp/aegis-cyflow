@@ -10,7 +10,7 @@ import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
 import com.yimei.cflow.core.FlowGraph.Graph
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, CreateUserSuccess, HierarchyInfo}
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 import scala.concurrent.duration._
@@ -37,8 +37,8 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
       val f1 = daemon ? CommandCreateUser(userId, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
 
       f1 onSuccess {
-        case CreateUserSuccess(userId) =>
-
+        case userState =>
+          log.info(s"创建用户成功 user state = ${userState}")
           // 发起用户查询
           log.info(s"定期发起用户查询${userId}")
           k1 = context.system.scheduler.schedule(

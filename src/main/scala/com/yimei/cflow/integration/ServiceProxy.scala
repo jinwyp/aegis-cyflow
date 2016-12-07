@@ -6,9 +6,10 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.FlowGraph.Graph
 import com.yimei.cflow.data.DataMaster
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CreateUserSuccess}
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, HierarchyInfo}
 
 import scala.concurrent.Future
 
@@ -31,18 +32,16 @@ object ServiceProxy extends CoreConfig {
 
 
   // 0> 创建用户
-  def userCreate(proxy: ActorRef): Future[CreateUserSuccess] = (proxy ? CommandCreateUser("hary", None)).mapTo[CreateUserSuccess]
+  def userCreate(proxy: ActorRef, userId: String, hierarchyInfo: Option[HierarchyInfo] = None): Future[User.State] =
+    (proxy ? CommandCreateUser(userId, hierarchyInfo)).mapTo[User.State]
 
-  // 1> 创建流程
-  def flowCreate(proxy: ActorRef, userId: String) = (proxy ? CommandCreateFlow(flow_ying, userId)).mapTo[CreateFlowSuccess]
+  // 1> 创建流程 - 自动运行
+  def flowCreate(proxy: ActorRef, userId: String, flowType: String) = (proxy ? CommandCreateFlow(flowType, userId)).mapTo[Graph]
 
-  // 2> 运行流程
-  def flowRun(proxy: ActorRef, flowId: String) = (proxy ? CommandRunFlow(flowId)).mapTo[RunFlowSuccess]
+  // 2> 查询流程
+  def flowQuery(proxy: ActorRef, flowId: String) = (proxy ? CommandQueryFlow(flowId)).mapTo[Graph]
 
-  // 3> 查询流程
-  def flowQuery(proxy: ActorRef, flowId: String) = (proxy ? CommandQueryFlow(flowId)).mapTo[FlowGraphJson]
-
-  // 4> 查询用户
+  // 3> 查询用户
   def userQuery(proxy: ActorRef, userId: String) = (proxy ? CommandQueryUser(userId)).mapTo[User.State]
 
 }

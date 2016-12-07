@@ -2,7 +2,7 @@ package com.yimei.cflow.user
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.integration.{DependentModule, ServicableBehavior}
-import com.yimei.cflow.user.User.{CommandCreateUser, CreateUserSuccess, HierarchyInfo}
+import com.yimei.cflow.user.User._
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 /**
@@ -16,8 +16,8 @@ trait UserMasterBehavior extends Actor
 
     case cmd@CommandCreateUser(userId, hierarchyInfo) =>
       log.info(s"UserMaster 收到消息${cmd}")
-      context.child(userId).fold(create(userId, hierarchyInfo))(identity)
-      sender() ! CreateUserSuccess(userId)
+      val child = context.child(userId).fold(create(userId, hierarchyInfo))(identity)
+      child forward CommandQueryUser(userId)
 
     // 收到流程过来的任务
     case command: GetUserData =>

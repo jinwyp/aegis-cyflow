@@ -13,9 +13,6 @@ import com.yimei.cflow.user.UserMaster.GetUserData
   */
 object User {
 
-  // 创建用户的反馈
-  case class CreateUserSuccess(userId: String)
-
   ////////////////////////////////////////////////////
   // 命令
   ////////////////////////////////////////////////////

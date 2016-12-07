@@ -5,30 +5,36 @@ import javax.ws.rs.Path
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server._
 import akka.util.Timeout
+import com.yimei.cflow.core.{FlowGraphProtol, FlowProtocol}
 import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.{User, UserProtocol}
-import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
+import com.yimei.cflow.user.User
+import io.swagger.annotations._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-@Path("/user/:userId")
-class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
+//     /flow/:userId
 
-  implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
+/**
+  * Created by hary on 16/12/7.
+  */
+@Path("/flow/:userId")
+class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with SprayJsonSupport {
+
+  implicit val timeout = FlowRoute.flowServiceTimeout // todo  why import User.userServiceTimeout does not work
 
   /**
-    *  创建用户
+    * 创建用户
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "创建用户", httpMethod = "POST")
+  @ApiOperation(value = "flowState", notes = "", nickname = "创建流程", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
-      value = "创建用户",
+      value = "创建流程",
       required = true,
-      dataType = "com.yimei.cflow.user.User.State",
+      dataType = "com.yimei.cflow.core.Flow.State",
       paramType = "body"
     )
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
@@ -38,19 +44,19 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postUser: Route = post {
-    pathPrefix("user" / Segment) { userId =>
-      complete(ServiceProxy.userCreate(proxy, userId, None))
+    pathPrefix("flow" / Segment / Segment) { (userId, flowType) =>
+      complete(ServiceProxy.flowCreate(proxy, userId, flowType))
       // todo 1: add hierachy info support
       // todo 2: idempotent processing in backend
     }
   }
 
   /**
-    *  查询用户
+    * 查询用户
     *
     * @return
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
@@ -66,13 +72,13 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getUser: Route = get {
-    pathPrefix("user" / Segment) { userId =>
-        complete(ServiceProxy.userQuery(proxy, userId))
+    pathPrefix("flow" / Segment) { flowId =>
+      complete(ServiceProxy.flowQuery(proxy, flowId))
     }
   }
 
   /**
-    *  查询用户
+    * 查询用户
     *
     * @return
     */
@@ -92,7 +98,7 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putUser: Route = put {
-    pathPrefix("user" / Segment) { userId =>
+    pathPrefix("flow" / Segment) { userId =>
       val k: Future[User.State] = ServiceProxy.userCreate(proxy, userId)
       complete("put success")
     }
@@ -106,13 +112,13 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
 /**
   * Created by hary on 16/12/2.
   */
-object UserRoute {
+object FlowRoute {
 
-  implicit val userServiceTimeout = Timeout(2 seconds)
+  implicit val flowServiceTimeout = Timeout(2 seconds)
 
 
-  def apply(proxy: ActorRef) = new UserRoute(proxy)
+  def apply(proxy: ActorRef) = new FlowRoute(proxy)
 
-  def route(proxy: ActorRef): Route = UserRoute(proxy).route
+  def route(proxy: ActorRef): Route = FlowRoute(proxy).route
 }
 

@@ -31,8 +31,8 @@ trait FlowMasterBehavior extends Actor
     // 创建, 并运行流程
     case command @ CommandCreateFlow(flowType, userId, parties) =>
       val flowId =  s"${flowType}-${userId}-${UUID.randomUUID().toString}"   // 创建flowId
-      create(flowId, parties)
-      sender() ! CreateFlowSuccess(flowId)   // 流程创建成功
+      val child = create(flowId, parties)
+      child forward CommandRunFlow(flowId)
 
     // 这里是没有uid的, 就是recovery回来的
     case command: Command =>

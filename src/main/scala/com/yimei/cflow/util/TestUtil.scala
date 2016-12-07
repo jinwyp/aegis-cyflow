@@ -29,10 +29,9 @@ object TestUtil extends CoreConfig {
     Thread.sleep(2000)
 
     val fall = for {
-      u <- userCreate(proxy)
-      f <- flowCreate(proxy, u.userId)
-      _ <- (proxy ? CommandRunFlow(f.flowId))
-    } yield (u.userId, f.flowId)
+      u <- userCreate(proxy, uid)
+      g <- flowCreate(proxy, uid, flow_ying)
+    } yield (uid, g.state.flowId)
 
     fall onSuccess {
       case (userId, flowId) =>
