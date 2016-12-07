@@ -20,13 +20,13 @@ import scala.concurrent.duration._
 /**
   * Created by hary on 16/12/7.
   */
-@Path("/flow/:userId")
+@Path("/flow")
 class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with SprayJsonSupport {
 
   implicit val timeout = FlowRoute.flowServiceTimeout // todo  why import User.userServiceTimeout does not work
 
   /**
-    * 创建用户
+    * 为用户创建流程
     */
   @ApiOperation(value = "flowState", notes = "", nickname = "创建流程", httpMethod = "POST")
   @ApiImplicitParams(Array(
@@ -52,7 +52,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
   }
 
   /**
-    * 查询用户
+    * 查询流程
     *
     * @return
     */
@@ -73,12 +73,13 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
   ))
   def getUser: Route = get {
     pathPrefix("flow" / Segment) { flowId =>
-      complete(ServiceProxy.flowQuery(proxy, flowId))
+      pathEnd {
+        complete(ServiceProxy.flowQuery(proxy, flowId))
+      }
     }
   }
 
   /**
-    * 查询用户
     *
     * @return
     */

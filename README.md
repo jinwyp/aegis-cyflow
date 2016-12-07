@@ -22,7 +22,7 @@ cy flow
   ///////////////////////////////////////////////////////////////////////////////////////
 ```
 
-## to
+## todo list
 
 1. add flowType to message to support        todo   done
 2. add userType to message                   todo   maybe not needed
@@ -37,7 +37,29 @@ cy flow
 9. rest api                                  todo
 10. schema migration                         todo
 11. neo4j for permission management          todo
-12. 
+12. load graph from configuration file       todo
+13. log optimization                         todo
+14. websocket push                           todo
 
+## rest api
 
+创建用户
+1. POST /user/:userId  
 
+查询用户
+2. GET  /user/:userId  
+
+提交用户任务
+3. POST /user/:userid/task/:taskId
+
+创建用户流程
+3. POST /flow?userId=:userId  创建用户流程 
+
+查询用户流程
+4. GET  /flow/:flowId  查询用户流程
+
+更新流程的数据点, 并触发流程继续
+5. PUT  /flow/:flowId?key1=v1&k2=v2...kn=vn
+
+重新触发决策点运行
+6. PUT /flow/:flowId/decision

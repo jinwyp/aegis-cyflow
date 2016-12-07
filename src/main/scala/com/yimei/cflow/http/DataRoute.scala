@@ -12,10 +12,10 @@ import io.swagger.annotations._
   */
 
 
-@Path("/user/:userId")
+@Path("/data/:name")
 class DataRoute(proxy: ActorRef) {
 
-  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+  @ApiOperation(value = "dataFetch", notes = "", nickname = "获取外部数据", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
@@ -30,9 +30,13 @@ class DataRoute(proxy: ActorRef) {
     // new ApiResponse(code = 200, message = "服务器应答", response = classOf[Data.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def getData = pathPrefix("/user" / Segment) { userId => complete("hello") }
+  def getData = pathPrefix("data" / Segment) { name =>
+    pathEnd {
+      complete("hello")
+    }
+  }
 
-  def route: Route = ???
+  def route: Route = getData
 }
 
 
