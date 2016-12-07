@@ -2,12 +2,13 @@ package com.yimei.cflow.util
 
 import java.util.{Date, UUID}
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import akka.pattern._
 import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
+import com.yimei.cflow.core.FlowGraph.Graph
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, CreateUserSuccess, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
@@ -26,6 +27,9 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
 
   def uuid() = UUID.randomUUID().toString
 
+  var k1: Cancellable = null
+  var k2: Cancellable = null
+
   def receive = {
     case test@QueryTest(flowId, userId) =>
 
@@ -37,7 +41,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
 
           // 发起用户查询
           log.info(s"定期发起用户查询${userId}")
-          context.system.scheduler.schedule(
+          k1 = context.system.scheduler.schedule(
             1 seconds,
             5 seconds,
             daemon,
@@ -61,7 +65,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
 
           // 2> 发起定时查询
           log.info(s"定期发起流程查询${flowId}")
-          context.system.scheduler.schedule(
+          k2 = context.system.scheduler.schedule(
             1 seconds,
             13 seconds,
             daemon,
@@ -69,8 +73,13 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
           )
       }
 
-    case json: FlowGraphJson =>
-      log.info(s"收到消息 = $json")
+    case json: Graph =>
+      log.info(s"flow[${json.state.flowId}] = ${json.state.decision}")
+      if ( json.state.decision == FlowFail || json.state.decision == FlowSuccess) {
+        k1.cancel()
+        k2.cancel()
+        log.info("测试结束")
+      }
 
     case state: User.State =>
       log.info(s"收到消息 = $state")

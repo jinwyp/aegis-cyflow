@@ -56,23 +56,24 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
 
   override def serving: Receive = {
 
+    // 创建流程
     case cmd: Flow.CommandCreateFlow =>
-      log.info(s"收到 ${cmd}")
+      log.debug(s"收到 ${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 用户模块交互
     case cmd: User.Command =>
-      log.info(s"收到 ${cmd}")
+      log.debug(s"收到 ${cmd}")
       modules.get(module_user).foreach(_ forward cmd)
 
     // 流程模块交互
     case cmd: Flow.Command =>
-      log.info(s"收到 ${cmd}")
+      log.debug(s"收到 ${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 数据模块交互
     case cmd: DataMaster.GetAutoData =>
-      log.info(s"收到 ${cmd}")
+      log.debug(s"收到 ${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
   }

@@ -53,8 +53,6 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     case ReceiveTimeout =>
       log.info(s"passivate timeout, begin passivating!!!!")
       context.stop(self)
-
-    case _ =>
   }
 
   override def unhandled(msg: Any): Unit = log.error(s"received unhandled message: $msg")

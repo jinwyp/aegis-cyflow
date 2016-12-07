@@ -18,12 +18,10 @@ object GraphBuilder {
     def ~>(v: Decision)(implicit builder: GraphBuilder) = builder.lines = EdgeLine(vv, e, v) :: builder.lines
   }
 
-  def jsonGraph(state: State)(routine: GraphBuilder => GraphBuilder): String = {
-    import spray.json._
-
+  def jsonGraph(state: State)(routine: GraphBuilder => GraphBuilder): Graph = {
     val builder = new GraphBuilder(List.empty[EdgeLine]);
     routine(builder)
-    Graph(builder.lines, state, pointDescription).toJson.toString
+    Graph(builder.lines, state, pointDescription)
   }
 
   class GraphBuilder(var lines: List[EdgeLine])

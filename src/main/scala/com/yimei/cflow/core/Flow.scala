@@ -10,7 +10,7 @@ object Flow {
   case class FlowGraphJson(json: String)
 
   // 数据点类型
-  trait PointValueType[T] {
+  trait PointValueType[+T] {
     val value: T
   }
 

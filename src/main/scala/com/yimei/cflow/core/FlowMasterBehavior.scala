@@ -22,6 +22,10 @@ trait FlowMasterBehavior extends Actor
     */
   def getFlowInfo(flowId: String): (FlowGraph, String) = ???
 
+  /**
+    *
+    * @return
+    */
   def serving: Receive = {
 
     // 创建, 并运行流程

@@ -1,6 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{Actor, ActorLogging}
+import com.yimei.cflow.core.FlowGraph.Graph
 
 /**
   * some common facilities
@@ -13,7 +14,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   var state: State
 
   //
-  def queryStatus(state: State): String
+  def queryStatus(state: State): Graph
 
   //
   def updateState(ev: Event) = {
@@ -30,8 +31,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
   def commonBehavior: Receive = {
     case query: CommandQueryFlow =>
-      log.info(s"received ${query}")
-      sender() ! FlowGraphJson(queryStatus(state))
+      sender() ! queryStatus(state)
 
     case shutdown: CommandShutdown =>
       log.info("received CommandShutdown")
