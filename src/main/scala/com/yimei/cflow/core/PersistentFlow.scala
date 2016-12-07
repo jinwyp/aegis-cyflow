@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.ReceiveTimeout
-import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
+import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.integration.DependentModule
 
 import scala.concurrent.duration._
@@ -53,6 +53,8 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     case ReceiveTimeout =>
       log.info(s"passivate timeout, begin passivating!!!!")
       context.stop(self)
+
+    case SaveSnapshotSuccess(metadata) =>
   }
 
   override def unhandled(msg: Any): Unit = log.error(s"received unhandled message: $msg")

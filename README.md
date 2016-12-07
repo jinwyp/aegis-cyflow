@@ -24,5 +24,13 @@ cy flow
 
 ## to
 
-1. add flowType to message to support
-2. add userType to message
+1. add flowType to message to support        done
+2. add userType to message                   todo   maybe not needed
+3. change serialization to custom            todo
+4. change serialization to protobuf          todo
+5. angular2 + D3 for operation visualization todo
+6. generic type support for DataPoint        todo
+7. cluster sharding                          todo
+
+
+

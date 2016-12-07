@@ -77,7 +77,8 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging {
       if (state.decision == FlowSuccess || state.decision == FlowFail ) {
         schedulers(state.flowId).cancel()
         schedulers = schedulers - state.flowId
-        log.info(s"${state.flowId} completed")
+        count = count + 1
+        log.info(s"${state.flowId} completed, completed total = ${count}")
       }
   }
 
