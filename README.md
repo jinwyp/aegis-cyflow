@@ -24,13 +24,20 @@ cy flow
 
 ## to
 
-1. add flowType to message to support        done
+1. add flowType to message to support        todo   done
 2. add userType to message                   todo   maybe not needed
+   just like flowType  
+   to support multiple user-types  
 3. change serialization to custom            todo
 4. change serialization to protobuf          todo
 5. angular2 + D3 for operation visualization todo
 6. generic type support for DataPoint        todo
 7. cluster sharding                          todo
+8. add swagger documentation                 todo 
+9. rest api                                  todo
+10. schema migration                         todo
+11. neo4j for permission management          todo
+12. 
 
 
 
