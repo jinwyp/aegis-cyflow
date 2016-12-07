@@ -63,6 +63,7 @@ class PersistentUser(userId: String,
       persist(TaskDequeue(taskId)) { event =>
         updateState(event)
         modules(module_flow) ! CommandPoints(task.flowId, points)
+        sender() ! state
       }
 
     // 收到超时

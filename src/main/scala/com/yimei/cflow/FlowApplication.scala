@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.http.{FlowRoute, UserRoute}
+import com.yimei.cflow.http.{FlowRoute, TaskRoute, UserRoute}
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 
@@ -25,6 +25,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   val routes: Route =
     FlowRoute.route(proxy) ~
     UserRoute.route(proxy) ~
+    TaskRoute.route(proxy) ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes)
 

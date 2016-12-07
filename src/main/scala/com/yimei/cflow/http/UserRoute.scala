@@ -20,7 +20,7 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
 
   /**
-    *  创建用户
+    * 创建用户
     */
   @ApiOperation(value = "userState", notes = "", nickname = "创建用户", httpMethod = "POST")
   @ApiImplicitParams(Array(
@@ -39,14 +39,17 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   ))
   def postUser: Route = post {
     pathPrefix("user" / Segment) { userId =>
-      complete(ServiceProxy.userCreate(proxy, userId, None))
-      // todo 1: add hierachy info support
-      // todo 2: idempotent processing in backend
+      pathEnd {
+        complete(ServiceProxy.userCreate(proxy, userId, None))
+      }
     }
   }
 
+  // todo 1: add hierachy info support
+  // todo 2: idempotent processing in backend
+
   /**
-    *  查询用户
+    * 查询用户
     *
     * @return
     */
@@ -67,12 +70,12 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   ))
   def getUser: Route = get {
     pathPrefix("user" / Segment) { userId =>
-        complete(ServiceProxy.userQuery(proxy, userId))
+      complete(ServiceProxy.userQuery(proxy, userId))
     }
   }
 
   /**
-    *  查询用户
+    * 查询用户
     *
     * @return
     */
@@ -99,7 +102,6 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   }
 
   def route: Route = postUser ~ getUser ~ putUser
-
 }
 
 

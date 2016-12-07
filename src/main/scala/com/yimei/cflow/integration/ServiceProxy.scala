@@ -9,7 +9,7 @@ import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowGraph.Graph
 import com.yimei.cflow.data.DataMaster
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, HierarchyInfo}
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, HierarchyInfo}
 
 import scala.concurrent.Future
 
@@ -43,6 +43,9 @@ object ServiceProxy extends CoreConfig {
 
   // 3> 查询用户
   def userQuery(proxy: ActorRef, userId: String) = (proxy ? CommandQueryUser(userId)).mapTo[User.State]
+
+  // 4> 用户提交任务
+  def userSubmit(proxy: ActorRef, userId: String, taskId: String, points: Map[String, DataPoint]) = (proxy ? CommandTaskSubmit(userId,taskId, points)).mapTo[User.State]
 
 }
 
