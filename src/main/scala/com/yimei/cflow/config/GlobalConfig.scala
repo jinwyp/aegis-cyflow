@@ -17,6 +17,7 @@ object GlobalConfig {
   val module_user = "UserMaster"
   val module_flow = "FlowMaster"
   val module_data = "DataMaster"
+  val module_service = "ServiceProxy"
 
   /**
     * 所有的数据点名称

@@ -10,7 +10,7 @@ object Flow {
   case class FlowGraphJson(json: String)
 
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
-  case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
+  case class DataPoint[T](value: T, memo: String, operator: String, id: String, timestamp: Date)
 
   // create flow, but not run it
   case class CommandCreateFlow(flowType: String, userId: String, parties: Map[String, String] = Map())
@@ -135,6 +135,7 @@ abstract class Flow extends AbstractFlow with DependentModule {
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"收到${cmd}")
+      sender() ! RunFlowSuccess(flowId)
       makeDecision() // 注意顺序
 
     case cmd: CommandPoint =>

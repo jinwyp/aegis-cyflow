@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import com.yimei.cflow.core.Flow.{DataPoint, Decision, Edge, State}
-import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, JsonFormat, RootJsonFormat}
 
 /**
   * Created by hary on 16/12/1.
@@ -33,8 +33,8 @@ object FlowProtocol extends DefaultJsonProtocol {
     def read(value: JsValue) = null
   }
 
-  // 数据点
-  implicit val dataPointFormat = jsonFormat5(DataPoint)
+  // 泛型数据点
+  implicit def dataPointFormat[T:JsonFormat] = jsonFormat5(DataPoint.apply[T])
 
   // 状态
   implicit val stateFormat = jsonFormat6(State)

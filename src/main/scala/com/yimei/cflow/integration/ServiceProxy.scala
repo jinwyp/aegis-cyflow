@@ -50,7 +50,7 @@ object ServiceProxy extends CoreConfig {
 /**
   * Created by hary on 16/12/6.
   */
-class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster("serviceProxy", dependOn, Some(daemon))
+class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster(module_service, dependOn, Some(daemon))
   with ServicableBehavior
   with ActorLogging {
 
