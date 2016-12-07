@@ -23,11 +23,16 @@ object ServiceProxy {
 /**
   * Created by hary on 16/12/6.
   */
-class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster("serviceProxy", dependOn)
+class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster("serviceProxy", dependOn, Some(daemon))
   with ServicableBehavior
   with ActorLogging {
 
   override def serving: Receive = {
+
+    case cmd : Flow.CommandCreateFlow =>
+      log.info(s"收到 ${cmd}")
+      modules.get(module_flow).foreach(_ forward cmd)
+
     // 用户模块交互
     case cmd: User.Command =>
       log.info(s"收到 ${cmd}")

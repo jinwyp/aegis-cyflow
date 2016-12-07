@@ -3,7 +3,8 @@ package com.yimei.cflow.core
 import akka.actor.ReceiveTimeout
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.integration.DependentModule
-import concurrent.duration._
+
+import scala.concurrent.duration._
 
 /**
   * Created by hary on 16/12/6.
@@ -34,9 +35,10 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
   override def receiveCommand: Receive = serving orElse commonBehavior
 
   // 命令处理
-  val serving :Receive = {
-    case cmd @ CommandRunFlow(flowId) =>
+  val serving: Receive = {
+    case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
+      sender() ! RunFlowSuccess(flowId)
       makeDecision
 
     case cmd: CommandPoint =>
@@ -97,10 +99,10 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
             log.info(s"check ${j.in}")
 
             // circular
-            if ( cur == j) {
+            if (cur == j) {
               // clear the points from State where j.in is responsible for
               persist(null: Event) { event =>
-                updateState(event)   // @todo 王琦
+                updateState(event) // @todo 王琦
               }
             } else {
               if (j.in.check(state)) {

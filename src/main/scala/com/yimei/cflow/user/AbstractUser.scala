@@ -19,11 +19,11 @@ abstract class AbstractUser extends Actor with ActorLogging {
   // 更新用户状态
   def updateState(ev: Event) = {
     ev match {
-      case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
-      case TaskEnqueue(taskId, task) => state = state.copy(tasks = state.tasks + (taskId -> task))
+      case TaskDequeue(taskId)         => state = state.copy(tasks = state.tasks - taskId)
+      case TaskEnqueue(taskId, task)   => state = state.copy(tasks = state.tasks + (taskId -> task))
       case HierarchyInfoUpdated(hinfo) => state = state.copy(hierarchyInfo = hinfo)
     }
-    log.info(s"${ev} persisted")
+    log.info(s"${ev} persisted, state = ${state}")
   }
 
   // 公用行为, 不涉及事件处理

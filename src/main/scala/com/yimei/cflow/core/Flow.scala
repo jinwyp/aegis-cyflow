@@ -18,6 +18,7 @@ object Flow {
 
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
+  case class RunFlowSuccess(flowId: String)
 
   case object ShutDownSuccess
 

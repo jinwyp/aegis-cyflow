@@ -37,6 +37,15 @@ object EngineTest extends App with ApplicationConfig with CorsSupport {
   Http().bindAndHandle(routes, "0.0.0.0", config.getInt("http.port"))
 
   val flowId = UUID.randomUUID().toString
-  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "hary"))  // 必须等时间长点发起
+  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use001"))  // 必须等时间长点发起
+
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use001"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use002"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use003"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use004"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use005"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use006"))  // 必须等时间长点发起
+//  coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use007"))  // 必须等时间长点发起
+
 }
 
