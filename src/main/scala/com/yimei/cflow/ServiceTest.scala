@@ -15,6 +15,7 @@ import com.yimei.cflow.user.UserMaster.GetUserData
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import ServiceProxy._
 
 /**
   * Created by hary on 16/12/3.
@@ -29,24 +30,14 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
 
-  // 0> 创建用户
-  def userSuccess: Future[CreateUserSuccess] = (proxy ? CommandCreateUser("hary", None)).mapTo[CreateUserSuccess]
 
-  // 1> 创建流程
-  def flowSuccess(userId: String) = (proxy ? CommandCreateFlow(flow_ying, userId)).mapTo[CreateFlowSuccess]
-
-  // 2> 查询流程
-  def flowQuery(flowId: String) = (proxy ? CommandQueryFlow(flowId)).mapTo[FlowGraphJson]
-
-  // 3> 查询用户
-  def userQuery(userId: String) = (proxy ? CommandQueryUser(userId)).mapTo[User.State]
 
 
   Thread.sleep(2000)
 
   val fall = for {
-    u <- userSuccess
-    f <- flowSuccess(u.userId)
+    u <- userCreate(proxy)
+    f <- flowCreate(proxy, u.userId)
     _ <- (proxy ? CommandRunFlow(f.flowId))
   } yield(u.userId, f.flowId)
 
@@ -60,7 +51,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
       5 seconds,
       new Runnable {
         override def run(): Unit = {
-          userQuery(userId) onSuccess {
+          userQuery(proxy, userId) onSuccess {
             case state: User.State =>
               coreSystem.log.info(s"收到${state}")
               state.tasks.foreach { entry =>
@@ -78,7 +69,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
       5 seconds,
       new Runnable {
         override def run(): Unit = {
-          flowQuery(flowId) onSuccess {
+          flowQuery(proxy, flowId) onSuccess {
             case flowJson => coreSystem.log.info(s"收到${flowJson}")
           }
         }
@@ -100,5 +91,5 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
 
     daemon ! CommandTaskSubmit(task.userId, taskId, points) // 提交任务处理给daemon
   }
-
 }
+
