@@ -9,8 +9,13 @@ object Flow {
 
   case class FlowGraphJson(json: String)
 
+  // 数据点类型
+  trait PointValueType[T] {
+    val value: T
+  }
+
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
-  case class DataPoint[T](value: T, memo: String, operator: String, id: String, timestamp: Date)
+  case class DataPoint(value: Int, memo: String, operator: String, id: String, timestamp: Date)
 
   // create flow, but not run it
   case class CommandCreateFlow(flowType: String, userId: String, parties: Map[String, String] = Map())

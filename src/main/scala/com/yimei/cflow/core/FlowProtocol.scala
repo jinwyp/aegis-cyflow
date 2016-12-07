@@ -34,7 +34,8 @@ object FlowProtocol extends DefaultJsonProtocol {
   }
 
   // 泛型数据点
-  implicit def dataPointFormat[T:JsonFormat] = jsonFormat5(DataPoint.apply[T])
+  //implicit def dataPointFormat[T:JsonFormat] = jsonFormat5(DataPoint.apply[T])
+  implicit def dataPointFormat = jsonFormat5(DataPoint)
 
   // 状态
   implicit val stateFormat = jsonFormat6(State)
