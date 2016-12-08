@@ -2,8 +2,7 @@ package com.yimei.cflow.core
 
 import akka.actor.{ActorLogging, ActorRef, Props}
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.core.Flow.{DataPoint, State}
-import com.yimei.cflow.core.FlowGraph.Graph
+import com.yimei.cflow.core.Flow.{DataPoint, Graph, State, EdgeStart}
 
 object PersistentEngine extends CoreConfig {
   def props[T <: FlowGraph](
@@ -43,7 +42,7 @@ class PersistentEngine[T <: FlowGraph](
     parties: Map[String, String],
     timeout: Int) extends PersistentFlow(timeout) with ActorLogging {
 
-  override var state = State(flowId, userId, parties, Map[String, DataPoint](), graph.getFlowInitial, Nil)
+  override var state = State(flowId, userId, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
   override def queryStatus(state: State): Graph = graph.getFlowGraph(state)
   override def modules: Map[String, ActorRef] = dependOn
 }

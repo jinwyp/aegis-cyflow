@@ -3,12 +3,11 @@ package com.yimei.cflow.util
 import java.util.{Date, UUID}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
-import akka.pattern._
 import com.yimei.cflow.ServiceTest._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.FlowGraph.Graph
+import com.yimei.cflow.core.Flow.{Graph, _}
+import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit}
@@ -35,7 +34,7 @@ object TestUtil extends CoreConfig {
 
     fall onSuccess {
       case (userId, flowId) =>
-        testClient !(userId, flowId)
+        testClient ! (userId, flowId)
       // coreSystem.actorOf(Props(new TestActor(proxy, userId, flowId)))
     }
 
@@ -46,7 +45,7 @@ object TestUtil extends CoreConfig {
   }
 }
 
-class TestClient(proxy: ActorRef) extends Actor with ActorLogging {
+class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProtocol {
 
   //  coreSystem.log.info(s"定期发起用户查询${userId}")
   //  coreSystem.log.info(s"定期发起流程查询${flowId}")
@@ -62,9 +61,9 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging {
       val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userId, flowId, 1))
       schedulers = schedulers + (flowId -> q)
 
-      // tick消息
+    // tick消息
     case (userId: String, flowId: String, 1) =>
-      proxy ! CommandQueryUser(userId)  //
+      proxy ! CommandQueryUser(userId) //
       proxy ! CommandQueryFlow(flowId)
 
     case state: User.State =>
@@ -72,12 +71,15 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging {
         processTask(entry._1, entry._2)
       }
 
-    case Graph(_,state,_) =>
-      if (state.decision == FlowSuccess || state.decision == FlowFail ) {
+    case g @ Graph(_, state, _) =>
+      if (state.decision == FlowSuccess || state.decision == FlowFail) {
         schedulers(state.flowId).cancel()
         schedulers = schedulers - state.flowId
         count = count + 1
         log.info(s"${state.flowId} completed, completed total = ${count}")
+        import spray.json._
+        log.info(s"final graph is ${g.toJson}")
+
       }
   }
 
@@ -86,7 +88,7 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging {
   def processTask(taskId: String, task: GetUserData) = {
     coreSystem.log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
-      (pname -> DataPoint(50, "userdata", task.userId, uuid, new Date())) // uuid为采集id
+      (pname -> DataPoint(50, Some("userdata"), Some(task.userId), uuid, new Date())) // uuid为采集id
     }.toMap
 
     proxy ! CommandTaskSubmit(task.userId, taskId, points) // 提交任务处理给daemon

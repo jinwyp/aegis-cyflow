@@ -1,7 +1,6 @@
 package com.yimei.cflow.user
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.yimei.cflow.user.UserMaster.GetUserData
 
 /**
   * Created by hary on 16/12/7.
@@ -19,8 +18,8 @@ abstract class AbstractUser extends Actor with ActorLogging {
   // 更新用户状态
   def updateState(ev: Event) = {
     ev match {
-      case TaskDequeue(taskId)         => state = state.copy(tasks = state.tasks - taskId)
-      case TaskEnqueue(taskId, task)   => state = state.copy(tasks = state.tasks + (taskId -> task))
+      case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
+      case TaskEnqueue(taskId, task) => state = state.copy(tasks = state.tasks + (taskId -> task))
       case HierarchyInfoUpdated(hinfo) => state = state.copy(hierarchyInfo = hinfo)
     }
     log.info(s"${ev} persisted, state = ${state}")

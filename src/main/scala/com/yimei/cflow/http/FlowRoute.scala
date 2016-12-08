@@ -7,12 +7,11 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
-import com.yimei.cflow.core.{FlowGraphProtol, FlowProtocol}
+import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.User
 import io.swagger.annotations._
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
 
 //     /flow/:userId
@@ -21,7 +20,7 @@ import scala.concurrent.duration._
   * Created by hary on 16/12/7.
   */
 @Path("/flow")
-class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with SprayJsonSupport {
+class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 
   implicit val timeout = FlowRoute.flowServiceTimeout // todo  why import User.userServiceTimeout does not work
 
@@ -43,11 +42,13 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def postUser: Route = post {
-    pathPrefix("flow" / Segment / Segment) { (userId, flowType) =>
-      complete(ServiceProxy.flowCreate(proxy, userId, flowType))
-      // todo 1: add hierachy info support
-      // todo 2: idempotent processing in backend
+  def postFlow: Route = post {
+    pathPrefix("flow") {
+      parameters(('userId, 'flowType)) { (userId, flowType) =>
+        complete(ServiceProxy.flowCreate(proxy, userId, flowType))
+        // todo 1: add hierachy info support
+        // todo 2: idempotent processing in backend
+      }
     }
   }
 
@@ -71,7 +72,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def getUser: Route = get {
+  def getFlow: Route = get {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
         complete(ServiceProxy.flowQuery(proxy, flowId))
@@ -79,11 +80,13 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
     }
   }
 
+
   /**
+    * 更新流程数据点并触发流程继续!!!!
     *
     * @return
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "PUT")
+  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
@@ -98,14 +101,22 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with FlowGraphProtol with 
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def putUser: Route = put {
-    pathPrefix("flow" / Segment) { userId =>
-      val k: Future[User.State] = ServiceProxy.userCreate(proxy, userId)
-      complete("put success")
+  def putFlowUpdatePoints: Route = put {
+    pathPrefix("flow" / Segment) { flowId =>
+      pathEnd {
+        parameter("updatePoint") { p =>
+          entity(as[Map[String, String]]) { points =>
+            val ips = points.map { entry =>
+              entry._1 -> entry._2.toInt    // 转成Int
+            }
+            complete(ServiceProxy.flowUpdatePoints(proxy, flowId, ips))
+          }
+        }
+      }
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser
+  def route: Route = postFlow ~ getFlow ~ putFlowUpdatePoints
 
 }
 

@@ -8,7 +8,7 @@ import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
-import com.yimei.cflow.core.FlowGraph.Graph
+import com.yimei.cflow.core.Flow.Graph
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, HierarchyInfo}
 import com.yimei.cflow.user.UserMaster.GetUserData
@@ -92,7 +92,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
   def processTask(taskId: String, task: GetUserData) = {
     log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
-        (pname -> DataPoint(50, "userdata", task.userId, uuid, new Date()))    // uuid为采集id
+        (pname -> DataPoint(50, Some("userdata"), Some(task.userId), uuid, new Date()))    // uuid为采集id
     }.toMap
 
     daemon ! CommandTaskSubmit(task.userId, taskId, points) // 提交任务处理给daemon

@@ -1,7 +1,6 @@
 package com.yimei.cflow.core
 
 import akka.actor.{Actor, ActorLogging}
-import com.yimei.cflow.core.FlowGraph.Graph
 
 /**
   * some common facilities
@@ -21,12 +20,16 @@ abstract class AbstractFlow extends Actor with ActorLogging {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
-      case DecisionUpdated(d) => state = state.copy(decision = d, histories = state.decision.toString :: state.histories)
+      case DecisionUpdated(arrow) => state = state.copy(
+        decision = arrow.end,
+        edge = arrow.edge,
+        histories = arrow :: state.histories
+      )
     }
   }
 
   def logState(mark: String = ""): Unit = {
-    log.info(s"<$mark>current state: {${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId}}")
+    log.info(s"<$mark>current state: { ${state.edge} -> ${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId}}")
   }
 
   def commonBehavior: Receive = {

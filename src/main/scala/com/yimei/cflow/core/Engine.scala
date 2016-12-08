@@ -2,8 +2,7 @@ package com.yimei.cflow.core
 
 import akka.actor.{ActorLogging, ActorRef, Props}
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.core.Flow.{DataPoint, State}
-import com.yimei.cflow.core.FlowGraph.Graph
+import com.yimei.cflow.core.Flow.{DataPoint, Graph, State, EdgeStart}
 
 /**
   * Created by hary on 16/12/6.
@@ -34,7 +33,7 @@ class Engine[T <: FlowGraph]( graph: T,
                               parties: Map[String, String],
                               timeout: Int) extends Flow with ActorLogging {
 
-  override var state = State(flowId, userId, parties, Map[String, DataPoint](), graph.getFlowInitial, Nil)
+  override var state = State(flowId, userId, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
   override def queryStatus(state: State): Graph = graph.getFlowGraph(state)
   override def modules: Map[String, ActorRef] = dependOn
 }

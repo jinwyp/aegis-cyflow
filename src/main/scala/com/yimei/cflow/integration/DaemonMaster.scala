@@ -5,7 +5,6 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.CommandCreateFlow
 import com.yimei.cflow.core.{Flow, FlowMaster}
 import com.yimei.cflow.data.DataMaster
-import com.yimei.cflow.graph.cang.CangGraph
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.user.{User, UserMaster}
 
@@ -54,7 +53,6 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
   }.toMap
 
   // 注册Graph!!!!!!
-  CangGraph
   YingGraph
 
   override def receive = {

@@ -15,6 +15,10 @@ import io.swagger.annotations._
 @Path("/data/:name")
 class DataRoute(proxy: ActorRef) {
 
+  /**
+    * 重新获取外部数据
+    * @return
+    */
   @ApiOperation(value = "dataFetch", notes = "", nickname = "获取外部数据", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(

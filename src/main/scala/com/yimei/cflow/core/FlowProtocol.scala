@@ -3,7 +3,7 @@ package com.yimei.cflow.core
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import com.yimei.cflow.core.Flow.{DataPoint, Decision, Edge, State}
+import com.yimei.cflow.core.Flow._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 /**
@@ -13,7 +13,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   // 日期
   implicit object DateJsonFormat extends RootJsonFormat[Date] {
-    val formatter = new SimpleDateFormat("yyyyMMdd")
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")   // todo change format
 
     override def write(obj: Date) = JsString(formatter.format(obj))
 
@@ -41,6 +41,10 @@ trait FlowProtocol extends DefaultJsonProtocol {
   //implicit def dataPointFormat[T:JsonFormat] = jsonFormat5(DataPoint.apply[T])
   implicit def dataPointFormat = jsonFormat5(DataPoint)
 
+  implicit val arrowFormat =jsonFormat2(Arrow)
+
   // 状态
-  implicit val stateFormat = jsonFormat6(State)
+  implicit val stateFormat = jsonFormat7(State)
+
+  implicit val graphFormat = jsonFormat3(Graph)
 }

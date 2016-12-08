@@ -1,5 +1,7 @@
 package com.yimei.cflow.core
 
+import java.util.{Date, UUID}
+
 import akka.actor.ReceiveTimeout
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.integration.DependentModule
@@ -49,6 +51,18 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       log.info(s"received ${cmds.points.map(_._1)}")
       processCommandPoints(cmds)
 
+    // 管理员更新数据点驱动流程
+    case cmd: CommandUpdatePoints =>
+      val uuid = UUID.randomUUID().toString
+      val points: Map[String, DataPoint] = cmd.points.map { entry =>
+        entry._1 -> DataPoint(entry._2, None, None, uuid, new Date())
+      }
+      persist(PointsUpdated(points)) { event =>
+        log.info(s"${event} persisted")
+        makeDecision()
+        sender() ! queryStatus(state)  // 返回流程状态
+      }
+
     // received 超时
     case ReceiveTimeout =>
       log.info(s"passivate timeout, begin passivating!!!!")
@@ -89,14 +103,15 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     val cur = state.decision
 
     cur.run(state) match {
-      case j: Judge =>
+      case arrow @ Arrow(j, Some(e)) =>
         logState("before judge")
-        persist(DecisionUpdated(j)) {
-          event =>
-            log.info(s"${event} persisted")
+
+        println(s"my ev is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        persist(DecisionUpdated(arrow)) {
+          event => log.info(s"${event} persisted")
             updateState(event)
             logState("after judge")
-            log.info(s"check ${j.in}")
+            log.info(s"check ${e}")
 
             // circular
             if (cur == j) {
@@ -105,33 +120,33 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
                 updateState(event) // @todo 王琦
               }
             } else {
-              if (j.in.check(state)) {
+              if (e.check(state)) {
                 // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
                 log.info(s"continue...")
                 makeDecision()
               } else {
-                log.info(s"schedule ${j.in}")
-                j.in.schedule(state, modules)
+                log.info(s"schedule ${e}")
+                e.schedule(state, modules)
               }
             }
         }
-      case FlowSuccess =>
+      case arrow @ Arrow(FlowSuccess, None) =>
         logState("FlowSuccess")
-        persist(DecisionUpdated(FlowSuccess)) {
+        persist(DecisionUpdated(arrow)) {
           event =>
-            log.info(s"${event.decision} persisted, begin snapshot")
+            log.info(s"${event} persisted, begin snapshot")
             updateState(event)
             saveSnapshot(state)
         }
-      case FlowFail =>
+      case arrow @ Arrow(FlowFail, None) =>
         logState("FlowFail")
-        persist(DecisionUpdated(FlowFail)) {
+        persist(DecisionUpdated(arrow)) {
           event =>
-            log.info(s"${event.decision} persisted, begin snapshot")
+            log.info(s"${event} persisted, begin snapshot")
             updateState(event)
             saveSnapshot(state)
         }
-      case FlowTodo =>
+      case Arrow(FlowTodo, None) =>
         log.info(s"current decision [${state.decision}] result: FlowTodo")
     }
   }

@@ -17,7 +17,7 @@ import spray.json.{JsValue, JsonFormat}
   */
 
 
-object TreeSprayJson extends FlowGraphProtol with FlowProtocol {
+object TreeSprayJson extends FlowProtocol {
 
   trait Tree
 
