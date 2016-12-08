@@ -60,7 +60,15 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         makeDecision()
-        sender() ! queryStatus(state)  // 返回流程状态
+        sender() ! queryStatus(state) // 返回流程状态
+      }
+
+    // 更新参与方!!!
+    case cmd: CommandUpdateParties =>
+      persist(PartiesUpdated(cmd.parties)) { event =>
+        updateState(event)
+        log.info(s"${event} persisted")
+        sender() ! queryStatus(state)
       }
 
     // received 超时
@@ -69,6 +77,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       context.stop(self)
 
     case SaveSnapshotSuccess(metadata) =>
+      log.info(s"snapshot saved successfully")
   }
 
   override def unhandled(msg: Any): Unit = log.error(s"received unhandled message: $msg")
@@ -103,7 +112,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     val cur = state.decision
 
     cur.run(state) match {
-      case arrow @ Arrow(j, Some(e)) =>
+      case arrow@Arrow(j, Some(e)) =>
         logState("before judge")
 
         println(s"my ev is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -130,7 +139,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
               }
             }
         }
-      case arrow @ Arrow(FlowSuccess, None) =>
+      case arrow@Arrow(FlowSuccess, None) =>
         logState("FlowSuccess")
         persist(DecisionUpdated(arrow)) {
           event =>
@@ -138,7 +147,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
             updateState(event)
             saveSnapshot(state)
         }
-      case arrow @ Arrow(FlowFail, None) =>
+      case arrow@Arrow(FlowFail, None) =>
         logState("FlowFail")
         persist(DecisionUpdated(arrow)) {
           event =>

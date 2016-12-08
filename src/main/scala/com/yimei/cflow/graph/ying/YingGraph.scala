@@ -20,6 +20,7 @@ object YingGraph extends FlowGraph {
   def getFlowGraph(state: State) =
     GraphBuilder.jsonGraph(state) { implicit builder =>
       import GraphBuilder._
+      V0 ~> EdgeStart ~> V1
       V1 ~> E1 ~> V2
       V2 ~> E2 ~> V3
       V3 ~> E3 ~> V4

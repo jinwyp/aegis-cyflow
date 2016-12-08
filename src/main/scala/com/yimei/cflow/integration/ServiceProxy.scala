@@ -35,6 +35,9 @@ object ServiceProxy extends CoreConfig {
   def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, Int]): Future[Graph] =
     (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Graph]
 
+  def flowUpdateParties(proxy: ActorRef, flowId: String, parties: Map[String, String]): Future[Graph] =
+  (proxy ? CommandUpdateParties(flowId, parties)).mapTo[Graph]
+
   // 0> 创建用户
   def userCreate(proxy: ActorRef, userId: String, hierarchyInfo: Option[HierarchyInfo] = None): Future[User.State] =
     (proxy ? CommandCreateUser(userId, hierarchyInfo)).mapTo[User.State]

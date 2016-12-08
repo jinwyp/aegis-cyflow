@@ -44,7 +44,7 @@ object Flow {
   case class CommandUpdatePoints(flowId: String, points: Map[String, Int])  extends Command
 
   // 更新流程关联方  todo 王琦
-  case class CommandUpdateParties(flowId: String, parties: Map[String, Map[String, String]])  extends Command
+  case class CommandUpdateParties(flowId: String, parties: Map[String, String])  extends Command
 
   // persistent事件
   trait Event
@@ -55,7 +55,7 @@ object Flow {
 
   case class DecisionUpdated(arrow: Arrow) extends Event
 
-  case class PointsUpdatedAdmin(points: Map[String, Int]) extends Event
+  case class PartiesUpdated(parties: Map[String, String]) extends Event
 
   // 状态
   case class State(
@@ -170,6 +170,9 @@ abstract class Flow extends AbstractFlow with DependentModule {
         entry._1 -> DataPoint(entry._2, None, None, uuid, new Date())
       }
       updateState(PointsUpdated(points))
+
+    case cmd: CommandUpdateParties =>
+      updateState(PartiesUpdated(cmd.parties))
   }
 
   // 处理命令

@@ -18,6 +18,10 @@ import io.swagger.annotations._
 @Path("/user/:userId/task/:taskId")
 class TaskRoute(proxy: ActorRef) extends UserProtocol with FlowProtocol with SprayJsonSupport {
 
+  /**
+    * 提交用户任务
+    * @return
+    */
   @ApiOperation(value = "userTask", notes = "", nickname = "用户提交任务", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
@@ -36,7 +40,6 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol with FlowProtocol with Spr
   def postTask = post {
     pathPrefix("user" / Segment / "task" / Segment) { (userId, taskId) =>
       entity(as[Map[String, DataPoint]]) { points =>
-        println("hello world!!!")
         complete(ServiceProxy.userSubmit(proxy, userId,taskId, points))
       }
     }

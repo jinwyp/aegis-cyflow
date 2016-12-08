@@ -25,6 +25,10 @@ abstract class AbstractFlow extends Actor with ActorLogging {
         edge = arrow.edge,
         histories = arrow :: state.histories
       )
+      case PartiesUpdated(ps) =>
+        log.info(s"begin update with ${ps}")
+        val k: Map[String, String] = ps
+        state = state.copy( parties =  state.parties ++ ps)
     }
   }
 
