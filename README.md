@@ -25,7 +25,7 @@ cy flow
 ## todo list
 
 1. add flowType to message to support        todo   done
-2. add userType to message                   todo   maybe not needed
+2. add userType to message                   todo   maybe not needed  could create multi userMaster
    just like flowType  
    to support multiple user-types  
 3. change serialization to custom            todo
@@ -34,17 +34,26 @@ cy flow
 6. generic type support for DataPoint        todo
 7. cluster sharding                          todo
 8. add swagger documentation                 todo 
-9. rest api                                  todo
 10. schema migration                         todo
 11. neo4j for permission management          todo
 12. load graph from configuration file       todo
 13. log optimization                         todo
 14. websocket push                           todo
+15. sbt-package-native                       todo
+16. multi-edge support                       todo
+17. edge description refurbishment           todo
+18. service-proxy dispatcher configuration   todo
+9. rest api                                  todo   doing
 
 ## rest api
 
 创建用户
-1. POST /user/:userId  
+1. POST /user/:userId
+   Optional -  HierarchyInfo(superior: Option[String], subordinates: Option[Array[String]])  - 组织关系  
+
+更新用户组织关系
+2. PUT /usr/:userId
+   Optional -  HierarchyInfo(superior: Option[String], subordinates: Option[Array[String]])  - 组织关系  
 
 查询用户
 2. GET  /user/:userId  
@@ -52,8 +61,8 @@ cy flow
 提交用户任务
 3. POST /user/:userid/task/:taskId
 
-创建用户流程
-3. POST /flow?userId=:userId  创建用户流程 
+创建流程流程
+3. POST /flow?userId=:userI&flowType=:flowType
 
 查询用户流程
 4. GET  /flow/:flowId  查询用户流程
@@ -63,3 +72,14 @@ cy flow
 
 重新触发决策点运行
 6. PUT /flow/:flowId/decision
+
+流程参与方更新 ???
+7. POST /flow/:flowId/party
+
+重新让采集点为流程flowId重新采集数据
+8. POST /data/:name?flowId=:flowId
+
+让采集点:name获取数据返回浏览器
+9. GET /data/:name
+
+
