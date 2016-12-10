@@ -17,26 +17,26 @@ object User {
   // 命令
   ////////////////////////////////////////////////////
   trait Command {
-    def userId: String
+    def guid: String
   }
 
   // 0. 创建用户 for UserMaster
-  case class CommandCreateUser(userId: String, hierarchyInfo: Option[HierarchyInfo] = None) extends Command
+  case class CommandCreateUser(guid: String, hierarchyInfo: Option[HierarchyInfo] = None) extends Command
 
   // 1. 用户提交任务
-  case class CommandTaskSubmit(userId: String, taskId: String, points: Map[String, DataPoint]) extends Command
+  case class CommandTaskSubmit(guid: String, taskId: String, points: Map[String, DataPoint]) extends Command
 
   // 2. shutdown用户
-  case class CommandShutDown(userId: String) extends Command
+  case class CommandShutDown(guid: String) extends Command
 
   // 3. 手机登录成功
-  case class CommandMobileCome(userId: String, mobile: ActorRef) extends Command
+  case class CommandMobileCome(guid: String, mobile: ActorRef) extends Command
 
   // 4. 电脑登录
-  case class CommandDesktopCome(userId: String, desktop: ActorRef) extends Command
+  case class CommandDesktopCome(guid: String, desktop: ActorRef) extends Command
 
   // 5. 查询用户信息
-  case class CommandQueryUser(userId: String) extends Command
+  case class CommandQueryUser(guid: String) extends Command
 
   ////////////////////////////////////////////////////
   // 事件
@@ -55,7 +55,7 @@ object User {
   ////////////////////////////////////////////////////
   // 状态
   ////////////////////////////////////////////////////
-  case class State(hierarchyInfo: Option[HierarchyInfo], tasks: Map[String, GetUserData])
+  case class State(userId: String, userType: String, hierarchyInfo: Option[HierarchyInfo], tasks: Map[String, GetUserData])
 
   // 人在组织中的位置
   case class HierarchyInfo(superior: Option[String], subordinates: Option[List[String]])
@@ -63,11 +63,17 @@ object User {
 
 }
 
-class User(userId: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[String, ActorRef]) extends AbstractUser with ActorLogging {
+class User(guid: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[String, ActorRef]) extends AbstractUser with ActorLogging {
 
   import User._
 
-  var state: State = State(hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
+  // 用户id与用户类型
+  val regex = "(\\w+)-(.*)".r
+  val (userId, userType) = guid match {
+    case regex(uid, gid) => (uid, gid)
+  }
+
+  var state: State = State(userId, userType, hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
 
   // 生成任务id
   def uuid() = UUID.randomUUID().toString;
@@ -85,7 +91,7 @@ class User(userId: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[St
     // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
 
     // 收到用户提交的采集数据
-    case command@CommandTaskSubmit(userId, taskId, points) =>
+    case command@CommandTaskSubmit(guid, taskId, points) =>
       log.info(s"收到采集提交: $command")
       val task = state.tasks(taskId)
       updateState(TaskDequeue(taskId))

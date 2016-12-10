@@ -26,7 +26,7 @@ cy flow
 
 1. add flowType to message to support        todo   done
 2. add userType to message                   todo   maybe not needed  could create multi userMaster
-   just like flowType  
+   just like flowType 
    to support multiple user-types  
 3. change serialization to custom            todo
 4. change serialization to protobuf          todo
@@ -43,26 +43,26 @@ cy flow
 16. multi-edge support                       todo
 17. edge description refurbishment           todo
 18. service-proxy dispatcher configuration   todo
-9. rest api                                  todo   doing
+19. rest api                                 todo   doing
 
 ## rest api
 
 创建用户
-1. POST /user/:userId
+1. POST /user/:userId?userType=:userType
    Optional -  HierarchyInfo(superior: Option[String], subordinates: Option[Array[String]])  - 组织关系  
 
 更新用户组织关系
-2. PUT /usr/:userId
+2. PUT /usrer/:userType/:userId
    Optional -  HierarchyInfo(superior: Option[String], subordinates: Option[Array[String]])  - 组织关系  
 
 查询用户
-2. GET  /user/:userId  
+2. GET  /user/:userId?type=01
 
 提交用户任务
-3. POST /user/:userid/task/:taskId
+3. POST /user/:userType/:userId/task/:taskId
 
 创建流程流程
-3. POST /flow?userId=:userI&flowType=:flowType
+3. POST /flow?userId=:userId&userType=:userType&flowType=:flowType
 
 查询用户流程
 4. GET  /flow/:flowId  查询用户流程

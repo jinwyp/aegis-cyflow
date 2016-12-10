@@ -15,7 +15,7 @@ import io.swagger.annotations._
 /**
   * Created by hary on 16/12/6.
   */
-@Path("/user/:userId/task/:taskId")
+@Path("/user/:userType/:userId/task/:taskId")
 class TaskRoute(proxy: ActorRef) extends UserProtocol with FlowProtocol with SprayJsonSupport {
 
   /**
@@ -38,9 +38,9 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol with FlowProtocol with Spr
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postTask = post {
-    pathPrefix("user" / Segment / "task" / Segment) { (userId, taskId) =>
+    pathPrefix("user" / Segment / Segment / "task" / Segment) { (userType, userId, taskId) =>
       entity(as[Map[String, DataPoint]]) { points =>
-        complete(ServiceProxy.userSubmit(proxy, userId,taskId, points))
+        complete(ServiceProxy.userSubmit(proxy, userType, userId,taskId, points))
       }
     }
   }

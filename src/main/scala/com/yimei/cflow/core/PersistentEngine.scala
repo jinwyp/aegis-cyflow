@@ -28,7 +28,7 @@ object PersistentEngine extends CoreConfig {
 /**
   * @param graph
   * @param flowId
-  * @param userId
+  * @param guid
   * @param parties
   * @param timeout
   * @tparam T
@@ -36,13 +36,13 @@ object PersistentEngine extends CoreConfig {
 class PersistentEngine[T <: FlowGraph](
     graph: T,
     flowId: String,
-    val persistenceId: String,
+    val persistenceId: String,       // 持久化id
     dependOn: Map[String, ActorRef],
-    userId: String,
+    guid: String,
     parties: Map[String, String],
     timeout: Int) extends PersistentFlow(timeout) with ActorLogging {
 
-  override var state = State(flowId, userId, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
+  override var state = State(flowId, guid, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
   override def queryStatus(state: State): Graph = graph.getFlowGraph(state)
   override def modules: Map[String, ActorRef] = dependOn
 }

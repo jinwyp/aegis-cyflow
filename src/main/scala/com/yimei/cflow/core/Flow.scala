@@ -8,11 +8,10 @@ import com.yimei.cflow.integration.DependentModule
 object Flow {
 
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
-  case class DataPoint(value: Int, memo: Option[String], operator: Option[String], id: String, timestamp: Date)
+  case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Date)
 
   // create flow, but not run it
-  case class CommandCreateFlow(flowType: String, userId: String, parties: Map[String, String] = Map())
-
+  case class CommandCreateFlow(flowType: String, guid: String, parties: Map[String, String] = Map())
 
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
@@ -22,7 +21,7 @@ object Flow {
 
   // 接收命令
   trait Command {
-    def flowId: String // flowType-userId-uuid
+    def flowId: String // flowType-userType-userId-uuid
   }
 
   // 启动流程
@@ -41,7 +40,7 @@ object Flow {
   case class CommandQueryFlow(flowId: String) extends Command
 
   // 手动更新points
-  case class CommandUpdatePoints(flowId: String, points: Map[String, Int])  extends Command
+  case class CommandUpdatePoints(flowId: String, points: Map[String, String])  extends Command
 
   // 更新流程关联方  todo 王琦
   case class CommandUpdateParties(flowId: String, parties: Map[String, String])  extends Command
@@ -59,14 +58,13 @@ object Flow {
 
   // 状态
   case class State(
-                    flowId: String,
-                    userId: String,
-                    parties: Map[String, String],
-                    points: Map[String, DataPoint],
-                    decision: Decision,
-                    edge: Option[Edge],
-                    histories: List[Arrow])
-
+            flowId: String,
+            guid: String,
+            parties: Map[String, String],
+            points: Map[String, DataPoint],
+            decision: Decision,
+            edge: Option[Edge],
+            histories: List[Arrow])
   // 分支边
   trait Edge {
     /**

@@ -3,7 +3,7 @@ package com.yimei.cflow.integration
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.CommandCreateFlow
-import com.yimei.cflow.core.{Flow, FlowMaster}
+import com.yimei.cflow.core.{Flow, FlowMaster, IdGenerator}
 import com.yimei.cflow.data.DataMaster
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.user.{User, UserMaster}
@@ -26,9 +26,10 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_flow` => FlowMaster.props(Array(module_user, module_data), persist)
-      case `module_user` => UserMaster.props(Array(module_flow, module_data), persist)
-      case `module_data` => DataMaster.props(Array(module_user, module_flow))
+      case `module_flow` => FlowMaster.props(Array(module_user, module_auto), persist)
+      case `module_user` => UserMaster.props(Array(module_flow, module_auto), persist)
+      case `module_auto` => DataMaster.props(Array(module_user, module_flow))
+      case `module_id`   => IdGenerator.props(name)
     }
   }
 

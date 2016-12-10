@@ -15,7 +15,7 @@ import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
   */
 object FlowApplication extends App with ApplicationConfig with CorsSupport {
 
-  val names = Array(module_data, module_user, module_flow)
+  val names = Array(module_auto, module_user, module_flow, module_id)
 
   // daemon master and
   val daemon = coreSystem.actorOf(DaemonMaster.props(names), "DaemonMaster")

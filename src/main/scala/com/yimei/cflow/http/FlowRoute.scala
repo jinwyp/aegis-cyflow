@@ -44,10 +44,12 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   ))
   def postFlow: Route = post {
     pathPrefix("flow") {
-      parameters(('userId, 'flowType)) { (userId, flowType) =>
-        complete(ServiceProxy.flowCreate(proxy, userId, flowType))
-        // todo 1: add hierachy info support
-        // todo 2: idempotent processing in backend
+      pathEnd {
+        parameters(('userType, 'userId, 'flowType)) { (userType, userId, flowType) =>
+          complete(ServiceProxy.flowCreate(proxy, userType, userId, flowType))
+          // todo 1: add hierachy info support
+          // todo 2: idempotent processing in backend
+        }
       }
     }
   }
@@ -84,6 +86,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   /**
     * 更新流程数据点并触发流程继续
     * PUT /flow/ying-hary-11111111111111?updatePoint
+    *
     * @return
     */
   @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
@@ -107,7 +110,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
         parameter("points") { p =>
           entity(as[Map[String, String]]) { points =>
             val ips = points.map { entry =>
-              entry._1 -> entry._2.toInt    // 转成Int
+              entry._1 -> entry._2
             }
             complete(ServiceProxy.flowUpdatePoints(proxy, flowId, ips))
           }
@@ -120,6 +123,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   /**
     * 更新流程数据点并触发流程继续
     * PUT /flow/ying-hary-11111111111111?updatePoint
+    *
     * @return
     */
   @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")

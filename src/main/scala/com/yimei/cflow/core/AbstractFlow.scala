@@ -33,7 +33,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   }
 
   def logState(mark: String = ""): Unit = {
-    log.info(s"<$mark>current state: { ${state.edge} -> ${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.userId}}")
+    log.info(s"<$mark>current state: { ${state.edge} -> ${state.decision} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.guid}}")
   }
 
   def commonBehavior: Receive = {

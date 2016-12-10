@@ -10,10 +10,10 @@ import spray.json.DefaultJsonProtocol
 
 trait UserProtocol extends DefaultJsonProtocol {
 
-  implicit val userHierarchyInfoFormat = jsonFormat2 (HierarchyInfo)
+  implicit val userHierarchyInfoFormat = jsonFormat2(HierarchyInfo)
 
-  implicit val userGetUserDataFormat = jsonFormat3 (GetUserData)
+  implicit val userGetUserDataFormat = jsonFormat3(GetUserData)
 
-  implicit val userStateFormat = jsonFormat2 (State)
+  implicit val userStateFormat = jsonFormat4(State)
 }
 

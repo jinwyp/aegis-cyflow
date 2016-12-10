@@ -1,6 +1,5 @@
 package com.yimei.cflow
 
-
 import akka.actor.Props
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
@@ -17,17 +16,18 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testEc = coreExecutor
 
   // daemon master and
-  val names = Array(module_data, module_user, module_flow)
+  val names  = Array(module_auto, module_user, module_flow)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")
-  val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
+  val proxy  = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
   val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
 
   Thread.sleep(2000)
 
-//  TestUtil.test(proxy, client, "hary")
+  TestUtil.test(proxy, client, "00", "hary")
 
-  for (i <- 1 to 1) {
-    TestUtil.test(proxy, client, s"hary${i}")
-  }
+//  for (i <- 1 to 1) {
+//    TestUtil.test(proxy, client, s"00-hary${i}")
+//  }
 
 }
+

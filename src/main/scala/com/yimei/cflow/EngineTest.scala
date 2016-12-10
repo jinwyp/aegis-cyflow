@@ -20,11 +20,10 @@ import scala.concurrent.duration._
   */
 object EngineTest extends App with ApplicationConfig with CorsSupport {
 
-
   // daemon master and
-  val names = Array(module_data, module_user, module_flow)
+  val names  = Array(module_auto, module_user, module_flow)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")
-  val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
+  val proxy  = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
 
   // 测试用的actor
   val queryActor = coreSystem.actorOf(Props(new QueryActor(daemon)), "QueryActor")

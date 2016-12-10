@@ -9,6 +9,7 @@ abstract class AbstractUser extends Actor with ActorLogging {
 
   import com.yimei.cflow.user.User._
 
+
   var state: State
 
   // 多终端在线
@@ -40,3 +41,5 @@ abstract class AbstractUser extends Actor with ActorLogging {
   }
 
 }
+
+

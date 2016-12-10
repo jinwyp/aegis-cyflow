@@ -40,7 +40,9 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   def postUser: Route = post {
     pathPrefix("user" / Segment) { userId =>
       pathEnd {
-        complete(ServiceProxy.userCreate(proxy, userId, None))
+        parameter('userType) { userType =>
+          complete(ServiceProxy.userCreate(proxy, userType, userId, None))
+        }
       }
     }
   }
@@ -70,7 +72,11 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   ))
   def getUser: Route = get {
     pathPrefix("user" / Segment) { userId =>
-      complete(ServiceProxy.userQuery(proxy, userId))
+      pathEnd {
+        parameter("userType") { userType =>
+          complete(ServiceProxy.userQuery(proxy, userType, userId))
+        }
+      }
     }
   }
 
@@ -96,8 +102,12 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
   ))
   def putUser: Route = put {
     pathPrefix("user" / Segment) { userId =>
-      val k: Future[User.State] = ServiceProxy.userCreate(proxy, userId)
-      complete("put success")
+      pathEnd {
+        parameter("userType") { userType =>
+          val k: Future[User.State] = ServiceProxy.userCreate(proxy, userType, userId)
+          complete("put success")
+        }
+      }
     }
   }
 

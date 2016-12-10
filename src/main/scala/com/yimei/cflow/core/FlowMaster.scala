@@ -23,16 +23,20 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true) extends Modul
     * @return
     */
   override def flowProp(flowId: String, parties: Map[String, String] = Map()): Props = {
-    val regex = "(\\w+)-(\\w+)-(.*)".r
+    val regex = "(\\w+)-(\\w+-\\w+)-(.*)".r
     flowId match {
-      case regex(flowType, userId, persistenceId) =>
+      case regex(flowType, guid, persistenceId) =>
+
+        log.info(s"flowId in flowProp is ${flowId}, ${guid}, ${persistenceId}")
+
+
         val graph = FlowRegistry.getFlowGraph(flowType)
         if (persist) {
           log.info(s"创建persistent flow..........")
-          PersistentEngine.props(graph, flowId, persistenceId, modules, userId, parties)
+          PersistentEngine.props(graph, flowId, persistenceId, modules, guid, parties)
         } else {
           log.info(s"创建non-persistent flow..........")
-          Engine.props(graph, flowId, modules, userId, parties)
+          Engine.props(graph, flowId, modules, guid, parties)
         }
     }
   }

@@ -14,22 +14,22 @@ trait UserMasterBehavior extends Actor
   with ActorLogging {
   override def serving: Receive = {
 
-    case cmd@CommandCreateUser(userId, hierarchyInfo) =>
+    case cmd@CommandCreateUser(guid, hierarchyInfo) =>
       log.info(s"UserMaster 收到消息${cmd}")
-      val child = context.child(userId).fold(create(userId, hierarchyInfo))(identity)
-      child forward CommandQueryUser(userId)
+      val child = context.child(guid).fold(create(guid, hierarchyInfo))(identity)
+      child forward CommandQueryUser(guid)
 
     // 收到流程过来的任务
     case command: GetUserData =>
-      val child = context.child(command.userId).fold {
-        create(command.userId, None)
+      val child = context.child(command.guid).fold {
+        create(command.guid, None)
       }(identity)
       child forward command
 
     // 其他用户command
     case command: User.Command =>
-      val child = context.child(command.userId).fold {
-        create(command.userId, None)
+      val child = context.child(command.guid).fold {
+        create(command.guid, None)
       }(identity)
       child forward command
 
@@ -37,8 +37,8 @@ trait UserMasterBehavior extends Actor
       log.info(s"${child.path.name} terminated")
   }
 
-  private def create(userId: String, hierarchyInfo: Option[HierarchyInfo]) = {
-    context.actorOf(props(userId, hierarchyInfo), userId)
+  private def create(guid: String, hierarchyInfo: Option[HierarchyInfo]) = {
+    context.actorOf(props(guid, hierarchyInfo), guid)
   }
 
   def props(userId: String, hierarchyInfo: Option[HierarchyInfo]): Props

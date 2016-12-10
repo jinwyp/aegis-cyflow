@@ -14,12 +14,13 @@ object UserMaster extends CoreConfig {
     if (refetchIfExists ||
       taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
     ) {
-      userMaster ! GetUserData(state.flowId, state.userId, taskName)
+      println(s"ufetch with ${state.guid}, ${state}")
+      userMaster ! GetUserData(state.flowId, state.guid, taskName)
     }
   }
 
   // 采集用户数据
-  case class GetUserData(flowId: String, userId: String, taskName: String)
+  case class GetUserData(flowId: String, guid: String, taskName: String)
 
   def props(dependOn: Array[String], persist: Boolean = true) = Props(new UserMaster(dependOn, persist))
 
@@ -30,15 +31,15 @@ object UserMaster extends CoreConfig {
   */
 class UserMaster(dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(module_user, dependOn) with UserMasterBehavior {
 
-  override def props(userId: String, hierarchyInfo: Option[HierarchyInfo]): Props = {
+  override def props(guid: String, hierarchyInfo: Option[HierarchyInfo]): Props = {
     persist match {
       case true  =>  {
         log.info(s"创建persistent user")
-        Props(new PersistentUser(userId, hierarchyInfo, modules, 20))
+        Props(new PersistentUser(guid, hierarchyInfo, modules, 20))
       }
       case false => {
         log.info(s"创建non-persistent user")
-        Props(new User(userId, hierarchyInfo, modules))
+        Props(new User(guid, hierarchyInfo, modules))
       }
     }
   }

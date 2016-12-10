@@ -34,9 +34,9 @@ object YingGraph extends FlowGraph {
 
   case object E1 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_A, state, modules(module_data))
-      fetch(data_B, state, modules(module_data))
-      fetch(data_C, state, modules(module_data))
+      fetch(data_A, state, modules(module_auto))
+      fetch(data_B, state, modules(module_auto))
+      fetch(data_C, state, modules(module_auto))
     }
 
     def check(state: State) = !Array(point_A, point_B, point_C).exists(
@@ -48,7 +48,7 @@ object YingGraph extends FlowGraph {
 
   case object E2 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_DEF, state, modules(module_data))
+      fetch(data_DEF, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
@@ -66,7 +66,7 @@ object YingGraph extends FlowGraph {
 
   case object E4 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_GHK, state, modules(module_data))
+      fetch(data_GHK, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_GHK).exists(!state.points.contains(_))
@@ -98,7 +98,7 @@ object YingGraph extends FlowGraph {
 
   case object E7 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_DEF, state, modules(module_data))
+      fetch(data_DEF, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
@@ -128,7 +128,7 @@ object YingGraph extends FlowGraph {
 
     override def decide(state: State): Arrow = {
       state.points.filter(entry => dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value
+        acc + entry._2.value.toInt
       } match {
         case 150 => Arrow(V3, Some(E3))
         case _ => Arrow(FlowFail, None)
@@ -143,7 +143,7 @@ object YingGraph extends FlowGraph {
     override def decide(state: State): Arrow = {
 
       state.points.filter(entry => dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value
+        acc + entry._2.value.toInt
       } match {
         case 150 => Arrow(V4, Some(E4))
         case _ => Arrow(FlowFail, None)
@@ -159,7 +159,7 @@ object YingGraph extends FlowGraph {
     override def decide(state: State) = {
       // println(s"V4 state = $state")
       state.points.filter(entry => dataPointMap(data_GHK).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value
+        acc + entry._2.value.toInt
       } match {
         case 150 => Arrow(V5, Some(E5))
         case m =>
@@ -177,7 +177,7 @@ object YingGraph extends FlowGraph {
     override def decide(state: State) = {
 
       state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value
+        acc + entry._2.value.toInt
       } match {
         case 100 => Arrow(V6, Some(E6))
         case _ => Arrow(FlowFail, None)
@@ -193,7 +193,7 @@ object YingGraph extends FlowGraph {
     override def decide(state: State) = {
 
       state.points.filter(entry => List(point_U_B1, point_U_B2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value
+        acc + entry._2.value.toInt
       } match {
         case 10 =>
           println("V6 -> SUCCESS")

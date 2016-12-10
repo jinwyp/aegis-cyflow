@@ -23,19 +23,19 @@ object TestUtil extends CoreConfig {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  def test(proxy: ActorRef, testClient: ActorRef, uid: String) = {
+  def test(proxy: ActorRef, testClient: ActorRef, userType: String, userId: String) = {
 
     Thread.sleep(2000)
 
     val fall = for {
-      u <- userCreate(proxy, uid)
-      g <- flowCreate(proxy, uid, flow_ying)
-    } yield (uid, g.state.flowId)
+      u <- userCreate(proxy, userType, userId)
+      g <- flowCreate(proxy, userType, userId, flow_ying)
+    } yield (userType, userId, g.state.flowId)
 
     fall onSuccess {
-      case (userId, flowId) =>
-        testClient ! (userId, flowId)
-      // coreSystem.actorOf(Props(new TestActor(proxy, userId, flowId)))
+      case (userType, userId, flowId) =>
+        testClient ! (userType, userId, flowId)
+      // coreSystem.actorOf(Props(new TestActor(proxy, guid, flowId)))
     }
 
     fall onFailure {
@@ -49,7 +49,6 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
 
   //  coreSystem.log.info(s"定期发起用户查询${userId}")
   //  coreSystem.log.info(s"定期发起流程查询${flowId}")
-
   var schedulers: Map[String, Cancellable] = Map()
 
   var count = 0
@@ -57,13 +56,13 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
   override def receive: Receive = {
 
     // 收到查询任务, 给自己发tick
-    case (userId: String, flowId: String) =>
-      val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userId, flowId, 1))
+    case (userType: String, userId: String, flowId: String) =>
+      val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userType, userId, flowId, 1))
       schedulers = schedulers + (flowId -> q)
 
     // tick消息
-    case (userId: String, flowId: String, 1) =>
-      proxy ! CommandQueryUser(userId) //
+    case (userType: String, userId: String, flowId: String, 1) =>
+      proxy ! CommandQueryUser(s"${userType}-${userId}") //
       proxy ! CommandQueryFlow(flowId)
 
     case state: User.State =>
@@ -88,10 +87,10 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
   def processTask(taskId: String, task: GetUserData) = {
     coreSystem.log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
-      (pname -> DataPoint(50, Some("userdata"), Some(task.userId), uuid, new Date())) // uuid为采集id
+      (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date())) // uuid为采集id
     }.toMap
 
-    proxy ! CommandTaskSubmit(task.userId, taskId, points) // 提交任务处理给daemon
+    proxy ! CommandTaskSubmit(task.guid, taskId, points) // 提交任务处理给daemon
   }
 }
 

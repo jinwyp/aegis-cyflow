@@ -42,7 +42,13 @@ libraryDependencies ++= {
 
     "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
     "ch.qos.logback" % "logback-classic" % "1.1.3",
-    "com.typesafe.akka" %% "akka-slf4j" % akkaV
+    "com.typesafe.akka" %% "akka-slf4j" % akkaV,
+
+    // lens
+    "com.softwaremill.quicklens" % "quicklens_2.11" % "1.4.8",
+
+    // neo4j-scala
+    "eu.fakod"  %% "neo4j-scala" % "0.3.3"
 
   )
 }

@@ -8,23 +8,28 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
 import com.yimei.cflow.user.User.HierarchyInfo
 import com.yimei.cflow.user.UserMaster.GetUserData
-
 import scala.concurrent.duration._
 
-
-class PersistentUser(userId: String,
+class PersistentUser(guid: String,
                      hierarchyInfo: Option[HierarchyInfo],
                      modules: Map[String, ActorRef],
                      passivateTimeout: Long) extends AbstractUser
   with PersistentActor
   with ActorLogging {
 
+  println(s"create persistenter user with guid = $guid")
+
   import com.yimei.cflow.user.User._
 
-  override def persistenceId = userId
+  // 用户id与用户类型
+  val regex = "(\\w+)-(.*)".r
+  val (userType, userId) = guid match {
+    case regex(utype, uid) => (utype, uid)
+  }
 
-  var state: State = State(hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
+  override def persistenceId = guid
 
+  var state: State = State(userId, userType, hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -47,6 +52,7 @@ class PersistentUser(userId: String,
   override def receiveCommand: Receive = commonBehavior orElse serving
 
   def serving: Receive =  {
+
     // 采集数据请求
     case command: GetUserData =>
       log.info(s"收到采集任务: $command")
@@ -70,11 +76,13 @@ class PersistentUser(userId: String,
     case ReceiveTimeout =>
       log.info(s"${persistenceId}超时, 开始钝化!!!!")
       context.stop(self)
+
   }
 
   override def unhandled(message: Any): Unit = {
     log.error(s"收到未处理消息 $message")
     super.unhandled(message)
   }
+
 }
 

@@ -31,21 +31,21 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
   var k2: Cancellable = null
 
   def receive = {
-    case test@QueryTest(flowId, userId) =>
+    case test@QueryTest(flowId, guid) =>
 
       // 创建用户
-      val f1 = daemon ? CommandCreateUser(userId, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
+      val f1 = daemon ? CommandCreateUser(guid, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
 
       f1 onSuccess {
         case userState =>
           log.info(s"创建用户成功 user state = ${userState}")
           // 发起用户查询
-          log.info(s"定期发起用户查询${userId}")
+          log.info(s"定期发起用户查询${guid}")
           k1 = context.system.scheduler.schedule(
             1 seconds,
             5 seconds,
             daemon,
-            User.CommandQueryUser(userId)
+            User.CommandQueryUser(guid)
           )
       }
 
@@ -55,7 +55,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
 
 
       // 先创建流程
-      val cmd = CommandCreateFlow("ying", userId)
+      val cmd = CommandCreateFlow("ying", guid)
       log.info(s"发起创建流程${cmd}")
       val f2 = daemon ? cmd
       f2 onSuccess {
@@ -92,9 +92,9 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
   def processTask(taskId: String, task: GetUserData) = {
     log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
-        (pname -> DataPoint(50, Some("userdata"), Some(task.userId), uuid, new Date()))    // uuid为采集id
+        (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date()))    // uuid为采集id
     }.toMap
 
-    daemon ! CommandTaskSubmit(task.userId, taskId, points) // 提交任务处理给daemon
+    daemon ! CommandTaskSubmit(task.guid, taskId, points) // 提交任务处理给daemon
   }
 }

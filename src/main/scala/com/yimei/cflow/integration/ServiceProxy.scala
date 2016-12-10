@@ -1,7 +1,6 @@
 package com.yimei.cflow.integration
 
 import akka.actor.{ActorLogging, ActorRef, Props}
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.pattern._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
@@ -32,31 +31,31 @@ object ServiceProxy extends CoreConfig {
   def props(daemon: ActorRef, modules: Array[String]) = Props(new ServiceProxy(daemon, modules))
 
   // 管理员更新数据点
-  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, Int]): Future[Graph] =
+  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Graph] =
     (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Graph]
 
   def flowUpdateParties(proxy: ActorRef, flowId: String, parties: Map[String, String]): Future[Graph] =
-  (proxy ? CommandUpdateParties(flowId, parties)).mapTo[Graph]
+    (proxy ? CommandUpdateParties(flowId, parties)).mapTo[Graph]
 
   // 0> 创建用户
-  def userCreate(proxy: ActorRef, userId: String, hierarchyInfo: Option[HierarchyInfo] = None): Future[User.State] =
-    (proxy ? CommandCreateUser(userId, hierarchyInfo)).mapTo[User.State]
+  def userCreate(proxy: ActorRef, userType: String, userId: String, hierarchyInfo: Option[HierarchyInfo] = None): Future[User.State] =
+    (proxy ? CommandCreateUser(s"${userType}-${userId}", hierarchyInfo)).mapTo[User.State]
 
   // 1> 创建流程 - 自动运行
-  def flowCreate(proxy: ActorRef, userId: String, flowType: String) =
-    (proxy ? CommandCreateFlow(flowType, userId)).mapTo[Graph]
+  def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String) =
+    (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}")).mapTo[Graph]
 
   // 2> 查询流程
   def flowQuery(proxy: ActorRef, flowId: String) =
     (proxy ? CommandQueryFlow(flowId)).mapTo[Graph]
 
   // 3> 查询用户
-  def userQuery(proxy: ActorRef, userId: String) =
-    (proxy ? CommandQueryUser(userId)).mapTo[User.State]
+  def userQuery(proxy: ActorRef, userType: String, userId: String) =
+    (proxy ? CommandQueryUser(s"${userType}-${userId}")).mapTo[User.State]
 
   // 4> 用户提交任务
-  def userSubmit(proxy: ActorRef, userId: String, taskId: String, points: Map[String, DataPoint]) =
-    (proxy ? CommandTaskSubmit(userId,taskId, points)).mapTo[User.State]
+  def userSubmit(proxy: ActorRef, userType: String, userId: String, taskId: String, points: Map[String, DataPoint]) =
+    (proxy ? CommandTaskSubmit(s"${userType}-${userId}", taskId, points)).mapTo[User.State]
 
 }
 
