@@ -1,10 +1,10 @@
 package com.yimei.cflow.integration
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.CommandCreateFlow
 import com.yimei.cflow.core.{Flow, FlowMaster, IdGenerator}
-import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.group.Group
 import com.yimei.cflow.user.{User, UserMaster}

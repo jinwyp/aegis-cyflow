@@ -88,6 +88,7 @@ class User(guid: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[Stri
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
       updateState(TaskEnqueue(taskId, command))
+      sender() ! state
     // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
 
     // 收到用户提交的采集数据

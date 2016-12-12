@@ -1,9 +1,8 @@
 package com.yimei.cflow.group
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.yimei.cflow.group.Group.Command
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import com.yimei.cflow.group.Group.{Command, CommandCreateGroup, CommandQueryGroup}
 import com.yimei.cflow.integration.{DependentModule, ServicableBehavior}
-import com.yimei.cflow.user.User.HierarchyInfo
 
 /**
   * Created by hary on 16/12/12.
@@ -13,14 +12,23 @@ trait GroupMasterBehavior extends Actor
   with DependentModule
   with ActorLogging {
 
-  def create(userType: String): ActorRef = {
-    context.actorOf(props(userType))
+  def create(ggid: String): ActorRef = {
+    context.actorOf(props(ggid),ggid)
   }
 
   override def serving: Receive = {
-    case cmd : Command =>
-      val child = context.child(cmd.userType).fold(create(cmd.userType,???))(identity)
+    case cmd@CommandCreateGroup(ggid) =>
+      log.info(s"GroupMaster 收到消息${cmd}")
+      val child = context.child(ggid).fold(create(ggid))(identity)
+      child forward CommandQueryGroup(ggid)
+
+    case command: Command =>
+      val child = context.child(command.ggid).fold(create(command.ggid))(identity)
+      child forward command
+
+    case Terminated(child) =>
+      log.info(s"${child.path.name} terminated")
   }
 
-  def props(userType: String): Props
+  def props(ggid: String): Props
 }
