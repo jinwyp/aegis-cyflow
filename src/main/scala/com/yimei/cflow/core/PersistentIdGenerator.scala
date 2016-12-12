@@ -24,6 +24,7 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
     case SnapshotOffer(_, snapshot: State) =>
       state = snapshot
       log.info(s"snapshot recovered")
+
     case RecoveryCompleted =>
       logState("recovery completed")
   }
@@ -34,7 +35,7 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
     case CommandGetId(key) =>
       persistAsync(EventIncrease(key)) { event =>
         updateState(event)
-        log.info(s"event $event persited")
+        log.info(s"event $event persisted")
         sender()! Id(state.keys(key) + 1)
       }
   }
