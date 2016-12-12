@@ -24,10 +24,9 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true) extends Modul
   /**
     *
     * @param flowId  流程id
-    * @param parties 参与方用户
     * @return
     */
-  override def flowProp(flowId: String, parties: Map[String, String] = Map()): Props = {
+  override def flowProp(flowId: String): Props = {
     val regex = "(\\w+)-(\\w+-\\w+)-(.*)".r
     flowId match {
       case regex(flowType, guid, persistenceId) =>
@@ -38,10 +37,10 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true) extends Modul
         val graph = FlowRegistry.getFlowGraph(flowType)
         if (persist) {
           log.info(s"创建persistent flow..........")
-          PersistentFlow.props(graph, flowId, modules, persistenceId, guid, parties)
+          PersistentFlow.props(graph, flowId, modules, persistenceId, guid)
         } else {
           log.info(s"创建non-persistent flow..........")
-          MemoryFlow.props(graph, flowId, modules, guid, parties)
+          MemoryFlow.props(graph, flowId, modules, guid)
         }
     }
   }

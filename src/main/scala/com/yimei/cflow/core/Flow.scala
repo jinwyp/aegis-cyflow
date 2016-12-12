@@ -10,7 +10,7 @@ object Flow {
   case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Date)
 
   // create flow, but not run it
-  case class CommandCreateFlow(flowType: String, guid: String, parties: Map[String, String] = Map())
+  case class CommandCreateFlow(flowType: String, guid: String)
 
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
@@ -42,9 +42,6 @@ object Flow {
   // 手动更新points
   case class CommandUpdatePoints(flowId: String, points: Map[String, String]) extends Command
 
-  // 更新流程关联方  todo 王琦
-  case class CommandUpdateParties(flowId: String, parties: Map[String, String]) extends Command
-
   // persistent事件
   trait Event
 
@@ -54,13 +51,10 @@ object Flow {
 
   case class DecisionUpdated(arrow: Arrow) extends Event
 
-  case class PartiesUpdated(parties: Map[String, String]) extends Event
-
   // 状态
   case class State(
                     flowId: String,
                     guid: String,
-                    parties: Map[String, String],
                     points: Map[String, DataPoint],
                     decision: Decision,
                     edge: Option[Edge],

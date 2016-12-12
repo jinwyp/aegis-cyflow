@@ -13,9 +13,8 @@ object PersistentFlow {
             flowId: String,
             modules: Map[String, ActorRef],
             pid: String,
-            guid: String,
-            parties: Map[String, String]): Props =
-    Props(new PersistentFlow(graph, flowId, modules, pid, guid, parties))
+            guid: String): Props =
+    Props(new PersistentFlow(graph, flowId, modules, pid, guid))
 }
 
 /**
@@ -29,15 +28,13 @@ object PersistentFlow {
   * @param dependOn  依赖的模块
   * @param pid       持久化id
   * @param guid      全局用户id
-  * @param parties   参与方信息
   */
 class PersistentFlow(
           graph: FlowGraph,
           flowId: String,
           dependOn: Map[String, ActorRef],
           pid: String,
-          guid: String,
-          parties: Map[String, String] ) extends AbstractFlow with DependentModule with PersistentActor {
+          guid: String) extends AbstractFlow with DependentModule with PersistentActor {
 
   import Flow._
 
@@ -48,7 +45,7 @@ class PersistentFlow(
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  override var state = State(flowId, guid, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
+  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
 
   //
   override def queryFlow(state: State): Graph = graph.getFlowGraph(state)
@@ -96,14 +93,6 @@ class PersistentFlow(
         log.info(s"${event} persisted")
         makeDecision()
         sender() ! queryFlow(state) // 返回流程状态
-      }
-
-    // 更新参与方!!!
-    case cmd: CommandUpdateParties =>
-      persist(PartiesUpdated(cmd.parties)) { event =>
-        updateState(event)
-        log.info(s"${event} persisted")
-        sender() ! queryFlow(state)
       }
 
     // received 超时

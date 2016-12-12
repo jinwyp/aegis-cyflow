@@ -26,7 +26,7 @@ trait FlowMasterBehavior extends Actor
   def serving: Receive = {
 
     // create and run flow
-    case command@CommandCreateFlow(flowType, guid, parties) =>
+    case command@CommandCreateFlow(flowType, guid) =>
 
       // use IdGenerator to get persistenceId
       // todo check it
@@ -36,20 +36,20 @@ trait FlowMasterBehavior extends Actor
         val fpid = (modules(module_id) ? CommandGetId("flow")).mapTo[Id]
         for (pid <- fpid) {
           val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
-          val child = create(flowId, parties)
+          val child = create(flowId)
           child forward CommandRunFlow(flowId)
         }
       }
 
       // use UUID to generate persistenceId
       val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
-      val child = create(flowId, parties)
+      val child = create(flowId)
       child forward CommandRunFlow(flowId)
 
     // other command
     case command: Command =>
       log.debug(s"get command $command and forward to child!!!!")
-      val child = context.child(command.flowId).fold(create(command.flowId, Map()))(identity)
+      val child = context.child(command.flowId).fold(create(command.flowId))(identity)
       child forward command
 
     case Terminated(child) =>
@@ -60,21 +60,19 @@ trait FlowMasterBehavior extends Actor
     * 创建
     *
     * @param flowId
-    * @param parties related parties take in the flow process
     * @return
     */
-  def create(flowId: String, parties: Map[String, String] = Map()): ActorRef = {
+  def create(flowId: String): ActorRef = {
     // log.info(s"创建流程:($flowId, $modules, $userId, $parties")
-    context.actorOf(flowProp(flowId, parties), flowId)
+    context.actorOf(flowProp(flowId), flowId)
   }
 
   /**
     *
     *
     * @param flowId  流程id
-    * @param parties 相关方
     * @return
     */
-  def flowProp(flowId: String, parties: Map[String, String]): Props
+  def flowProp(flowId: String): Props
 
 }

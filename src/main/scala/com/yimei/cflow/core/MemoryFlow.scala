@@ -12,11 +12,10 @@ object MemoryFlow {
     * @param flowId      flow Id  (flowType-userType*userId-persistenceId)
     * @param modules     injected dependent modules
     * @param guid         global userId (userType + userId)
-    * @param parties     parties take part in the flow process
     * @return
     */
-  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef],guid: String, parties: Map[String, String] = Map()) = {
-    Props(new MemoryFlow(graph, flowId, modules, guid, parties))
+  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef],guid: String) = {
+    Props(new MemoryFlow(graph, flowId, modules, guid))
   }
 
 }
@@ -27,15 +26,14 @@ object MemoryFlow {
   * @param flowId       flow id(flowType-userType-userId-persistenceId)
   * @param dependOn     injected modules
   * @param guid         global userId (userType + userId)
-  * @param parties      parties take part in the flow process
   */
-class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRef], guid: String, parties: Map[String, String] )
+class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRef], guid: String)
   extends AbstractFlow
     with DependentModule {
 
   import Flow._
 
-  override var state: State = State(flowId, guid, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
+  override var state: State = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
 
   override def queryFlow(state: State): Graph = graph.getFlowGraph(state)
 
@@ -64,9 +62,6 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
         entry._1 -> DataPoint(entry._2, None, None, uuid, new Date())
       }
       updateState(PointsUpdated(points))
-
-    case cmd: CommandUpdateParties =>
-      updateState(PartiesUpdated(cmd.parties))
   }
 
   //
