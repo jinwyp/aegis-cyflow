@@ -1,20 +1,43 @@
 package com.yimei.cflow.group
 
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.integration.ModuleMaster
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.group.Group.GetGroupData
 
 object GroupMaster {
-  def props(userType: String, dependOn: Array[String]): Props = Props(new GroupMaster(userType, dependOn))
+
+  def gfetch(taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
+    if (refetchIfExists ||
+      taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
+    ) {
+      println(s"ufetch with ${state.guid}, ${state}")
+      userMaster ! GetGroupData(state.flowId, state.guid, taskName)
+    }
+  }
+
+  def props(dependOn: Array[String],persist: Boolean = true): Props = Props(new GroupMaster(dependOn,persist))
 }
 
 /**
   * Created by hary on 16/12/12.
   */
-class GroupMaster(userType: String, dependOn: Array[String], persist: Boolean = true)
+class GroupMaster(dependOn: Array[String], persist: Boolean = true)
   extends ModuleMaster(module_group, dependOn)
     with GroupMasterBehavior{
 
-  override def props(userType: String): Props = Group.props(userType, modules, persist)
+  override def props(ggid: String): Props = {
+    persist match {
+      case true  =>  {
+        log.info(s"创建persistent group")
+        Props(new PersistentGroup(ggid, modules, 20))
+      }
+      case false => {
+        log.info(s"创建non-persistent group")
+        Props(new MemoryGroup(ggid, modules))
+      }
+    }
+  }
 
 }

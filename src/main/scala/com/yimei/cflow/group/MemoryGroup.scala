@@ -2,8 +2,8 @@ package com.yimei.cflow.group
 
 import java.util.UUID
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.yimei.cflow.group.Group.{CommandClaimTask, GetGroupData, TaskDequeue, TaskEnqueue}
+import akka.actor.{ActorLogging, ActorRef}
+import com.yimei.cflow.config.GlobalConfig.module_user
 import com.yimei.cflow.user.UserMaster.GetUserData
 
 /**
@@ -11,28 +11,46 @@ import com.yimei.cflow.user.UserMaster.GetUserData
   */
 
 object MemoryGroup {
-  def props(userType: String, modules: Map[String, ActorRef]): Props = Props(new PersistentGroup(userType, modules))
+  //def props(userType: String, modules: Map[String, ActorRef]): Props = Props(new PersistentGroup(userType, modules))
 }
 
-class MemoryGroup(userType: String, modules: Map[String, ActorRef])
-  extends AbstractGroup
-    with Actor
-    with ActorLogging {
+class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGroup with ActorLogging {
+  import Group._
+
+  // 用户id与用户类型
+  val regex = "(\\w+)-(.*)".r
+  val (gid, userType) = ggid match {
+    case regex(uid, gid) => (uid, gid)
+  }
+
+  var state: State = State(gid,userType,Map[String,GetGroupData]()) // group的状态不断累积!!!!!!!!
+
+  // 生成任务id
+  def uuid() = UUID.randomUUID().toString
 
   override def receive: Receive = commonBehavior orElse serving
 
-  def serving: Receive = {
-    case g@GetGroupData(flowId, userType, group, task) =>
-      val taskId = UUID.randomUUID().toString
-      val ev = TaskEnqueue(userType, group, taskId, g)
-      updateState(ev)
-      log.info(s"event ${ev} persisted")
 
-    case CommandClaimTask(userType, group, taskId, userId) =>
-      val task = state.tasks(group)(taskId)
-      val ev = TaskDequeue(userType, group, taskId)
-      log.info(s"event ${ev} persisted")
-      updateState(ev)
-      modules("user") ! GetUserData(task.flowId, s"${userType}-${userId}", task.taskName)
+  def serving: Receive = {
+
+    // 采集数据请求
+    case command: GetGroupData =>
+      log.info(s"收到采集任务: $command")
+      val taskId = uuid; // 生成任务id, 将任务保存
+      updateState(TaskEnqueue(taskId, command))
+    // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
+
+    // 收到用户claim请求
+    case command@CommandClaimTask(ggid: String, taskId: String, userId: String) =>
+      log.info(s"claim的请求: $command")
+      val task = state.tasks(taskId)
+      updateState(TaskDequeue(taskId))
+      modules(module_user) ! GetUserData(task.flowId,s"${userType}-${userId}",task.taskName)
+      sender() ! state
+  }
+
+  override def unhandled(message: Any): Unit = {
+    log.error(s"收到未处理消息 $message")
+    super.unhandled(message)
   }
 }

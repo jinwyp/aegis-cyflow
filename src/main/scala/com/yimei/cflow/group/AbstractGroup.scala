@@ -1,36 +1,29 @@
 package com.yimei.cflow.group
 
+import akka.actor.{Actor, ActorLogging}
 import akka.actor.Actor.Receive
 
 /**
   * Created by hary on 16/12/12.
   */
-class AbstractGroup {
+abstract class AbstractGroup extends Actor with ActorLogging {
 
   import Group._
-  import com.softwaremill.quicklens._
 
   //
-  var state: State = State(Map())
+  var state: State
 
   def updateState(event: Event) = {
     event match {
-      case TaskEnqueue(_, group, taskId, task) =>
-        state =
-          if (state.tasks.contains(group)) {
-            state.modify(_.tasks.at(group)).setTo(
-              state.tasks(group) + (taskId -> task)
-            )
-          } else {
-            state.modify(_.tasks).setTo(Map(group -> Map(taskId -> task)))
-          }
-
-      case TaskDequeue(_, group, taskId) =>
-        state.modify(_.tasks.at(group)).setTo(state.tasks(group) - taskId)
+      case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
+      case TaskEnqueue(taskId,task) => state = state.copy(tasks = state.tasks + (taskId -> task))
     }
+    log.info(s"${event} persisted, state = ${state}")
   }
 
   def commonBehavior: Receive = {
-    case CommandQueryGroup(_, group) => state
+    case command:CommandQueryGroup =>
+      log.info(s"收到group查询：$command")
+      sender() ! state
   }
 }
