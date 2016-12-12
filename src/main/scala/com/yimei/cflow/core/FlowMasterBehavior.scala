@@ -11,11 +11,9 @@ import akka.pattern._
 import akka.util.Timeout
 import scala.concurrent.duration._
 
-
 /**
   * Created by hary on 16/12/4.
   */
-
 trait FlowMasterBehavior extends Actor
   with ActorLogging
   with ServicableBehavior
@@ -77,7 +75,6 @@ trait FlowMasterBehavior extends Actor
     * @param parties 相关方
     * @return
     */
-  def flowProp(flowId: String,
-               parties: Map[String, String]): Props
+  def flowProp(flowId: String, parties: Map[String, String]): Props
 
 }

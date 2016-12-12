@@ -1,4 +1,5 @@
 package com.yimei.cflow.core
+import akka.actor.Actor.Receive
 
 
 /**
@@ -8,7 +9,9 @@ class MemoryIdGenerator(name: String) extends AbstractIdGenerator {
 
   import IdGenerator._
 
-  override def receive: Receive = {
+  override def receive: Receive = commonBehavior orElse serving
+
+  def serving: Receive = {
     case CommandGetId(key) =>
       updateState(EventIncrease(key))
       sender()! Id(state.keys(key) + 1)

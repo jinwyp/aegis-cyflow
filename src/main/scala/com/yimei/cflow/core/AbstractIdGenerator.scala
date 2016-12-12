@@ -1,12 +1,13 @@
 package com.yimei.cflow.core
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{Actor, ActorLogging, Props}
 
 object IdGenerator {
   // Command
   trait Command
 
   case class CommandGetId(key: String) extends Command
+  case object CommandQueryId extends Command
 
   case class Id(id: BigInt)  // 返回的id
 
@@ -15,7 +16,12 @@ object IdGenerator {
 
   case class EventIncrease(key: String) extends Event
 
-  case class State(keys: Map[String, BigInt])
+  case class State(keys: Map[String, Long])
+
+  def props(name: String, persist: Boolean = true) = persist match {
+    case true => Props(new PersistentIdGenerator(name))
+    case false => Props(new MemoryIdGenerator(name))
+  }
 }
 
 /**
@@ -30,13 +36,22 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
   def updateState(event: Event) = {
     event match {
       case EventIncrease(key) =>
-        val entry = (key, state.keys(key) + 1)
-        state = state.copy(keys = state.keys + entry)
+        if( state.keys.contains(key)) {
+          val nextId =  state.keys(key) + 1L
+          state = state.copy(keys = state.keys + (key -> nextId))
+        } else {
+          val nextId =  state.keys(key) + 0L
+          state = state.copy(keys = state.keys + (key -> nextId))
+        }
     }
   }
 
   def logState(mark: String) = {
     log.info(s"<${mark}> cur state: $state")
+  }
+
+  def commonBehavior: Receive = {
+    case CommandQueryId => sender() ! state.keys
   }
 
 }

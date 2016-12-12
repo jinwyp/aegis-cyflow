@@ -4,10 +4,7 @@ import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 
 object PersistentIdGenerator {
-
   def props(name: String): Props = Props(new PersistentIdGenerator(name))
-
-
 }
 
 /**
@@ -31,7 +28,9 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
       logState("recovery completed")
   }
 
-  override def receiveCommand: Receive = {
+  override def receiveCommand = commonBehavior orElse serving
+
+  def serving: Receive = {
     case CommandGetId(key) =>
       persistAsync(EventIncrease(key)) { event =>
         updateState(event)
