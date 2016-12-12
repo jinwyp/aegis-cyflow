@@ -5,6 +5,7 @@ import java.util.UUID
 import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
+import com.yimei.cflow.integration.ServicableBehavior
 import com.yimei.cflow.user.User.HierarchyInfo
 import com.yimei.cflow.user.UserMaster.GetUserData
 
@@ -77,7 +78,6 @@ class User(guid: String, hierarchyInfo: Option[HierarchyInfo], modules: Map[Stri
 
   // 生成任务id
   def uuid() = UUID.randomUUID().toString;
-
 
   override def receive: Receive = commonBehavior orElse serving
 

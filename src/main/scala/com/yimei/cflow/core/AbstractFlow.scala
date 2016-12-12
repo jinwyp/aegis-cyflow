@@ -13,7 +13,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   var state: State
 
   //
-  def queryStatus(state: State): Graph
+  def queryFlow(state: State): Graph
 
   //
   def updateState(ev: Event) = {
@@ -38,7 +38,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
   def commonBehavior: Receive = {
     case query: CommandQueryFlow =>
-      sender() ! queryStatus(state)
+      sender() ! queryFlow(state)
 
     case shutdown: CommandShutdown =>
       log.info("received CommandShutdown")

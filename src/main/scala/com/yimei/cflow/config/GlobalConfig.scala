@@ -14,11 +14,12 @@ object GlobalConfig {
   /**
     * 全局模块名称
     */
-  val module_user = "UserMaster"
-  val module_flow = "FlowMaster"
-  val module_auto = "DataMaster"
-  val module_service = "ServiceProxy"
-  val module_id = "ServiceProxy"
+  val module_user   = "UserMaster"
+  val module_group  = "GroupMaster"
+  val module_flow   = "FlowMaster"
+  val module_auto   = "AutoMaster"
+  val module_proxy  = "ServiceProxy"   //
+  val module_id     = "IdGenerator"
 
   /**
     * 所有的数据点名称

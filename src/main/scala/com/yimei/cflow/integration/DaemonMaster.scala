@@ -4,8 +4,9 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.CommandCreateFlow
 import com.yimei.cflow.core.{Flow, FlowMaster, IdGenerator}
-import com.yimei.cflow.data.DataMaster
+import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.group.Group
 import com.yimei.cflow.user.{User, UserMaster}
 
 // 模块注册于协商
@@ -26,10 +27,11 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_flow` => FlowMaster.props(Array(module_user, module_auto), persist)
-      case `module_user` => UserMaster.props(Array(module_flow, module_auto), persist)
-      case `module_auto` => DataMaster.props(Array(module_user, module_flow))
-      case `module_id`   => IdGenerator.props(name)
+      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto), persist)
+      case `module_user`  => UserMaster.props(Array(module_flow, module_auto), persist)
+      case `module_auto`  => AutoMaster.props(Array(module_user, module_flow))
+      case `module_id`    => IdGenerator.props(name)
+      case `module_group` => Group.props(Array(module_user))
     }
   }
 
@@ -62,7 +64,7 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
       modules.get(name).foreach(sender() ! RegisterModule(name, _))
 
     case Terminated(ref) =>
-      val (died, rest) = modules.span(entry => entry._2 == ref);
+      val (died, rest) = modules.partition(entry => entry._2 == ref);
       modules = rest
       died.foreach { entry =>
         log.warning(s"!!!!!!!!!!!!!!!!!!${entry._1} died, restarting...")

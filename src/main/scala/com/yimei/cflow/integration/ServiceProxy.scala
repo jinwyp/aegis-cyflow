@@ -6,7 +6,7 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.data.DataMaster
+import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, HierarchyInfo}
 
@@ -62,7 +62,7 @@ object ServiceProxy extends CoreConfig {
 /**
   * Created by hary on 16/12/6.
   */
-class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster(module_service, dependOn, Some(daemon))
+class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMaster(module_proxy, dependOn, Some(daemon))
   with ServicableBehavior
   with ActorLogging {
 
@@ -84,7 +84,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 数据模块交互
-    case cmd: DataMaster.GetAutoData =>
+    case cmd: AutoMaster.GetAutoData =>
       log.debug(s"收到 ${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 

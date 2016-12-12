@@ -12,6 +12,8 @@ trait UserMasterBehavior extends Actor
   with ServicableBehavior
   with DependentModule
   with ActorLogging {
+
+
   override def serving: Receive = {
 
     case cmd@CommandCreateUser(guid, hierarchyInfo) =>

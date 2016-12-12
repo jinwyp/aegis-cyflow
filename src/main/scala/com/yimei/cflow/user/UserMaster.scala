@@ -29,7 +29,8 @@ object UserMaster extends CoreConfig {
 /**
   * Created by hary on 16/12/2.
   */
-class UserMaster(dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(module_user, dependOn) with UserMasterBehavior {
+class UserMaster(dependOn: Array[String], persist: Boolean = true) extends ModuleMaster(module_user, dependOn)
+  with UserMasterBehavior {
 
   override def props(guid: String, hierarchyInfo: Option[HierarchyInfo]): Props = {
     persist match {

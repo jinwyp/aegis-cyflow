@@ -7,7 +7,6 @@ object IdGenerator {
 
   def props(name: String): Props = Props(new IdGenerator(name))
 
-
   // Command
   trait Command
 
@@ -21,8 +20,6 @@ object IdGenerator {
   case class EventIncrease(key: String) extends Event
 
   case class State(keys: Map[String, BigInt])
-
-
 }
 
 /**
@@ -69,6 +66,5 @@ class IdGenerator(name: String) extends PersistentActor with ActorLogging {
         sender()! Id(state.keys(key) + 1)
       }
   }
-
 }
 

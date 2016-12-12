@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
-import com.yimei.cflow.data.DataMaster.fetch
+import com.yimei.cflow.auto.AutoMaster.fetch
 import com.yimei.cflow.user.UserMaster.ufetch
 
 /**

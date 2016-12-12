@@ -2,23 +2,58 @@ package com.yimei.cflow.core
 
 import java.util.{Date, UUID}
 
-import akka.actor.ReceiveTimeout
+import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.integration.DependentModule
 
 import scala.concurrent.duration._
 
+object PersistentFlow {
+  def props(graph: FlowGraph,
+            flowId: String,
+            modules: Map[String, ActorRef],
+            pid: String,
+            guid: String,
+            parties: Map[String, String]): Props =
+    Props(new PersistentFlow(graph, flowId, modules, pid, guid, parties))
+}
+
 /**
   * Created by hary on 16/12/6.
   */
-abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
-  with DependentModule
-  with PersistentActor {
+
+/**
+  *
+  * @param graph     流程图
+  * @param flowId    流程id
+  * @param dependOn  依赖的模块
+  * @param pid       持久化id
+  * @param guid      全局用户id
+  * @param parties   参与方信息
+  */
+class PersistentFlow(
+          graph: FlowGraph,
+          flowId: String,
+          dependOn: Map[String, ActorRef],
+          pid: String,
+          guid: String,
+          parties: Map[String, String] ) extends AbstractFlow with DependentModule with PersistentActor {
 
   import Flow._
 
+  override def persistenceId: String = pid
+
   // 钝化超时时间
-  context.setReceiveTimeout(passivateTimeout seconds)
+  val timeout = context.system.settings.config.getInt(graph.getFlowType)
+  log.info(s"timeout is $timeout")
+  context.setReceiveTimeout(timeout seconds)
+
+  override var state = State(flowId, guid, parties, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
+
+  //
+  override def queryFlow(state: State): Graph = graph.getFlowGraph(state)
+
+  override def modules: Map[String, ActorRef] = dependOn
 
   // 恢复
   def receiveRecover = {
@@ -40,7 +75,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
-      sender() ! queryStatus(state)
+      sender() ! queryFlow(state)
       makeDecision
 
     case cmd: CommandPoint =>
@@ -60,7 +95,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         makeDecision()
-        sender() ! queryStatus(state) // 返回流程状态
+        sender() ! queryFlow(state) // 返回流程状态
       }
 
     // 更新参与方!!!
@@ -68,7 +103,7 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
       persist(PartiesUpdated(cmd.parties)) { event =>
         updateState(event)
         log.info(s"${event} persisted")
-        sender() ! queryStatus(state)
+        sender() ! queryFlow(state)
       }
 
     // received 超时
@@ -160,3 +195,4 @@ abstract class PersistentFlow(passivateTimeout: Long) extends AbstractFlow
     }
   }
 }
+
