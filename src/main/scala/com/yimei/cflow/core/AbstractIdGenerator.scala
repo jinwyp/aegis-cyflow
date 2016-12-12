@@ -16,8 +16,10 @@ object IdGenerator {
 
   case class EventIncrease(key: String) extends Event
 
+  // State
   case class State(keys: Map[String, Long])
 
+  // create IdGenerator Props
   def props(name: String, persist: Boolean = true) = persist match {
     case true => Props(new PersistentIdGenerator(name))
     case false => Props(new MemoryIdGenerator(name))
@@ -36,13 +38,12 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
   def updateState(event: Event) = {
     event match {
       case EventIncrease(key) =>
-        if( state.keys.contains(key)) {
-          val nextId =  state.keys(key) + 1L
-          state = state.copy(keys = state.keys + (key -> nextId))
+        val nextId = if( state.keys.contains(key)) {
+          state.keys(key) + 1L
         } else {
-          val nextId =  state.keys(key) + 0L
-          state = state.copy(keys = state.keys + (key -> nextId))
+          0L
         }
+        state = state.copy(keys = state.keys + (key -> nextId))
     }
   }
 
