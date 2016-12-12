@@ -6,7 +6,7 @@ import com.yimei.cflow.core.Flow.CommandCreateFlow
 import com.yimei.cflow.core.{Flow, FlowMaster, IdGenerator}
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.graph.ying.YingGraph
-import com.yimei.cflow.group.Group
+import com.yimei.cflow.group.{Group, GroupMaster}
 import com.yimei.cflow.user.{User, UserMaster}
 
 // 模块注册于协商
@@ -27,11 +27,11 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto), persist)
-      case `module_user`  => UserMaster.props(Array(module_flow, module_auto), persist)
-      case `module_auto`  => AutoMaster.props(Array(module_user, module_flow))
-      case `module_id`    => IdGenerator.props(name)
-      case `module_group` => Group.props(Array(module_user))
+      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_id), persist)
+      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_id), persist)
+      case `module_auto`  => AutoMaster.props(Array(module_user, module_flow, module_id))
+      case `module_id`    => IdGenerator.props(name, persist)
+      case `module_group` => GroupMaster.props(Array(module_user))
     }
   }
 
