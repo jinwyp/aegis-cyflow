@@ -3,6 +3,7 @@ package com.yimei.cflow.user
 import akka.actor.{ActorRef, Props, Terminated}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser}

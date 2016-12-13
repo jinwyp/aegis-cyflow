@@ -7,6 +7,7 @@ import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.core.Flow.{CommandPoint, CommandPoints, DataPoint}
 
 /**

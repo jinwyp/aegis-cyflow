@@ -12,7 +12,7 @@ import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem =
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit}
 import com.yimei.cflow.user.User.CommandUserTask
-
+import com.yimei.cflow.graph.ying.YingConfig._
 import scala.concurrent.duration._
 
 /**

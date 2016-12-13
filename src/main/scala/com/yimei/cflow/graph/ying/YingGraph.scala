@@ -8,6 +8,7 @@ import com.yimei.cflow.auto.AutoMaster.fetch
 import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.graph.ying.AutoActors.{A, B, C, DEF, GHK}
 import com.yimei.cflow.user.UserMaster.ufetch
+import com.yimei.cflow.graph.ying.YingConfig._
 
 /**
   * Created by hary on 16/12/1.
