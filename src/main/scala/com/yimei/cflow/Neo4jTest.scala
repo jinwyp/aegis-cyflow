@@ -1,6 +1,6 @@
 package com.yimei.cflow
 
-import eu.fakod.neo4jscala.{Neo4jWrapper, SingletonEmbeddedGraphDatabaseServiceProvider, TypedTraverser}
+import eu.fakod.neo4jscala.{Cypher, Neo4jWrapper, SingletonEmbeddedGraphDatabaseServiceProvider, TypedTraverser}
 
 import scala.sys.ShutdownHookThread
 
@@ -18,7 +18,11 @@ case class NonMatrix(name: String, profession: String) extends MatrixBase
   * The Matrix Example
   * http://wiki.neo4j.org/content/The_Matrix
   */
-object TheMatrix extends App with Neo4jWrapper with SingletonEmbeddedGraphDatabaseServiceProvider with TypedTraverser {
+object TheMatrix extends App
+  with Neo4jWrapper
+  with SingletonEmbeddedGraphDatabaseServiceProvider
+  with TypedTraverser
+  with Cypher {
 
   ShutdownHookThread {
     shutdown(ds)
@@ -49,6 +53,23 @@ object TheMatrix extends App with Neo4jWrapper with SingletonEmbeddedGraphDataba
       nodeMap("Morpheus") --> "KNOWS" --> nodeMap("Cypher") --> "KNOWS" --> nodeMap("Agent Smith")
       nodeMap("Agent Smith") --> "CODED_BY" --> nodeMap("The Architect")
       nodeMap
+  }
+
+
+  {
+    val query = "start n=node(" + nodeMap("Neo").getId + ") return n, n.name"
+    withTx { neo =>
+      val typedResult: Iterator[Matrix] = query.execute.asCC[Matrix]("n")
+      println(s"typedResult = ${typedResult.next}")
+    }
+  }
+
+  {
+    val query = """start n=node(*) where n.name="Neo" return n"""
+    withTx { neo =>
+      val typedResult = query.execute.asCC[Matrix]("n")
+      println(s"typedResult = ${typedResult.next}")
+    }
   }
 
   // list of Nodes of type: List[Node]
@@ -83,13 +104,14 @@ object TheMatrix extends App with Neo4jWrapper with SingletonEmbeddedGraphDataba
     * The resulting List is sorted by name
     *
     */
-  val erg2 = nodeMap("Neo").doTraverse[MatrixBase](follow(BREADTH_FIRST) -- "KNOWS" ->- "CODED_BY") {
-    END_OF_GRAPH
-  } {
-    case (x: Matrix, tp) if (tp.depth == 2) => x.name.length > 2
-    case (x: NonMatrix, _) => false
-  }.toList.sortWith(_.name < _.name)
 
-  println("Relations CODED_BY and KNOWS, sorted by name and depth == 2: " + erg2)
+//  val erg2 = nodeMap("Neo").doTraverse[MatrixBase](follow(BREADTH_FIRST) -- "KNOWS" ->- "CODED_BY") {
+//    END_OF_GRAPH
+//  } {
+//    case (x: Matrix, tp) if (tp.depth == 2) => x.name.length > 2
+//    case (x: NonMatrix, _) => false
+//  }.toList.sortWith(_.name < _.name)
+//  println("Relations CODED_BY and KNOWS, sorted by name and depth == 2: " + erg2)
+
 }
 
