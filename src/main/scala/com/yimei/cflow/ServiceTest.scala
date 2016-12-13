@@ -15,6 +15,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
+
+
   // daemon master and
   val names  = Array(module_auto, module_user, module_flow, module_id, module_group)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")

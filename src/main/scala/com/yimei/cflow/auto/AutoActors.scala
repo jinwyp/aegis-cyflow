@@ -14,6 +14,15 @@ import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 // 数据采集器
 object AutoActors extends CoreConfig {
 
+
+  def registerAll() = {
+    AutoMaster.register("A",   (modules: Map[String, ActorRef]) => Props(new A(modules)))
+    AutoMaster.register("B",   (modules: Map[String, ActorRef]) => Props(new B(modules)))
+    AutoMaster.register("C",   (modules: Map[String, ActorRef]) => Props(new C(modules)))
+    AutoMaster.register("DEF", (modules: Map[String, ActorRef]) => Props(new DEF(modules)))
+    AutoMaster.register("GHK", (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
+  }
+
   import scala.concurrent.duration._
 
   def uuid() = UUID.randomUUID().toString

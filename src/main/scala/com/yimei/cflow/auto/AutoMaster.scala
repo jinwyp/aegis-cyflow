@@ -27,16 +27,15 @@ object AutoMaster {
     }
   }
 
-  var propMap: Map[String, () => Props] = Map()
+  var propMap: Map[String, Map[String, ActorRef] => Props] = Map()
 
   /**
     *
     * @param name
     * @param f
     */
-  def register(name: String, f: => Props) = {
-    val func = () => f
-    propMap = propMap + ( name -> func)
+  def register(name: String, f: Map[String, ActorRef] => Props) = {
+    propMap = propMap + ( name -> f)
   }
 
   /**
@@ -52,15 +51,9 @@ object AutoMaster {
 
 class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, dependOn) with ServicableBehavior {
 
-  import AutoActors._
   import AutoMaster._
 
-  // register auto task
-  AutoMaster.register("A",   Props(new A(modules)))
-  AutoMaster.register("B",   Props(new B(modules)))
-  AutoMaster.register("C",   Props(new C(modules)))
-  AutoMaster.register("DEF", Props(new DEF(modules)))
-  AutoMaster.register("GHK", Props(new GHK(modules)))
+  AutoActors.registerAll()
 
   // all child auto actors
   var actors = Map[String, ActorRef]()
@@ -77,7 +70,7 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
     log.debug("DataMaster initHook now!!!!")
     for (elem <- propMap) {
       println(s"begin create AutoActor ${elem._1}....")
-      actors = actors + (elem._1 -> context.actorOf(elem._2(), elem._1))
+      actors = actors + (elem._1 -> context.actorOf(elem._2(modules), elem._1))
     }
 
     println(s"all AutoActors are $actors")
