@@ -41,7 +41,7 @@ class PersistentFlow(
   override def persistenceId: String = pid
 
   // 钝化超时时间
-  val timeout = context.system.settings.config.getInt(graph.getFlowType)
+  val timeout = context.system.settings.config.getInt(s"flow.${graph.getFlowType}.timeout")
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
