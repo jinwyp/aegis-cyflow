@@ -29,7 +29,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
   override def persistenceId = ggid
 
-  var state: State = State(gid, userType, Map[String, CommandGroupTask]()) // group的状态不断累积!!!!!!!!
+  override var state: State = State(gid, userType, Map[String, CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)

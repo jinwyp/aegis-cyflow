@@ -10,7 +10,7 @@ abstract class AbstractGroup extends Actor with ActorLogging {
 
   import Group._
 
-  //
+  // 抽象方法
   var state: State
 
   def updateState(event: Event) = {

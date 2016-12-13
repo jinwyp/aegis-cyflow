@@ -25,7 +25,7 @@ object Group {
   case class TaskDequeue(taskId: String) extends Event
 
   // State:  group -> taskId -> groupTask
-  case class State(gid: String, userType: String, tasks: Map[String, CommandGroupTask])
+  case class State(userType: String, gid: String, tasks: Map[String, CommandGroupTask])
 
 }
 

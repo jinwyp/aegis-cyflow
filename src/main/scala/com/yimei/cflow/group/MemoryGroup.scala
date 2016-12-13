@@ -19,11 +19,11 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
 
   // 用户id与用户类型
   val regex = "(\\w+)-(.*)".r
-  val (gid, userType) = ggid match {
+  val (userType, gid) = ggid match {
     case regex(uid, gid) => (uid, gid)
   }
 
-  var state: State = State(gid,userType,Map[String,CommandGroupTask]()) // group的状态不断累积!!!!!!!!
+  override var state: State = State(userType, gid, Map[String,CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 生成任务id
   def uuid() = UUID.randomUUID().toString

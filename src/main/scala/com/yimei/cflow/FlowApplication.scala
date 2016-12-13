@@ -29,6 +29,42 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   // daemon master and
   val daemon = coreSystem.actorOf(DaemonMaster.props(names), "DaemonMaster")
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
+  Thread.sleep(1000)
+
+
+  // 测试Id
+  val f = ServiceProxy.idGet(proxy, "hello")
+  f.onSuccess {
+    case s => println(s"got $s")
+  }
+
+  // 测试group服务
+  for {
+    gc <- ServiceProxy.groupCreate(proxy, "operation", "risk")
+  } {
+    ServiceProxy.groupTask(proxy, "operation", "risk", "flowId", "helloTask")
+    Thread.sleep(1000)
+
+    for {
+      gq <- ServiceProxy.groupQuery(proxy, "operation", "risk")
+      uc <- ServiceProxy.userCreate(proxy, "operation", "hary")
+      claim <- ServiceProxy.groupClaim(proxy, "operation", "risk", "hary", gq.tasks.head._1)
+    } {
+      println(s"gcreate create = $gc")
+      println(s"gquery         = $gq")
+      println(s"ucreate        = $uc")
+      println(s"claim          = $claim")
+      Thread.sleep(1000)
+      for{
+       uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
+      } {
+        println(s"userQuery       = $uq")
+
+      }
+    }
+  }
+
+
 
   // http
   val routes: Route =

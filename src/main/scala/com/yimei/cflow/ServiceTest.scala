@@ -1,6 +1,7 @@
 package com.yimei.cflow
 
 import akka.actor.Props
+import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry
@@ -18,10 +19,10 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testEc = coreExecutor
 
   // 1> 注册自动任务
+  // AutoRegistry.register()
 
   // 2> 注册流程图
-  FlowRegistry.register(flow_ying, YingGraph)
-
+  FlowRegistry.register(YingGraph.getFlowType, YingGraph)
 
   // daemon master and
   val names  = Array(module_auto, module_user, module_flow, module_id, module_group)

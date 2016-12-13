@@ -15,4 +15,7 @@ trait CoreConfig {
   implicit val coreMaterializer = ActorMaterializer()
 
   val config = coreSystem.settings.config
+
+  val autoPoint = config.getConfig("autopoint")   // 自动任务数据点
+  val taskPoint = config.getConfig("taskpoint")   // 用户任务数据点
 }

@@ -52,7 +52,7 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
   }
 
   def commonBehavior: Receive = {
-    case CommandQueryId => sender() ! state.keys
+    case CommandQueryId => sender() ! state
   }
 
 }
