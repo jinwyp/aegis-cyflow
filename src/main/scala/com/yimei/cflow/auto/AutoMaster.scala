@@ -27,16 +27,7 @@ object AutoMaster {
     }
   }
 
-  var propMap: Map[String, Map[String, ActorRef] => Props] = Map()
 
-  /**
-    *
-    * @param name
-    * @param f
-    */
-  def register(name: String, f: Map[String, ActorRef] => Props) = {
-    propMap = propMap + ( name -> f)
-  }
 
   /**
     *
@@ -51,7 +42,7 @@ object AutoMaster {
 
 class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, dependOn) with ServicableBehavior {
 
-  import AutoMaster._
+  import AutoRegistry._
 
   AutoActors.registerAll()
 

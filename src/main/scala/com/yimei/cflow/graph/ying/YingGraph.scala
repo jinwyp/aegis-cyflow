@@ -12,8 +12,7 @@ import com.yimei.cflow.user.UserMaster.ufetch
   */
 object YingGraph extends FlowGraph {
 
-  // 先注册自己
-  FlowRegistry.register(flow_ying, YingGraph)
+
 
   def getFlowInitial: Decision = V0
 

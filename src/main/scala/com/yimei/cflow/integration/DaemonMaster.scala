@@ -55,9 +55,6 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
     (name, m)
   }.toMap
 
-  // 注册Graph!!!!!!
-  YingGraph
-
   override def receive = {
     case GiveMeModule(name) =>
       log.debug(s"收到GiveMeModule(${name}) from [${sender().path}]")

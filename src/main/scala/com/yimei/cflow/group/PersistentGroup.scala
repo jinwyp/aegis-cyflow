@@ -10,17 +10,14 @@ import com.yimei.cflow.user.User.CommandUserTask
 import scala.concurrent.duration._
 
 
-//object PersistentGroup {
-//  def props(userType: String, modules: Map[String, ActorRef]): Props = Props(new PersistentGroup(userType, modules))
-//}
-
 /**
   * Created by hary on 16/12/10.
   */
 
-class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout: Long) extends AbstractGroup with PersistentActor with ActorLogging {
+class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTimeout: Long) extends AbstractGroup with PersistentActor with ActorLogging {
 
   import Group._
+
   println(s"create persistenter group with guid = $ggid")
 
 
@@ -32,7 +29,7 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
 
   override def persistenceId = ggid
 
-  var state: State = State(gid,userType,Map[String,CommandGroupTask]()) // group的状态不断累积!!!!!!!!
+  var state: State = State(gid, userType, Map[String, CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -43,9 +40,11 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
     case ev: Event =>
       log.info(s"recover with event: $ev")
       updateState(ev)
+
     case SnapshotOffer(_, snapshot: State) =>
       log.info(s"recover with snapshot: $snapshot")
       state = snapshot
+
     case RecoveryCompleted =>
       log.info(s"recover completed")
   }
@@ -65,17 +64,17 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
       persist(TaskEnqueue(taskId, command)) { event =>
         updateState(event)
       }
-    // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
 
     // 收到用户claim请求
     case command@CommandClaimTask(ggid: String, taskId: String, userId: String) =>
       log.info(s"claim的请求: $command")
       val task = state.tasks(taskId)
-      persist(TaskDequeue(taskId)){ event =>
+      persist(TaskDequeue(taskId)) { event =>
         updateState(event)
-        modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName)
+        modules(module_user) ! CommandUserTask(task.flowId, s"${userType}-${userId}", task.taskName)
         sender() ! state
       }
+
     // 收到超时
     case ReceiveTimeout =>
       log.info(s"${persistenceId}超时, 开始钝化!!!!")
