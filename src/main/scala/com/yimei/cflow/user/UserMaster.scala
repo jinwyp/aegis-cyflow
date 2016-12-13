@@ -11,12 +11,12 @@ import com.yimei.cflow.user.User.CommandUserTask
 
 object UserMaster extends CoreConfig {
 
-  def ufetch(taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
+  def ufetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
       taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! CommandUserTask(state.flowId, state.guid, taskName)
+      userMaster ! CommandUserTask(state.flowId, state.guid, flowType+"_"+taskName)
     }
   }
 

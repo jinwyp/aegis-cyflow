@@ -1,14 +1,12 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.ActorRef
+import com.yimei.cflow.auto.AutoMaster.fetch
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
-import com.yimei.cflow.auto.AutoMaster.fetch
-import com.yimei.cflow.auto.AutoRegistry
-import com.yimei.cflow.graph.ying.AutoActors.{A, B, C, DEF, GHK}
-import com.yimei.cflow.user.UserMaster.ufetch
+import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
 import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.user.UserMaster.ufetch
 
 /**
   * Created by hary on 16/12/1.
@@ -38,9 +36,9 @@ object YingGraph extends FlowGraph {
 
   case object E1 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_A, state, modules(module_auto))
-      fetch(data_B, state, modules(module_auto))
-      fetch(data_C, state, modules(module_auto))
+      fetch(flow_ying, data_A, state, modules(module_auto))
+      fetch(flow_ying, data_B, state, modules(module_auto))
+      fetch(flow_ying, data_C, state, modules(module_auto))
     }
 
     def check(state: State) = !Array(point_A, point_B, point_C).exists(
@@ -52,7 +50,7 @@ object YingGraph extends FlowGraph {
 
   case object E2 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_DEF, state, modules(module_auto))
+      fetch(flow_ying, data_DEF, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
@@ -70,7 +68,7 @@ object YingGraph extends FlowGraph {
 
   case object E4 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_GHK, state, modules(module_auto))
+      fetch(flow_ying, data_GHK, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_GHK).exists(!state.points.contains(_))
@@ -81,7 +79,7 @@ object YingGraph extends FlowGraph {
   // fetch data from user module of task_A for point_U_A1, point_U_A2
   case object E5 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      ufetch(task_A, state, modules(module_user))
+      ufetch(flow_ying, task_A, state, modules(module_user))
     }
 
     def check(state: State) = !taskPointMap(task_A).exists(!state.points.contains(_))
@@ -92,7 +90,7 @@ object YingGraph extends FlowGraph {
   // fetch data from user module of task_B for point_U_B1, point_U_B2
   case object E6 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      ufetch(task_B, state, modules(module_user))
+      ufetch(flow_ying, task_B, state, modules(module_user))
     }
 
     def check(state: State) = !taskPointMap(task_B).exists(!state.points.contains(_))
@@ -102,7 +100,7 @@ object YingGraph extends FlowGraph {
 
   case object E7 extends Edge {
     def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(data_DEF, state, modules(module_auto))
+      fetch(flow_ying, data_DEF, state, modules(module_auto))
     }
 
     def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
