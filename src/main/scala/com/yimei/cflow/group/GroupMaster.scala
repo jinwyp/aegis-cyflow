@@ -5,6 +5,7 @@ import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.group.Group.{Command, CommandCreateGroup, CommandGroupTask, CommandQueryGroup}
+import com.yimei.cflow.graph.ying.YingConfig._
 
 object GroupMaster {
 

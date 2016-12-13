@@ -10,6 +10,7 @@ import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http.{FlowRoute, TaskRoute, UserRoute}
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
+import com.yimei.cflow.graph.ying.YingConfig._
 
 
 /**

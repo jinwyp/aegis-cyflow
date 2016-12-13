@@ -1,10 +1,10 @@
 package com.yimei.cflow.auto
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.yimei.cflow.core.Flow.State
-import com.yimei.cflow.config.GlobalConfig._
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.graph.ying.AutoActors
+import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.core.Flow.State
+import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 /**

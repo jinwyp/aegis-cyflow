@@ -2,7 +2,7 @@ package com.yimei.cflow.core
 
 import com.yimei.cflow.core.Flow.{Decision, Edge, State}
 import com.yimei.cflow.core.Flow.Graph
-import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 
 /**
   * Created by hary on 16/12/6.
