@@ -32,7 +32,7 @@ class SwaggerDocService(system: ActorSystem) extends SwaggerHttpService with Has
     //    ru.typeOf[QPF]
 
   )
-  override val host = config.getString("swagger.url")
+  override val host = coreConfig.getString("swagger.url")
   override val info = Info(version = "1.0")
   override val externalDocs = Some(new ExternalDocs("Core Docs", "http://acme.com/docs"))
   override val securitySchemeDefinitions = Map("basicAuth" -> new BasicAuthDefinition())

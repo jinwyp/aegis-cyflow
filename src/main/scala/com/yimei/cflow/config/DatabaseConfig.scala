@@ -8,9 +8,9 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 trait DatabaseConfig extends CoreConfig {
 
   private val hikariConfig = new HikariConfig()
-  hikariConfig.setJdbcUrl(config.getString("database.url"))
-  hikariConfig.setUsername(config.getString("database.user"))
-  hikariConfig.setPassword(config.getString("database.password"))
+  hikariConfig.setJdbcUrl(coreConfig.getString("database.url"))
+  hikariConfig.setUsername(coreConfig.getString("database.user"))
+  hikariConfig.setPassword(coreConfig.getString("database.password"))
 
   private val dataSource = new HikariDataSource(hikariConfig)
   val driver = slick.driver.MySQLDriver;

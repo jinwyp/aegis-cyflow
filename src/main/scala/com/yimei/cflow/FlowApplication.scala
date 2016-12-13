@@ -81,5 +81,5 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
     corsHandler(new SwaggerDocService(coreSystem).routes)
 
   implicit val mysystem = coreSystem // @todo fixme
-  Http().bindAndHandle(routes, "0.0.0.0", config.getInt("http.port"))
+  Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
 }

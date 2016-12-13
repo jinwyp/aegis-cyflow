@@ -33,7 +33,7 @@ object EngineTest extends App with ApplicationConfig with CorsSupport {
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes)
   implicit val mysystem = coreSystem // @todo fixme
-  Http().bindAndHandle(routes, "0.0.0.0", config.getInt("http.port"))
+  Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
 
   val flowId = UUID.randomUUID().toString
   coreSystem.scheduler.scheduleOnce(1 seconds, queryActor, QueryTest(flowId, "use001"))  // 必须等时间长点发起

@@ -10,9 +10,9 @@ trait FlywayConfig extends CoreConfig {
 
   private val flyway = new Flyway()
   flyway.setDataSource(
-    config.getString("database.url"),
-    config.getString("database.user"),
-    config.getString("database.password")
+    coreConfig.getString("database.url"),
+    coreConfig.getString("database.user"),
+    coreConfig.getString("database.password")
   )
 
   def migrate = {
