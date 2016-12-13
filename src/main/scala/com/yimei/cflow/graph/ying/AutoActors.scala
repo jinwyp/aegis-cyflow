@@ -17,11 +17,11 @@ import com.yimei.cflow.core.Flow.{CommandPoint, CommandPoints, DataPoint}
 object AutoActors extends CoreConfig {
 
   def registerAll() = {
-    AutoRegistry.register("A",   (modules: Map[String, ActorRef]) => Props(new A(modules)))
-    AutoRegistry.register("B",   (modules: Map[String, ActorRef]) => Props(new B(modules)))
-    AutoRegistry.register("C",   (modules: Map[String, ActorRef]) => Props(new C(modules)))
-    AutoRegistry.register("DEF", (modules: Map[String, ActorRef]) => Props(new DEF(modules)))
-    AutoRegistry.register("GHK", (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
+    AutoRegistry.register(flow_ying, data_A,   (modules: Map[String, ActorRef]) => Props(new A(modules)))
+    AutoRegistry.register(flow_ying, data_B,   (modules: Map[String, ActorRef]) => Props(new B(modules)))
+    AutoRegistry.register(flow_ying, data_C,   (modules: Map[String, ActorRef]) => Props(new C(modules)))
+    AutoRegistry.register(flow_ying, data_DEF, (modules: Map[String, ActorRef]) => Props(new DEF(modules)))
+    AutoRegistry.register(flow_ying, data_GHK, (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
   }
 
   import scala.concurrent.duration._

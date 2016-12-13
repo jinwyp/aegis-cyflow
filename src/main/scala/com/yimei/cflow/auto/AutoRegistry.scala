@@ -14,8 +14,8 @@ object AutoRegistry {
     * @param name
     * @param f
     */
-  def register(name: String, f: Map[String, ActorRef] => Props) = {
-    propMap = propMap + ( name -> f)
+  def register(flowType:String, name: String, f: Map[String, ActorRef] => Props) = {
+    propMap = propMap + ( flowType+"_"+name -> f)
   }
 
 }
