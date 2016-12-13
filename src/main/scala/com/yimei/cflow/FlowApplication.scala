@@ -59,11 +59,16 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
        uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
       } {
         println(s"userQuery       = $uq")
-
       }
     }
   }
 
+  Thread.sleep(2000)
+  for{
+    uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
+  } {
+    println(s"userQuery       = $uq")
+  }
 
 
   // http
