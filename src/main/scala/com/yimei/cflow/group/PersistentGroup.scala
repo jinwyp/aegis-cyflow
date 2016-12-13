@@ -23,7 +23,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
   // 用户id与用户类型
   val regex = "(\\w+)-(.*)".r
-  val (gid, userType) = ggid match {
+  val (userType, gid) = ggid match {
     case regex(uid, gid) => (uid, gid)
   }
 

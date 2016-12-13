@@ -15,7 +15,7 @@ class MemoryUser(guid: String, modules: Map[String, ActorRef]) extends AbstractU
 
   // 用户id与用户类型
   val regex = "(\\w+)-(.*)".r
-  val (userId, userType) = guid match {
+  val (userType,userId) = guid match {
     case regex(uid, gid) => (uid, gid)
   }
 
