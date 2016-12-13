@@ -11,7 +11,7 @@ import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
 import com.yimei.cflow.core.Flow.Graph
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit}
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.CommandUserTask
 
 import scala.concurrent.duration._
 

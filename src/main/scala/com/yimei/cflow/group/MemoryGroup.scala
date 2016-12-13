@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.CommandUserTask
 
 /**
   * Created by hary on 16/12/12.

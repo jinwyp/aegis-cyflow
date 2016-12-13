@@ -6,7 +6,7 @@ import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.CommandUserTask
 import scala.concurrent.duration._
 
 class PersistentUser(guid: String,

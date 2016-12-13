@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.CommandUserTask
 
 import scala.concurrent.duration._
 

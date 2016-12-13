@@ -2,7 +2,6 @@ package com.yimei.cflow.user
 
 import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow.DataPoint
-import com.yimei.cflow.user.UserMaster.CommandUserTask
 
 /**
   * Created by hary on 16/12/2.
@@ -33,6 +32,9 @@ object User {
 
   // 5. 查询用户信息
   case class CommandQueryUser(guid: String) extends Command
+
+  // 采集用户数据
+  case class CommandUserTask(flowId: String, guid: String, taskName: String)
 
   ////////////////////////////////////////////////////
   // 事件

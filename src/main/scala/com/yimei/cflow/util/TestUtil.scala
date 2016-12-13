@@ -11,7 +11,7 @@ import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit}
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.CommandUserTask
 
 import scala.concurrent.duration._
 

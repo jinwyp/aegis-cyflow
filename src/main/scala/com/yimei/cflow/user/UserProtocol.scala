@@ -1,7 +1,6 @@
 package com.yimei.cflow.user
 
-import com.yimei.cflow.user.User.{State}
-import com.yimei.cflow.user.UserMaster.CommandUserTask
+import com.yimei.cflow.user.User.{CommandUserTask, State}
 import spray.json.DefaultJsonProtocol
 
 /**
@@ -10,7 +9,7 @@ import spray.json.DefaultJsonProtocol
 
 trait UserProtocol extends DefaultJsonProtocol {
 
-  implicit val userGetUserDataFormat = jsonFormat3(CommandUserTask)
+  implicit val userCommandUserTaskFormat = jsonFormat3(CommandUserTask)
 
   implicit val userStateFormat = jsonFormat3(State)
 }

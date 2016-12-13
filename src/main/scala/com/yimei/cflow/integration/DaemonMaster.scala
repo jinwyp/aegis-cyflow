@@ -27,11 +27,11 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persist: Boolean): Props = {
     name match {
-      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_id), persist)
-      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_id), persist)
+      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_group, module_id), persist)
+      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_group, module_id), persist)
+      case `module_group` => GroupMaster.props(Array(module_user), persist)
       case `module_auto`  => AutoMaster.props(Array(module_user, module_flow, module_id))
       case `module_id`    => IdGenerator.props(name, persist)
-      case `module_group` => GroupMaster.props(Array(module_user))
     }
   }
 
