@@ -81,7 +81,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 数据模块交互
-    case cmd: AutoMaster.GetAutoData =>
+    case cmd: AutoMaster.CommandAutoTask =>
       log.debug(s"收到 ${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
