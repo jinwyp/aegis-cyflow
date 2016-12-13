@@ -1,10 +1,12 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
 import com.yimei.cflow.auto.AutoMaster.fetch
+import com.yimei.cflow.auto.AutoRegistry
+import com.yimei.cflow.graph.ying.AutoActors.{A, B, C, DEF, GHK}
 import com.yimei.cflow.user.UserMaster.ufetch
 
 /**
@@ -12,7 +14,9 @@ import com.yimei.cflow.user.UserMaster.ufetch
   */
 object YingGraph extends FlowGraph {
 
-
+  override def registerAutoTask(): Unit = {
+    AutoActors.registerAll()
+  }
 
   def getFlowInitial: Decision = V0
 

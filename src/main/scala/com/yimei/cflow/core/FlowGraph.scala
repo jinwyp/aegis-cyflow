@@ -25,6 +25,8 @@ trait FlowGraph {
     * @return
     */
   def getFlowType: String
+
+  def registerAutoTask(): Unit
 }
 
 

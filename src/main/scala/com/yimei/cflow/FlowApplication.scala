@@ -3,7 +3,6 @@ package com.yimei.cflow
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry
@@ -22,7 +21,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   FlowRegistry.register(flow_ying, YingGraph)
 
   // 2> 注册自动任务
-  // AutoRegistry.register(data_X, (modules: Map[String, ActorRef]) => new Actor {})
+
 
   val names = Array(module_auto, module_user, module_group, module_flow, module_id)
 
@@ -55,8 +54,8 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
       println(s"ucreate        = $uc")
       println(s"claim          = $claim")
       Thread.sleep(1000)
-      for{
-       uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
+      for {
+        uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
       } {
         println(s"userQuery       = $uq")
       }
@@ -64,7 +63,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   }
 
   Thread.sleep(2000)
-  for{
+  for {
     uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
   } {
     println(s"userQuery       = $uq")
@@ -74,11 +73,11 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   // http
   val routes: Route =
     FlowRoute.route(proxy) ~
-    UserRoute.route(proxy) ~
- //   GroupRoute.route(proxy) ~
-    TaskRoute.route(proxy) ~
-    new SwaggerService().route ~
-    corsHandler(new SwaggerDocService(coreSystem).routes)
+      UserRoute.route(proxy) ~
+      //   GroupRoute.route(proxy) ~
+      TaskRoute.route(proxy) ~
+      new SwaggerService().route ~
+      corsHandler(new SwaggerDocService(coreSystem).routes)
 
   implicit val mysystem = coreSystem // @todo fixme
   Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))

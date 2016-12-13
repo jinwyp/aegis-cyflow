@@ -1,12 +1,13 @@
-package com.yimei.cflow.auto
+package com.yimei.cflow.graph.ying
 
 import java.util.{Date, UUID}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoint, CommandPoints, DataPoint}
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 
 /**
   * Created by hary on 16/12/1.

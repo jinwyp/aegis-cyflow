@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.graph.ying.AutoActors
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 /**
@@ -43,8 +44,6 @@ object AutoMaster {
 class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, dependOn) with ServicableBehavior {
 
   import AutoRegistry._
-
-  AutoActors.registerAll()
 
   // all child auto actors
   var actors = Map[String, ActorRef]()

@@ -13,9 +13,5 @@ trait CoreConfig {
   implicit val coreTimeout = Timeout(5 seconds)
   implicit val coreExecutor = coreSystem.dispatcher
   implicit val coreMaterializer = ActorMaterializer()
-
   val coreConfig = coreSystem.settings.config
-
-  val autoPoint = coreConfig.getConfig("autopoint")   // 自动任务数据点
-  val taskPoint = coreConfig.getConfig("taskpoint")   // 用户任务数据点
 }
