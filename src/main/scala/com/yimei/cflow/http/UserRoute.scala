@@ -41,7 +41,7 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
     pathPrefix("user" / Segment) { userId =>
       pathEnd {
         parameter('userType) { userType =>
-          complete(ServiceProxy.userCreate(proxy, userType, userId, None))
+          complete(ServiceProxy.userCreate(proxy, userType, userId))
         }
       }
     }

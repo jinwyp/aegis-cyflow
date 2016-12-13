@@ -4,7 +4,7 @@ import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.integration.ModuleMaster
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.group.Group.GetGroupData
+import com.yimei.cflow.group.Group.CommandGroupTask
 
 object GroupMaster {
 
@@ -13,7 +13,7 @@ object GroupMaster {
       taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! GetGroupData(state.flowId, state.guid, taskName)
+      userMaster ! CommandGroupTask(state.flowId, state.guid, taskName)
     }
   }
 

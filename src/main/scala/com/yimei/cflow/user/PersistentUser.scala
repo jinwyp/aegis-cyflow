@@ -6,12 +6,10 @@ import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoints, DataPoint}
-import com.yimei.cflow.user.User.HierarchyInfo
-import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.user.UserMaster.CommandUserTask
 import scala.concurrent.duration._
 
 class PersistentUser(guid: String,
-                     hierarchyInfo: Option[HierarchyInfo],
                      modules: Map[String, ActorRef],
                      passivateTimeout: Long) extends AbstractUser
   with PersistentActor
@@ -29,7 +27,7 @@ class PersistentUser(guid: String,
 
   override def persistenceId = guid
 
-  var state: State = State(userId, userType, hierarchyInfo, Map[String, GetUserData]()) // 用户的状态不断累积!!!!!!!!
+  var state: State = State(userId, userType, Map[String, CommandUserTask]()) // 用户的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -54,7 +52,7 @@ class PersistentUser(guid: String,
   def serving: Receive =  {
 
     // 采集数据请求
-    case command: GetUserData =>
+    case command: CommandUserTask =>
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
       persist(TaskEnqueue(taskId, command)) { event =>

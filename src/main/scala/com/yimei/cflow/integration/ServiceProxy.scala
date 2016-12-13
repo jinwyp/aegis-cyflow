@@ -8,7 +8,7 @@ import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, HierarchyInfo}
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit}
 
 import scala.concurrent.Future
 
@@ -34,12 +34,9 @@ object ServiceProxy extends CoreConfig {
   def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Graph] =
     (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Graph]
 
-  def flowUpdateParties(proxy: ActorRef, flowId: String, parties: Map[String, String]): Future[Graph] =
-    (proxy ? CommandUpdateParties(flowId, parties)).mapTo[Graph]
-
   // 0> 创建用户
-  def userCreate(proxy: ActorRef, userType: String, userId: String, hierarchyInfo: Option[HierarchyInfo] = None): Future[User.State] =
-    (proxy ? CommandCreateUser(s"${userType}-${userId}", hierarchyInfo)).mapTo[User.State]
+  def userCreate(proxy: ActorRef, userType: String, userId: String): Future[User.State] =
+    (proxy ? CommandCreateUser(s"${userType}-${userId}")).mapTo[User.State]
 
   // 1> 创建流程 - 自动运行
   def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String) =

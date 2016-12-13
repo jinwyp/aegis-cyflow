@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.user.UserMaster.CommandUserTask
 
 import scala.concurrent.duration._
 
@@ -32,7 +32,7 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
 
   override def persistenceId = ggid
 
-  var state: State = State(gid,userType,Map[String,GetGroupData]()) // group的状态不断累积!!!!!!!!
+  var state: State = State(gid,userType,Map[String,CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -59,7 +59,7 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
   def serving: Receive = {
 
     // 采集数据请求
-    case command: GetGroupData =>
+    case command: CommandGroupTask =>
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
       persist(TaskEnqueue(taskId, command)) { event =>
@@ -73,7 +73,7 @@ class PersistentGroup(ggid:String,modules:Map[String,ActorRef],passivateTimeout:
       val task = state.tasks(taskId)
       persist(TaskDequeue(taskId)){ event =>
         updateState(event)
-        modules(module_user) ! GetUserData(task.flowId,s"${userType}-${userId}",task.taskName)
+        modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName)
         sender() ! state
       }
     // 收到超时

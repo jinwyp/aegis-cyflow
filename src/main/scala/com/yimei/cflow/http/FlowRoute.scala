@@ -119,41 +119,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     }
   }
 
-
-  /**
-    * 更新流程数据点并触发流程继续
-    * PUT /flow/ying-hary-11111111111111?updatePoint
-    *
-    * @return
-    */
-  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "查询用户状态",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
-  def putFlowParties: Route = put {
-    pathPrefix("flow" / Segment) { flowId =>
-      pathEnd {
-        parameter("parties") { p =>
-          entity(as[Map[String, String]]) { parties =>
-            complete(ServiceProxy.flowUpdateParties(proxy, flowId, parties))
-          }
-        }
-      }
-    }
-  }
-
-  def route: Route = postFlow ~ getFlow ~ putFlowPoints ~ putFlowParties
+  def route: Route = postFlow ~ getFlow ~ putFlowPoints
 
 }
 

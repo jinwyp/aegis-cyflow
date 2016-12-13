@@ -21,7 +21,6 @@ abstract class AbstractUser extends Actor with ActorLogging {
     ev match {
       case TaskDequeue(taskId) => state = state.copy(tasks = state.tasks - taskId)
       case TaskEnqueue(taskId, task) => state = state.copy(tasks = state.tasks + (taskId -> task))
-      case HierarchyInfoUpdated(hinfo) => state = state.copy(hierarchyInfo = hinfo)
     }
     log.info(s"${ev} persisted, state = ${state}")
   }

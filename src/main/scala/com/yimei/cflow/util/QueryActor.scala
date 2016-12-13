@@ -10,8 +10,8 @@ import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
 import com.yimei.cflow.core.Flow.Graph
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit, HierarchyInfo}
-import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit}
+import com.yimei.cflow.user.UserMaster.CommandUserTask
 
 import scala.concurrent.duration._
 
@@ -34,7 +34,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
     case test@QueryTest(flowId, guid) =>
 
       // 创建用户
-      val f1 = daemon ? CommandCreateUser(guid, Some(HierarchyInfo(Some("ceo"), Some(List("s1", "s2")))))
+      val f1 = daemon ? CommandCreateUser(guid)
 
       f1 onSuccess {
         case userState =>
@@ -89,7 +89,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
       }
   }
 
-  def processTask(taskId: String, task: GetUserData) = {
+  def processTask(taskId: String, task: CommandUserTask) = {
     log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
         (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date()))    // uuid为采集id

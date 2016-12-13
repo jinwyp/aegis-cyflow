@@ -1,7 +1,7 @@
 package com.yimei.cflow.user
 
-import com.yimei.cflow.user.User.{HierarchyInfo, State}
-import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.user.User.{State}
+import com.yimei.cflow.user.UserMaster.CommandUserTask
 import spray.json.DefaultJsonProtocol
 
 /**
@@ -10,10 +10,8 @@ import spray.json.DefaultJsonProtocol
 
 trait UserProtocol extends DefaultJsonProtocol {
 
-  implicit val userHierarchyInfoFormat = jsonFormat2(HierarchyInfo)
+  implicit val userGetUserDataFormat = jsonFormat3(CommandUserTask)
 
-  implicit val userGetUserDataFormat = jsonFormat3(GetUserData)
-
-  implicit val userStateFormat = jsonFormat4(State)
+  implicit val userStateFormat = jsonFormat3(State)
 }
 

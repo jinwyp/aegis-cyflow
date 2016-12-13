@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.UserMaster.GetUserData
+import com.yimei.cflow.user.UserMaster.CommandUserTask
 
 /**
   * Created by hary on 16/12/12.
@@ -23,7 +23,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
     case regex(uid, gid) => (uid, gid)
   }
 
-  var state: State = State(gid,userType,Map[String,GetGroupData]()) // group的状态不断累积!!!!!!!!
+  var state: State = State(gid,userType,Map[String,CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 生成任务id
   def uuid() = UUID.randomUUID().toString
@@ -34,7 +34,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
   def serving: Receive = {
 
     // 采集数据请求
-    case command: GetGroupData =>
+    case command: CommandGroupTask =>
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
       updateState(TaskEnqueue(taskId, command))
@@ -45,7 +45,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
       log.info(s"claim的请求: $command")
       val task = state.tasks(taskId)
       updateState(TaskDequeue(taskId))
-      modules(module_user) ! GetUserData(task.flowId,s"${userType}-${userId}",task.taskName)
+      modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName)
       sender() ! state
   }
 
