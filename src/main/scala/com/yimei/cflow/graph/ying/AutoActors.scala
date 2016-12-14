@@ -36,7 +36,7 @@ object AutoActors extends CoreConfig {
 //      data_GHK -> Props(new GHK(modules))
 //    )
 
-  val point = DataPoint("50", Some("memo"), Some("system"), uuid, new Date())
+  val point = DataPoint("50", Some("memo"), Some("system"), uuid, new Date().getTime)
 
   class A(modules: Map[String, ActorRef]) extends Actor with ActorLogging {
     def receive = {

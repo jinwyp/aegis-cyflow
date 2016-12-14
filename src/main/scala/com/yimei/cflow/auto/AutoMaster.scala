@@ -48,7 +48,7 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
   // servicable behavior
   override def serving: Receive = {
     case  get @CommandAutoTask(flowId, flowType ,actorName)  =>
-      log.info(s"forward ${get} to ${actors(actorName)} ")
+      log.info(s"forward ${get} to ${actors(flowType)(actorName)} ")
       actors(flowType)(actorName) forward  get
   }
 

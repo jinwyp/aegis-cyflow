@@ -87,7 +87,7 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
   def processTask(taskId: String, task: CommandUserTask) = {
     coreSystem.log.info(s"处理用户任务: ${taskId}")
     val points = taskPointMap(task.taskName).map { pname =>
-      (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date())) // uuid为采集id
+      (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date().getTime)) // uuid为采集id
     }.toMap
 
     proxy ! CommandTaskSubmit(task.guid, taskId, points) // 提交任务处理给daemon

@@ -1,13 +1,15 @@
 package com.yimei.cflow.core
 
-import java.util.Date
-
-import akka.actor.{ActorRef, Props}
+import akka.actor.ActorRef
+import com.yimei.cflow.core.FlowRegistry._
+import com.yimei.cflow.auto.AutoMaster._
+import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.user.UserMaster.ufetch
 
 object Flow {
 
   // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
-  case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Date)
+  case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Long)
 
   // create flow, but not run it
   case class CommandCreateFlow(flowType: String, guid: String)
@@ -58,38 +60,53 @@ object Flow {
                     points: Map[String, DataPoint],
                     decision: Decision,
                     edge: Option[Edge],
-                    histories: List[Arrow])
+                    histories: List[Arrow]
+                  )
 
   // 分支边
-  trait Edge {
+  abstract class Edge(flowType:String, autoTasks: Array[String] = Array(), userTasks: Array[String] = Array()) {
     /**
       * 调度采集数据
       *
       * @param state   流程状态
       * @param modules 这个流程依赖的模块
       */
-    def schedule(state: State, modules: Map[String, ActorRef]): Unit
+    def schedule(state: State, modules: Map[String, ActorRef]) = {
+      //采集自动任务
+      autoTasks.foreach(at =>
+        fetch(flowType,at,state,modules(module_auto))
+      )
 
-    def check(state: State): Boolean
+      //采集用户任务
+      userTasks.foreach(ut =>
+        ufetch(flowType,ut,state,modules(module_user))
+      )
+    }
 
+    /**
+      *
+       * @param state
+      * @return
+      */
+    def check(state: State): Boolean = {
+      autoTasks.foldLeft(true)((t,at) => t && !autoTask(flowType)(at)._1.exists(!state.points.contains(_)) ) &&
+      userTasks.foldLeft(true)((t,ut) => t && !userTask(flowType)(ut).exists(!state.points.contains(_)))
+    }
   }
 
   // 开始边
-  case object EdgeStart extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
+  case object EdgeStart extends Edge("allType",Array[String](),Array[String]()) {
+    override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
       throw new IllegalArgumentException("VoidEdge can not be scheduled")
 
-    def check(state: State) = true
+    def check(state: State, autoTask: Array[String], userTask: Array[String]) = true
 
     override def toString = "Start"
 
-    //    def describe() = ???   // 描述这条边
   }
 
   trait Decision {
     def run(state: State): Arrow
-
-    //    def describe() = ??? // 描述这个决策点
   }
 
   trait Decided extends Decision

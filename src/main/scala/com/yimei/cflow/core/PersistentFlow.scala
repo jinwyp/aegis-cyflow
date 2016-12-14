@@ -87,7 +87,7 @@ class PersistentFlow(
     case cmd: CommandUpdatePoints =>
       val uuid = UUID.randomUUID().toString
       val points: Map[String, DataPoint] = cmd.points.map { entry =>
-        entry._1 -> DataPoint(entry._2, None, None, uuid, new Date())
+        entry._1 -> DataPoint(entry._2, None, None, uuid, new Date().getTime)
       }
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")

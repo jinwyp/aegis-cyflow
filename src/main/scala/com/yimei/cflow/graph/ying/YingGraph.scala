@@ -1,12 +1,9 @@
 package com.yimei.cflow.graph.ying
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.auto.AutoMaster.fetch
-import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
+import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.user.UserMaster.ufetch
 
 /**
   * Created by hary on 16/12/1.
@@ -21,9 +18,9 @@ object YingGraph extends FlowGraph {
     */
   override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] =
     Map(
-      data_A   -> (dataPointMap(data_A),   (modules: Map[String, ActorRef]) => Props(new A(modules))),
-      data_B   -> (dataPointMap(data_B),   (modules: Map[String, ActorRef]) => Props(new B(modules))),
-      data_C   -> (dataPointMap(data_C),   (modules: Map[String, ActorRef]) => Props(new C(modules))),
+      data_A -> (dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
+      data_B -> (dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
+      data_C -> (dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
       data_DEF -> (dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules))),
       data_GHK -> (dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
     )
@@ -50,78 +47,34 @@ object YingGraph extends FlowGraph {
 
   override def getFlowType: String = flow_ying
 
-  case object E1 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(flow_ying, data_A, state, modules(module_auto))
-      fetch(flow_ying, data_B, state, modules(module_auto))
-      fetch(flow_ying, data_C, state, modules(module_auto))
-    }
-
-    def check(state: State) = !Array(point_A, point_B, point_C).exists(
-      !state.points.contains(_)
-    )
-
+  case object E1 extends Edge(flow_ying, autoTasks = Array(data_A, data_B, data_C)) {
     override def toString = "E1"
   }
 
-  case object E2 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(flow_ying, data_DEF, state, modules(module_auto))
-    }
-
-    def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
-
+  case object E2 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
     override def toString = "E2"
   }
 
-  case object E3 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = ???
-
-    def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
-
+  case object E3 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
+    override def schedule(state: State, modules: Map[String, ActorRef]) = ???
     override def toString = "E3"
   }
 
-  case object E4 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(flow_ying, data_GHK, state, modules(module_auto))
-    }
-
-    def check(state: State) = !dataPointMap(data_GHK).exists(!state.points.contains(_))
-
+  case object E4 extends Edge(flow_ying, autoTasks = Array(data_GHK)) {
     override def toString = "E4"
   }
 
-  // fetch data from user module of task_A for point_U_A1, point_U_A2
-  case object E5 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      ufetch(flow_ying, task_A, state, modules(module_user))
-    }
-
-    def check(state: State) = !taskPointMap(task_A).exists(!state.points.contains(_))
-
+  case object E5 extends Edge(flow_ying, userTasks = Array(task_A)) {
     override def toString = "E5"
   }
 
   // fetch data from user module of task_B for point_U_B1, point_U_B2
-  case object E6 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      ufetch(flow_ying, task_B, state, modules(module_user))
-    }
-
-    def check(state: State) = !taskPointMap(task_B).exists(!state.points.contains(_))
-
-    override def toString = "E6"
+  case object E6 extends Edge(flow_ying, userTasks = Array(task_B)) {
+      override def toString = "E6"
   }
 
-  case object E7 extends Edge {
-    def schedule(state: State, modules: Map[String, ActorRef]) = {
-      fetch(flow_ying, data_DEF, state, modules(module_auto))
-    }
-
-    def check(state: State) = !dataPointMap(data_DEF).exists(!state.points.contains(_))
-
-    override def toString = "E6"
+  case object E7 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
+     override def toString = "E7"
   }
 
   /////////////////
@@ -247,11 +200,13 @@ object YingGraph extends FlowGraph {
 
   case object V7 extends Judge {
     override def decide(state: State) = Arrow(V8, Some(EdgeStart))
+
     override def toString = "V7"
   }
 
   case object V8 extends Judge {
     override def decide(state: State) = Arrow(FlowSuccess, None)
+
     override def toString = "V8"
   }
 

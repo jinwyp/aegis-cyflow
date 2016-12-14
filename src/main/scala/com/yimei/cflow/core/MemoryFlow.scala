@@ -59,7 +59,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
     case cmd: CommandUpdatePoints =>
       val uuid = UUID.randomUUID().toString
       val points: Map[String, DataPoint] = cmd.points.map { entry =>
-        entry._1 -> DataPoint(entry._2, None, None, uuid, new Date())
+        entry._1 -> DataPoint(entry._2, None, None, uuid, new Date().getTime)
       }
       updateState(PointsUpdated(points))
   }
