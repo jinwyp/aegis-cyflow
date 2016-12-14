@@ -1,3 +1,5 @@
+import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
+
 name := "aegis-cflow"
 
 version := "1.0"
@@ -48,10 +50,21 @@ libraryDependencies ++= {
     "com.softwaremill.quicklens" % "quicklens_2.11" % "1.4.8",
 
     // neo4j-scala
-    "eu.fakod"  %% "neo4j-scala" % "0.3.3"
+    "eu.fakod"  %% "neo4j-scala" % "0.3.3",
+
+    // scala-pb
+    "com.trueaccord.scalapb"      %% "scalapb-runtime"  % "0.5.34"       % PB.protobufConfig
+
 
   )
 }
+
+PB.protobufSettings
+PB.runProtoc in PB.protobufConfig := {
+  args => com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray)
+}
+version in PB.protobufConfig := "3.0.0-beta-3"
+
 
 scalacOptions ++= Seq(
   "-deprecation",

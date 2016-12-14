@@ -1,0 +1,20 @@
+import "scalapb/scalapb.proto";
+
+package com.yimei.cflow.user.User;
+
+
+message CommondGroupTask {
+    required string flowId = 1;
+    required string ggid = 2;
+    required string taskName = 3;
+}
+
+message TaskEnqueue {
+    required string taskId = 1;
+    required CommandGroupTask task = 2;
+}
+
+message TaskDequeue {
+    required string taskId = 1;
+}
+

@@ -1,0 +1,53 @@
+syntax = "proto2";
+
+// This is available because of the PB.protobufConfig on scalapb-runtime in build.sbt
+import "scalapb/scalapb.proto";
+
+package com.yimei.cflow.core.Flow;
+
+message DataPoint {
+    required string value = 1;
+    optional string memo = 2;
+    optional string operator = 3;
+    optional string id = 4;
+    optional int64 timestamp = 5;
+}
+
+message Arrow {
+    required Decision end = 1;
+    optional Edge edge = 2;
+}
+
+enum Decided {
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Decision";
+    FlowSuccess = 1;
+    FlowFail = 2;
+    FlowTodo = 3;
+}
+
+message Judge {
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Decison";
+}
+
+message Edge {
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Edge";
+}
+
+message PointUpdated {
+  option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
+  required string name = 1;
+  required DataPoint point = 2;
+}
+
+message PointsUpdated {
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
+    required string name = 1;
+    map<string, DataPoint> points = 2;
+}
+
+message DecisionUpdated {
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
+    required Decision decision = 1;
+}
+
+
