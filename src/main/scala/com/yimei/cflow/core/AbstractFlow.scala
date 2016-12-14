@@ -20,11 +20,31 @@ abstract class AbstractFlow extends Actor with ActorLogging {
     ev match {
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
-      case DecisionUpdated(arrow) => state = state.copy(
-        decision = arrow.end,
-        edge = arrow.edge,
-        histories = arrow :: state.histories
-      )
+      case DecisionUpdated(arrow) =>
+        //把当前边里不能重用的点设置为used = true
+        state.edge match {
+
+            // todo 王琦 optimize
+          case Some(e) =>
+            val allPoints: Array[String] = e.getAllDataPointsName(state)  // 所有需要设置为used的数据点
+            var newPoints = state.points
+            allPoints.foreach(ap => newPoints = newPoints + (ap -> newPoints(ap).copy(used = true)))  // for side effect of newPoints
+
+            state = state.copy(
+              decision = arrow.end,
+              edge = arrow.edge,
+              histories = arrow :: state.histories,
+              points = newPoints
+            )
+
+          case a =>
+            state = state.copy(
+              decision  = arrow.end,
+              edge      = arrow.edge,
+              histories = arrow :: state.histories
+            )
+        }
+        log.info("new status: {}",state)
     }
   }
 

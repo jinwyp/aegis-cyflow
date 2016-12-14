@@ -45,35 +45,37 @@ object YingGraph extends FlowGraph {
       builder
     }
 
+
   override def getFlowType: String = flow_ying
 
-  case object E1 extends Edge(flow_ying, autoTasks = Array(data_A, data_B, data_C)) {
+  case object E1 extends Edge(autoTasks = Array(data_A, data_B, data_C)) {
     override def toString = "E1"
   }
 
-  case object E2 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
+  case object E2 extends Edge(autoTasks = Array(data_DEF)) {
     override def toString = "E2"
   }
 
-  case object E3 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
-    override def schedule(state: State, modules: Map[String, ActorRef]) = ???
+  case object E3 extends Edge(autoTasks = Array(data_DEF)) {
+    //这里很关键，不能这么写了，因为DEF虽然已经收集过，但是当V2决策的时候已经设置为used = true了，所以会报错
+  //  override def schedule(state: State, modules: Map[String, ActorRef]) = ???
     override def toString = "E3"
   }
 
-  case object E4 extends Edge(flow_ying, autoTasks = Array(data_GHK)) {
+  case object E4 extends Edge(autoTasks = Array(data_GHK)) {
     override def toString = "E4"
   }
 
-  case object E5 extends Edge(flow_ying, userTasks = Array(task_A)) {
+  case object E5 extends Edge(userTasks = Array(task_A)) {
     override def toString = "E5"
   }
 
   // fetch data from user module of task_B for point_U_B1, point_U_B2
-  case object E6 extends Edge(flow_ying, userTasks = Array(task_B)) {
+  case object E6 extends Edge(userTasks = Array(task_B)) {
       override def toString = "E6"
   }
 
-  case object E7 extends Edge(flow_ying, autoTasks = Array(data_DEF)) {
+  case object E7 extends Edge(autoTasks = Array(data_DEF)) {
      override def toString = "E7"
   }
 
