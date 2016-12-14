@@ -16,7 +16,7 @@ object UserMaster extends CoreConfig {
       taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! CommandUserTask(state.flowId, state.guid, flowType+"_"+taskName)
+      userMaster ! CommandUserTask(state.flowId, state.guid, flowType+"."+taskName)
     }
   }
 
