@@ -20,7 +20,7 @@ object AutoMaster {
     */
   def fetch(flowType:String, actorName: String, state: State, autoMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if ( refetchIfExists ||
-      FlowRegistry.autoTask(flowType)(actorName)._1.filter(!state.points.contains(_)).length > 0
+      FlowRegistry.autoTask(flowType)(actorName)._1.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
       // 给autoMaster发送获取数据请求
       autoMaster ! CommandAutoTask(state.flowId, flowType, actorName)

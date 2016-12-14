@@ -45,7 +45,7 @@ class PersistentFlow(
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil)
+  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil,graph.getFlowType)
 
   //
   override def queryFlow(state: State): Graph = graph.getFlowGraph(state)

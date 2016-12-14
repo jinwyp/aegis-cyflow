@@ -13,7 +13,7 @@ object UserMaster extends CoreConfig {
 
   def ufetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
-      userTask(flowType)(taskName).filter(!state.points.contains(_)).length > 0
+      userTask(flowType)(taskName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
       userMaster ! CommandUserTask(state.flowId, state.guid, taskName,flowType)
