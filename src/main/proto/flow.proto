@@ -3,14 +3,15 @@ syntax = "proto2";
 // This is available because of the PB.protobufConfig on scalapb-runtime in build.sbt
 import "scalapb/scalapb.proto";
 
-package com.yimei.cflow.core.Flow;
+package com.yimei.cflow.core;
 
 message DataPoint {
     required string value = 1;
     optional string memo = 2;
     optional string operator = 3;
     optional string id = 4;
-    optional int64 timestamp = 5;
+    optional int64  timestamp = 5;
+    required bool   used = 6;
 }
 
 message Arrow {
@@ -18,19 +19,22 @@ message Arrow {
     optional Edge edge = 2;
 }
 
-enum Decided {
-    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Decision";
-    FlowSuccess = 1;
-    FlowFail = 2;
-    FlowTodo = 3;
-}
-
+// Judge("success")
+// Judge("fail")
+// Judge("todo")
+// Judge("xxxx")
+// Judge("A")
 message Judge {
-    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Decison";
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.JudgeBehavior";
+    required string name = 1;
 }
 
+// Edge(Seq("auto1", "auto2"), Seq("task1", "task2")
+// Edge(Seq(), Seq())
 message Edge {
-    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Edge";
+    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.EdgeBehavior";
+    repeated String autoTasks = 1;
+    repeated String userTasks = 2;
 }
 
 message PointUpdated {

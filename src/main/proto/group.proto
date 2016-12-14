@@ -1,6 +1,6 @@
 import "scalapb/scalapb.proto";
 
-package com.yimei.cflow.user.User;
+package com.yimei.cflow;
 
 
 message CommondGroupTask {
