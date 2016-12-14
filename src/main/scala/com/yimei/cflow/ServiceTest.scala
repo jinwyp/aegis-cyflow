@@ -1,7 +1,6 @@
 package com.yimei.cflow
 
 import akka.actor.Props
-import com.yimei.cflow.auto.AutoRegistry
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry
