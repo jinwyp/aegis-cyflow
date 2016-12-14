@@ -1,5 +1,6 @@
 package com.yimei.cflow.graph.cang
 
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow.{Decision, Graph, State}
 import com.yimei.cflow.core.FlowGraph
 
@@ -21,7 +22,6 @@ object CangGraph extends FlowGraph {
     */
   override def getFlowGraph(state: State): Graph = ???
 
-  override def registerAutoTask(): Unit = ???
 
   /**
     * flow type
@@ -29,4 +29,14 @@ object CangGraph extends FlowGraph {
     * @return
     */
   override def getFlowType: String = ???
+
+  /**
+    *
+    */
+  override def getAutoTask: Map[String, (Array[String], (Map[String, ActorRef]) => Props)] = ???
+
+  /**
+    * 注册用户任务
+    */
+  override def getUserTask: Map[String, Array[String]] = ???
 }

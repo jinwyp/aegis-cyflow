@@ -9,7 +9,7 @@ object Group {
 
   case class CommandCreateGroup(ggid: String) extends Command
 
-  case class CommandGroupTask(flowId: String, ggid: String, taskName: String) extends Command
+  case class CommandGroupTask(flowType:String, flowId: String, ggid: String, taskName: String) extends Command
 
   case class CommandClaimTask(ggid: String, taskId: String, userId: String) extends Command
 

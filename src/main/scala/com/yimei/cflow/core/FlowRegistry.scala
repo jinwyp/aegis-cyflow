@@ -1,6 +1,6 @@
 package com.yimei.cflow.core
 
-import com.yimei.cflow.auto.AutoRegistry
+import akka.actor.{ActorRef, Props}
 
 
 /**
@@ -10,10 +10,18 @@ object FlowRegistry {
 
   private val registries = collection.mutable.Map[String, FlowGraph]()
 
+  // flowType -> autoTaskName -> (points, propbuilder)
+  var autoTask: Map[String, Map[String, (Array[String], Map[String, ActorRef] => Props)]]  = Map()
+
+  // flowType -> userTask -> points
+  var userTask: Map[String, Map[String, Array[String]]] = Map()
+
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
-    graph.registerAutoTask()
+    autoTask = autoTask + (flowType -> graph.getAutoTask)
+    userTask = userTask + (flowType -> graph.getUserTask)
   }
 
   def getFlowGraph(flowType: String) = registries(flowType)
+
 }

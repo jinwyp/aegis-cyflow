@@ -34,7 +34,7 @@ object User {
   case class CommandQueryUser(guid: String) extends Command
 
   // 采集用户数据
-  case class CommandUserTask(flowId: String, guid: String, taskName: String)
+  case class CommandUserTask(flowId: String, guid: String, taskName: String,flowType:String)
 
   ////////////////////////////////////////////////////
   // 事件
