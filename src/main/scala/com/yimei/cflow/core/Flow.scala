@@ -64,8 +64,11 @@ object Flow {
                     flowType:String
                   )
 
-  // 分支边
-  abstract class Edge(autoTasks: Array[String] = Array(), userTasks: Array[String] = Array()) {
+
+  trait EdgeBehavior {
+    val autoTasks: Array[String]
+    val userTasks: Array[String]
+
     /**
       * 调度采集数据
       *
@@ -85,13 +88,13 @@ object Flow {
     }
     /**
       *
-       * @param state
+      * @param state
       * @return
       */
     def check(state: State): Boolean = {
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
       autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
-      userTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
+        userTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
     }
 
     //获取全部不能重用的task
@@ -104,13 +107,20 @@ object Flow {
     def getAllDataPointsName(state: State):Array[String] = {
       val allTasks = getNonReusedTask()
       allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at)._1 ++: a) ++
-      allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
+        allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
     }
+
+
 
   }
 
+  // 分支边
+  case class Edge(autoTasks: Array[String] = Array(), userTasks: Array[String] = Array()) extends EdgeBehavior
+
   // 开始边
-  case object EdgeStart extends Edge(Array[String](),Array[String]()) {
+
+  val EdgeStart = new Edge {
+
     override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
       throw new IllegalArgumentException("VoidEdge can not be scheduled")
 
@@ -118,6 +128,15 @@ object Flow {
 
     override def toString = "Start"
   }
+
+//  case object EdgeStart extends Edge(Array[String](),Array[String]()) {
+//    override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
+//      throw new IllegalArgumentException("VoidEdge can not be scheduled")
+//
+//    def check(state: State, autoTask: Array[String], userTask: Array[String]) = true
+//
+//    override def toString = "Start"
+//  }
 
   trait Decision {
     def run(state: State): Arrow
