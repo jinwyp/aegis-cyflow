@@ -68,10 +68,10 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
     // 收到用户claim请求
     case command@CommandClaimTask(ggid: String, taskId: String, userId: String) =>
       log.info(s"claim的请求: $command")
-      val task = state.tasks(taskId)
+      val task: CommandGroupTask = state.tasks(taskId)
       persist(TaskDequeue(taskId)) { event =>
         updateState(event)
-        modules(module_user) ! CommandUserTask(task.flowId, s"${userType}-${userId}", task.taskName)
+        modules(module_user) ! CommandUserTask(task.flowId, s"${userType}-${userId}", task.taskName, task.flowType)
         sender() ! state
       }
 

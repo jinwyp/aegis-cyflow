@@ -1,10 +1,10 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.ActorRef
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.fetch
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
+import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphBuilder}
 import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.user.UserMaster.ufetch
 
@@ -13,8 +13,26 @@ import com.yimei.cflow.user.UserMaster.ufetch
   */
 object YingGraph extends FlowGraph {
 
-  override def registerAutoTask(): Unit = {
-    AutoActors.registerAll()
+  import AutoActors._
+
+
+  /**
+    *
+    */
+  override def getAutoTask: Map[String, (Array[String], (Map[String, ActorRef]) => Props)] =
+    Map(
+      data_A -> (dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
+      data_B -> (dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
+      data_C -> (dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
+      data_DEF -> (dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules))),
+      data_GHK -> (dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
+    )
+
+  /**
+    * 注册用户任务
+    */
+  override def getUserTask: Map[String, Array[String]] = {
+    taskPointMap
   }
 
   def getFlowInitial: Decision = V0

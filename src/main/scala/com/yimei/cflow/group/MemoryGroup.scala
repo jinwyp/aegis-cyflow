@@ -10,9 +10,9 @@ import com.yimei.cflow.user.User.CommandUserTask
   * Created by hary on 16/12/12.
   */
 
-object MemoryGroup {
-  //def props(userType: String, modules: Map[String, ActorRef]): Props = Props(new PersistentGroup(userType, modules))
-}
+//object MemoryGroup {
+//  //def props(userType: String, modules: Map[String, ActorRef]): Props = Props(new PersistentGroup(userType, modules))
+//}
 
 class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGroup with ActorLogging {
   import Group._
@@ -45,7 +45,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
       log.info(s"claim的请求: $command")
       val task = state.tasks(taskId)
       updateState(TaskDequeue(taskId))
-      modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName)
+      modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName,task.flowType)
       sender() ! state
   }
 

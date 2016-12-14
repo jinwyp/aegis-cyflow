@@ -1,5 +1,6 @@
 package com.yimei.cflow.core
 
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow.{Decision, Graph, State}
 
 
@@ -26,7 +27,16 @@ trait FlowGraph {
     */
   def getFlowType: String
 
-  def registerAutoTask(): Unit
+  /**
+    *
+    */
+  def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)]
+
+  /**
+    * 注册用户任务
+    */
+  def getUserTask: Map[String, Array[String]]
+
 }
 
 

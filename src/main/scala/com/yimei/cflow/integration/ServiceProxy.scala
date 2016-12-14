@@ -70,8 +70,8 @@ object ServiceProxy extends CoreConfig {
     (proxy ? CommandQueryGroup(s"${userType}-${gid}")).mapTo[Group.State]
   def groupClaim(proxy: ActorRef, userType: String, gid: String, userId: String, taskId: String) =
     (proxy ? CommandClaimTask(s"${userType}-${gid}", taskId, userId)).mapTo[Group.State]
-  def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String) =
-    proxy ! CommandGroupTask(flowId, s"${userType}-${gid}", taskName)
+  def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String,flowType:String) =
+    proxy ! CommandGroupTask(flowType,flowId, s"${userType}-${gid}", taskName)
 
 }
 

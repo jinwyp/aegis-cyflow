@@ -42,7 +42,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   for {
     gc <- ServiceProxy.groupCreate(proxy, "operation", "risk")
   } {
-    ServiceProxy.groupTask(proxy, "operation", "risk", "flowId", "helloTask")
+    ServiceProxy.groupTask(proxy, "operation", "risk", "flowId", "helloTask",flow_ying)
     Thread.sleep(1000)
 
     for {

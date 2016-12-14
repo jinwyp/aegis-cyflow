@@ -5,16 +5,16 @@ import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.group.Group.{Command, CommandCreateGroup, CommandGroupTask, CommandQueryGroup}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.core.FlowRegistry._
 
 object GroupMaster {
 
-  def gfetch(taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
+  def gfetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
-      taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
+      userTask(flowType)(taskName).filter(!state.points.contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! CommandGroupTask(state.flowId, state.guid, taskName)
+      userMaster ! CommandGroupTask(flowType, state.flowId, state.guid, taskName)
     }
   }
 

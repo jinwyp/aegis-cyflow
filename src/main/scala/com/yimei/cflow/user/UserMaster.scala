@@ -3,20 +3,20 @@ package com.yimei.cflow.user
 import akka.actor.{ActorRef, Props, Terminated}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser}
 import com.yimei.cflow.user.User.CommandUserTask
+import com.yimei.cflow.core.FlowRegistry._
 
 object UserMaster extends CoreConfig {
 
   def ufetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
-      taskPointMap(taskName).filter(!state.points.contains(_)).length > 0
+      userTask(flowType)(taskName).filter(!state.points.contains(_)).length > 0
     ) {
       println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! CommandUserTask(state.flowId, state.guid, flowType+"."+taskName)
+      userMaster ! CommandUserTask(state.flowId, state.guid, taskName,flowType)
     }
   }
 
