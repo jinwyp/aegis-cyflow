@@ -51,7 +51,7 @@ object YingGraph extends FlowGraph {
 
   def getFlowInitial: Decision = V0
 
-  def getFlowGraph(state: State) =
+  def getFlowGraph(state: State): Graph =
     GraphBuilder.jsonGraph(state) { implicit builder =>
       import GraphBuilder._
       V0 ~> E1 ~> V1
@@ -74,13 +74,23 @@ object YingGraph extends FlowGraph {
   val E5 = Edge(userTasks = Array(task_B))
 
   /*
-
   val V0 = Judge("a")
   val V1 = Judge("b")
   val V2 = Judge("c")
   val V3 = Judge("d")
   val V4 = Judge("e")
 
+  def getFlowGraph(state: State) =
+    GraphBuilder.jsonGraph(state) { implicit builder =>
+      import GraphBuilder._
+      V0 ~> E1 ~> V1
+      V1 ~> E2 ~> V2
+      V2 ~> E3 ~> V3
+      V3 ~> E4 ~> V4
+      V4 ~> E5 ~> V5
+      V5 ~> EdgeStart ~> V3
+      builder
+    }
    */
 
 

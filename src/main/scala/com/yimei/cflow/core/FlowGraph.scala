@@ -82,7 +82,7 @@ trait FlowGraph {
   /**
     * 所有决策点
     */
-  def getJudges: Map[String, State => Arrow] = Map()
+  def getDeciders: Map[String, State => Arrow] = Map()
 
 }
 
