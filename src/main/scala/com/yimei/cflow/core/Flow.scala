@@ -1,6 +1,6 @@
 package com.yimei.cflow.core
 
-import akka.actor.ActorRef
+import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
@@ -82,6 +82,12 @@ object Flow {
       * @param modules 这个流程依赖的模块
       */
     def schedule(state: State, modules: Map[String, ActorRef]) = {
+
+//      println("!!!!!!!!!!" )
+//      println(this)
+//      println(partUTasks)
+//      println("?????????")
+//      println(partGTasks)
       //采集自动任务
       autoTasks.foreach(at =>
         fetch(state.flowType,at,state,modules(module_auto))
@@ -112,10 +118,18 @@ object Flow {
       * @return
       */
     def check(state: State): Boolean = {
+
+      val pUserTasks: Array[String] = partUTasks.foldLeft(Array[String]())((t, put)=>t ++ put._2)
+      val pGroupTasks: Array[String] = partGTasks.foldLeft(Array[String]())((t, gut)=> t ++ gut._2)
+
+      val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
+
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
       autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
-      userTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_))) &&
-        partUTasks.foldLeft(true)((t,ptks) => t && ptks._2.foldLeft(true)((t1,au) => t1 && !userTask(state.flowType)(au).exists(!state.points.filter(t=>(!t._2.used)).contains(_))))
+        allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
+
+
+       // partUTasks.foldLeft(true)((t,ptks) => t && ptks._2.foldLeft(true)((t1,au) => t1 && !userTask(state.flowType)(au).exists(!state.points.filter(t=>(!t._2.used)).contains(_))))
 
 
 

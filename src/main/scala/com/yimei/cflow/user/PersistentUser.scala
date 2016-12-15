@@ -49,7 +49,7 @@ class PersistentUser(guid: String,
 
   override def receiveCommand: Receive = commonBehavior orElse serving
 
-  def serving: Receive =  {
+  def serving: Receive = {
 
     // 采集数据请求
     case command: CommandUserTask =>
@@ -63,11 +63,16 @@ class PersistentUser(guid: String,
     // 收到用户提交的采集数据
     case command@CommandTaskSubmit(userId, taskId, points: Map[String, DataPoint]) =>
       log.info(s"收到采集提交: $command")
-      val task = state.tasks(taskId)
-      persist(TaskDequeue(taskId)) { event =>
-        updateState(event)
-        modules(module_flow) ! CommandPoints(task.flowId, points)
-        sender() ! state
+      val taskOpt = state.tasks.get(taskId)
+      taskOpt match {
+        case Some(task) => persist(TaskDequeue(taskId)) {
+          event =>
+            updateState(event)
+            modules(module_flow) ! CommandPoints(task.flowId, points)
+            sender() ! state
+        }
+        case None =>
+          log.warning(s"任务${taskId}已被提交")
       }
 
     // 收到超时
