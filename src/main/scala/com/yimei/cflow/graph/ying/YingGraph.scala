@@ -50,7 +50,7 @@ object YingGraph extends FlowGraph {
   val E2 = Edge(autoTasks = Array(data_DEF))
   val E3 = Edge(autoTasks = Array(data_GHK))
   val E4 = Edge(userTasks = Array(task_A))
-  val E5 = Edge(userTasks = Array(task_B))
+  val E5 = Edge(partUTasks = partUserTaskMap)
 
 
   /////////////////
@@ -135,6 +135,23 @@ object YingGraph extends FlowGraph {
     override def toString = "V5"
   }
 
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  //      \ ----------------------> always true                     VoidEdge
+  //      V0
+  //       \ ---------------------> A(data_A) B(data_B) C(data_C)   E1
+  //       V1
+  //         \--------------------> [D, E, F](data_DEF)             E2
+  //         v2
+  //           \------------------> [G, H, K]                       E3
+  //            V3
+  //           /  \---------------> [UA1, UA2](task_A)              E4
+  //          /    V4
+  //         /      \-------------> [UB1, UB2](task_B)              E5
+  //         --<----V5
+  //             |
+  //             |---------------->                                 EdgeStart
+  ///////////////////////////////////////////////////////////////////////////////////////
 
 
   ///////////////////////////////////////////////////////////////////////////////////////
