@@ -9,12 +9,12 @@ import com.yimei.cflow.core.FlowRegistry._
 
 object GroupMaster {
 
-  def gfetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, refetchIfExists: Boolean = false) = {
+  def gfetch(flowType:String, taskName: String, state: State, groupMaster: ActorRef, ggid:String, refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
       userTask(flowType)(taskName).filter(!state.points.contains(_)).length > 0
     ) {
-      println(s"ufetch with ${state.guid}, ${state}")
-      userMaster ! CommandGroupTask(flowType, state.flowId, state.guid, taskName)
+      println(s"gfetch with${ggid}, ${state.guid}, ${state}")
+      groupMaster ! CommandGroupTask(flowType, state.flowId, ggid, taskName)
     }
   }
 

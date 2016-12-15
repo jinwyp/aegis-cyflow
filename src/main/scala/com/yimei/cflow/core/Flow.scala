@@ -1,10 +1,11 @@
 package com.yimei.cflow.core
 
-import akka.actor.ActorRef
+import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.user.UserMaster.ufetch
+import com.yimei.cflow.group.GroupMaster.gfetch
 
 object Flow {
 
@@ -71,6 +72,8 @@ object Flow {
   trait EdgeBehavior {
     val autoTasks: Array[String]
     val userTasks: Array[String]
+    val partUTasks: Map[String,Array[String]]   // key = 参与方guid对应的流程上下文key值, value = userTask名称列表
+    val partGTasks: Map[String,Array[String]]   // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
 
     /**
       * 调度采集数据
@@ -79,6 +82,12 @@ object Flow {
       * @param modules 这个流程依赖的模块
       */
     def schedule(state: State, modules: Map[String, ActorRef]) = {
+
+//      println("!!!!!!!!!!" )
+//      println(this)
+//      println(partUTasks)
+//      println("?????????")
+//      println(partGTasks)
       //采集自动任务
       autoTasks.foreach(at =>
         fetch(state.flowType,at,state,modules(module_auto))
@@ -86,8 +95,22 @@ object Flow {
 
       //采集用户任务
       userTasks.foreach(ut =>
-        ufetch(state.flowType,ut,state,modules(module_user))
+        ufetch(state.flowType,ut,state,modules(module_user),state.guid)
       )
+
+      // 参与方任务
+      partUTasks.foreach { entry =>
+        entry._2.foreach{ ut =>
+          ufetch(state.flowType,ut,state,modules(module_user),state.points(entry._1).value)
+        }
+      }
+
+      // 参与方组任务
+      partGTasks.foreach{ entry =>
+        entry._2.foreach{ gt =>
+          gfetch(state.flowType,gt,state,modules(module_group),state.points(entry._1).value)
+        }
+      }
     }
     /**
       *
@@ -95,10 +118,22 @@ object Flow {
       * @return
       */
     def check(state: State): Boolean = {
+
+      val pUserTasks: Array[String] = partUTasks.foldLeft(Array[String]())((t, put)=>t ++ put._2)
+      val pGroupTasks: Array[String] = partGTasks.foldLeft(Array[String]())((t, gut)=> t ++ gut._2)
+
+      val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
+
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
       autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
-        userTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
-    }
+        allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
+
+
+       // partUTasks.foldLeft(true)((t,ptks) => t && ptks._2.foldLeft(true)((t1,au) => t1 && !userTask(state.flowType)(au).exists(!state.points.filter(t=>(!t._2.used)).contains(_))))
+
+
+
+     }
 
     //获取全部不能重用的task
     def getNonReusedTask():(Array[String],Array[String]) = (autoTasks,userTasks)
@@ -118,7 +153,12 @@ object Flow {
   }
 
   // 分支边
-  case class Edge(autoTasks: Array[String] = Array(), userTasks: Array[String] = Array()) extends EdgeBehavior
+  case class Edge(
+                   autoTasks: Array[String] = Array(),
+                   userTasks: Array[String] = Array(),
+                   partUTasks: Map[String,Array[String]] = Map(),
+                   partGTasks: Map[String,Array[String]] = Map()
+                 ) extends EdgeBehavior
 
   // 开始边
 

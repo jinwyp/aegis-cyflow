@@ -29,7 +29,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
   override def persistenceId = ggid
 
-  override var state: State = State(gid, userType, Map[String, CommandGroupTask]()) // group的状态不断累积!!!!!!!!
+  override var state: State = State(userType, gid, Map[String, CommandGroupTask]()) // group的状态不断累积!!!!!!!!
 
   // 超时
   context.setReceiveTimeout(passivateTimeout seconds)
@@ -68,11 +68,19 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
     // 收到用户claim请求
     case command@CommandClaimTask(ggid: String, taskId: String, userId: String) =>
       log.info(s"claim的请求: $command")
-      val task: CommandGroupTask = state.tasks(taskId)
-      persist(TaskDequeue(taskId)) { event =>
-        updateState(event)
-        modules(module_user) ! CommandUserTask(task.flowId, s"${userType}-${userId}", task.taskName, task.flowType)
-        sender() ! state
+      state.tasks.get(taskId) match {
+        case Some(task) => persist(TaskDequeue(taskId)) {
+          event =>
+            updateState(event)
+            modules(module_user) ! CommandUserTask(task.flowId, s"${
+              userType
+            }-${
+              userId
+            }", task.taskName, task.flowType)
+            sender() ! state
+        }
+        case None =>
+          log.warning(s"task[$taskId] is already claimed")
       }
 
     // 收到超时

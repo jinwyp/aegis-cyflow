@@ -20,8 +20,7 @@ object YingGraph extends FlowGraph {
       data_A ->(dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
       data_B ->(dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
       data_C ->(dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
-      data_DEF ->(dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules))),
-      data_GHK ->(dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
+      data_DEF ->(dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules)))
     )
 
   // will be like this
@@ -68,10 +67,10 @@ object YingGraph extends FlowGraph {
 
 
   val E1 = Edge(autoTasks = Array(data_A, data_B, data_C))
-  val E2 = Edge(autoTasks = Array(data_DEF))
-  val E3 = Edge(autoTasks = Array(data_GHK))
+  val E2 = Edge(userTasks = Array(task_K_PU1,task_K_PG1))
+  val E3 = Edge(partUTasks = Map(point_K_PU1->Array(task_PU)), partGTasks = Map(point_K_PG1->Array(task_PG)))
   val E4 = Edge(userTasks = Array(task_A))
-  val E5 = Edge(userTasks = Array(task_B))
+  val E5 = Edge(autoTasks = Array(data_DEF))
 
   /*
   val V0 = Judge("a")
@@ -115,12 +114,11 @@ object YingGraph extends FlowGraph {
   case object V2 extends Judge {
 
     override def decide(state: State): Arrow = {
-      state.points.filter(entry => dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value.toInt
-      } match {
-        case 150 => Arrow(V3, Some(E3))
-        case _ => Arrow(FlowFail, None)
-      }
+      //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
+      if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
+        Arrow(V3,Some(E3))
+      else
+        Arrow(FlowFail, None)
     }
 
     override def toString = "V2"
@@ -130,10 +128,11 @@ object YingGraph extends FlowGraph {
 
     override def decide(state: State): Arrow = {
 
-      state.points.filter(entry => dataPointMap(data_GHK).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+      //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过
+      state.points.filter(entry => List(point_PU1,point_PU2,point_PG1,point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
         acc + entry._2.value.toInt
       } match {
-        case 150 => Arrow(V4, Some(E4))
+        case 200 => Arrow(V4, Some(E4))
         case _ => Arrow(FlowFail, None)
       }
 
@@ -162,12 +161,19 @@ object YingGraph extends FlowGraph {
 
   case object V5 extends Judge {
 
+    var count = 3
+
     override def decide(state: State) = {
 
-      state.points.filter(entry => List(point_U_B1, point_U_B2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+      state.points.filter(entry =>dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
         acc + entry._2.value.toInt
       } match {
-        case 100 => Arrow(V3, Some(EdgeStart))
+        case 150 => if(count>0) {
+          count = count - 1
+          Arrow(V3, Some(EdgeStart))
+        }
+        else
+          Arrow(FlowSuccess, None)
         case _ => Arrow(FlowFail, None)
       }
 
@@ -189,6 +195,24 @@ object YingGraph extends FlowGraph {
   //           /  \---------------> [UA1, UA2](task_A)              E4
   //          /    V4
   //         /      \-------------> [UB1, UB2](task_B)              E5
+  //         --<----V5
+  //             |
+  //             |---------------->                                 EdgeStart
+  ///////////////////////////////////////////////////////////////////////////////////////
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  //      \ ----------------------> always true                     VoidEdge
+  //      V0
+  //       \ ---------------------> A(data_A) B(data_B) C(data_C)   E1
+  //       V1
+  //         \-------------------->  point_K_PU1,point_K_PG1        E2
+  //         v2
+  //           \------------------> [pu_1,pu_2](pg-1,pg-2)          E3
+  //            V3
+  //           /  \---------------> [UA1, UA2](task_A)              E4
+  //          /    V4
+  //         /      \-------------> [UB1, UB2](partTask_A)          E5
   //         --<----V5
   //             |
   //             |---------------->                                 EdgeStart
