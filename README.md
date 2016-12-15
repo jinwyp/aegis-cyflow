@@ -84,3 +84,16 @@ cy flow
 
 ##
 
+def createUser(classType: string) = {
+   // 1> 从IdGenerator 取得 classType的next Id
+   // 2> 返回classType$id
+}
+
+def createGroup(classType: string, group: string, group: string) = {
+   // 1> 从IdGenerator 取得 classType的next Id
+   // 2> 返回classType$id
+}
+
+create user  应该返回userId
+create group 应该返回ggid
+

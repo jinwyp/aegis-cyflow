@@ -32,12 +32,7 @@ object YingGraph extends FlowGraph {
 
   // decider builder
   val db = FlowGraph.deciderBuilder
-    .decision("ok1").is { state =>
-      if (state.flowId == "10")
-        Arrow(null, null)
-      else
-        Arrow(null, null)
-    }
+    .decision("ok1").is(state => if (state.flowId == "10") Arrow(null, null) else Arrow(null, null))
     .decision("ok2").is(state => if (state.flowId == "10") Arrow(null, null) else Arrow(null, null))
     .decision("ok3").is(state => if (state.flowId == "10") Arrow(null, null) else Arrow(null, null))
     .done
