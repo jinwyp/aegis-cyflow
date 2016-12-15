@@ -69,7 +69,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
             1 seconds,
             13 seconds,
             daemon,
-            Flow.CommandQueryFlow(flowId)
+            Flow.CommandFlowGraph(flowId)
           )
       }
 

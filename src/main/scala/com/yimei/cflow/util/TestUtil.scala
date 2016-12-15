@@ -63,7 +63,7 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
     // tick消息
     case (userType: String, userId: String, flowId: String, 1) =>
       proxy ! CommandQueryUser(s"${userType}-${userId}") //
-      proxy ! CommandQueryFlow(flowId)
+      proxy ! CommandFlowGraph(flowId)
 
     case state: User.State =>
       state.tasks.foreach { entry =>

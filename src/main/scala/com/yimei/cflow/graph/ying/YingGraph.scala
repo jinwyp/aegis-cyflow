@@ -11,17 +11,38 @@ import com.yimei.cflow.graph.ying.YingConfig._
 object YingGraph extends FlowGraph {
 
   import AutoActors._
+
   /**
     *
     */
   override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] =
     Map(
-      data_A -> (dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
-      data_B -> (dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
-      data_C -> (dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
-      data_DEF -> (dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules))),
-      data_GHK -> (dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
+      data_A ->(dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
+      data_B ->(dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
+      data_C ->(dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
+      data_DEF ->(dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules))),
+      data_GHK ->(dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
     )
+
+  // will be like this
+  val k = FlowGraph.autoBuilder
+    .actor("k").points("a", "b", "c").prop(modules => Props(new A(modules)))
+    .actor("m").points("1", "2", "3").prop(modules => Props(new B(modules)))
+    .actor("t").points("4", "5", "6").prop(modules => Props(new C(modules)))
+    .done
+
+  // decider builder
+  val db = FlowGraph.deciderBuilder
+    .decision("ok1").is { state =>
+      if (state.flowId == "10")
+        Arrow(null, null)
+      else
+        Arrow(null, null)
+    }
+    .decision("ok2").is(state => if (state.flowId == "10") Arrow(null, null) else Arrow(null, null))
+    .decision("ok3").is(state => if (state.flowId == "10") Arrow(null, null) else Arrow(null, null))
+    .done
+
 
   /**
     * 注册用户任务
@@ -30,7 +51,7 @@ object YingGraph extends FlowGraph {
 
   def getFlowInitial: Decision = V0
 
-  def getFlowGraph(state: State) =
+  def getFlowGraph(state: State): Graph =
     GraphBuilder.jsonGraph(state) { implicit builder =>
       import GraphBuilder._
       V0 ~> E1 ~> V1
@@ -51,6 +72,26 @@ object YingGraph extends FlowGraph {
   val E3 = Edge(autoTasks = Array(data_GHK))
   val E4 = Edge(userTasks = Array(task_A))
   val E5 = Edge(partUTasks = partUserTaskMap)
+
+  /*
+  val V0 = Judge("a")
+  val V1 = Judge("b")
+  val V2 = Judge("c")
+  val V3 = Judge("d")
+  val V4 = Judge("e")
+
+  def getFlowGraph(state: State) =
+    GraphBuilder.jsonGraph(state) { implicit builder =>
+      import GraphBuilder._
+      V0 ~> E1 ~> V1
+      V1 ~> E2 ~> V2
+      V2 ~> E3 ~> V3
+      V3 ~> E4 ~> V4
+      V4 ~> E5 ~> V5
+      V5 ~> EdgeStart ~> V3
+      builder
+    }
+   */
 
 
   /////////////////
