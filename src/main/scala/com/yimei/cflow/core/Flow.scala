@@ -39,7 +39,10 @@ object Flow {
   case class CommandPoints(flowId: String, points: Map[String, DataPoint]) extends Command
 
   // 查询流程
-  case class CommandQueryFlow(flowId: String) extends Command
+  case class CommandFlowGraph(flowId: String) extends Command
+
+  // 查询流程状态
+  case class CommandFlowState(flowId: String) extends Command
 
   // 手动更新points
   case class CommandUpdatePoints(flowId: String, points: Map[String, String]) extends Command

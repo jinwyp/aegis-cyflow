@@ -48,7 +48,7 @@ class PersistentFlow(
   override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil,graph.getFlowType)
 
   //
-  override def queryFlow(state: State): Graph = graph.getFlowGraph(state)
+  override def genGraph(state: State): Graph = graph.getFlowGraph(state)
 
   override def modules: Map[String, ActorRef] = dependOn
 
@@ -72,7 +72,7 @@ class PersistentFlow(
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
-      sender() ! queryFlow(state)
+      sender() ! genGraph(state)
       makeDecision
 
     case cmd: CommandPoint =>
@@ -92,7 +92,7 @@ class PersistentFlow(
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         makeDecision()
-        sender() ! queryFlow(state) // 返回流程状态
+        sender() ! genGraph(state) // 返回流程状态
       }
 
     // received 超时

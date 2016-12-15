@@ -35,7 +35,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
 
   override var state: State = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil,graph.getFlowType)
 
-  override def queryFlow(state: State): Graph = graph.getFlowGraph(state)
+  override def genGraph(state: State): Graph = graph.getFlowGraph(state)
 
   override def modules: Map[String, ActorRef] = dependOn
 

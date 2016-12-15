@@ -39,7 +39,7 @@ object ServiceProxy extends CoreConfig {
   def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String) =
     (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}")).mapTo[Graph]
   def flowQuery(proxy: ActorRef, flowId: String) =
-    (proxy ? CommandQueryFlow(flowId)).mapTo[Graph]
+    (proxy ? CommandFlowGraph(flowId)).mapTo[Graph]
   def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Graph] =
     (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Graph]
 
