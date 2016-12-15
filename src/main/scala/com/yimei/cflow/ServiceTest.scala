@@ -3,7 +3,7 @@ package com.yimei.cflow
 import akka.actor.Props
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.FlowRegistry
+import com.yimei.cflow.core.{FlowGraph, FlowRegistry}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.CorsSupport
@@ -17,6 +17,26 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
+  import com.yimei.cflow.core.FlowGraph._
+
+  val tb: Map[String, Array[String]] =
+    taskBuilder
+      .task("hello").points("a", "b", "c")
+      .task("world").points("d", "e", "f")
+      .done
+  println(s"$tb")
+
+  val ab = autoBuilder
+    .actor("hello").points("a", "b", "c").prop(modules => null: Props)
+    .actor("world").points("d", "e", "f").prop(modules => null: Props)
+    .done
+  println(s"$ab")
+
+
+
+
+
+
   // 1> 注册自动任务
   // AutoRegistry.register()
 
@@ -24,18 +44,18 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   FlowRegistry.register(YingGraph.getFlowType, YingGraph)
 
   // daemon master and
-  val names  = Array(module_auto, module_user, module_flow, module_id, module_group)
+  val names = Array(module_auto, module_user, module_flow, module_id, module_group)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")
-  val proxy  = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
+  val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
   val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
 
   Thread.sleep(2000)
 
   TestUtil.test(proxy, client, "00", "hary")
 
-//  for (i <- 1 to 1) {
-//    TestUtil.test(proxy, client, s"00-hary${i}")
-//  }
+  //  for (i <- 1 to 1) {
+  //    TestUtil.test(proxy, client, s"00-hary${i}")
+  //  }
 
 }
 
