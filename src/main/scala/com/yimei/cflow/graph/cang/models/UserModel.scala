@@ -5,8 +5,11 @@ import java.time.LocalDateTime
 /** 添加用户 **/
 case class AddUser(username: String, password: String, name: String, email: String, phone: String, companyName: String, roleId: Int)
 
-/** 修改用户 **/
-case class UpdateUser(username: String, name: String, email: String, phone: String, companyName: String, roleId: Int)
+/** 管理员修改用户 **/
+case class UpdateUser(id: BigInt, username: String, name: String, email: String, phone: String, companyName: String, roleId: Int)
+
+/** 用户修改自己信息 **/
+case class UpdateSelf(email: String, phone: String)
 
 /** 用户登陆 **/
 case class UserLogin(username: String, password: String)
