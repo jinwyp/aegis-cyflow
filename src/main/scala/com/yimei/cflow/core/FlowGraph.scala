@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, Decision, Graph, State}
+import com.yimei.cflow.core.Flow._
 
 
 object FlowGraph {
@@ -54,7 +54,7 @@ trait FlowGraph {
     * initial decision point
     * @return
     */
-  def getFlowInitial: Decision
+  def getFlowInitial:Judge
 
   /**
     *

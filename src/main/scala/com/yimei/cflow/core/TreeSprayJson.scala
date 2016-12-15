@@ -1,6 +1,6 @@
 package com.yimei.cflow.core
 
-import com.yimei.cflow.core.Flow.Decision
+import com.yimei.cflow.core.Flow.Judge
 import spray.json.{JsValue, JsonFormat}
 
 /**
@@ -21,9 +21,9 @@ object TreeSprayJson extends FlowProtocol {
 
   trait Tree
 
-  case class Node(value: Decision, children: List[Tree]) extends Tree
+  case class Node(value: Judge, children: List[Tree]) extends Tree
 
-  case class Leaf(value: Decision) extends Tree
+  case class Leaf(value: Judge) extends Tree
 
   implicit object TreeFormat extends JsonFormat[Tree] {
     def write(obj: Tree) = {

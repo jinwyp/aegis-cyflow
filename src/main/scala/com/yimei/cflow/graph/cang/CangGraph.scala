@@ -1,7 +1,7 @@
 package com.yimei.cflow.graph.cang
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Decision, Graph, State}
+import com.yimei.cflow.core.Flow.{Judge, Graph, State}
 import com.yimei.cflow.core.FlowGraph
 
 /**
@@ -13,7 +13,7 @@ object CangGraph extends FlowGraph {
     *
     * @return
     */
-  override def getFlowInitial: Decision = ???
+  override def getFlowInitial: Judge = ???
 
   /**
     *

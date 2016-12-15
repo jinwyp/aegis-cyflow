@@ -24,11 +24,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
   }
 
   // 序列化Decision
-  implicit object DecisionFormat extends RootJsonFormat[Decision] {
-    def write(c: Decision) = JsString(c.toString)
-
-    def read(value: JsValue) = null
-  }
+  implicit val judgeFormat = jsonFormat1(Judge)
 
   // 序列Edge
   implicit object EdgeFormat extends RootJsonFormat[Edge] {

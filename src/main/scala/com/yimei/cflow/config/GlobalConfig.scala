@@ -17,5 +17,8 @@ object GlobalConfig {
   val module_auto   = "AutoMaster"
   val module_proxy  = "ServiceProxy"
   val module_id     = "IdGenerator"
+
+
+
 }
 
