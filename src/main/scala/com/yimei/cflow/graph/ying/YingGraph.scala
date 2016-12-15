@@ -11,8 +11,6 @@ import com.yimei.cflow.graph.ying.YingConfig._
 object YingGraph extends FlowGraph {
 
   import AutoActors._
-
-
   /**
     *
     */
@@ -40,44 +38,20 @@ object YingGraph extends FlowGraph {
       V2 ~> E3 ~> V3
       V3 ~> E4 ~> V4
       V4 ~> E5 ~> V5
-      V5 ~> E6 ~> V6
-      V4 ~> EdgeStart ~> V7
+      V5 ~> EdgeStart ~> V3
       builder
     }
 
 
   override def getFlowType: String = flow_ying
 
-  case object E1 extends Edge(autoTasks = Array(data_A, data_B, data_C)) {
-    override def toString = "E1"
-  }
 
-  case object E2 extends Edge(autoTasks = Array(data_DEF)) {
-    override def toString = "E2"
-  }
+  val E1 = Edge(autoTasks = Array(data_A, data_B, data_C))
+  val E2 = Edge(autoTasks = Array(data_DEF))
+  val E3 = Edge(autoTasks = Array(data_GHK))
+  val E4 = Edge(userTasks = Array(task_A))
+  val E5 = Edge(userTasks = Array(task_B))
 
-  case object E3 extends Edge(autoTasks = Array(data_DEF)) {
-    //这里很关键，不能这么写了，因为DEF虽然已经收集过，但是当V2决策的时候已经设置为used = true了，所以会报错
-  //  override def schedule(state: State, modules: Map[String, ActorRef]) = ???
-    override def toString = "E3"
-  }
-
-  case object E4 extends Edge(autoTasks = Array(data_GHK)) {
-    override def toString = "E4"
-  }
-
-  case object E5 extends Edge(userTasks = Array(task_A)) {
-    override def toString = "E5"
-  }
-
-  // fetch data from user module of task_B for point_U_B1, point_U_B2
-  case object E6 extends Edge(userTasks = Array(task_B)) {
-      override def toString = "E6"
-  }
-
-  case object E7 extends Edge(autoTasks = Array(data_DEF)) {
-     override def toString = "E7"
-  }
 
   /////////////////
   case object V0 extends Judge {
@@ -115,7 +89,7 @@ object YingGraph extends FlowGraph {
 
     override def decide(state: State): Arrow = {
 
-      state.points.filter(entry => dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+      state.points.filter(entry => dataPointMap(data_GHK).contains(entry._1)).foldLeft(0) { (acc, entry) =>
         acc + entry._2.value.toInt
       } match {
         case 150 => Arrow(V4, Some(E4))
@@ -131,10 +105,10 @@ object YingGraph extends FlowGraph {
 
     override def decide(state: State) = {
       // println(s"V4 state = $state")
-      state.points.filter(entry => dataPointMap(data_GHK).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+      state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
         acc + entry._2.value.toInt
       } match {
-        case 150 => Arrow(V5, Some(E5))
+        case 100 => Arrow(V5, Some(E5))
         case m =>
           println(s"V4 result = $m")
           Arrow(FlowFail, Some(EdgeStart))
@@ -149,10 +123,10 @@ object YingGraph extends FlowGraph {
 
     override def decide(state: State) = {
 
-      state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+      state.points.filter(entry => List(point_U_B1, point_U_B2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
         acc + entry._2.value.toInt
       } match {
-        case 100 => Arrow(V6, Some(E6))
+        case 100 => Arrow(V3, Some(EdgeStart))
         case _ => Arrow(FlowFail, None)
       }
 
@@ -161,25 +135,7 @@ object YingGraph extends FlowGraph {
     override def toString = "V5"
   }
 
-  case object V6 extends Judge {
 
-    override def decide(state: State) = {
-
-      state.points.filter(entry => List(point_U_B1, point_U_B2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
-        acc + entry._2.value.toInt
-      } match {
-        case 10 =>
-          println("V6 -> SUCCESS")
-          Arrow(FlowSuccess, None)
-
-        case _ =>
-          println("V6 ---E7---> V8")
-          Arrow(V8, Some(E7))
-      }
-    }
-
-    override def toString = "V6"
-  }
 
   ///////////////////////////////////////////////////////////////////////////////////////
   //      \ ----------------------> always true                     VoidEdge
@@ -188,29 +144,15 @@ object YingGraph extends FlowGraph {
   //       V1
   //         \--------------------> [D, E, F](data_DEF)             E2
   //         v2
-  //          \-------------------> [D, E, F]                       E3
-  //          V3
-  //           \------------------> [G, H, K]                       E4
-  //            V4
-  //           /  \---------------> [UA1, UA2](task_A)              E5
-  //          V7   V5
-  //         /      \-------------> [UB3, UB2](task_B)              E6
-  //        V8<------V6
+  //           \------------------> [G, H, K]                       E3
+  //            V3
+  //           /  \---------------> [UA1, UA2](task_A)              E4
+  //          /    V4
+  //         /      \-------------> [UB1, UB2](task_B)              E5
+  //         --<----V5
   //             |
-  //             |----------------> [G, H, K]                       E7
+  //             |---------------->                                 EdgeStart
   ///////////////////////////////////////////////////////////////////////////////////////
-
-  case object V7 extends Judge {
-    override def decide(state: State) = Arrow(V8, Some(EdgeStart))
-
-    override def toString = "V7"
-  }
-
-  case object V8 extends Judge {
-    override def decide(state: State) = Arrow(FlowSuccess, None)
-
-    override def toString = "V8"
-  }
 
 }
 

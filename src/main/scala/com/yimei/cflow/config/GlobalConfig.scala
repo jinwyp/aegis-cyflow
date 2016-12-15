@@ -18,3 +18,4 @@ object GlobalConfig {
   val module_proxy  = "ServiceProxy"
   val module_id     = "IdGenerator"
 }
+
