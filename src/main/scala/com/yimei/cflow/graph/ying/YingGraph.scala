@@ -23,6 +23,14 @@ object YingGraph extends FlowGraph {
       data_GHK -> (dataPointMap(data_GHK), (modules: Map[String, ActorRef]) => Props(new GHK(modules)))
     )
 
+  // will be like this
+  val k = FlowGraph.autoBuilder
+    .actor("k").points("a", "b", "c").prop(modules => Props(new A(modules)))
+    .actor("m").points("1", "2", "3").prop(modules => Props(new B(modules)))
+    .actor("t").points("4", "5", "6").prop(modules => Props(new C(modules)))
+    .done
+
+
   /**
     * 注册用户任务
     */
