@@ -6,32 +6,42 @@ import com.yimei.cflow.core.Flow.{Arrow, Decision, Graph, State}
 
 object FlowGraph {
 
-  case class AutoBuilder( name: String = "",
-                          points: Array[String] =Array(),
-                          acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
-    def actor(actorName: String) = this.copy(name = actorName)
-    def points(pointNames: String*) = this.copy(points = pointNames.toArray)
+  case class AutoBuilder(_name: String = "",
+                         _points: Array[String] =Array(),
+                         _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
+    def actor(actorName: String) = this.copy(_name = actorName)
+    def points(pointNames: String*) = this.copy(_points = pointNames.toArray)
     def prop(propfun: Map[String, ActorRef] => Props) = {
-      val curName = this.name
-      val curPoints = this.points
-      this.copy(name = "", points = Array(), acc = this.acc + (curName -> (curPoints, propfun)))
+      val curName = this._name
+      val curPoints = this._points
+      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName -> (curPoints, propfun)))
     }
-    def done = acc
+    def done = _acc
   }
 
-  case class TaskBuilder(name: String = "", acc: Map[String, Array[String]] = Map()) {
-    def task(taskName: String) = this.copy(name = taskName)
+  case class TaskBuilder(_name: String = "", _acc: Map[String, Array[String]] = Map()) {
+    def task(taskName: String) = this.copy(_name = taskName)
     def points(pointNames: String*) = {
-      val curName = this.name
-      this.copy(name = "", acc = this.acc + (curName -> pointNames.toArray))
+      val curName = this._name
+      this.copy(_name = "", _acc = this._acc + (curName -> pointNames.toArray))
 
     }
-    def done = this.acc
+    def done = this._acc
+  }
+
+  case class DeciderBuilder(_name: String = "", _acc: Map[String, State => Arrow] = Map()) {
+    def decision(name: String) = this.copy(_name = name)
+    def is(decider: State => Arrow): DeciderBuilder = {
+      this.copy(_acc = this._acc + (this._name -> decider))
+    }
+    def done = this._acc
   }
 
   def autoBuilder = AutoBuilder()
 
   def taskBuilder = TaskBuilder()
+
+  def deciderBuilder = DeciderBuilder()
 
 }
 
