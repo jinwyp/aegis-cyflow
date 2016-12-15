@@ -15,23 +15,18 @@ object YingGraph extends FlowGraph {
   /**
     *
     */
-  override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] =
-    Map(
-      data_A ->(dataPointMap(data_A), (modules: Map[String, ActorRef]) => Props(new A(modules))),
-      data_B ->(dataPointMap(data_B), (modules: Map[String, ActorRef]) => Props(new B(modules))),
-      data_C ->(dataPointMap(data_C), (modules: Map[String, ActorRef]) => Props(new C(modules))),
-      data_DEF ->(dataPointMap(data_DEF), (modules: Map[String, ActorRef]) => Props(new DEF(modules)))
-    )
-
-  // will be like this
-  val k = FlowGraph.autoBuilder
-    .actor("k").points("a", "b", "c").prop(modules => Props(new A(modules)))
-    .actor("m").points("1", "2", "3").prop(modules => Props(new B(modules)))
-    .actor("t").points("4", "5", "6").prop(modules => Props(new C(modules)))
+  override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] = FlowGraph.autoBuilder
+    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
+    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
+    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
+    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
     .done
 
-  override def getDeciders: Map[String, (State) => Arrow] =
-    FlowGraph.deciderBuilder
+  /**
+    *
+    * @return
+    */
+  override def getDeciders: Map[String, (State) => Arrow] = FlowGraph.deciderBuilder
     .decision("V0").is(V0)
     .decision("V1").is(V1)
     .decision("V2").is(V2)
@@ -45,8 +40,17 @@ object YingGraph extends FlowGraph {
     */
   override def getUserTask: Map[String, Array[String]] = taskPointMap
 
+  /**
+    *
+    * @return
+    */
   def getFlowInitial: Judge = Judge("V0")
 
+  /**
+    *
+    * @param state
+    * @return
+    */
   def getFlowGraph(state: State): Graph =
     GraphBuilder.jsonGraph(state) { implicit builder =>
       import GraphBuilder._
