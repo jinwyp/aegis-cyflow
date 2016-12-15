@@ -53,9 +53,9 @@ libraryDependencies ++= {
     "eu.fakod"  %% "neo4j-scala" % "0.3.3",
 
     // scala-pb
-    "com.trueaccord.scalapb"      %% "scalapb-runtime"  % "0.5.34"       % PB.protobufConfig
+    "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
-
+    "org.scalaz" %% "scalaz-core" % "7.2.8"
   )
 }
 
