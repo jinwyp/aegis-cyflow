@@ -3,6 +3,7 @@ package com.yimei.cflow.graph.cang.models
 import java.sql.Timestamp
 
 import spray.json.DefaultJsonProtocol
+import BaseFormatter._
 
 object CangFlowModel extends DefaultJsonProtocol {
 
