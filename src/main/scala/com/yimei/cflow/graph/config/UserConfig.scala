@@ -15,10 +15,10 @@ class UserConfig {
 
   // 贸易方运营组
   val myf_caiwu = "cw" // 贸易方财务
-  val myf_yewu = "yw" // 贸易方业务
+  val myf_yewu  = "yw"  // 贸易方业务
 
   // 资金方运营组
   val zjf_caiwu = "cw" // 资金方财务
-  val zjf_yewu = "yw" // 资金方业务
+  val zjf_yewu  = "yw"  // 资金方业务
 
 }
