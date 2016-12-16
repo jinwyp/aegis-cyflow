@@ -1,6 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.ActorRef
+import akka.cluster.sharding.ShardRegion
 import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry._
@@ -19,8 +20,6 @@ object Flow {
   case class CreateFlowSuccess(flowId: String)
 
   case class RunFlowSuccess(flowId: String)
-
-  // shutdown the flow
 
   // 接收命令
   trait Command {
