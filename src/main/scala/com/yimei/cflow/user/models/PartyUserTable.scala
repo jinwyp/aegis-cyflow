@@ -14,7 +14,7 @@ trait PartyUserTable {
 
   class PartyUser(tag:Tag) extends Table[PartyUserEntity](tag,"party_user"){
     def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
-    def party_id = column[String]("party_id")
+    def party_id = column[Long]("party_id")
     def user_id = column[String]("user_id")
     def password = column[String]("password")
     def phone = column[Option[String]]("phone")
