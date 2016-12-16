@@ -48,7 +48,7 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
 
       // use UUID to generate persistenceId
       val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
-    val child = create(flowId)
+      val child = create(flowId)
       child forward CommandRunFlow(flowId)
 
     // other command

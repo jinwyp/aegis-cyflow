@@ -6,10 +6,10 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.core.FlowRegistry
+
 /**
   * Created by hary on 16/12/3.
   */
-
 object AutoMaster {
 
   /**
@@ -22,12 +22,9 @@ object AutoMaster {
     if ( refetchIfExists ||
       FlowRegistry.autoTask(flowType)(actorName)._1.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
-      // 给autoMaster发送获取数据请求
       autoMaster ! CommandAutoTask(state.flowId, flowType, actorName)
     }
   }
-
-
 
   /**
     *
@@ -36,8 +33,8 @@ object AutoMaster {
     */
   case class CommandAutoTask(flowId: String, flowType:String, actorName: String)
 
-
   def props(dependOn: Array[String]) = Props(new AutoMaster(dependOn))
+
 }
 
 class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, dependOn) with ServicableBehavior {
@@ -56,12 +53,10 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
   override def initHook(): Unit = {
     log.debug("DataMaster initHook now!!!!")
     for (elem: (String, Map[String, (Array[String], (Map[String, ActorRef]) => Props)]) <- FlowRegistry.autoTask) {
-      println(s"begin create flowType ${elem._1}....")
-     // var temp: Map[String, ActorRef] = elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1)))
-      actors = actors + (elem._1 ->  elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1))) )
+      log.debug(s"begin create flowType ${elem._1}....")
+      actors = actors + (elem._1 -> elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1))) )
     }
-
-    println(s"all AutoActors are $actors")
+    log.debug(s"all AutoActors are $actors")
   }
 }
 
