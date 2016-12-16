@@ -71,7 +71,7 @@ class PersistentFlow(
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
-      sender() ! genGraph(state)
+      sender() ! state
       makeDecision
 
     case cmd: CommandPoint =>

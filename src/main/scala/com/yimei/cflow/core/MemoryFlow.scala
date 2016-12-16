@@ -42,7 +42,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"收到${cmd}")
-      sender() ! RunFlowSuccess(flowId)
+      sender() ! state
       makeDecision() // 注意顺序
 
     case cmd: CommandPoint =>
