@@ -1,6 +1,6 @@
 -- 流程实例
 create table flow_instance(
-  id long not null auto_increment,
+  id BIGINT not null auto_increment,
   flow_id varchar(64) not null,
   flow_type varchar(16) not null,     -- cang   ying
   user_type varchar(32) not null,    -- 用户类型  相当于party_id
@@ -12,7 +12,7 @@ create table flow_instance(
 
 -- 流程任务
 create table flow_task(
-  id long not null auto_increment,
+  id BIGINT not null auto_increment,
   flow_id    varchar(64)   not null,
   task_id    varchar(128)  not null,
   task_name  varchar(64)   not null,
@@ -30,7 +30,7 @@ create table flow_task(
 -- 港口方-1, 港口方-2
 -- ...
 create table  party_instance (
-  id long not null auto_increment,
+  id BIGINT not null auto_increment,
   party_class varchar(8) not null,    -- 参与方类别 -  zjf  rzf  myf,
   instance_id varchar(32),                    -- 比如融资方-1, 融资方-2
   party_name varchar(256),            -- 参与方名称
@@ -40,8 +40,8 @@ create table  party_instance (
 
 -- 用户表
 create table party_user(
-  id long not null auto_increment,
-  party_id long not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
+  id BIGINT not null auto_increment,
+  party_id BIGINT not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
   user_id varchar(10) not null,     --
 
   password varchar(128) not null,
@@ -58,7 +58,7 @@ create table party_user(
 --
 create table user_group(
 
-  id long not null auto_increment,
+  id BIGINT not null auto_increment,
   party_class varchar(32) not null,    -- 参与方类别
   gid varchar(32) not null,            -- 参与方组id
   description varchar(256) not null,  -- 运营组描述
