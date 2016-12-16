@@ -22,7 +22,6 @@ object CangGraph extends FlowGraph {
     */
   override def getFlowGraph(state: State): Graph = ???
 
-
   /**
     * flow type
     *

@@ -1,4 +1,4 @@
-package com.yimei.cflow.graph.config
+package com.yimei.cflow.graph
 
 /**
   * Created by hary on 16/12/15.
