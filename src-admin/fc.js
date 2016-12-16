@@ -484,20 +484,19 @@
                     var val = [res.edges[i].begin, res.edges[i].end];
                     var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
                     var isProcessing = res.state.edge ? (i==res.state.edge) : false;
-                    edges.push({ data: {'source': val[0], 'target':val[1], 'name':i}, 'isFinished': isFinished, 'isProcessing': isProcessing});
+                    edges.push({ data: {'source': val[0], 'target':val[1], 'name':i}, classes: (isFinished? 'isFinished' : '') +  (isProcessing? 'isProcessing':'')});
                     
                     val.forEach(function(v, j){
                         if(node_keys.indexOf(v)<0){
                             node_keys.push(v);
                             var ispro = (j==0)? false : isProcessing;
-                            nodes.push({data: {'id': v} , 'isFinished': isFinished, 'isProcessing': ispro});
+                            nodes.push({data: {'id': v}, classes: (isFinished? 'isFinished' : '') +  (isProcessing? 'isProcessing':'')});
                         }
                         isFinished && (nodes[node_keys.indexOf(v)].isFinished = true);
                         isProcessing && (nodes[node_keys.indexOf(v)].isProcessing = true);
                     });
                 };
-console.log(nodes)
-console.log(edges)
+console.log({nodes: nodes, edges: edges})
                 return {nodes: nodes, edges: edges};
             // })
         // })
