@@ -23,11 +23,8 @@ trait FlowProtocol extends DefaultJsonProtocol {
     }
   }
 
-  // 序列Edge
   implicit val edgeFormat = jsonFormat5(Edge)
 
-  // 泛型数据点
-  //implicit def dataPointFormat[T:JsonFormat] = jsonFormat5(DataPoint.apply[T])
   implicit val dataPointFormat = jsonFormat6(DataPoint)
 
   implicit val arrowFormat =jsonFormat2(Arrow)

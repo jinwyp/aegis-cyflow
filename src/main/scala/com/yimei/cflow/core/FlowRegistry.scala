@@ -14,6 +14,7 @@ object FlowRegistry {
 
   private val registries = collection.mutable.Map[String, FlowGraph]()
 
+  // flowType -> actorName -> AutoProperty
   var autoTask: Map[String, Map[String, AutoProperty]]  = Map()
 
   // flowType -> userTask -> points

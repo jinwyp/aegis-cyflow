@@ -19,10 +19,10 @@ import scala.concurrent.duration._
 /**
   * Created by hary on 16/12/7.
   */
-@Path("/flow")
-class CangRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
+@Path("/cang")
+class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 
-  implicit val timeout = CangRoute.flowServiceTimeout // todo  why import User.userServiceTimeout does not work
+  implicit val timeout = ViewRoute.cangServiceTimeout // todo  why import User.userServiceTimeout does not work
 
   /**
     * 为用户创建流程
@@ -127,13 +127,13 @@ class CangRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 /**
   * Created by hary on 16/12/2.
   */
-object CangRoute {
+object ViewRoute {
 
-  implicit val flowServiceTimeout = Timeout(2 seconds)
+  implicit val cangServiceTimeout = Timeout(2 seconds)
 
 
-  def apply(proxy: ActorRef) = new CangRoute(proxy)
+  def apply(proxy: ActorRef) = new ViewRoute(proxy)
 
-  def route(proxy: ActorRef): Route = CangRoute(proxy).route
+  def route(proxy: ActorRef): Route = ViewRoute(proxy).route
 }
 
