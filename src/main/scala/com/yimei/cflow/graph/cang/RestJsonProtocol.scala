@@ -8,5 +8,4 @@ import spray.json.DefaultJsonProtocol
 trait RestJsonProtocol extends DefaultJsonProtocol {
 
 
-
 }
