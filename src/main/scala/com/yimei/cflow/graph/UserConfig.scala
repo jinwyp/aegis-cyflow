@@ -12,6 +12,9 @@ class UserConfig {
   val gkf_class = "gk" // 港口方
   val jgf_class = "jg" // 监管方
 
+  //系统中全部的参与方
+  val all_classes = Array(rzf_class,zjf_class,myf_class,gkf_class,jgf_class)
+
 
   // 贸易方运营组
   val myf_caiwu = "cw" // 贸易方财务

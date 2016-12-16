@@ -5,7 +5,7 @@ import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
 /**
   * Created by hary on 16/12/6.
   */
-trait DatabaseConfig extends CoreConfig {
+object DatabaseConfig extends CoreConfig {
 
   private val hikariConfig = new HikariConfig()
   hikariConfig.setJdbcUrl(coreConfig.getString("database.url"))
