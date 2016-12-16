@@ -88,11 +88,13 @@ object YingGraph extends FlowGraph {
   def J1(state: State): Arrow = Arrow(V2, Some(E2))
 
   def J2(state: State): Arrow = {
-    //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
-    if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
-      Arrow(V3,Some(E3))
-    else
-      Arrow(FlowFail, None)
+
+    Arrow(V3,Some(E3))
+//    //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
+//    if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
+//      Arrow(V3,Some(E3))
+//    else
+//      Arrow(FlowFail, None)
   }
 
   def J3(state: State): Arrow = {
