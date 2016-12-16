@@ -91,190 +91,191 @@
                 var res = {
                     "edges": {
                         "E3": {
-                        "userTasks": [],
-                        "partGTasks": {
-                            "KPG1": [
-                            "PG"
-                            ]
-                        },
-                        "begin": "V2",
-                        "partUTasks": {
-                            "KPU1": [
-                            "PU"
-                            ]
-                        },
-                        "autoTasks": [],
-                        "end": "V3"
+                            "userTasks": [],
+                            "partGTasks": {
+                                "KPG1": [
+                                "PG"
+                                ]
+                            },
+                            "begin": "V2",
+                            "partUTasks": {
+                                "KPU1": [
+                                "PU"
+                                ]
+                            },
+                            "autoTasks": [],
+                            "end": "V3"
                         },
                         "Start": {
-                        "userTasks": [],
-                        "partGTasks": {},
-                        "begin": "V5",
-                        "partUTasks": {},
-                        "autoTasks": [],
-                        "end": "V3"
+                            "userTasks": [],
+                            "partGTasks": {},
+                            "begin": "V5",
+                            "partUTasks": {},
+                            "autoTasks": [],
+                            "end": "V3"
                         },
                         "E2": {
-                        "userTasks": [
-                            "TKUP1",
-                            "TKPG1"
-                        ],
-                        "partGTasks": {},
-                        "begin": "V1",
-                        "partUTasks": {},
-                        "autoTasks": [],
-                        "end": "V2"
+                            "userTasks": [
+                                "TKUP1",
+                                "TKPG1"
+                            ],
+                            "partGTasks": {},
+                            "begin": "V1",
+                            "partUTasks": {},
+                            "autoTasks": [],
+                            "end": "V2"
                         },
                         "E1": {
-                        "userTasks": [],
-                        "partGTasks": {},
-                        "begin": "V0",
-                        "partUTasks": {},
-                        "autoTasks": [
-                            "A",
-                            "B",
-                            "C"
-                        ],
-                        "end": "V1"
+                            "userTasks": [],
+                            "partGTasks": {},
+                            "begin": "V0",
+                            "partUTasks": {},
+                            "autoTasks": [
+                                "A",
+                                "B",
+                                "C"
+                            ],
+                            "end": "V1"
                         },
                         "E5": {
-                        "userTasks": [],
-                        "partGTasks": {},
-                        "begin": "V4",
-                        "partUTasks": {},
-                        "autoTasks": [
-                            "DEF"
-                        ],
-                        "end": "V5"
+                            "userTasks": [],
+                            "partGTasks": {},
+                            "begin": "V4",
+                            "partUTasks": {},
+                            "autoTasks": [
+                                "DEF"
+                            ],
+                            "end": "V5"
                         },
                         "E4": {
-                        "userTasks": [
-                            "UA"
-                        ],
-                        "partGTasks": {},
-                        "begin": "V3",
-                        "partUTasks": {},
-                        "autoTasks": [],
-                        "end": "V4"
+                            "userTasks": [
+                                "UA"
+                            ],
+                            "partGTasks": {},
+                            "begin": "V3",
+                            "partUTasks": {},
+                            "autoTasks": [],
+                            "end": "V4"
                         }
                     },
                     "state": {
                         "guid": "00-hary",
                         "flowType": "ying",
                         "decision": "FlowSuccess",
+                        "edge": "E5",
                         "points": {
-                        "E": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        },
-                        "PU2": {
-                            "used": false,
-                            "timestamp": 1481878273504,
-                            "id": "ae16a1fe-c325-4fa3-985b-16e474bcdc90",
-                            "operator": "fund-wangqiId",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "PU1": {
-                            "used": false,
-                            "timestamp": 1481878273504,
-                            "id": "47c76192-b1b3-4099-8979-84df9d273dcf",
-                            "operator": "fund-wangqiId",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "F": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        },
-                        "A": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        },
-                        "PG1": {
-                            "used": false,
-                            "timestamp": 1481878278504,
-                            "id": "bd7f40c2-cdff-40c9-936b-1ae56953f43f",
-                            "operator": "fund-wangqiId",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "UA2": {
-                            "used": true,
-                            "timestamp": 1481878298495,
-                            "id": "73fed178-50e9-4a9a-91e6-0e04815510e3",
-                            "operator": "00-hary",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "B": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        },
-                        "PG2": {
-                            "used": false,
-                            "timestamp": 1481878278504,
-                            "id": "0fcbddce-bf37-44d5-956e-69c6bbb4e602",
-                            "operator": "fund-wangqiId",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "C": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        },
-                        "UA1": {
-                            "used": true,
-                            "timestamp": 1481878298495,
-                            "id": "bc00b306-3dd1-46e5-8d37-690237ab3c5d",
-                            "operator": "00-hary",
-                            "value": "50",
-                            "memo": "userdata"
-                        },
-                        "KPU1": {
-                            "used": true,
-                            "timestamp": 1481878268507,
-                            "id": "2088389a-65b2-495f-84ef-de2557493b38",
-                            "operator": "00-hary",
-                            "value": "fund-wangqiId",
-                            "memo": "userdata"
-                        },
-                        "KPG1": {
-                            "used": true,
-                            "timestamp": 1481878268509,
-                            "id": "04e70d57-ad39-4ec4-9a21-08b9011b56d7",
-                            "operator": "00-hary",
-                            "value": "fund-wqGroup",
-                            "memo": "userdata"
-                        },
-                        "D": {
-                            "used": true,
-                            "timestamp": 1481878267515,
-                            "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
-                            "operator": "system",
-                            "value": "50",
-                            "memo": "memo"
-                        }
+                            "E": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            },
+                            "PU2": {
+                                "used": false,
+                                "timestamp": 1481878273504,
+                                "id": "ae16a1fe-c325-4fa3-985b-16e474bcdc90",
+                                "operator": "fund-wangqiId",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "PU1": {
+                                "used": false,
+                                "timestamp": 1481878273504,
+                                "id": "47c76192-b1b3-4099-8979-84df9d273dcf",
+                                "operator": "fund-wangqiId",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "F": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            },
+                            "A": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            },
+                            "PG1": {
+                                "used": false,
+                                "timestamp": 1481878278504,
+                                "id": "bd7f40c2-cdff-40c9-936b-1ae56953f43f",
+                                "operator": "fund-wangqiId",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "UA2": {
+                                "used": true,
+                                "timestamp": 1481878298495,
+                                "id": "73fed178-50e9-4a9a-91e6-0e04815510e3",
+                                "operator": "00-hary",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "B": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            },
+                            "PG2": {
+                                "used": false,
+                                "timestamp": 1481878278504,
+                                "id": "0fcbddce-bf37-44d5-956e-69c6bbb4e602",
+                                "operator": "fund-wangqiId",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "C": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            },
+                            "UA1": {
+                                "used": true,
+                                "timestamp": 1481878298495,
+                                "id": "bc00b306-3dd1-46e5-8d37-690237ab3c5d",
+                                "operator": "00-hary",
+                                "value": "50",
+                                "memo": "userdata"
+                            },
+                            "KPU1": {
+                                "used": true,
+                                "timestamp": 1481878268507,
+                                "id": "2088389a-65b2-495f-84ef-de2557493b38",
+                                "operator": "00-hary",
+                                "value": "fund-wangqiId",
+                                "memo": "userdata"
+                            },
+                            "KPG1": {
+                                "used": true,
+                                "timestamp": 1481878268509,
+                                "id": "04e70d57-ad39-4ec4-9a21-08b9011b56d7",
+                                "operator": "00-hary",
+                                "value": "fund-wqGroup",
+                                "memo": "userdata"
+                            },
+                            "D": {
+                                "used": true,
+                                "timestamp": 1481878267515,
+                                "id": "b563e2c4-cddd-46e6-9009-8a13193c406f",
+                                "operator": "system",
+                                "value": "50",
+                                "memo": "memo"
+                            }
                         },
                         "flowId": "ying-00-hary-1",
                         "histories": [
@@ -282,15 +283,15 @@
                             "end": "FlowSuccess"
                         },
                         {
-                            "end": "V5",
+                            "end": "V4",
                             "edge": {
-                            "userTasks": [],
+                            "userTasks": [
+                                "UA"
+                            ],
                             "partGTasks": {},
-                            "name": "E5",
+                            "name": "E4",
                             "partUTasks": {},
-                            "autoTasks": [
-                                "DEF"
-                            ]
+                            "autoTasks": []
                             }
                         },
                         {
@@ -306,28 +307,6 @@
                             }
                         },
                         {
-                            "end": "V3",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "Start",
-                            "partUTasks": {},
-                            "autoTasks": []
-                            }
-                        },
-                        {
-                            "end": "V5",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "E5",
-                            "partUTasks": {},
-                            "autoTasks": [
-                                "DEF"
-                            ]
-                            }
-                        },
-                        {
                             "end": "V4",
                             "edge": {
                             "userTasks": [
@@ -337,62 +316,6 @@
                             "name": "E4",
                             "partUTasks": {},
                             "autoTasks": []
-                            }
-                        },
-                        {
-                            "end": "V3",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "Start",
-                            "partUTasks": {},
-                            "autoTasks": []
-                            }
-                        },
-                        {
-                            "end": "V5",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "E5",
-                            "partUTasks": {},
-                            "autoTasks": [
-                                "DEF"
-                            ]
-                            }
-                        },
-                        {
-                            "end": "V4",
-                            "edge": {
-                            "userTasks": [
-                                "UA"
-                            ],
-                            "partGTasks": {},
-                            "name": "E4",
-                            "partUTasks": {},
-                            "autoTasks": []
-                            }
-                        },
-                        {
-                            "end": "V3",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "Start",
-                            "partUTasks": {},
-                            "autoTasks": []
-                            }
-                        },
-                        {
-                            "end": "V5",
-                            "edge": {
-                            "userTasks": [],
-                            "partGTasks": {},
-                            "name": "E5",
-                            "partUTasks": {},
-                            "autoTasks": [
-                                "DEF"
-                            ]
                             }
                         },
                         {
@@ -470,8 +393,7 @@
                         "KPG1": "设置融资方 group1",
                         "D": "征信平分4"
                     }
-                    }
-
+                }
 
                 var node_keys = [];
                 var nodes = [];
@@ -484,19 +406,19 @@
                     var val = [res.edges[i].begin, res.edges[i].end];
                     var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
                     var isProcessing = res.state.edge ? (i==res.state.edge) : false;
-                    edges.push({ data: {'source': val[0], 'target':val[1], 'name':i}, classes: (isFinished? 'isFinished' : '') +  (isProcessing? 'isProcessing':'')});
+                    edges.push({ data: {'source': val[0], 'target':val[1], 'name':i}, classes: (isFinished? 'isFinished' : '') +' '+  (isProcessing? 'isProcessing':'')});
                     
                     val.forEach(function(v, j){
                         if(node_keys.indexOf(v)<0){
                             node_keys.push(v);
                             var ispro = (j==0)? false : isProcessing;
-                            nodes.push({data: {'id': v}, classes: (isFinished? 'isFinished' : '') +  (isProcessing? 'isProcessing':'')});
+                            nodes.push({data: {'id': v}, classes: (isFinished? 'isFinished' : '') +' '+  (isProcessing? 'isProcessing':'')});
                         }
                         isFinished && (nodes[node_keys.indexOf(v)].isFinished = true);
                         isProcessing && (nodes[node_keys.indexOf(v)].isProcessing = true);
                     });
                 };
-console.log({nodes: nodes, edges: edges})
+                console.log({nodes: nodes, edges: edges})
                 return {nodes: nodes, edges: edges};
             // })
         // })
