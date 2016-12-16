@@ -8,7 +8,9 @@ case class FileObjList(fileList: List[FileObj])
 
 /** 进入仓押系统,初始化 **/
 case class StartFlow(applyUserId: BigInt, applyUserName: String, applyUserPhone: String, applyCompanyId: BigInt,
-                     applyCompanyName: String, financeCreateTime: LocalDateTime, financeEndTime: LocalDateTime,
+                     applyCompanyName: String, //申请人-融资方 信息
+                     financeCreateTime: LocalDateTime,
+                     financeEndTime: LocalDateTime,  //仓押开始,结束时间
                      downstreamCompanyName: String, financingAmount: BigDecimal, expectDate: Int, interestRate: BigDecimal,
                      coalType: String, coalIndex_NCV: Int, coalIndex_RS: BigDecimal, coalIndex_ADV: BigDecimal,
                      stockPort: String, coalAmount: BigDecimal, auditFileList: FileObjList, createTime: LocalDateTime)
