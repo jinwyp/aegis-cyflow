@@ -1,7 +1,5 @@
 package com.yimei.cflow.graph
 
-import scala.collection.immutable.HashMap.HashMap1
-
 /**
   * Created by hary on 16/12/15.
   */
