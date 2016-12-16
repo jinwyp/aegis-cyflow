@@ -6,15 +6,15 @@ object IdGenerator {
   // Command
   trait Command
 
-  case class CommandGetId(key: String) extends Command
+  case class CommandGetId(key: String, buffer: Int = 1) extends Command
   case object CommandQueryId extends Command
 
-  case class Id(id: BigInt)  // 返回的id
+  case class Id(id: Long)  // 返回的id
 
   // Event
   trait Event
 
-  case class EventIncrease(key: String) extends Event
+  case class EventIncrease(key: String, buffer: Int) extends Event
 
   // State
   case class State(keys: Map[String, Long])
@@ -35,15 +35,16 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
 
   var state = State(Map())
 
-  def updateState(event: Event) = {
+  def updateState(event: Event): Long = {
     event match {
-      case EventIncrease(key) =>
+      case EventIncrease(key, buffer) =>
         val nextId = if( state.keys.contains(key)) {
-          state.keys(key) + 1L
+          state.keys(key) + buffer
         } else {
           0L
         }
         state = state.copy(keys = state.keys + (key -> nextId))
+        nextId
     }
   }
 

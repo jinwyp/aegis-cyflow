@@ -29,21 +29,24 @@ object FlowMaster {
   */
 class FlowMaster(dependOn: Array[String], persist: Boolean = true)
   extends ModuleMaster(module_flow, dependOn)
-    with ServicableBehavior {
+    with ServicableBehavior
+    with IdBufferable {
+
+  // IdBufferable need this
+  override val bufferSize: Int =  100
+  override val bufferKey: String = "flow"
+  implicit val myIdGenerator = modules(module_id)
+  implicit val myEc = context.system.dispatcher
+  implicit val myTimeout = Timeout(3 seconds)
 
   def serving: Receive = {
 
     // create and run flow
     case command@CommandCreateFlow(flowType, guid) =>
 
-      // use IdGenerator to get persistenceId  todo: optimize !!!
       if (true) {
-        implicit val ec = context.system.dispatcher
-        implicit val timeout = Timeout(3 seconds)
-        val fpid = (modules(module_id) ? CommandGetId("flow")).mapTo[Id]
-
-        val pid = Await.result(fpid, 2 seconds)   //
-        val flowId = s"${flowType}-${guid}-${pid.id}" // 创建flowId
+        val pid = nextId
+        val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
         val child = create(flowId)
         child forward CommandRunFlow(flowId)
 

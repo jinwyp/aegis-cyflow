@@ -56,7 +56,7 @@ object ServiceProxy extends CoreConfig {
   // Id模块
   // 1> get id
   // 2> query IdGenerator state
-  def idGet(proxy: ActorRef, key: String) = (proxy ? CommandGetId(key)).mapTo[Id]
+  def idGet(proxy: ActorRef, key: String, buffer: Int = 1) = (proxy ? CommandGetId(key, buffer)).mapTo[Id]
   def idState(proxy: ActorRef) = (proxy ? CommandQueryId).mapTo[IdGenerator.State]
 
   // Group模块  todo 王琦
