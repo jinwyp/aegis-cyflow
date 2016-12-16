@@ -152,16 +152,25 @@ object Flow {
     }
   }
 
+  //
   // 分支边
+  // partUTasks:
+  //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的guid,
+  //   value为, 这个参与方需要作的任务列表
+  //
+  // partGTasks:
+  //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的ggid(参与方运营组)
+  //   value为, 这个参与方运营组需要作的任务列表
+  //
   case class Edge( name: String,
                    autoTasks: Array[String] = Array(),
                    userTasks: Array[String] = Array(),
-                   partUTasks: Map[String,Array[String]] = Map(), //  
+                   partUTasks: Map[String,Array[String]] = Map(),
                    partGTasks: Map[String,Array[String]] = Map()  //
                  ) extends EdgeBehavior {
     override def toString = name
   }
-  val EdgeStart = new Edge("Start")   // 起始边
+  val EdgeStart = new Edge("Start")   // start edge
 
   // common judges
   val FlowSuccess = "FlowSuccess"
