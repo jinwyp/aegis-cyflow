@@ -145,9 +145,6 @@ object Flow {
         allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at).points ++: a) ++
         allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
     }
-
-
-
   }
 
   // 分支边
@@ -173,70 +170,23 @@ object Flow {
     override def toString = "Start"
   }
 
-//  case object EdgeStart extends Edge(Array[String](),Array[String]()) {
-//    override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
-//      throw new IllegalArgumentException("VoidEdge can not be scheduled")
-//
-//    def check(state: State, autoTask: Array[String], userTask: Array[String]) = true
-//
-//    override def toString = "Start"
-//  }
-
-
-
   val FlowSuccess = "FlowSuccess"
   val FlowFail = "FlowFail"
   val FlowTodo = "FlowTodo"
 
-//  trait Decision {
-//    def run(state: State): Arrow
-//  }
-//
-//  trait Decided extends Decision
-//
-//  case object FlowSuccess extends Decided {
-//    def run(state: State) = Arrow(FlowSuccess, None)
-//
-//    override def toString = "FlowSuccess"
-//  }
-//
-//  case object FlowFail extends Decided {
-//    def run(state: State) = Arrow(FlowFail, None)
-//
-//    override def toString = "FlowFail"
-//  }
-//
-//  case object FlowTodo extends Decided {
-//    def run(state: State) = Arrow(FlowTodo, None)
-//
-//    override def toString = "FlowTodo"
-//  }
+  case class EdgeDescription(
+                              autoTasks: Array[String] = Array(),
+                              userTasks: Array[String] = Array(),
+                              partUTasks: Map[String,Array[String]] = Map(),
+                              partGTasks: Map[String,Array[String]] = Map(),
+                              begin: String,
+                              end: String
+                            )
 
-//  abstract class Judge extends Decision {
-//
-//    // 计算结果
-//    def run(state: State): Arrow = {
-//      state.edge match {
-//        case None =>
-//          throw new IllegalArgumentException("impossible here")
-//        case Some(e) =>
-//          if (!e.check(state)) {
-//            Arrow(FlowTodo, None)
-//          } else {
-//            decide(state)
-//          }
-//      }
-//    }
-//
-//    // 依据状态评估分支: success, 失败, 或者继续评估
-//    def decide(state: State): Arrow
-//  }
 
-  case class Graph(edges: Map[Edge, Array[String]], state: State, dataDescription: Map[String, String])
+  case class Graph(edges: Map[String, EdgeDescription], state: State, dataDescription: Map[String, String])
 
   case class Arrow(end: String, edge: Option[Edge])
-
-
 
 }
 
