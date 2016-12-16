@@ -12,8 +12,7 @@ class MemoryIdGenerator(name: String) extends AbstractIdGenerator {
 
   def serving: Receive = {
     case CommandGetId(key, buffer) =>
-      val old = state.keys(key)
-      updateState(EventIncrease(key, buffer))
+      val old = updateState(EventIncrease(key, buffer))
       sender() ! Id(old + 1)
   }
 }
