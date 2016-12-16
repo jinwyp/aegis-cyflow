@@ -156,8 +156,8 @@ object Flow {
   case class Edge( name: String,
                    autoTasks: Array[String] = Array(),
                    userTasks: Array[String] = Array(),
-                   partUTasks: Map[String,Array[String]] = Map(),
-                   partGTasks: Map[String,Array[String]] = Map()
+                   partUTasks: Map[String,Array[String]] = Map(), //  
+                   partGTasks: Map[String,Array[String]] = Map()  //
                  ) extends EdgeBehavior {
     override def toString = name
   }
