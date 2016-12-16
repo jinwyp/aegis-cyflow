@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph
 
+import scala.collection.immutable.HashMap.HashMap1
+
 /**
   * Created by hary on 16/12/15.
   */
@@ -16,12 +18,30 @@ class UserConfig {
   val all_classes = Array(rzf_class,zjf_class,myf_class,gkf_class,jgf_class)
 
 
+  // 融资方运营组
+  val rzf_yewu = "yw"  //融资方业务
+
+  // 监管费运营组
+  val jgf_yewu = "yw"  //监管方业务
+
+  // 港口运营组
+  val gkf_yewu = "yw"  //港口方业务
   // 贸易方运营组
+
   val myf_caiwu = "cw" // 贸易方财务
-  val myf_yewu  = "yw"  // 贸易方业务
+  val myf_yewu  = "yw" // 贸易方业务
 
   // 资金方运营组
   val zjf_caiwu = "cw" // 资金方财务
-  val zjf_yewu  = "yw"  // 资金方业务
+  val zjf_yewu  = "yw" // 资金方业务
+
+
+
+  val roleList  = Map[String, String](
+    jgf_yewu -> "监管业务员员",
+    gkf_yewu -> "港口业务员员",
+    zjf_yewu -> "资金方业务员",
+    zjf_caiwu -> "资金方财务"
+  );
 
 }
