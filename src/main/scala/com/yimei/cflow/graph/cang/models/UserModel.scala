@@ -26,6 +26,17 @@ case class UserListSearch(username: String, name: String, companyName: String, r
 /** 管理员重置密码 **/
 case class AdminResetUserPwd(id: BigInt)
 
+/** 管理员禁用用户 **/
+case class AdminDisableUser(id: BigInt)
+
+/** 用户详细信息 **/
+case class UserDetail(id: BigInt, username: String, name: String, email: String, phone: String, companyName: String, roleName: String, lastLoginTime: LocalDateTime)
+
+/** 用户登陆日志信息 **/
+case class UserLoginLog(userId: BigInt, companyId: BigInt, username: String, createTime: LocalDateTime)
+
+
+
 
 
 
