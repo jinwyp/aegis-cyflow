@@ -1,7 +1,6 @@
 package com.yimei.cflow.graph.cang.models
 
 import java.sql.Timestamp
-import java.time.{LocalDateTime}
 
 import spray.json.DefaultJsonProtocol
 
@@ -23,7 +22,9 @@ object CangFlowModel extends DefaultJsonProtocol {
                        financingDays: Int,               //融资天数
                        interestRate: BigDecimal,         //利率
                        coalType: String,                 //煤炭种类,品种
-                       coalIndex_NCV: Int, coalIndex_RS: BigDecimal, coalIndex_ADV: BigDecimal,  //煤炭 热值,硫分,空干基挥发分
+                       coalIndex_NCV: Int,
+                       coalIndex_RS: BigDecimal,
+                       coalIndex_ADV: BigDecimal,        //煤炭 热值,硫分,空干基挥发分
                        stockPort: String,                //库存港口
                        coalAmount: BigDecimal,           //总质押吨数
                        auditFileList: FileObjList)       //审批文件列表
@@ -49,5 +50,10 @@ object CangFlowModel extends DefaultJsonProtocol {
                                 financeFileList: FileObjList,
                                 businessFileList: FileObjList)
   implicit val customerUploadFileFormat = jsonFormat3(CustomerUploadFile)
+
+
+
+
+
 
 }
