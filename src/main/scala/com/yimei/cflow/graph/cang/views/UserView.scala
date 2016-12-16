@@ -1,4 +1,4 @@
-package com.yimei.cflow.graph.cang.viewModels
+package com.yimei.cflow.graph.cang.views
 
 import java.sql.Timestamp
 
