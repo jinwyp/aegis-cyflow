@@ -14,15 +14,22 @@ object GraphBuilder {
   }
 
   class OpsVE(vv: String, e: Edge) {
-    def ~>(v: String)(implicit builder: GraphBuilder) = builder.lines = builder.lines + (e -> Array(vv, v))
+    def ~>(v: String)(implicit builder: GraphBuilder) =
+      builder.lines = builder.lines + (e.name -> EdgeDescription(
+        autoTasks = e.autoTasks,
+        userTasks = e.userTasks,
+        partUTasks = e.partUTasks,
+        partGTasks = e.partGTasks,
+        vv,
+        v))
   }
 
   def jsonGraph(state: State)(routine: GraphBuilder => GraphBuilder): Graph = {
-    val builder = new GraphBuilder(Map[Edge, Array[String]]())
+    val builder = new GraphBuilder(Map[String, EdgeDescription]())
     routine(builder)
     Graph(builder.lines, state, pointDescription)
   }
 
-  class GraphBuilder(var lines: Map[Edge, Array[String]])
+  class GraphBuilder(var lines: Map[String, EdgeDescription])
 
 }
