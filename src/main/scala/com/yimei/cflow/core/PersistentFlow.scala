@@ -9,6 +9,8 @@ import com.yimei.cflow.core.FlowRegistry._
 import scala.concurrent.duration._
 
 object PersistentFlow {
+  def props(): Props = ???
+
   def props(graph: FlowGraph,
             flowId: String,
             modules: Map[String, ActorRef],

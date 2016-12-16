@@ -1,6 +1,10 @@
 package com.yimei.cflow.group
 
+import akka.actor.Props
+
 object Group {
+  def props(): Props = ???
+
 
   // Command
   trait Command {

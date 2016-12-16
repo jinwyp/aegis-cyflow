@@ -6,7 +6,7 @@ import com.yimei.cflow.core.Flow.Command
 /**
   * Created by hary on 16/12/16.
   */
-trait FlowClusterSupport {
+object FlowClusterSupport {
   // for cluster
   val extractEntityId: ShardRegion.ExtractEntityId = {
     case cmd: Command => (cmd.flowId, cmd)
@@ -17,4 +17,6 @@ trait FlowClusterSupport {
   val extractShardId: ShardRegion.ExtractShardId = {
     case cmd: Command => (cmd.flowId.hashCode % numberOfShards).toString
   }
+
+  val shardName = "flow"
 }

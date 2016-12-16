@@ -6,7 +6,7 @@ import com.yimei.cflow.group.Group.Command
 /**
   * Created by hary on 16/12/16.
   */
-trait GroupClusterSupport {
+object GroupClusterSupport {
   // for cluster
   val extractEntityId: ShardRegion.ExtractEntityId = {
     case cmd: Command => (cmd.ggid, cmd)
@@ -17,4 +17,6 @@ trait GroupClusterSupport {
   val extractShardId: ShardRegion.ExtractShardId = {
     case cmd: Command => (cmd.ggid.hashCode % numberOfShards).toString
   }
+
+  val shardName = "group"
 }
