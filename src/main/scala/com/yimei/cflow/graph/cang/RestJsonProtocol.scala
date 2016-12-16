@@ -1,6 +1,5 @@
 package com.yimei.cflow.graph.cang
 
-import com.yimei.cflow.graph.cang.models.FileObj
 import spray.json.DefaultJsonProtocol
 
 /**
@@ -8,6 +7,6 @@ import spray.json.DefaultJsonProtocol
   */
 trait RestJsonProtocol extends DefaultJsonProtocol {
 
-  implicit val fileObjFormat = jsonFormat3(FileObj)
+
 
 }

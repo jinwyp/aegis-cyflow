@@ -3,6 +3,7 @@ package com.yimei.cflow.graph.cang
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow.{Graph, State}
 import com.yimei.cflow.core.FlowGraph
+import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 /**
   * Created by hary on 16/12/13.
@@ -32,7 +33,12 @@ object CangGraph extends FlowGraph {
   /**
     *
     */
-  override def getAutoTask: Map[String, (Array[String], (Map[String, ActorRef]) => Props)] = ???
+
+
+  /**
+    *
+    */
+  override def getAutoTask: Map[String, AutoProperty] = ???
 
   /**
     * 注册用户任务

@@ -51,15 +51,5 @@ object AutoActors extends CoreConfig {
           CommandPoints(flowId, Map( point_D -> point, point_E -> point, point_F -> point)))
     }
   }
-
-
-  // 同时采集GHK
-//  class GHK(modules: Map[String, ActorRef])  extends Actor {
-//    def receive = {
-//      case CommandAutoTask(flowId,flowType, name) =>
-//        context.system.scheduler.scheduleOnce(7 seconds, modules(module_flow),
-//          CommandPoints(flowId, Map( point_G -> point, point_H -> point, point_K -> point)))
-//    }
-//  }
 }
 

@@ -9,8 +9,11 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{Command, CommandCreateFlow, CommandRunFlow}
 import com.yimei.cflow.core.IdGenerator.{CommandGetId, Id}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
+
 import scala.concurrent.duration._
 import akka.pattern._
+
+import scala.concurrent.{Await, Future}
 
 /**
   * Created by hary on 16/12/1.
@@ -33,23 +36,23 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
     // create and run flow
     case command@CommandCreateFlow(flowType, guid) =>
 
-      // use IdGenerator to get persistenceId
-      // todo check it
-      if (false) {
+      // use IdGenerator to get persistenceId  todo: optimize !!!
+      if (true) {
         implicit val ec = context.system.dispatcher
         implicit val timeout = Timeout(3 seconds)
         val fpid = (modules(module_id) ? CommandGetId("flow")).mapTo[Id]
-        for (pid <- fpid) {
-          val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
-          val child = create(flowId)
-          child forward CommandRunFlow(flowId)
-        }
-      }
 
-      // use UUID to generate persistenceId
-      val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
-    val child = create(flowId)
-      child forward CommandRunFlow(flowId)
+        val pid = Await.result(fpid, 2 seconds)   //
+        val flowId = s"${flowType}-${guid}-${pid.id}" // 创建flowId
+        val child = create(flowId)
+        child forward CommandRunFlow(flowId)
+
+      } else {
+        // use UUID to generate persistenceId
+        val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
+        val child = create(flowId)
+        child forward CommandRunFlow(flowId)
+      }
 
     // other command
     case command: Command =>

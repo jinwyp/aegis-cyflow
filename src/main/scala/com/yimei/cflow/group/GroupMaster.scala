@@ -13,7 +13,7 @@ object GroupMaster {
     if (refetchIfExists ||
       userTask(flowType)(taskName).filter(!state.points.contains(_)).length > 0
     ) {
-      println(s"gfetch with${ggid}, ${state.guid}, ${state}")
+      // println(s"gfetch with${ggid}, ${state.guid}, ${state}")
       groupMaster ! CommandGroupTask(flowType, state.flowId, ggid, taskName)
     }
   }

@@ -3,28 +3,28 @@ package com.yimei.cflow.graph.cang.models
 import java.time.LocalDateTime
 
 /** 添加用户 **/
-case class AddUser(username: String, password: String, name: String, email: String, phone: String, companyName: String, roleId: Int)
+case class AddUser(username: String, password: String, name: String, email: String, phone: String, companyName: String, roleId: Int, createTime: LocalDateTime, createManId: BigInt, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 管理员修改用户 **/
-case class UpdateUser(id: BigInt, username: String, name: String, email: String, phone: String, companyName: String, roleId: Int)
+case class UpdateUser(id: BigInt, username: String, name: String, email: String, phone: String, companyName: String, roleId: Int, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 用户修改自己信息 **/
-case class UpdateSelf(email: String, phone: String)
+case class UpdateSelf(email: String, phone: String, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 用户登陆 **/
-case class UserLogin(username: String, password: String)
+case class UserLogin(username: String, password: String, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 用户自己修改密码 **/
-case class UserResetPwd(newPassword: String, oldPassword: String)
+case class UserResetPwd(newPassword: String, oldPassword: String, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 用户管理,列表字段 **/
-case class UserList(username: String, name: String, companyName: String, roleName: String, lastLoginTime: LocalDateTime)
+case class UserList(username: String, name: String, companyName: String, roleName: String)
 
-/** 用户管理-列表, 搜索 **/
+/** 用户管理-列表, 搜索参数 **/
 case class UserListSearch(username: String, name: String, companyName: String, roleId: Int)
 
 /** 管理员重置密码 **/
-case class AdminResetUserPwd(id: BigInt)
+case class AdminResetUserPwd(id: BigInt, lastUpdateTime: LocalDateTime, lastUpdateManId: BigInt)
 
 /** 管理员禁用用户 **/
 case class AdminDisableUser(id: BigInt)
