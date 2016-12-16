@@ -91,7 +91,7 @@ class PersistentFlow(
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         makeDecision()
-        sender() ! genGraph(state) // 返回流程状态
+        sender() ! state // 返回流程状态
       }
 
     // received 超时

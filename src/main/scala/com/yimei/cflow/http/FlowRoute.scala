@@ -7,7 +7,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
-import com.yimei.cflow.core.FlowProtocol
+import com.yimei.cflow.core.{Flow, FlowProtocol}
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.User
 import io.swagger.annotations._
@@ -39,7 +39,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postFlow: Route = post {
@@ -71,7 +71,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getFlow: Route = get {
@@ -85,11 +85,11 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 
   /**
     * 更新流程数据点并触发流程继续
-    * PUT /flow/ying-hary-11111111111111?updatePoint
     *
+    * PUT /flow/ying-zjf-hary-125?updatePoint
     * @return
     */
-  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "PUT")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
@@ -101,7 +101,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putFlowPoints: Route = put {

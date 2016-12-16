@@ -9,7 +9,7 @@ import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.core.IdGenerator.{CommandGetId, CommandQueryId, Id}
 import com.yimei.cflow.group.Group
-import com.yimei.cflow.group.Group.{CommandClaimTask, CommandCreateGroup, CommandGroupTask, CommandQueryGroup}
+import com.yimei.cflow.group.Group.{State, _}
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit}
 
@@ -40,8 +40,8 @@ object ServiceProxy extends CoreConfig {
     (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}")).mapTo[Graph]
   def flowQuery(proxy: ActorRef, flowId: String) =
     (proxy ? CommandFlowGraph(flowId)).mapTo[Graph]
-  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Graph] =
-    (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Graph]
+  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Flow.State] =
+    (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Flow.State]
 
   // 1> 创建用户
   // 2> 查询用户
@@ -68,9 +68,9 @@ object ServiceProxy extends CoreConfig {
     (proxy ? CommandCreateGroup(s"${userType}-${gid}")).mapTo[Group.State]
   def groupQuery(proxy: ActorRef, userType: String, gid: String) =
     (proxy ? CommandQueryGroup(s"${userType}-${gid}")).mapTo[Group.State]
-  def groupClaim(proxy: ActorRef, userType: String, gid: String, userId: String, taskId: String) =
+  def groupClaim(proxy: ActorRef, userType: String, gid: String, userId: String, taskId: String): Future[Group.State] =
     (proxy ? CommandClaimTask(s"${userType}-${gid}", taskId, userId)).mapTo[Group.State]
-  def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String,flowType:String) =
+  def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String,flowType:String): Unit =
     proxy ! CommandGroupTask(flowType,flowId, s"${userType}-${gid}", taskName)
 
 }
