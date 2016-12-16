@@ -150,15 +150,18 @@ object Flow {
 
   // 分支边
   case class Edge(
+                 name: String,
                    autoTasks: Array[String] = Array(),
                    userTasks: Array[String] = Array(),
                    partUTasks: Map[String,Array[String]] = Map(),
                    partGTasks: Map[String,Array[String]] = Map()
-                 ) extends EdgeBehavior
+                 ) extends EdgeBehavior {
+    override def toString = name
+  }
 
   // 开始边
 
-  val EdgeStart = new Edge {
+  val EdgeStart = new Edge("Start") {
 
     override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
       throw new IllegalArgumentException("VoidEdge can not be scheduled")

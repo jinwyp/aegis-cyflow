@@ -15,7 +15,7 @@ object UserMaster extends CoreConfig {
     if (refetchIfExists ||
       userTask(flowType)(taskName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
-      println(s"ufetch with ${taskName}, ${state.guid}, ${state}")
+      // println(s"ufetch with ${taskName}, ${state.guid}, ${state}")
       userMaster ! CommandUserTask(state.flowId, guid, taskName,flowType)
     }
   }

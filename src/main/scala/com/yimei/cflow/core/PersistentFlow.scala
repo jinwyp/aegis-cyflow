@@ -149,7 +149,7 @@ class PersistentFlow(
       case arrow@Arrow(j, Some(e)) =>
         logState("before judge")
 
-        println(s"my ev is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log.info(s"arrow is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
         persist(DecisionUpdated(arrow)) {
           event => log.info(s"${event} persisted")
             updateState(event)
