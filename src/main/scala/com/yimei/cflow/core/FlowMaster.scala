@@ -35,7 +35,7 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
   // IdBufferable need this
   override val bufferSize: Int =  100
   override val bufferKey: String = "flow"
-  implicit val myIdGenerator = modules(module_id)
+  implicit def myIdGenerator = modules(module_id)
   implicit val myEc = context.system.dispatcher
   implicit val myTimeout = Timeout(3 seconds)
 

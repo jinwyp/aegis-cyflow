@@ -21,7 +21,7 @@ trait IdBufferable {
 
   implicit val myEc: ExecutionContext
   implicit val myTimeout: Timeout
-  implicit val myIdGenerator: ActorRef
+  implicit def myIdGenerator: ActorRef
 
   def nextId = {
     if(curId == 0 || curId == max) {
