@@ -54,7 +54,7 @@ trait FlowGraph {
     * initial decision point
     * @return
     */
-  def getFlowInitial:Judge
+  def getFlowInitial:String
 
   /**
     *

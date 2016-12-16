@@ -86,7 +86,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
         if (!e.check(state)) {
           Arrow(FlowTodo, None)
         } else {
-          deciders(graph.getFlowType)(cur.name)(state)
+          deciders(graph.getFlowType)(cur)(state)
         }
     }
 

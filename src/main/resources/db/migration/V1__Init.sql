@@ -48,7 +48,7 @@ create table  party_instance (
 create table party_user(
   id long not null auto_increment,
 
-  party_id long not null,           -- 参与方的实体id, 这个等价于  userType
+  party_id long not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
   user_id varchar(10) not null,     --
 
   gid varchar(2) not null,          -- 用户所属的组

@@ -62,7 +62,7 @@ object Flow {
                     flowId: String,
                     guid: String,
                     points: Map[String, DataPoint],
-                    decision: Judge,
+                    decision: String,
                     edge: Option[Edge],
                     histories: List[Arrow],
                     flowType:String
@@ -135,6 +135,7 @@ object Flow {
 
     /**
       *根据（autoTask,userTask) 获取全部的数据点
+ *
       * @return
       */
     def getAllDataPointsName(state: State):Array[String] = {
@@ -178,13 +179,9 @@ object Flow {
 
 
 
-  case class Judge(name: String)
-
-
-
-  val FlowSuccess = Judge("FlowSuccess")
-  val FlowFail = Judge("FlowFail")
-  val FlowTodo = Judge("FlowTodo")
+  val FlowSuccess = "FlowSuccess"
+  val FlowFail = "FlowFail"
+  val FlowTodo = "FlowTodo"
 
 //  trait Decision {
 //    def run(state: State): Arrow
@@ -230,9 +227,9 @@ object Flow {
 //    def decide(state: State): Arrow
 //  }
 
-  case class Graph(edges: Map[Edge, Array[Judge]], state: State, dataDescription: Map[String, String])
+  case class Graph(edges: Map[Edge, Array[String]], state: State, dataDescription: Map[String, String])
 
-  case class Arrow(end: Judge, edge: Option[Edge])
+  case class Arrow(end: String, edge: Option[Edge])
 
 
 
