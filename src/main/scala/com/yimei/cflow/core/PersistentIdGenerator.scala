@@ -34,19 +34,22 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
 
   override def receiveCommand = commonBehavior orElse serving
 
-  var cnt = 0
+//  var cnt = 0
 
   def serving: Receive = {
-    case CommandGetId(key) =>
-      persistAsync(EventIncrease(key)) { event =>
-        updateState(event)
+    case CommandGetId(key, buffer) =>
+      persistAsync(EventIncrease(key, buffer)) { event =>
+
+        val old = updateState(event)
         log.info(s"event $event persisted")
-        sender()! Id(state.keys(key) + 1)
-        cnt = cnt + 1
-        if ( cnt == 50) {
-          log.debug(s"save snapshot of IdGenerator now...")
-          saveSnapshot(state)
-        }
+        sender()! Id(old + 1)
+
+//        cnt = cnt + 1
+//        if ( cnt == 50) {
+//          log.debug(s"save snapshot of IdGenerator now...")
+//          saveSnapshot(state)
+//        }
+
       }
   }
 }

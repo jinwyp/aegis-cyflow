@@ -8,11 +8,11 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow.{Graph, _}
 import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.group.Group
+import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
 import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit, CommandUserTask}
-import com.yimei.cflow.group.Group._
-import com.yimei.cflow.group.Group
 
 import scala.concurrent.duration._
 
@@ -25,20 +25,20 @@ object TestUtil extends CoreConfig {
   implicit val testEc = coreExecutor
 
   def test(proxy: ActorRef, testClient: ActorRef, userType: String, userId: String,
-           pUserType:String, pUserId:String,pGroupType:String,pGroupId:String) = {
+           pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) = {
 
     Thread.sleep(2000)
 
     val fall = for {
       u <- userCreate(proxy, userType, userId)
-      pu <- userCreate(proxy,pUserType,pUserId)
-      pg <- groupCreate(proxy,pGroupType,pGroupId)
+      pu <- userCreate(proxy, pUserType, pUserId)
+      pg <- groupCreate(proxy, pGroupType, pGroupId)
       g <- flowCreate(proxy, userType, userId, flow_ying)
-    } yield (userType, userId, g.state.flowId, pUserType,pUserId, pGroupType, pGroupId)
+    } yield (userType, userId, g.state.flowId, pUserType, pUserId, pGroupType, pGroupId)
 
     fall onSuccess {
-      case (userType, userId, flowId,pUserType,pUserId,pGroupType,pGroupId) =>
-        testClient ! (userType, userId, flowId,pUserType,pUserId,pGroupType,pGroupId)
+      case (userType, userId, flowId, pUserType, pUserId, pGroupType, pGroupId) =>
+        testClient !(userType, userId, flowId, pUserType, pUserId, pGroupType, pGroupId)
       // coreSystem.actorOf(Props(new TestActor(proxy, guid, flowId)))
     }
 
@@ -49,7 +49,9 @@ object TestUtil extends CoreConfig {
   }
 }
 
-class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProtocol {
+class TestClient(proxy: ActorRef) extends Actor
+  with ActorLogging
+  with FlowProtocol {
 
   //  coreSystem.log.info(s"定期发起用户查询${userId}")
   //  coreSystem.log.info(s"定期发起流程查询${flowId}")
@@ -57,39 +59,40 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
 
   var count = 0
 
-  var gUserId:String = null
+  var gUserId: String = null
 
   override def receive: Receive = {
 
     // 收到查询任务, 给自己发tick
-    case (userType: String, userId: String, flowId: String,
-    pUserType: String,pUserId : String,pGroupType: String,pGroupId: String) =>
+    case (userType: String, userId: String, flowId: String, pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) =>
       gUserId = pUserId
       val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userType, userId, flowId,
-        pUserType,pUserId,pGroupType,pGroupId, 1))
+        pUserType, pUserId, pGroupType, pGroupId, 1))
       schedulers = schedulers + (flowId -> q)
 
     // tick消息
-    case (userType: String, userId: String, flowId: String, pUserType: String,pUserId : String,pGroupType: String,pGroupId: String, 1) =>
+    case (userType: String, userId: String, flowId: String, pUserType: String, pUserId: String, pGroupType: String, pGroupId: String, 1) =>
       proxy ! CommandQueryUser(s"${userType}-${userId}") //
       proxy ! CommandQueryUser(s"${pUserType}-${pUserId}")
       proxy ! CommandQueryGroup(s"${pGroupType}-${pGroupId}")
       proxy ! CommandFlowGraph(flowId)
 
+      // 收到用户状态, 就自动处理用户任务
     case state: User.State =>
-      log.info("!!!!state:{}",state)
+      log.info("!!!!state:{}", state)
       state.tasks.foreach { (entry: (String, CommandUserTask)) =>
         processTask(entry._1, entry._2)
       }
 
+    // 收到组状态, 对每个组的任务进行claim
     case state: Group.State =>
-      log.info("!!!groupstate:{}",state)
-      state.tasks.foreach( t=>
-        proxy ! CommandClaimTask(s"${state.userType}-${state.gid}",t._1,gUserId)
+      log.info("!!!groupstate:{}", state)
+      state.tasks.foreach(t =>
+        proxy ! CommandClaimTask(s"${state.userType}-${state.gid}", t._1, gUserId)
       )
 
-
-    case g @ Graph(_, state, _) =>
+    // 收到流程图
+    case g@Graph(_, state, _) =>
       if (state.decision == FlowSuccess || state.decision == FlowFail) {
         schedulers(state.flowId).cancel()
         schedulers = schedulers - state.flowId
@@ -97,7 +100,6 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
         log.info(s"${state.flowId} completed, completed total = ${count}")
         import spray.json._
         log.info(s"final graph is ${g.toJson}")
-
       }
   }
 
@@ -105,23 +107,21 @@ class TestClient(proxy: ActorRef) extends Actor with ActorLogging with FlowProto
 
   def processTask(taskId: String, task: CommandUserTask) = {
     coreSystem.log.info(s"处理用户任务: ${taskId}")
-    var points:Map[String,DataPoint] = null
-    //设置partition 用户
-    if(task.taskName == "TKUP1")
-    {
+    var points: Map[String, DataPoint] = null
+    //设置参与方用户
+    if (task.taskName == "TKUP1") {
       points = taskPointMap(task.taskName).map { pname =>
-        (pname -> DataPoint("fund-wangqiId",Some("userdata"), Some(task.guid), uuid, new Date().getTime) )
+        (pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
-    else
-    if(task.taskName == "TKPG1")
-    {
+    // 设置参与方组
+    else if (task.taskName == "TKPG1") {
       points = taskPointMap(task.taskName).map { pname =>
-        (pname -> DataPoint("fund-wqGroup",Some("userdata"), Some(task.guid), uuid, new Date().getTime) )
+        (pname -> DataPoint("fund-wqGroup", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
-    else
-    {
+    // 其他为用户任务
+    else {
       points = taskPointMap(task.taskName).map { pname =>
         (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date().getTime)) // uuid为采集id
       }.toMap
