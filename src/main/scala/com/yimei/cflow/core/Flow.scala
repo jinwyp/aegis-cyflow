@@ -70,6 +70,7 @@ object Flow {
 
 
   trait EdgeBehavior {
+    val name: String
     val autoTasks: Array[String]
     val userTasks: Array[String]
     val partUTasks: Map[String,Array[String]]   // key = 参与方guid对应的流程上下文key值, value = userTask名称列表
@@ -82,6 +83,10 @@ object Flow {
       * @param modules 这个流程依赖的模块
       */
     def schedule(state: State, modules: Map[String, ActorRef]) = {
+
+      if ( name == "Start") {
+        throw new IllegalArgumentException("StartEdge can not be scheduled")
+      }
 
       //采集自动任务
       autoTasks.foreach(at =>
@@ -114,21 +119,23 @@ object Flow {
       */
     def check(state: State): Boolean = {
 
+      // 没有任何任务!!!
+      if (
+        autoTasks.length == 0  &&
+        userTasks.length == 0 &&
+        partGTasks.size == 0 &&
+        partGTasks == 0
+      ) {
+        true
+      }
+
       val pUserTasks: Array[String] = partUTasks.foldLeft(Array[String]())((t, put)=>t ++ put._2)
       val pGroupTasks: Array[String] = partGTasks.foldLeft(Array[String]())((t, gut)=> t ++ gut._2)
-
       val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      // autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
       autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
       allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
-
-
-       // partUTasks.foldLeft(true)((t,ptks) => t && ptks._2.foldLeft(true)((t1,au) => t1 && !userTask(state.flowType)(au).exists(!state.points.filter(t=>(!t._2.used)).contains(_))))
-
-
-
      }
 
     //获取全部不能重用的task
@@ -136,107 +143,51 @@ object Flow {
 
     /**
       *根据（autoTask,userTask) 获取全部的数据点
- *
       * @return
       */
     def getAllDataPointsName(state: State):Array[String] = {
       val allTasks = getNonReusedTask()
-      // allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at)._1 ++: a) ++
         allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at).points ++: a) ++
         allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
     }
-
-
-
   }
 
+  //
   // 分支边
-  case class Edge(
-                 name: String,
+  // partUTasks:
+  //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的guid,
+  //   value为, 这个参与方需要作的任务列表
+  //
+  // partGTasks:
+  //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的ggid(参与方运营组)
+  //   value为, 这个参与方运营组需要作的任务列表
+  //
+  case class Edge( name: String,
                    autoTasks: Array[String] = Array(),
                    userTasks: Array[String] = Array(),
                    partUTasks: Map[String,Array[String]] = Map(),
-                   partGTasks: Map[String,Array[String]] = Map()
+                   partGTasks: Map[String,Array[String]] = Map()  //
                  ) extends EdgeBehavior {
     override def toString = name
   }
+  val EdgeStart = new Edge("Start")   // start edge
 
-  // 开始边
-
-  val EdgeStart = new Edge("Start") {
-
-    override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
-      throw new IllegalArgumentException("VoidEdge can not be scheduled")
-
-    def check(state: State, autoTask: Array[String], userTask: Array[String]) = true
-
-    override def toString = "Start"
-  }
-
-//  case object EdgeStart extends Edge(Array[String](),Array[String]()) {
-//    override def schedule(state: State, modules: Map[String, ActorRef] = Map()) =
-//      throw new IllegalArgumentException("VoidEdge can not be scheduled")
-//
-//    def check(state: State, autoTask: Array[String], userTask: Array[String]) = true
-//
-//    override def toString = "Start"
-//  }
-
-
-
+  // common judges
   val FlowSuccess = "FlowSuccess"
   val FlowFail = "FlowFail"
   val FlowTodo = "FlowTodo"
 
-//  trait Decision {
-//    def run(state: State): Arrow
-//  }
-//
-//  trait Decided extends Decision
-//
-//  case object FlowSuccess extends Decided {
-//    def run(state: State) = Arrow(FlowSuccess, None)
-//
-//    override def toString = "FlowSuccess"
-//  }
-//
-//  case object FlowFail extends Decided {
-//    def run(state: State) = Arrow(FlowFail, None)
-//
-//    override def toString = "FlowFail"
-//  }
-//
-//  case object FlowTodo extends Decided {
-//    def run(state: State) = Arrow(FlowTodo, None)
-//
-//    override def toString = "FlowTodo"
-//  }
-
-//  abstract class Judge extends Decision {
-//
-//    // 计算结果
-//    def run(state: State): Arrow = {
-//      state.edge match {
-//        case None =>
-//          throw new IllegalArgumentException("impossible here")
-//        case Some(e) =>
-//          if (!e.check(state)) {
-//            Arrow(FlowTodo, None)
-//          } else {
-//            decide(state)
-//          }
-//      }
-//    }
-//
-//    // 依据状态评估分支: success, 失败, 或者继续评估
-//    def decide(state: State): Arrow
-//  }
-
-  case class Graph(edges: Map[Edge, Array[String]], state: State, dataDescription: Map[String, String])
+  case class EdgeDescription(
+                              autoTasks: Array[String] = Array(),
+                              userTasks: Array[String] = Array(),
+                              partUTasks: Map[String,Array[String]] = Map(),
+                              partGTasks: Map[String,Array[String]] = Map(),
+                              begin: String,
+                              end: String
+                            )
+  case class Graph(edges: Map[String, EdgeDescription], state: State, dataDescription: Map[String, String])
 
   case class Arrow(end: String, edge: Option[Edge])
-
-
 
 }
 
