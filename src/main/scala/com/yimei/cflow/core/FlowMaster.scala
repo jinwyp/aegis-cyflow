@@ -35,21 +35,21 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
 
       // use IdGenerator to get persistenceId
       // todo check it
-      if (false) {
+      if (true) {
         implicit val ec = context.system.dispatcher
         implicit val timeout = Timeout(3 seconds)
         val fpid = (modules(module_id) ? CommandGetId("flow")).mapTo[Id]
         for (pid <- fpid) {
-          val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
+          val flowId = s"${flowType}-${guid}-${pid.id}" // 创建flowId
           val child = create(flowId)
           child forward CommandRunFlow(flowId)
         }
+      } else {
+        // use UUID to generate persistenceId
+        val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
+        val child = create(flowId)
+        child forward CommandRunFlow(flowId)
       }
-
-      // use UUID to generate persistenceId
-      val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
-      val child = create(flowId)
-      child forward CommandRunFlow(flowId)
 
     // other command
     case command: Command =>
