@@ -28,17 +28,15 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
   val daemon = coreSystem.actorOf(DaemonMaster.props(names, true), "DaemonMaster")
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
+  val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
 
   Thread.sleep(2000)
 
-//  val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
-//  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
+  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
 
-  for (i <- 1 to 2) {
-    // TestUtil.test(proxy, client, s"00-hary${i}")
-    val client = coreSystem.actorOf(Props(new TestClient(proxy)), s"TestClient$i")
-    TestUtil.test(proxy, client, s"00$i", s"hary$i",s"fund$i",s"wangqiId$i",s"fund$i",s"wqGroup$i")
-  }
+//  for (i <- 1 to 2) {
+//    TestUtil.test(proxy, client, s"00$i", s"hary$i",s"fund$i",s"wangqiId$i",s"fund$i",s"wqGroup$i")
+//  }
 
 }
 
