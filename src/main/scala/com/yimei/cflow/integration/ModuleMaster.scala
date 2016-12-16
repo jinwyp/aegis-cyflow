@@ -17,7 +17,6 @@ import scala.concurrent.duration._
 abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho: Option[ActorRef] = None)
   extends Actor
     with ServicableBehavior
-    with DependentModule
     with ActorLogging {
 
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
@@ -56,8 +55,7 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
       log.debug(s"get module $name")
       context.watch(ref)
 
-      // 如果所有模块都拿到, 就进入服务态
-      if (check) {
+      if (ready) {
         initHook()
         context.become(serving orElse ignoring)
         log.info(s"${moduleName} is servicable now dependOn = ${modules.keys}")
@@ -78,14 +76,11 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
   }
 
   /**
-    * check whether
+    * check whether this module is ready for service
     *
     * @return
     */
-  def check() = dependOn.find(!modules.contains(_)) match {
-    case Some(_) => false
-    case None => true
-  }
+  def ready() = dependOn.find(!modules.contains(_)).fold(true)(_ => false)
 
   override def unhandled(message: Any): Unit = {
     message match {

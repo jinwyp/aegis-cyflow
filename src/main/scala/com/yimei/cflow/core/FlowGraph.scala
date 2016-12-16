@@ -2,19 +2,34 @@ package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 
 object FlowGraph {
 
+//  case class AutoBuilder1(_name: String = "",
+//                         _points: Array[String] =Array(),
+//                         _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
+//    def actor(actorName: String) = this.copy(_name = actorName)
+//    def points(pointNames: Array[String]) = this.copy(_points = pointNames)
+//    def prop(propfun: Map[String, ActorRef] => Props) = {
+//      val curName = this._name
+//      val curPoints = this._points
+//      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName -> (curPoints, propfun)))
+//    }
+//    def done = _acc
+//  }
+
+
   case class AutoBuilder(_name: String = "",
                          _points: Array[String] =Array(),
-                         _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
+                         _acc: Map[String, AutoProperty] = Map()) {
     def actor(actorName: String) = this.copy(_name = actorName)
     def points(pointNames: Array[String]) = this.copy(_points = pointNames)
     def prop(propfun: Map[String, ActorRef] => Props) = {
       val curName = this._name
       val curPoints = this._points
-      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName -> (curPoints, propfun)))
+      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName ->  AutoProperty(curPoints, propfun)))
     }
     def done = _acc
   }
@@ -72,7 +87,8 @@ trait FlowGraph {
   /**
     *
     */
-  def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)]
+  // def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)]
+  def getAutoTask: Map[String, AutoProperty]
 
   /**
     * 注册用户任务

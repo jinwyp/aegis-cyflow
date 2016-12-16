@@ -9,10 +9,15 @@ import com.yimei.cflow.core.Flow.{Arrow, State}
   */
 object FlowRegistry {
 
+  // todo: change (k, v) --> AutoProperty
+  case class AutoProperty(points: Array[String], prop: Map[String, ActorRef] => Props)
+
   private val registries = collection.mutable.Map[String, FlowGraph]()
 
   // flowType -> autoTaskName -> (points, propbuilder)
-  var autoTask: Map[String, Map[String, (Array[String], Map[String, ActorRef] => Props)]]  = Map()
+  // var autoTask: Map[String, Map[String, (Array[String], Map[String, ActorRef] => Props)]]  = Map()
+
+  var autoTask: Map[String, Map[String, AutoProperty]]  = Map()
 
   // flowType -> userTask -> points
   var userTask: Map[String, Map[String, Array[String]]] = Map()

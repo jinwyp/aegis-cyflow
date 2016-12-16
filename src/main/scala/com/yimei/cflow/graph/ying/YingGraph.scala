@@ -1,7 +1,9 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.{ActorLogging, ActorRef, Props}
+import akka.event.Logging
 import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
 import com.yimei.cflow.graph.ying.YingConfig._
 
@@ -15,12 +17,20 @@ object YingGraph extends FlowGraph {
   /**
     *
     */
-  override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] = FlowGraph.autoBuilder
+  override def getAutoTask: Map[String, AutoProperty] = FlowGraph.autoBuilder
     .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
     .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
     .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
     .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
     .done
+
+//  //
+//  def getAutoTaskV2 = FlowGraph.AutoBuilderV2()
+//    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
+//    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
+//    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
+//    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
+//    .done
 
   /**
     *
@@ -65,14 +75,13 @@ object YingGraph extends FlowGraph {
 
   override def getFlowType: String = flow_ying
 
-  val E1 = Edge(autoTasks = Array(data_A, data_B, data_C))
-  val E2 = Edge(userTasks = Array(task_K_PU1,task_K_PG1))
-  val E3 = Edge(partUTasks = Map(point_K_PU1->Array(task_PU)), partGTasks = Map(point_K_PG1->Array(task_PG)))
-  val E4 = Edge(userTasks = Array(task_A))
-  val E5 = Edge(autoTasks = Array(data_DEF))
+  val E1 = Edge("E1", autoTasks = Array(data_A, data_B, data_C))
+  val E2 = Edge("E2", userTasks = Array(task_K_PU1,task_K_PG1))
+  val E3 = Edge("E3", partUTasks = Map(point_K_PU1->Array(task_PU)), partGTasks = Map(point_K_PG1->Array(task_PG)))
+  val E4 = Edge("E4", userTasks = Array(task_A))
+  val E5 = Edge("E5", autoTasks = Array(data_DEF))
 
   def J0(state: State): Arrow = {
-    println("V0 -----E1----->V1")
     Arrow(V1, Some(E1))
   }
 
@@ -98,13 +107,11 @@ object YingGraph extends FlowGraph {
   }
 
   def J4(state: State): Arrow = {
-    // println(s"V4 state = $state")
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 100 => Arrow(V5, Some(E5))
       case m =>
-        println(s"V4 result = $m")
         Arrow(FlowFail, Some(EdgeStart))
     }
   }

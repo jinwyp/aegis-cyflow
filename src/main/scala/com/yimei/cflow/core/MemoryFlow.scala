@@ -4,18 +4,17 @@ import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.FlowRegistry.deciders
-import com.yimei.cflow.integration.DependentModule
 
 object MemoryFlow {
   /**
     *
-    * @param graph       flow graph
-    * @param flowId      flow Id  (flowType-userType*userId-persistenceId)
-    * @param modules     injected dependent modules
-    * @param guid         global userId (userType + userId)
+    * @param graph   flow graph
+    * @param flowId  flow Id  (flowType-userType*userId-persistenceId)
+    * @param modules injected dependent modules
+    * @param guid    global userId (userType + userId)
     * @return
     */
-  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef],guid: String) = {
+  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String) = {
     Props(new MemoryFlow(graph, flowId, modules, guid))
   }
 
@@ -23,22 +22,19 @@ object MemoryFlow {
 
 /**
   *
-  * @param graph        flow graph
-  * @param flowId       flow id(flowType-userType-userId-persistenceId)
-  * @param dependOn     injected modules
-  * @param guid         global userId (userType + userId)
+  * @param graph  flow graph
+  * @param flowId flow id(flowType-userType-userId-persistenceId)
+  * @param guid   global userId (userType + userId)
   */
-class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRef], guid: String)
-  extends AbstractFlow
-    with DependentModule {
+class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String) extends AbstractFlow {
 
   import Flow._
 
-  override var state: State = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil,graph.getFlowType)
+  override var state: State = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
 
   override def genGraph(state: State): Graph = graph.getFlowGraph(state)
 
-  override def modules: Map[String, ActorRef] = dependOn
+  //   override def modules: Map[String, ActorRef] = dependOn
 
   override def receive: Receive = commonBehavior orElse serving
 
@@ -91,12 +87,12 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
     }
 
     arrow match {
-      case arrow @ Arrow(j, Some(e)) =>
+      case arrow@Arrow(j, Some(e)) =>
         updateState(DecisionUpdated(arrow))
         log.info(s"schedule edge = ${e}")
 
         // 继续执行图!!!
-        if( e.check(state)) {
+        if (e.check(state)) {
           makeDecision()
         } else {
           e.schedule(state, modules)

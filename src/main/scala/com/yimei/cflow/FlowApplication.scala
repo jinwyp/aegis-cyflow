@@ -21,57 +21,13 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   // 1> 注册流程类型
   FlowRegistry.register(flow_ying, YingGraph)
 
-  // 2> 注册自动任务
-
-
+  // 2> 启动服务
   val names = Array(module_auto, module_user, module_group, module_flow, module_id)
-
-  // daemon master and
   val daemon = coreSystem.actorOf(DaemonMaster.props(names), "DaemonMaster")
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
   Thread.sleep(1000)
 
-
-  // 测试Id
-  val f = ServiceProxy.idGet(proxy, "hello")
-  f.onSuccess {
-    case s => println(s"got $s")
-  }
-
-  // 测试group服务
-  for {
-    gc <- ServiceProxy.groupCreate(proxy, "operation", "risk")
-  } {
-    ServiceProxy.groupTask(proxy, "operation", "risk", "flowId", "helloTask",flow_ying)
-    Thread.sleep(1000)
-
-    for {
-      gq <- ServiceProxy.groupQuery(proxy, "operation", "risk")
-      uc <- ServiceProxy.userCreate(proxy, "operation", "hary")
-      claim <- ServiceProxy.groupClaim(proxy, "operation", "risk", "hary", gq.tasks.head._1)
-    } {
-      println(s"gcreate create = $gc")
-      println(s"gquery         = $gq")
-      println(s"ucreate        = $uc")
-      println(s"claim          = $claim")
-      Thread.sleep(1000)
-      for {
-        uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
-      } {
-        println(s"userQuery       = $uq")
-      }
-    }
-  }
-
-  Thread.sleep(2000)
-  for {
-    uq <- ServiceProxy.userQuery(proxy, "operation", "hary")
-  } {
-    println(s"userQuery       = $uq")
-  }
-
-
-  // http
+  // 3> http
   val routes: Route =
     FlowRoute.route(proxy) ~
       UserRoute.route(proxy) ~

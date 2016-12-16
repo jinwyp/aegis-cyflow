@@ -4,7 +4,6 @@ import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
-import com.yimei.cflow.integration.DependentModule
 import com.yimei.cflow.core.FlowRegistry._
 
 import scala.concurrent.duration._
@@ -24,18 +23,17 @@ object PersistentFlow {
 
 /**
   *
-  * @param graph     流程图
-  * @param flowId    流程id
-  * @param dependOn  依赖的模块
-  * @param pid       持久化id
-  * @param guid      全局用户id
+  * @param graph  流程图
+  * @param flowId 流程id
+  * @param pid    持久化id
+  * @param guid   全局用户id
   */
 class PersistentFlow(
-          graph: FlowGraph,
-          flowId: String,
-          dependOn: Map[String, ActorRef],
-          pid: String,
-          guid: String) extends AbstractFlow with DependentModule with PersistentActor {
+                      graph: FlowGraph,
+                      flowId: String,
+                      modules: Map[String, ActorRef],
+                      pid: String,
+                      guid: String) extends AbstractFlow with PersistentActor {
 
   import Flow._
 
@@ -46,12 +44,12 @@ class PersistentFlow(
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil,graph.getFlowType)
+  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
 
   //
   override def genGraph(state: State): Graph = graph.getFlowGraph(state)
 
-  override def modules: Map[String, ActorRef] = dependOn
+  //  override def modules: Map[String, ActorRef] = dependOn
 
   // 恢复
   def receiveRecover = {
@@ -151,7 +149,7 @@ class PersistentFlow(
       case arrow@Arrow(j, Some(e)) =>
         logState("before judge")
 
-        println(s"my ev is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log.info(s"arrow is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
         persist(DecisionUpdated(arrow)) {
           event => log.info(s"${event} persisted")
             updateState(event)

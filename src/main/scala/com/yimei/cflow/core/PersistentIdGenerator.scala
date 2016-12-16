@@ -1,7 +1,8 @@
 package com.yimei.cflow.core
 
 import akka.actor.{ActorLogging, Props}
-import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
+import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
+import akka.remote.transport.ThrottlerTransportAdapter.Direction.Receive
 
 object PersistentIdGenerator {
   def props(name: String): Props = Props(new PersistentIdGenerator(name))
@@ -27,9 +28,13 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
 
     case RecoveryCompleted =>
       logState("recovery completed")
+
+    case SaveSnapshotSuccess =>
   }
 
   override def receiveCommand = commonBehavior orElse serving
+
+  var cnt = 0
 
   def serving: Receive = {
     case CommandGetId(key) =>
@@ -37,6 +42,11 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
         updateState(event)
         log.info(s"event $event persisted")
         sender()! Id(state.keys(key) + 1)
+        cnt = cnt + 1
+        if ( cnt == 50) {
+          log.debug(s"save snapshot of IdGenerator now...")
+          saveSnapshot(state)
+        }
       }
   }
 }

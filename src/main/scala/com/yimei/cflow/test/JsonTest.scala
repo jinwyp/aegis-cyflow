@@ -1,5 +1,6 @@
-package com.yimei.cflow
+package com.yimei.cflow.test
 
+import com.yimei.cflow.core.PointUtil
 import spray.json._
 
 
@@ -13,10 +14,18 @@ object MyJsonProtocol extends DefaultJsonProtocol {
   * Created by hary on 16/12/15.
   */
 object JsonTest extends App {
-  import util.Implicits._
+
   import MyJsonProtocol._
+  import PointUtil._
 
   val color = Color("CadetBlue", 95, 158, 160)
   println(s"color str is ${color.str}")
   println(s"color as[Color] is ${color.str.as[Color]}")
+
+  val k = color.wrap()
+  println(s"wrapped is $k")
+
+  val un = k.unwrap
+  println(s"wrapped is $un")
+
 }
