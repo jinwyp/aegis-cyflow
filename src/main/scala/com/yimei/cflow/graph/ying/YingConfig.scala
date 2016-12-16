@@ -4,87 +4,108 @@ package com.yimei.cflow.graph.ying
   * Created by wangqi on 16/12/13.
   */
 object YingConfig {
- /**
-   * 所有的数据点名称
-   */
- val point_A = "A"
- val point_B = "B"
- val point_C = "C"
- val point_K_PU1 = "KPU1"  //设置partition user1
- val point_K_PG1 = "KPG1"  //设置partition group1
+  /**
+    * 所有的数据点名称
+    */
+  val point_A = "A"
+  val point_B = "B"
+  val point_C = "C"
+  val point_K_PU1 = "KPU1"
+  //设置partition user1
+  val point_K_PG1 = "KPG1" //设置partition group1
 
- val point_PU1 = "PU1"    //partition user1 采集数据点1
- val point_PU2 = "PU2"    //partition user1 采集数据点2
+  val point_PU1 = "PU1"
+  //partition user1 采集数据点1
+  val point_PU2 = "PU2" //partition user1 采集数据点2
 
- val point_PG1 = "PG1"    //partition group1 采集数据点1
- val point_PG2 = "PG2"    //partition group1 采集数据点2
+  val point_PG1 = "PG1"
+  //partition group1 采集数据点1
+  val point_PG2 = "PG2" //partition group1 采集数据点2
 
- val point_U_A1 = "UA1"   //流程发起者任务数据
- val point_U_A2 = "UA2"   //流程发起者任务数据
+  val point_U_A1 = "UA1"
+  //流程发起者任务数据
+  val point_U_A2 = "UA2" //流程发起者任务数据
 
- val point_D = "D"       //自动任务数据点
- val point_E = "E"
- val point_F = "F"
+  val point_D = "D"
+  //自动任务数据点
+  val point_E = "E"
+  val point_F = "F"
 
- /**
-   * 数据采集点Actor名称
-   */
- val data_A = "A"
- val data_B = "B"
- val data_C = "C"
- val data_DEF = "DEF"
+  /**
+    * 数据采集点Actor名称
+    */
+  val data_A = "A"
+  val data_B = "B"
+  val data_C = "C"
+  val data_DEF = "DEF"
 
- /**
-   * 流程类型
-   */
- val flow_ying = "ying"
+  /**
+    * 流程类型
+    */
+  val flow_ying = "ying"
 
- // 采集点actor, 与能够采集的数据点名称
- val dataPointMap = Map[String, Array[String]](
-  data_A -> Array(point_A),
-  data_B -> Array(point_B),
-  data_C -> Array(point_C),
-  data_DEF -> Array(point_D, point_E, point_F)
- )
+  // 采集点actor, 与能够采集的数据点名称
+  val dataPointMap = Map[String, Array[String]](
+    data_A -> Array(point_A),
+    data_B -> Array(point_B),
+    data_C -> Array(point_C),
+    data_DEF -> Array(point_D, point_E, point_F)
+  )
 
- // 数据点描述
- val pointDescription = Map[String, String](
-  point_A -> "征信平分1",
-  point_B -> "征信平分2",
-  point_C -> "征信平分3",
-  point_D -> "征信平分4",
-  point_E -> "征信平分5",
-  point_F -> "征信平分6",
-  point_U_A1 -> "用户提交A1",
-  point_U_A2 -> "用户提交A2",
-  point_K_PU1 -> "设置资金方 user1",         //设置partition user1
-  point_K_PG1 -> "设置融资方 group1",         //设置partition group1
-  point_PU1 -> "partition user1 采集数据点1",    //partition user1 采集数据点1
-  point_PU2 -> "partition user1 采集数据点2",    //partition user1 采集数据点2
-  point_PG1 -> "partition group1 采集数据点1",   //partition group1 采集数据点1
-  point_PG2 -> "partition group1 采集数据点2"    //partition group1 采集数据点2
- )
+  // 数据点描述
+  val pointDescription = Map[String, String](
+    point_A -> "征信平分1",
+    point_B -> "征信平分2",
+    point_C -> "征信平分3",
+    point_D -> "征信平分4",
+    point_E -> "征信平分5",
+    point_F -> "征信平分6",
+    point_U_A1 -> "用户提交A1",
+    point_U_A2 -> "用户提交A2",
+    point_K_PU1 -> "设置资金方 user1", //设置partition user1
+    point_K_PG1 -> "设置融资方 group1", //设置partition group1
+    point_PU1 -> "partition user1 采集数据点1", //partition user1 采集数据点1
+    point_PU2 -> "partition user1 采集数据点2", //partition user1 采集数据点2
+    point_PG1 -> "partition group1 采集数据点1", //partition group1 采集数据点1
+    point_PG2 -> "partition group1 采集数据点2" //partition group1 采集数据点2
+  )
 
- // 用户任务列表
- val task_A = "UA"
- //用户设置partition
- val task_K_PU1 = "TKUP1"
- val task_K_PG1 = "TKPG1"
- //partition任务列表
- val task_PU = "PU"
- val task_PG = "PG"
-
-
- // 用户任务与采集点的对应关系
- val taskPointMap = Map[String, Array[String]](
-  task_A -> Array(point_U_A1, point_U_A2),
-  task_K_PU1 -> Array(point_K_PU1),
-  task_K_PG1 -> Array(point_K_PG1),
-  task_PU -> Array(point_PU1,point_PU2),
-  task_PG -> Array(point_PG1,point_PG2)
- )
+  // 用户任务列表
+  val task_A = "UA"
+  //用户设置partition
+  val task_K_PU1 = "TKUP1"
+  val task_K_PG1 = "TKPG1"
+  //partition任务列表
+  val task_PU = "PU"
+  val task_PG = "PG"
 
 
+  // 用户任务与采集点的对应关系
+  val taskPointMap = Map[String, Array[String]](
+    task_A -> Array(point_U_A1, point_U_A2),
+    task_K_PU1 -> Array(point_K_PU1),
+    task_K_PG1 -> Array(point_K_PG1),
+    task_PU -> Array(point_PU1, point_PU2),
+    task_PG -> Array(point_PG1, point_PG2)
+  )
+
+  // 决策点
+  val V0 = "V0"
+  val V1 = "V1"
+  val V2 = "V2"
+  val V3 = "V3"
+  val V4 = "V4"
+  val V5 = "V5"
+
+  // 决策点描述
+  val judgeDecription = Map[String, String](
+    V0 -> "V0",
+    V1 -> "V1",
+    V2 -> "V2",
+    V3 -> "V3",
+    V4 -> "V4",
+    V5 -> "V5"
+  )
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

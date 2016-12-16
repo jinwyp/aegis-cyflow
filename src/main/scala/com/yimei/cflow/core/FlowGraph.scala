@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, Decision, Graph, State}
+import com.yimei.cflow.core.Flow._
 
 
 object FlowGraph {
@@ -10,7 +10,7 @@ object FlowGraph {
                          _points: Array[String] =Array(),
                          _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
     def actor(actorName: String) = this.copy(_name = actorName)
-    def points(pointNames: String*) = this.copy(_points = pointNames.toArray)
+    def points(pointNames: Array[String]) = this.copy(_points = pointNames)
     def prop(propfun: Map[String, ActorRef] => Props) = {
       val curName = this._name
       val curPoints = this._points
@@ -54,7 +54,7 @@ trait FlowGraph {
     * initial decision point
     * @return
     */
-  def getFlowInitial: Decision
+  def getFlowInitial:String
 
   /**
     *

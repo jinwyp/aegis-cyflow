@@ -5,6 +5,7 @@ import java.util.{Date, UUID}
 import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.integration.DependentModule
+import com.yimei.cflow.core.FlowRegistry._
 
 import scala.concurrent.duration._
 
@@ -134,8 +135,19 @@ class PersistentFlow(
   protected def makeDecision(): Unit = {
 
     val cur = state.decision
+    val arrow: Arrow = state.edge match {
+      case None =>
+        throw new IllegalArgumentException("impossible here")
+      case Some(e) =>
+        if (!e.check(state)) {
+          Arrow(FlowTodo, None)
+        } else {
+          deciders(graph.getFlowType)(cur)(state)
+        }
+    }
 
-    cur.run(state) match {
+
+    arrow match {
       case arrow@Arrow(j, Some(e)) =>
         logState("before judge")
 

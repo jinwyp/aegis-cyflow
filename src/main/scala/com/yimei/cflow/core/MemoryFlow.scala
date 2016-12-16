@@ -3,6 +3,7 @@ package com.yimei.cflow.core
 import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props}
+import com.yimei.cflow.core.FlowRegistry.deciders
 import com.yimei.cflow.integration.DependentModule
 
 object MemoryFlow {
@@ -76,9 +77,20 @@ class MemoryFlow(graph: FlowGraph, flowId: String, dependOn: Map[String, ActorRe
   }
 
   private def makeDecision() {
-    val curDecision = state.decision
 
-    curDecision.run(state) match {
+    val cur = state.decision
+    val arrow: Arrow = state.edge match {
+      case None =>
+        throw new IllegalArgumentException("impossible here")
+      case Some(e) =>
+        if (!e.check(state)) {
+          Arrow(FlowTodo, None)
+        } else {
+          deciders(graph.getFlowType)(cur)(state)
+        }
+    }
+
+    arrow match {
       case arrow @ Arrow(j, Some(e)) =>
         updateState(DecisionUpdated(arrow))
         log.info(s"schedule edge = ${e}")

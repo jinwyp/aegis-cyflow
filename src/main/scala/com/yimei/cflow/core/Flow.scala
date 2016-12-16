@@ -1,11 +1,11 @@
 package com.yimei.cflow.core
 
-import akka.actor.{ActorLogging, ActorRef}
-import com.yimei.cflow.core.FlowRegistry._
+import akka.actor.ActorRef
 import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.user.UserMaster.ufetch
+import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.group.GroupMaster.gfetch
+import com.yimei.cflow.user.UserMaster.ufetch
 
 object Flow {
 
@@ -62,7 +62,7 @@ object Flow {
                     flowId: String,
                     guid: String,
                     points: Map[String, DataPoint],
-                    decision: Decision,
+                    decision: String,
                     edge: Option[Edge],
                     histories: List[Arrow],
                     flowType:String
@@ -83,11 +83,6 @@ object Flow {
       */
     def schedule(state: State, modules: Map[String, ActorRef]) = {
 
-//      println("!!!!!!!!!!" )
-//      println(this)
-//      println(partUTasks)
-//      println("?????????")
-//      println(partGTasks)
       //采集自动任务
       autoTasks.foreach(at =>
         fetch(state.flowType,at,state,modules(module_auto))
@@ -140,6 +135,7 @@ object Flow {
 
     /**
       *根据（autoTask,userTask) 获取全部的数据点
+ *
       * @return
       */
     def getAllDataPointsName(state: State):Array[String] = {
@@ -181,53 +177,59 @@ object Flow {
 //    override def toString = "Start"
 //  }
 
-  trait Decision {
-    def run(state: State): Arrow
-  }
 
-  trait Decided extends Decision
 
-  case object FlowSuccess extends Decided {
-    def run(state: State) = Arrow(FlowSuccess, None)
+  val FlowSuccess = "FlowSuccess"
+  val FlowFail = "FlowFail"
+  val FlowTodo = "FlowTodo"
 
-    override def toString = "FlowSuccess"
-  }
+//  trait Decision {
+//    def run(state: State): Arrow
+//  }
+//
+//  trait Decided extends Decision
+//
+//  case object FlowSuccess extends Decided {
+//    def run(state: State) = Arrow(FlowSuccess, None)
+//
+//    override def toString = "FlowSuccess"
+//  }
+//
+//  case object FlowFail extends Decided {
+//    def run(state: State) = Arrow(FlowFail, None)
+//
+//    override def toString = "FlowFail"
+//  }
+//
+//  case object FlowTodo extends Decided {
+//    def run(state: State) = Arrow(FlowTodo, None)
+//
+//    override def toString = "FlowTodo"
+//  }
 
-  case object FlowFail extends Decided {
-    def run(state: State) = Arrow(FlowFail, None)
+//  abstract class Judge extends Decision {
+//
+//    // 计算结果
+//    def run(state: State): Arrow = {
+//      state.edge match {
+//        case None =>
+//          throw new IllegalArgumentException("impossible here")
+//        case Some(e) =>
+//          if (!e.check(state)) {
+//            Arrow(FlowTodo, None)
+//          } else {
+//            decide(state)
+//          }
+//      }
+//    }
+//
+//    // 依据状态评估分支: success, 失败, 或者继续评估
+//    def decide(state: State): Arrow
+//  }
 
-    override def toString = "FlowFail"
-  }
+  case class Graph(edges: Map[Edge, Array[String]], state: State, dataDescription: Map[String, String])
 
-  case object FlowTodo extends Decided {
-    def run(state: State) = Arrow(FlowTodo, None)
-
-    override def toString = "FlowTodo"
-  }
-
-  abstract class Judge extends Decision {
-
-    // 计算结果
-    def run(state: State): Arrow = {
-      state.edge match {
-        case None =>
-          throw new IllegalArgumentException("impossible here")
-        case Some(e) =>
-          if (!e.check(state)) {
-            Arrow(FlowTodo, None)
-          } else {
-            decide(state)
-          }
-      }
-    }
-
-    // 依据状态评估分支: success, 失败, 或者继续评估
-    def decide(state: State): Arrow
-  }
-
-  case class Graph(edges: Map[Edge, Array[Decision]], state: State, dataDescription: Map[String, String])
-
-  case class Arrow(end: Decision, edge: Option[Edge])
+  case class Arrow(end: String, edge: Option[Edge])
 
 
 

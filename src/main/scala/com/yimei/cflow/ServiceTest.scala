@@ -17,25 +17,6 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  import com.yimei.cflow.core.FlowGraph._
-
-  val tb: Map[String, Array[String]] =
-    taskBuilder
-      .task("hello").points("a", "b", "c")
-      .task("world").points("d", "e", "f")
-      .done
-  println(s"$tb")
-
-  val ab = autoBuilder
-    .actor("hello").points("a", "b", "c").prop(modules => null: Props)
-    .actor("world").points("d", "e", "f").prop(modules => null: Props)
-    .done
-  println(s"$ab")
-
-
-
-
-
 
   // 1> 注册自动任务
   // AutoRegistry.register()
