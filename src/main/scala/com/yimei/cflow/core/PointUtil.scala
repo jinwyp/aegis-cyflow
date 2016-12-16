@@ -25,6 +25,6 @@ object PointUtil {
   }
 
   implicit class dataPointWrapper[A:JsonFormat](a: A) {
-    def wrap[A](memo: Option[String] = None, operator: Option[String] = None) = DataPoint(a.str, memo, operator, UUID.randomUUID().toString, 0L, false)
+    def wrap(memo: Option[String] = None, operator: Option[String] = None) = DataPoint(a.str, memo, operator, UUID.randomUUID().toString, 0L, false)
   }
 }

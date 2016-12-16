@@ -120,8 +120,9 @@ object Flow {
       val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
-        allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
+      // autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at)._1.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
+      autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
+      allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
 
 
        // partUTasks.foldLeft(true)((t,ptks) => t && ptks._2.foldLeft(true)((t1,au) => t1 && !userTask(state.flowType)(au).exists(!state.points.filter(t=>(!t._2.used)).contains(_))))
@@ -140,7 +141,8 @@ object Flow {
       */
     def getAllDataPointsName(state: State):Array[String] = {
       val allTasks = getNonReusedTask()
-      allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at)._1 ++: a) ++
+      // allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at)._1 ++: a) ++
+        allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at).points ++: a) ++
         allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
     }
 

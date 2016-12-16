@@ -3,6 +3,7 @@ package com.yimei.cflow.graph.ying
 import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.event.Logging
 import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
 import com.yimei.cflow.graph.ying.YingConfig._
 
@@ -16,12 +17,20 @@ object YingGraph extends FlowGraph {
   /**
     *
     */
-  override def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)] = FlowGraph.autoBuilder
+  override def getAutoTask: Map[String, AutoProperty] = FlowGraph.autoBuilder
     .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
     .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
     .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
     .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
     .done
+
+//  //
+//  def getAutoTaskV2 = FlowGraph.AutoBuilderV2()
+//    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
+//    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
+//    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
+//    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
+//    .done
 
   /**
     *
