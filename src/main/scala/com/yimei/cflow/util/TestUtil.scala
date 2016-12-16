@@ -27,8 +27,6 @@ object TestUtil extends CoreConfig {
   def test(proxy: ActorRef, testClient: ActorRef, userType: String, userId: String,
            pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) = {
 
-    Thread.sleep(2000)
-
     val fall = for {
       u <- userCreate(proxy, userType, userId)
       pu <- userCreate(proxy, pUserType, pUserId)
