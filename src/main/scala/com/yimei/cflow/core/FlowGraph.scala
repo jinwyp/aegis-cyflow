@@ -7,20 +7,6 @@ import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 object FlowGraph {
 
-//  case class AutoBuilder1(_name: String = "",
-//                         _points: Array[String] =Array(),
-//                         _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
-//    def actor(actorName: String) = this.copy(_name = actorName)
-//    def points(pointNames: Array[String]) = this.copy(_points = pointNames)
-//    def prop(propfun: Map[String, ActorRef] => Props) = {
-//      val curName = this._name
-//      val curPoints = this._points
-//      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName -> (curPoints, propfun)))
-//    }
-//    def done = _acc
-//  }
-
-
   case class AutoBuilder(_name: String = "",
                          _points: Array[String] =Array(),
                          _acc: Map[String, AutoProperty] = Map()) {

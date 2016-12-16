@@ -31,8 +31,8 @@ object TestUtil extends CoreConfig {
       u <- userCreate(proxy, userType, userId)
       pu <- userCreate(proxy, pUserType, pUserId)
       pg <- groupCreate(proxy, pGroupType, pGroupId)
-      g <- flowCreate(proxy, userType, userId, flow_ying)
-    } yield (userType, userId, g.state.flowId, pUserType, pUserId, pGroupType, pGroupId)
+      fs <- flowCreate(proxy, userType, userId, flow_ying)
+    } yield (userType, userId, fs.flowId, pUserType, pUserId, pGroupType, pGroupId)
 
     fall onSuccess {
       case (userType, userId, flowId, pUserType, pUserId, pGroupType, pGroupId) =>

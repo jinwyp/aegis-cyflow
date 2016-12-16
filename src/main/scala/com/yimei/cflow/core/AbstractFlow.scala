@@ -53,9 +53,11 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   }
 
   def commonBehavior: Receive = {
+    // return the whole graph = state + graph
     case query: CommandFlowGraph =>
       sender() ! genGraph(state)
 
+    // only return the state
     case query: CommandFlowState =>
       sender() ! state
 

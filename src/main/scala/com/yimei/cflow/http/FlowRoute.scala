@@ -77,7 +77,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   def getFlow: Route = get {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
-        complete(ServiceProxy.flowQuery(proxy, flowId))
+        complete(ServiceProxy.flowGraph(proxy, flowId))
       }
     }
   }
