@@ -32,12 +32,11 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
 
   Thread.sleep(2000)
 
-//  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
+  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
 
-  for (i <- 1 to 2) {
-    // TestUtil.test(proxy, client, s"00-hary${i}")
-    TestUtil.test(proxy, client, s"00$i", s"hary$i",s"fund$i",s"wangqiId$i",s"fund$i",s"wqGroup$i")
-  }
+//  for (i <- 1 to 2) {
+//    TestUtil.test(proxy, client, s"00$i", s"hary$i",s"fund$i",s"wangqiId$i",s"fund$i",s"wqGroup$i")
+//  }
 
 }
 
