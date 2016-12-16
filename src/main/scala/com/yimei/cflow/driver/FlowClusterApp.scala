@@ -1,4 +1,4 @@
-package com.yimei.cflow
+package com.yimei.cflow.driver
 
 import akka.actor.{ActorIdentity, ActorPath, ActorSystem, Identify, Props}
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}

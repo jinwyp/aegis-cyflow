@@ -1,4 +1,4 @@
-package com.yimei.cflow
+package com.yimei.cflow.test
 
 /**
   * Created by hary on 16/12/10.

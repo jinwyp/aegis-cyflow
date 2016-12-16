@@ -1,4 +1,4 @@
-package com.yimei.cflow
+package com.yimei.cflow.test
 
 import eu.fakod.neo4jscala.{Cypher, Neo4jWrapper, SingletonEmbeddedGraphDatabaseServiceProvider, TypedTraverser}
 
