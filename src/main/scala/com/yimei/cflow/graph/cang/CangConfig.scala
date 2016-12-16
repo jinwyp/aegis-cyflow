@@ -6,6 +6,11 @@ package com.yimei.cflow.graph.cang
 object CangConfig {
 
   /**
+    *  流程类型
+    */
+  val flow_cang = "cang"
+
+  /**
     * 所有的数据点名称
     */
   val point_A = "pa"
