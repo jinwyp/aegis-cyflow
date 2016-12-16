@@ -115,4 +115,18 @@ object CangConfig {
     task_traffickerFinancePayToFundProvider -> Array(point_traffickerFinancePayToFundProvider)
   )
 
+
+  /**
+    * 所有决策点名称
+    */
+  val V0 = "V0"
+
+
+  /**
+    *  所有决策点描述
+    */
+  val judgeDescription = Map[String, String](
+
+  )
+
 }
