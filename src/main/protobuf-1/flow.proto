@@ -14,6 +14,16 @@ message DataPoint {
     required bool   used = 6;
 }
 
+message PartUTask {
+    required string guid = 1;
+    repeated string tasks = 2;
+}
+
+message PartGTask {
+    required string ggid = 1;
+    repeated string tasks = 2;
+}
+
 
 // Edge(Seq("auto1", "auto2"), Seq("task1", "task2")
 // Edge(Seq(), Seq())
@@ -21,8 +31,8 @@ message Edge {
     option (scalapb.message).extends = "com.yimei.cflow.core.Flow.EdgeBehavior";
     repeated string autoTasks = 1;
     repeated string userTasks = 2;
- //  map<string,repeated string> partUtasks = 3;
- //   map<string,repeated string> partGtasks = 4;
+    repeated PartUTask partUTasks = 3;
+    repeated PartGTask partGTasks = 4;
 }
 
 message Arrow {

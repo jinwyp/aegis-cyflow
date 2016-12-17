@@ -67,15 +67,17 @@ object Flow {
                   )
 
 
+  case class PartUTask(guid: String, tasks: List[String])
+  case class PartGTask(ggid: String, tasks: List[String])
+
   trait EdgeBehavior {
     val name: String
-    val autoTasks: Array[String]
-    val userTasks: Array[String]
-    val partUTasks: Map[String, Array[String]]
-    // key = 参与方guid对应的流程上下文key值, value = userTask名称列表
-    val partGTasks: Map[String, Array[String]] // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
+    val autoTasks: List[String]
+    val userTasks: List[String]
+    val partUTasks: List[PartUTask]
+    val partGTasks: List[PartGTask] // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
 
-    /**
+    /*
       * 调度采集数据
       *
       * @param state   流程状态
