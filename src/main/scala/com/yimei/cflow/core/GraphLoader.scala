@@ -7,6 +7,11 @@ import java.io.File
   */
 object GraphLoader {
 
+  def kload: FlowGraph = {
+    var module = this.getClass.getClassLoader.loadClass("com.yimei.cflow.graph.ying.YingGraph$")
+    module.getField("MODULE$").get(null).asInstanceOf[FlowGraph]
+  }
+
 
   def load() = {
 

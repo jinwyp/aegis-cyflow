@@ -18,10 +18,10 @@ object YingGraph extends FlowGraph {
     *
     */
   override def getAutoTask: Map[String, AutoProperty] = FlowGraph.autoBuilder
-    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
-    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
-    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
-    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
+    .actor(auto_A)  .points(dataPointMap(auto_A))  .prop(modules => Props(new A(modules)))
+    .actor(auto_B)  .points(dataPointMap(auto_B))  .prop(modules => Props(new B(modules)))
+    .actor(auto)  .points(dataPointMap(auto))  .prop(modules => Props(new C(modules)))
+    .actor(auto_DEF).points(dataPointMap(auto_DEF)).prop(modules => Props(new DEF(modules)))
     .done
 
 //  //
@@ -75,11 +75,11 @@ object YingGraph extends FlowGraph {
 
   override def getFlowType: String = flow_ying
 
-  val E1 = Edge("E1", autoTasks = List(data_A, data_B, data_C))
+  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
   val E2 = Edge("E2", userTasks = List(task_K_PU1,task_K_PG1))
-  val E3 = Edge("E3", partUTasks = List(PartUTask(point_K_PU1,List(task_PU))), partGTasks = List(PartGTask(point_K_PG1,List(task_PG))))
+  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1,List(task_PU))), partGTasks = List(PartGTask(point_KPG_1,List(task_PG))))
   val E4 = Edge("E4", userTasks = List(task_A))
-  val E5 = Edge("E5", autoTasks = List(data_DEF))
+  val E5 = Edge("E5", autoTasks = List(auto_DEF))
 
   def J0(state: State): Arrow = {
     Arrow(V1, Some(E1))
@@ -122,7 +122,7 @@ object YingGraph extends FlowGraph {
 
   def J5(state: State): Arrow = {
 
-    state.points.filter(entry =>dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+    state.points.filter(entry =>dataPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if(count>0) {

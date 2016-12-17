@@ -3,7 +3,7 @@ package com.yimei.cflow
 import akka.actor.Props
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{FlowGraph, FlowRegistry}
+import com.yimei.cflow.core.{FlowGraph, FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.CorsSupport
@@ -22,7 +22,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   // AutoRegistry.register()
 
   // 2> 注册流程图
-  FlowRegistry.register(YingGraph.getFlowType, YingGraph)
+  FlowRegistry.register(YingGraph.getFlowType, GraphLoader.kload)
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)

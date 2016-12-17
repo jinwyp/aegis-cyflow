@@ -10,34 +10,29 @@ object YingConfig {
   val point_A = "A"
   val point_B = "B"
   val point_C = "C"
-  val point_K_PU1 = "KPU1"
-  //设置partition user1
-  val point_K_PG1 = "KPG1" //设置partition group1
+  val point_KPU_1 = "KPU1" //设置partition user1
+  val point_KPG_1 = "KPG1" //设置partition group1
 
-  val point_PU1 = "PU1"
-  //partition user1 采集数据点1
+  val point_PU1 = "PU1" //partition user1 采集数据点1
   val point_PU2 = "PU2" //partition user1 采集数据点2
 
-  val point_PG1 = "PG1"
-  //partition group1 采集数据点1
+  val point_PG1 = "PG1" //partition group1 采集数据点1
   val point_PG2 = "PG2" //partition group1 采集数据点2
 
-  val point_U_A1 = "UA1"
-  //流程发起者任务数据
+  val point_U_A1 = "UA1" //流程发起者任务数据
   val point_U_A2 = "UA2" //流程发起者任务数据
 
-  val point_D = "D"
-  //自动任务数据点
+  val point_D = "D" //自动任务数据点
   val point_E = "E"
   val point_F = "F"
 
   /**
     * 数据采集点Actor名称
     */
-  val data_A = "A"
-  val data_B = "B"
-  val data_C = "C"
-  val data_DEF = "DEF"
+  val auto_A = "A"
+  val auto_B = "B"
+  val auto = "C"
+  val auto_DEF = "DEF"
 
   /**
     * 流程类型
@@ -46,10 +41,10 @@ object YingConfig {
 
   // 采集点actor, 与能够采集的数据点名称
   val dataPointMap = Map[String, Array[String]](
-    data_A -> Array(point_A),
-    data_B -> Array(point_B),
-    data_C -> Array(point_C),
-    data_DEF -> Array(point_D, point_E, point_F)
+    auto_A -> Array(point_A),
+    auto_B -> Array(point_B),
+    auto -> Array(point_C),
+    auto_DEF -> Array(point_D, point_E, point_F)
   )
 
   // 数据点描述
@@ -62,8 +57,8 @@ object YingConfig {
     point_F -> "征信平分6",
     point_U_A1 -> "用户提交A1",
     point_U_A2 -> "用户提交A2",
-    point_K_PU1 -> "设置资金方 user1", //设置partition user1
-    point_K_PG1 -> "设置融资方 group1", //设置partition group1
+    point_KPU_1 -> "设置资金方 user1", //设置partition user1
+    point_KPG_1 -> "设置融资方 group1", //设置partition group1
     point_PU1 -> "partition user1 采集数据点1", //partition user1 采集数据点1
     point_PU2 -> "partition user1 采集数据点2", //partition user1 采集数据点2
     point_PG1 -> "partition group1 采集数据点1", //partition group1 采集数据点1
@@ -83,8 +78,8 @@ object YingConfig {
   // 用户任务与采集点的对应关系
   val taskPointMap = Map[String, Array[String]](
     task_A -> Array(point_U_A1, point_U_A2),
-    task_K_PU1 -> Array(point_K_PU1),
-    task_K_PG1 -> Array(point_K_PG1),
+    task_K_PU1 -> Array(point_KPU_1),
+    task_K_PG1 -> Array(point_KPG_1),
     task_PU -> Array(point_PU1, point_PU2),
     task_PG -> Array(point_PG1, point_PG2)
   )
