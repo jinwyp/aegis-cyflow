@@ -75,11 +75,11 @@ object YingGraph extends FlowGraph {
 
   override def getFlowType: String = flow_ying
 
-  val E1 = Edge("E1", autoTasks = Array(data_A, data_B, data_C))
-  val E2 = Edge("E2", userTasks = Array(task_K_PU1,task_K_PG1))
-  val E3 = Edge("E3", partUTasks = Map(point_K_PU1->Array(task_PU)), partGTasks = Map(point_K_PG1->Array(task_PG)))
-  val E4 = Edge("E4", userTasks = Array(task_A))
-  val E5 = Edge("E5", autoTasks = Array(data_DEF))
+  val E1 = Edge("E1", autoTasks = List(data_A, data_B, data_C))
+  val E2 = Edge("E2", userTasks = List(task_K_PU1,task_K_PG1))
+  val E3 = Edge("E3", partUTasks = List(PartUTask(point_K_PU1,List(task_PU))), partGTasks = List(PartGTask(point_K_PG1,List(task_PG))))
+  val E4 = Edge("E4", userTasks = List(task_A))
+  val E5 = Edge("E5", autoTasks = List(data_DEF))
 
   def J0(state: State): Arrow = {
     Arrow(V1, Some(E1))
