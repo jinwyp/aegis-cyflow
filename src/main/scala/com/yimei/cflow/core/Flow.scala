@@ -141,7 +141,12 @@ object Flow {
     }
 
     //获取全部不能重用的task
-    def getNonReusedTask(): (List[String], List[String]) = (autoTasks, userTasks)
+    def getNonReusedTask(): (List[String], List[String]) = {
+      val pUserTasks: List[String] = partUTasks.foldLeft(List[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: List[String] = partGTasks.foldLeft(List[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: List[String] = userTasks ++: pUserTasks ++: pGroupTasks
+      (autoTasks, allUserTasks)
+    }
 
     /**
       * 根据（autoTask,userTask) 获取全部的数据点
