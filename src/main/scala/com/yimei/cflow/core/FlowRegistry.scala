@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, State}
+import com.yimei.cflow.core.Flow.{Arrow, Edge, State}
 
 
 /**

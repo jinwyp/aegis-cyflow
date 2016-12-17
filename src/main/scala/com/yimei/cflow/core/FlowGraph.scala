@@ -5,6 +5,13 @@ import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 
+trait GraphDeciders {
+  val flowType: String
+  def flowGraph = FlowRegistry.getFlowGraph(flowType)
+  def getDeciders: Map[String, State => Arrow]
+}
+
+
 object FlowGraph {
 
   case class AutoBuilder(_name: String = "",
