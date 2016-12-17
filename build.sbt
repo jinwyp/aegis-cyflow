@@ -75,3 +75,45 @@ scalacOptions ++= Seq(
   "-feature",
   "-language:_"
 )
+
+lazy val publishSettings = Seq(
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (version.value.trim.endsWith("SNAPSHOT"))
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  },
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  pomIncludeRepository := { (repo: MavenRepository) => false},
+  pomExtra := pomXml) ++ xerial.sbt.Sonatype.sonatypeSettings
+
+lazy val pomXml = {
+  <url>https://github.com/epiphyllum/zflow</url>
+    <licenses>
+      <license>
+        <name>Apache License 2.0</name>
+        <url>http://www.apache.org/licenses/</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+    <scm>
+      <url>git@github.com:epiphyllum/zflow.git</url>
+      <connection>scm:git:git@github.com:epiphyllum/zflow.git</connection>
+    </scm>
+    <developers>
+      <developer>
+        <id>hary</id>
+        <name>hary</name>
+        <url>http://github.com/epiphyllum</url>
+      </developer>
+    </developers>
+}
+
+lazy val releaseSettings = sbtrelease.ReleasePlugin.releaseSettings ++ Seq(
+  sbtrelease.ReleasePlugin.ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
+)
+
+
+
