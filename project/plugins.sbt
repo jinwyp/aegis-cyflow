@@ -14,5 +14,7 @@ addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.8.5")
 
 addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.2.1")
 
+addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.3")
+
 // Protoc-jar so we don't need the Protoc compiler
 libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b3"
