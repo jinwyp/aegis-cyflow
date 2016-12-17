@@ -166,10 +166,10 @@ object Flow {
   //   value为, 这个参与方运营组需要作的任务列表
   //
   case class Edge(name: String,
-                  autoTasks: Array[String] = Array(),
-                  userTasks: Array[String] = Array(),
-                  partUTasks: Map[String, Array[String]] = Map(),
-                  partGTasks: Map[String, Array[String]] = Map() //
+                  autoTasks: List[String] = List(),
+                  userTasks: List[String] = List(),
+                  partUTasks: List[PartUTask] = List(),
+                  partGTasks: List[PartGTask] = List() //
                  ) extends EdgeBehavior {
     override def toString = name
   }
