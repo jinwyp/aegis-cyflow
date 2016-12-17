@@ -67,8 +67,8 @@ object Flow {
                   )
 
 
-  case class PartUTask(guid: String, tasks: List[String])
-  case class PartGTask(ggid: String, tasks: List[String])
+  case class PartUTask(guidKey: String, tasks: List[String])
+  case class PartGTask(ggidKey: String, tasks: List[String])
 
   trait EdgeBehavior {
     val name: String
@@ -101,15 +101,15 @@ object Flow {
 
       // 参与方任务
       partUTasks.foreach { entry =>
-        entry._2.foreach { ut =>
-          ufetch(state.flowType, ut, state, modules(module_user), state.points(entry._1).value)
+        entry.tasks.foreach { ut =>
+          ufetch(state.flowType, ut, state, modules(module_user), state.points(entry.guidKey).value)
         }
       }
 
       // 参与方组任务
       partGTasks.foreach { entry =>
-        entry._2.foreach { gt =>
-          gfetch(state.flowType, gt, state, modules(module_group), state.points(entry._1).value)
+        entry.tasks.foreach { gt =>
+          gfetch(state.flowType, gt, state, modules(module_group), state.points(entry.ggidKey).value)
         }
       }
     }
@@ -125,15 +125,15 @@ object Flow {
       if (
         autoTasks.length == 0 &&
           userTasks.length == 0 &&
-          partGTasks.size == 0 &&
-          partGTasks == 0
+          partUTasks.size == 0 &&
+          partGTasks.size == 0
       ) {
         true
       }
 
-      val pUserTasks: Array[String] = partUTasks.foldLeft(Array[String]())((t, put) => t ++ put._2)
-      val pGroupTasks: Array[String] = partGTasks.foldLeft(Array[String]())((t, gut) => t ++ gut._2)
-      val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
+      val pUserTasks: List[String] = partUTasks.foldLeft(List[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: List[String] = partGTasks.foldLeft(List[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: List[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
       autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
@@ -141,17 +141,17 @@ object Flow {
     }
 
     //获取全部不能重用的task
-    def getNonReusedTask(): (Array[String], Array[String]) = (autoTasks, userTasks)
+    def getNonReusedTask(): (List[String], List[String]) = (autoTasks, userTasks)
 
     /**
       * 根据（autoTask,userTask) 获取全部的数据点
       *
       * @return
       */
-    def getAllDataPointsName(state: State): Array[String] = {
+    def getAllDataPointsName(state: State): List[String] = {
       val allTasks = getNonReusedTask()
       allTasks._1.foldLeft(List[String]())((a, at) => autoTask(state.flowType)(at).points ++: a) ++
-        allTasks._2.foldLeft(List[String]())((a, ut) => userTask(state.flowType)(ut) ++: a) toArray
+        allTasks._2.foldLeft(List[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
     }
   }
 
@@ -182,10 +182,10 @@ object Flow {
   val FlowTodo = "FlowTodo"
 
   case class EdgeDescription(
-                              autoTasks: Array[String] = Array(),
-                              userTasks: Array[String] = Array(),
-                              partUTasks: Map[String, Array[String]] = Map(),
-                              partGTasks: Map[String, Array[String]] = Map(),
+                              autoTasks: List[String] = List(),
+                              userTasks: List[String] = List(),
+                              partUTasks: List[PartUTask] = List(),
+                              partGTasks: List[PartGTask] = List(),
                               begin: String,
                               end: String
                             )
