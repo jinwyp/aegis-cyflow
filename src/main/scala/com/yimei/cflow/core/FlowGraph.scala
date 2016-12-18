@@ -8,6 +8,9 @@ import com.yimei.cflow.core.FlowRegistry.AutoProperty
 trait GraphJar {
   def getDeciders: Map[String, State => Arrow]
   def getAutoProperties: Array[AutoProperty]
+  def edge(name: String) = {
+
+  }
 }
 
 abstract class AutoActor(modules: Map[String, ActorRef]) extends Actor with ActorLogging

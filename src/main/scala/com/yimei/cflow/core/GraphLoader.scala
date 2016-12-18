@@ -1,35 +1,29 @@
 package com.yimei.cflow.core
 
-import java.io.File
+import java.io.{File, InputStream}
 import java.lang.reflect.Constructor
 import java.net.URLClassLoader
-import java.util.Map.Entry
-import java.util.function.Consumer
 
 import akka.actor.{ActorRef, Props}
-import com.typesafe.config.ConfigValue
-import com.yimei.cflow.config.CoreConfig
+import com.typesafe.config.{Config, ConfigFactory}
 import com.yimei.cflow.core.Flow.{Arrow, Edge, Graph, State}
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 /**
   * Created by hary on 16/12/17.
   */
-object GraphLoader extends CoreConfig {
+object GraphLoade {
 
   // 加载所有
   def loadall(): Unit = {
-    val flows = coreConfig.getConfig("flow");
-    flows.entrySet().forEach(new Consumer[Entry[String, ConfigValue]] {
-      override def accept(t: Entry[String, ConfigValue]): Unit = {
 
-        val jarFile: String = null // todo:  get from config
-        val graph = loadGraph(t.getKey, jarFile) // 加载
+    // 1> list directories of flows
+    val graphs: Array[String] = ???
 
-        FlowRegistry.register(t.getKey, graph) // 注册graph
-      }
-    })
+    // 2>
+    graphs.foreach(loadGraph(_))
   }
+
 
   // 加载deciders
   def loadDeciders(classLoader: ClassLoader): Map[String, State => Arrow] = ???
@@ -53,22 +47,27 @@ object GraphLoader extends CoreConfig {
     AutoProperty(Array("a", "b"), prop)
   }
 
-  def loadGraph(flowType: String, jarFile: String): FlowGraph = {
+  def loadGraph(flowType: String): FlowGraph = {
 
-    // 加载器
-    val classLoader: URLClassLoader = new java.net.URLClassLoader(Array(new File(jarFile).toURI.toURL),
-      this.getClass.getClassLoader)
+    // 1> list flows/$flowType/*.jar
+    val jars: Array[String] = ???
 
-    // 加载决策器
-    val deciders = loadDeciders(classLoader)
+    // 2> create classloader for this graph
+    val classLoader: URLClassLoader = new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
 
-    // 加载自动任务Actor
-    val actors = loadActors(classLoader) // AutoActor的class名字为配置文件提供, 所以是可以读出来的
+    // 3> 读取type
+    val config: Config = ConfigFactory.load(classLoader, "flow")
 
-    // 从配置文件中读取各项配置
-    val userTasks: Map[String, Array[String]] = null;
+    // 4> 拿到graphJar对象
+    val graphJarName: String = ???
+    val module = classLoader.loadClass(graphJarName + "$")
+    val graphJar = module.getField("MODULE$").get(null).asInstanceOf[GraphJar]
 
-    //
+    // 拿到deciders
+
+    // 拿到autoProperties
+
+
     val initial = ???
 
     val userTask = ???
@@ -79,7 +78,7 @@ object GraphLoader extends CoreConfig {
     new FlowGraph {
       override def getFlowGraph(state: State): Graph = graph
 
-      override def getAutoTask: Map[String, AutoProperty] = actors
+      override def getAutoTask: Map[String, AutoProperty] = ???
 
       override def getFlowInitial: String = initial
 
@@ -87,7 +86,7 @@ object GraphLoader extends CoreConfig {
 
       override def getUserTask: Map[String, Array[String]] = userTask
 
-      override def getDeciders: Map[String, (State) => Arrow] = deciders
+      override def getDeciders: Map[String, (State) => Arrow] = ???
 
       override def getEdges: Map[String, Edge] = ???
     }
