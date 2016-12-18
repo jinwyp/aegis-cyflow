@@ -1,5 +1,7 @@
 import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
 
+enablePlugins(JavaServerAppPackaging)
+
 name := "aegis-cflow"
 
 version := "1.0"
