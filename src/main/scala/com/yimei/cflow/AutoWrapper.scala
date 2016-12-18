@@ -7,13 +7,10 @@ import java.util.UUID
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{AutoActor, FlowGraph}
 import com.yimei.cflow.core.Flow.{Arrow, CommandPoints, DataPoint, State}
+import com.yimei.cflow.core.FlowGraph
 
-import scala.concurrent.ExecutionContext
-import ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.reflect.ClassTag
 
 case class AutoPoint(value: String)
 
@@ -25,7 +22,7 @@ class AutoActor(
   extends Actor
     with ActorLogging {
 
-  import scala.concurrent.ExecutionContext;
+  import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
   override def receive: Receive = {
@@ -71,7 +68,7 @@ object AutoWrapper extends App {
   println(deciMap("v0").invoke(this, null))
 
   val ff: Future[Map[String, String]] =
-    autoMap("autoA").invoke(this, null).asInstanceOf[Future[Map[String,String]]]
+    autoMap("autoA").invoke(this, null).asInstanceOf[Future[Map[String, String]]]
 
   ff.onSuccess {
     case m => println(m)
@@ -80,8 +77,6 @@ object AutoWrapper extends App {
   Thread.sleep(1000)
 
   System.exit(0)
-
-
 
 
   var classLoader = new java.net.URLClassLoader(Array(new File("module.jar").toURI.toURL),
@@ -107,7 +102,7 @@ object AutoWrapper extends App {
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
-      m.getReturnType == classOf[Future[Map[String,String]]]
+        m.getReturnType == classOf[Future[Map[String, String]]]
     }.map { am =>
       (am.getName -> am)
     }.toMap
