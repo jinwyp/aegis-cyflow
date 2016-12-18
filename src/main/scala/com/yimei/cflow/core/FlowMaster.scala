@@ -7,13 +7,9 @@ import akka.actor.{ActorRef, Props, Terminated}
 import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{Command, CommandCreateFlow, CommandRunFlow}
-import com.yimei.cflow.core.IdGenerator.{CommandGetId, Id}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 import scala.concurrent.duration._
-import akka.pattern._
-
-import scala.concurrent.{Await, Future}
 
 /**
   * Created by hary on 16/12/1.
@@ -33,16 +29,18 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
     with IdBufferable {
 
   // IdBufferable need this
-  override val bufferSize: Int =  100
+  override val bufferSize: Int = 100
   override val bufferKey: String = "flow"
+
   implicit def myIdGenerator = modules(module_id)
+
   implicit val myEc = context.system.dispatcher
   implicit val myTimeout = Timeout(3 seconds)
 
   def serving: Receive = {
 
     // create and run flow
-    case command@CommandCreateFlow(flowType, guid) =>
+    case command@CommandCreateFlow(flowType, guid, initData) =>
 
       if (true) {
         val pid = nextId

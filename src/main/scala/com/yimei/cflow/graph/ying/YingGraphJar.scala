@@ -1,10 +1,8 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.Actor.Receive
 import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow.{Arrow, Graph, State}
-import com.yimei.cflow.core.{AutoActor, FlowProtocol, FlowRegistry, GraphJar}
-import com.yimei.cflow.user.User
+import com.yimei.cflow.core.{AutoActor, FlowProtocol, GraphJar}
 
 /**
   * Created by hary on 16/12/17.
@@ -29,13 +27,22 @@ object YingGraphJar extends GraphJar with FlowProtocol {
     Arrow("v1", None)
   }
 
-  def v1(state: State): Arrow = ???
+  def v1(state: State): Arrow = {
+    Arrow("v1", ???)   // todo:  需要调整decider接口, 不然无法写
+  }
+
   def v2(state: State): Arrow = ???
+
   def v3(state: State): Arrow = ???
+
   def v4(state: State): Arrow = ???
+
   def v5(state: State): Arrow = ???
 
 
+  //////////////////////////////////////////////////////////////////////////////////////////
+  // 需要依据配置文件中配置得AutoTask名称命名这些Actor的名称!!!!!!!!
+  //////////////////////////////////////////////////////////////////////////////////////////
   class AutoA(modules: Map[String, ActorRef]) extends AutoActor(modules) {
     override def receive: Receive = ???
   }

@@ -13,7 +13,7 @@ object Flow {
   case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Long, used: Boolean = false)
 
   // create flow, but not run it
-  case class CommandCreateFlow(flowType: String, guid: String)
+  case class CommandCreateFlow(flowType: String, guid: String, initData: Map[String, String] = Map())
 
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)

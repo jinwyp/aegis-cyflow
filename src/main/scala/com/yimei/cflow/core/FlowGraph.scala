@@ -90,6 +90,11 @@ trait FlowGraph {
   def getUserTask: Map[String, Array[String]]
 
   /**
+    *
+    */
+  def getEdges: Map[String, Edge]
+
+  /**
     * 所有决策点
     */
   def getDeciders: Map[String, State => Arrow]

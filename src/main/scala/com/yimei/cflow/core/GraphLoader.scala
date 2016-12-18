@@ -9,7 +9,7 @@ import java.util.function.Consumer
 import akka.actor.{ActorRef, Props}
 import com.typesafe.config.ConfigValue
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.core.Flow.{Arrow, Graph, State}
+import com.yimei.cflow.core.Flow.{Arrow, Edge, Graph, State}
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 /**
@@ -89,6 +89,8 @@ object GraphLoader extends CoreConfig {
       override def getUserTask: Map[String, Array[String]] = userTask
 
       override def getDeciders: Map[String, (State) => Arrow] = deciders
+
+      override def getEdges: Map[String, Edge] = ???
     }
   }
 
