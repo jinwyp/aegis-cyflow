@@ -2,6 +2,7 @@ package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow.{Arrow, Edge, State}
+import com.yimei.cflow.core.Flow.EdgeStart
 
 
 /**
@@ -23,11 +24,17 @@ object FlowRegistry {
   // flowType -> deciderName -> behavior
   var deciders: Map[String, Map[String, State => Arrow]] = Map()
 
+  //flowType -> edgeName -> edge
+  var edges: Map[String,Map[String,Edge]] = Map()
+
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
     autoTask = autoTask + (flowType -> graph.getAutoTask)
     userTask = userTask + (flowType -> graph.getUserTask)
     deciders = deciders + (flowType -> graph.getDeciders)
+
+
+    edges = Map(flowType-> graph.getEdges)
   }
 
   def getFlowGraph(flowType: String) = registries(flowType)

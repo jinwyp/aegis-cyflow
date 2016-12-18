@@ -165,13 +165,13 @@ class PersistentFlow(
                 updateState(event) // @todo 王琦
               }
             } else {
-              if (e.check(state)) {
+              if (edges(graph.getFlowType)(e).check(state)) {
                 // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
                 log.info(s"continue...")
                 makeDecision()
               } else {
                 log.info(s"schedule ${e}")
-                e.schedule(state, modules)
+                edges(graph.getFlowType)(e).schedule(state, modules)
               }
             }
         }
