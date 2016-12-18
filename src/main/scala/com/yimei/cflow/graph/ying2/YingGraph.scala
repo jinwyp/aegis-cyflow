@@ -3,10 +3,13 @@ package com.yimei.cflow.graph.ying2
 import java.lang.reflect.Method
 
 import akka.actor.Props
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
 import com.yimei.cflow.graph.ying2.YingConfig._
+
+import scala.concurrent.Future
 
 /**
   * Created by hary on 16/12/1.
@@ -165,19 +168,37 @@ object YingGraph extends FlowGraph {
     *
     * @return
     */
-  override def getAutoMap: Map[String, Method] = ???
+  override def getAutoMap: Map[String, Method] = {
+    this.getClass.getMethods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[CommandAutoTask] &&
+        m.getReturnType == classOf[Future[Map[String, String]]]
+    }.map { am =>
+      (am.getName -> am)
+    }.toMap
+  }
 
   /**
     *
     * @return
     */
-  override def getDeciMap: Map[String, Method] = ???
+  override def getDeciMap: Map[String, Method] = {
+    this.getClass.getMethods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[State] &&
+        m.getReturnType == classOf[Arrow]
+    }.map { am =>
+      (am.getName -> am)
+    }.toMap
+  }
 
   /**
     *
     * @return
     */
-  override def getGraphJar: AnyRef = ???
+  override def getGraphJar: AnyRef = this
 }
 
 
