@@ -67,8 +67,8 @@ object Flow {
                   )
 
 
-  case class PartUTask(guidKey: String, tasks: List[String])
-  case class PartGTask(ggidKey: String, tasks: List[String])
+  case class PartUTask(guidKey: String, tasks: Seq[String])
+  case class PartGTask(ggidKey: String, tasks: Seq[String])
 
   trait EdgeBehavior {
     val name: String

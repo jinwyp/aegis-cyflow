@@ -29,10 +29,11 @@ message PartGTask {
 // Edge(Seq(), Seq())
 message Edge {
     option (scalapb.message).extends = "com.yimei.cflow.core.Flow.EdgeBehavior";
-    repeated string autoTasks = 1;
-    repeated string userTasks = 2;
-    repeated PartUTask partUTasks = 3;
-    repeated PartGTask partGTasks = 4;
+    required string name = 1;
+    repeated string autoTasks = 2;
+    repeated string userTasks = 3;
+    repeated PartUTask partUTasks = 4;
+    repeated PartGTask partGTasks = 5;
 }
 
 message Arrow {

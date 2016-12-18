@@ -5,7 +5,7 @@ import java.time.Instant
 
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.config.FlywayConfig
-import com.yimei.cflow.user.models.{FlowInstanceEntity, FlowInstanceTable}
+import com.yimei.cflow.user.db.{FlowInstanceEntity, FlowInstanceTable}
 import com.yimei.cflow.util.DBUtils._
 
 /**
