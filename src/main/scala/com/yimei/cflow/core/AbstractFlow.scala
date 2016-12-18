@@ -26,7 +26,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
             // todo 王琦 optimize
           case Some(e) =>
-            val allPoints: List[String] = e.getAllDataPointsName(state)  // 所有需要设置为used的数据点
+            val allPoints = e.getAllDataPointsName(state)  // 所有需要设置为used的数据点
             var newPoints = state.points
             allPoints.foreach(ap => newPoints = newPoints + (ap -> newPoints(ap).copy(used = true)))  // for side effect of newPoints
 

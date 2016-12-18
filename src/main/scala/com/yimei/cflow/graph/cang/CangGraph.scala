@@ -1,7 +1,7 @@
 package com.yimei.cflow.graph.cang
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Graph, State}
+import com.yimei.cflow.core.Flow.{Arrow, Graph, State}
 import com.yimei.cflow.core.FlowGraph
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
@@ -44,4 +44,9 @@ object CangGraph extends FlowGraph {
     * 注册用户任务
     */
   override def getUserTask: Map[String, Array[String]] = ???
+
+  /**
+    * 所有决策点
+    */
+  override def getDeciders: Map[String, (State) => Arrow] = ???
 }

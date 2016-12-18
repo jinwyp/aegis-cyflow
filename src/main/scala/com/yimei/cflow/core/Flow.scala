@@ -72,10 +72,10 @@ object Flow {
 
   trait EdgeBehavior {
     val name: String
-    val autoTasks: List[String]
-    val userTasks: List[String]
-    val partUTasks: List[PartUTask]
-    val partGTasks: List[PartGTask] // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
+    val autoTasks: Seq[String]
+    val userTasks: Seq[String]
+    val partUTasks: Seq[PartUTask]
+    val partGTasks: Seq[PartGTask] // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
 
     /*
       * 调度采集数据
@@ -131,9 +131,9 @@ object Flow {
         true
       }
 
-      val pUserTasks: List[String] = partUTasks.foldLeft(List[String]())((t, put) => t ++: put.tasks)
-      val pGroupTasks: List[String] = partGTasks.foldLeft(List[String]())((t, gut) => t ++: gut.tasks)
-      val allUserTasks: List[String] = userTasks ++: pUserTasks ++: pGroupTasks
+      val pUserTasks: Seq[String] = partUTasks.foldLeft(Seq[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: Seq[String] = partGTasks.foldLeft(Seq[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
       autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
@@ -141,10 +141,10 @@ object Flow {
     }
 
     //获取全部不能重用的task
-    def getNonReusedTask(): (List[String], List[String]) = {
-      val pUserTasks: List[String] = partUTasks.foldLeft(List[String]())((t, put) => t ++: put.tasks)
-      val pGroupTasks: List[String] = partGTasks.foldLeft(List[String]())((t, gut) => t ++: gut.tasks)
-      val allUserTasks: List[String] = userTasks ++: pUserTasks ++: pGroupTasks
+    def getNonReusedTask(): (Seq[String], Seq[String]) = {
+      val pUserTasks: Seq[String] = partUTasks.foldLeft(Seq[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: Seq[String] = partGTasks.foldLeft(Seq[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
       (autoTasks, allUserTasks)
     }
 
@@ -153,10 +153,10 @@ object Flow {
       *
       * @return
       */
-    def getAllDataPointsName(state: State): List[String] = {
+    def getAllDataPointsName(state: State): Seq[String] = {
       val allTasks = getNonReusedTask()
-      allTasks._1.foldLeft(List[String]())((a, at) => autoTask(state.flowType)(at).points ++: a) ++
-        allTasks._2.foldLeft(List[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
+      allTasks._1.foldLeft(Seq[String]())((a, at) => autoTask(state.flowType)(at).points ++: a) ++
+        allTasks._2.foldLeft(Seq[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
     }
   }
 
@@ -171,10 +171,10 @@ object Flow {
   //   value为, 这个参与方运营组需要作的任务列表
   //
   case class Edge(name: String,
-                  autoTasks: List[String] = List(),
-                  userTasks: List[String] = List(),
-                  partUTasks: List[PartUTask] = List(),
-                  partGTasks: List[PartGTask] = List() //
+                  autoTasks: Seq[String] = List(),
+                  userTasks: Seq[String] = List(),
+                  partUTasks: Seq[PartUTask] = List(),
+                  partGTasks: Seq[PartGTask] = List() //
                  ) extends EdgeBehavior {
     override def toString = name
   }
@@ -187,10 +187,10 @@ object Flow {
   val FlowTodo = "FlowTodo"
 
   case class EdgeDescription(
-                              autoTasks: List[String] = List(),
-                              userTasks: List[String] = List(),
-                              partUTasks: List[PartUTask] = List(),
-                              partGTasks: List[PartGTask] = List(),
+                              autoTasks: Seq[String] = List(),
+                              userTasks: Seq[String] = List(),
+                              partUTasks: Seq[PartUTask] = List(),
+                              partGTasks: Seq[PartGTask] = List(),
                               begin: String,
                               end: String
                             )

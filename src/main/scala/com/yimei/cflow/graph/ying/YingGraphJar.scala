@@ -1,13 +1,15 @@
 package com.yimei.cflow.graph.ying
 
+import akka.actor.Actor.Receive
+import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow.{Arrow, Graph, State}
-import com.yimei.cflow.core.{FlowProtocol, FlowRegistry, GraphDeciders}
+import com.yimei.cflow.core.{AutoActor, FlowProtocol, FlowRegistry, GraphJar}
 import com.yimei.cflow.user.User
 
 /**
   * Created by hary on 16/12/17.
   */
-object YingDeciders extends GraphDeciders with FlowProtocol {
+object YingGraphJar extends GraphJar with FlowProtocol {
 
   import com.yimei.cflow.core.PointUtil._
 
@@ -32,4 +34,18 @@ object YingDeciders extends GraphDeciders with FlowProtocol {
   def v3(state: State): Arrow = ???
   def v4(state: State): Arrow = ???
   def v5(state: State): Arrow = ???
+
+
+  class AutoA(modules: Map[String, ActorRef]) extends AutoActor(modules) {
+    override def receive: Receive = ???
+  }
+
+  class AutoB(modules: Map[String, ActorRef]) extends AutoActor(modules) {
+    override def receive: Receive = ???
+  }
+
+  class AutoC(modules: Map[String, ActorRef]) extends AutoActor(modules) {
+    override def receive: Receive = ???
+  }
+
 }

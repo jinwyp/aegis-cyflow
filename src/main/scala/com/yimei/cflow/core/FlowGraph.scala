@@ -1,16 +1,17 @@
 package com.yimei.cflow.core
 
-import akka.actor.{ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
-
-trait GraphDeciders {
+//
+trait GraphJar {
   val flowType: String
-  def flowGraph = FlowRegistry.getFlowGraph(flowType)
+  def flowGraph: FlowGraph = FlowRegistry.getFlowGraph(flowType)
   def getDeciders: Map[String, State => Arrow]
 }
 
+abstract class AutoActor(modules: Map[String, ActorRef]) extends Actor with ActorLogging
 
 object FlowGraph {
 
@@ -91,7 +92,7 @@ trait FlowGraph {
   /**
     * 所有决策点
     */
-  def getDeciders: Map[String, State => Arrow] = Map()
+  def getDeciders: Map[String, State => Arrow]
 
 }
 
