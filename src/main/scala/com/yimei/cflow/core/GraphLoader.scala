@@ -12,7 +12,7 @@ import com.yimei.cflow.core.FlowRegistry.AutoProperty
 /**
   * Created by hary on 16/12/17.
   */
-object GraphLoade {
+object GraphLoader {
 
   // 加载所有
   def loadall(): Unit = {
