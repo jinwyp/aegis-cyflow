@@ -1,4 +1,4 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.ying2
 
 import java.util.{Date, UUID}
 
@@ -7,7 +7,7 @@ import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{CommandPoint, CommandPoints, DataPoint}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.ying2.YingConfig._
 
 /**
   * Created by hary on 16/12/1.

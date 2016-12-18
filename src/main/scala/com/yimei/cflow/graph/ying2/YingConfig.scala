@@ -1,4 +1,4 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.ying2
 
 /**
   * Created by wangqi on 16/12/13.
@@ -68,7 +68,7 @@ object YingConfig {
   // 用户任务列表
   val task_A = "UA"
   //用户设置partition
-  val task_K_PU1 = "TKUP1"
+  val task_K_PU1 = "TKPU1"
   val task_K_PG1 = "TKPG1"
   //partition任务列表
   val task_PU = "PU"

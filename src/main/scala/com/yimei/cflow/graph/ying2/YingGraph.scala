@@ -1,10 +1,10 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.ying2
 
 import akka.actor.Props
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.ying2.YingConfig._
 
 /**
   * Created by hary on 16/12/1.
