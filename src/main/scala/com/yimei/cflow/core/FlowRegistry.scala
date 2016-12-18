@@ -1,8 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, Edge, State}
-import com.yimei.cflow.core.Flow.EdgeStart
+import com.yimei.cflow.core.Flow._
 
 
 /**
@@ -24,8 +23,14 @@ object FlowRegistry {
   // flowType -> deciderName -> behavior
   var deciders: Map[String, Map[String, State => Arrow]] = Map()
 
-  //flowType -> edgeName -> edge
+  // flowType -> edgeName -> edge
   var edges: Map[String,Map[String,Edge]] = Map()
+
+  // flowType -> Graph  and Graph should be:
+  // case class Graph(edges: Map[String, EdgeDescription], points: Map[String, String])
+  // PersistentFlow does not need Graph parameters
+  // todo
+  var graphs = Map[String, Graph]
 
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
