@@ -66,7 +66,20 @@ object AutoWrapper extends App {
   }
 
   val autoMap = getAutoMap(AutoWrapper.getClass)
-  val deciMap = getDeciderMap(AutoWrapper.getClass)
+  val deciMap: Map[String, Method] = getDeciderMap(AutoWrapper.getClass)
+
+  println(deciMap("v0").invoke(this, null))
+
+  val ff: Future[Map[String, String]] =
+    autoMap("autoA").invoke(this, null).asInstanceOf[Future[Map[String,String]]]
+
+  ff.onSuccess {
+    case m => println(m)
+  }
+
+  Thread.sleep(1000)
+
+  System.exit(0)
 
 
 
