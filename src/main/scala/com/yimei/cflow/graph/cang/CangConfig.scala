@@ -48,16 +48,16 @@ object CangConfig {
     point_customerUploadContract -> "融资方上传合同,文件时提交的数据",
     point_supervisorUploadContract -> "监管员上传合同时提交的数据",
     point_portUploadContract -> "港口工作人员上传合同时提交的数据",
-    point_traffickerAudit -> "贸易商工作人员审核时提交的数据",
+    point_traffickerAudit -> "贸易商审核时提交的数据",
     point_traffickerFinanceAudit -> "贸易商财务审核时提交的数据",
     point_fundProviderAudit -> "资金方工作人员审核时提交的数据",
     point_fundProviderFinanceLoad -> "资金方财务放款给贸易商时提交的数据",
-    point_serviceTransferAccountsToCustomer -> "系统检测当资金方财务放款到贸易商账上时, 转账给融资方时提交的数据",
+    point_serviceTransferAccountsToCustomer -> "系统检测当资金方财务放的款到贸易商账上时, 转账给融资方时提交的数据",
     point_customerPayToTrafficker -> "融资方回款给贸易商时提交的数据",
-    point_traffickerNoticePortReleaseGoods -> "贸易商工作人员通知港口放货时提交的数据",
+    point_traffickerNoticePortReleaseGoods -> "贸易商通知港口放货时提交的数据",
     point_portReleaseGoods -> "港口放货时提交的数据",
     point_traffickerAuditIfCompletePayment -> "贸易商确认, 是否已经回款完成",
-    point_traffickerConfirmPayToFundProvider -> "贸易商工作人员确认同意回款给资金方时提交的数据",
+    point_traffickerConfirmPayToFundProvider -> "贸易商确认同意回款给资金方时提交的数据",
     point_traffickerFinancePayToFundProvider -> "贸易商财务付款给资金方时提交的数据"
 
   )
