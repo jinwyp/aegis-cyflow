@@ -18,7 +18,7 @@ object CangConfig {
   val point_X = "px"
   val point_Y = "py"
 
-  val point_start = "startDataPoint"
+  val point_start = "startPoint"
   val point_traffickerAssignUsers = "traffickerAssignUsersPoint"
   val point_customerUploadContract = "customerUploadContractPoint"
   val point_supervisorUploadContract = "supervisorUploadContractPoint"
