@@ -53,6 +53,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                  supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
                                  portContractFileList: FileObjList,        //港口上传合同文件列表
                                  status: String)                           //当前状态
+  implicit val traffickerAuditPageFormat = jsonFormat19(TraffickerAuditPage)
 
   /** 贸易商财务审核,给出放款建议页面 **/
   case class TraffickerFinanceAuditPage(customerCompanyName: String, businessCode: String,
@@ -64,6 +65,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                         alreadyPayPrinciple: BigDecimal,          //已回款本金
                                         waitPayPrinciple: BigDecimal,             //待回款本金
                                         status: String)                           //当前状态
+  implicit val traffickerFinanceAuditPageFormat = jsonFormat10(TraffickerFinanceAuditPage)
 
   /** 资金方审核页面 **/
   case class FundProviderAuditPage(customerCompanyName: String, businessCode: String, coalType: String,
@@ -83,6 +85,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                    supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
                                    portContractFileList: FileObjList,        //港口上传合同文件列表
                                    status: String)                           //当前状态
+  implicit val fundProviderAuditPageFormat = jsonFormat19(FundProviderAuditPage)
 
   /** 资金方财务查看,付款页面 **/
   case class FundProviderFinancePayPage(customerCompanyName: String, businessCode: String,
@@ -94,7 +97,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                         alreadyPayPrinciple: BigDecimal,     //已回款本金
                                         waitPayPrinciple: BigDecimal,        //待回款本金
                                         status: String)                      //当前状态
-
+  implicit val fundProviderFinancePayPageFormat = jsonFormat10(FundProviderFinancePayPage)
 
 
 
