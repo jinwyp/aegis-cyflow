@@ -5,10 +5,10 @@ GET  /party/:class                     查询参与方类别
 PUT  /party/:class                     更新参与方类别
 
 // 参与方运营组管理
-GET    /pgroup?limit=10&offset=20  参与方运营组列表
-POST   /pgroup/:gname              创建参与方运营组
-DELETE /pgroup/:gname              删除参与方运营组
-PUT    /pgroup/:gname              更新参与方运营组
+GET    /group?limit=10&offset=20  参与方运营组列表
+POST   /group/:gname              创建参与方运营组
+DELETE /group/:gname              删除参与方运营组
+PUT    /group/:gname              更新参与方运营组
 
 // 参与方实例管理
 POST /inst/:class/:class_id           创建参与方实例
