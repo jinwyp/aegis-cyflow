@@ -59,4 +59,14 @@ message DecisionUpdated {
     required string decision = 1;
 }
 
+message State {
+    required string flowId = 1;
+    required string guid = 2;
+    map<string, DataPoint> points = 3;
+    required string decision = 4;
+    optional Edge edge = 5;
+    repeated Arrow histories = 6;
+    required string flowType = 7;
+}
+
 
