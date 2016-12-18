@@ -1,8 +1,14 @@
 package com.yimei.cflow.core
 
+import java.util.UUID
+
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
+
+import scala.concurrent.Future
 
 //
 trait GraphJar {
@@ -10,9 +16,31 @@ trait GraphJar {
   def getAutoProperties: Map[String,AutoProperty]
 }
 
+class AutoActor(
+                 name: String,
+                 modules: Map[String, ActorRef],
+                 auto: CommandAutoTask => Future[Map[String, String]]
+               )
+  extends Actor
+    with ActorLogging {
+
+  import scala.concurrent.ExecutionContext;
+  import ExecutionContext.Implicits.global
+
+  override def receive: Receive = {
+    case task: CommandAutoTask =>
+      auto(task).map { values =>
+        modules(module_flow) ! CommandPoints(
+          task.flowId,
+          values.map { entry =>
+            ((entry._1) -> DataPoint(entry._2, None, Some(name), UUID.randomUUID().toString, 10, false))
+          }
+        )
+      }
+  }
+}
 
 
-abstract class AutoActor(modules: Map[String, ActorRef]) extends Actor with ActorLogging
 
 object FlowGraph {
 
