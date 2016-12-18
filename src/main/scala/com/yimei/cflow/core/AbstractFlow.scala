@@ -1,6 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.{Actor, ActorLogging}
+import com.yimei.cflow.core.FlowRegistry._
 
 /**
   * some common facilities
@@ -22,6 +23,10 @@ abstract class AbstractFlow extends Actor with ActorLogging {
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(arrow) =>
         //把当前边里不能重用的点设置为used = true
+        val newEdge = arrow.edge match {
+          case Some(e) => Some(edges(state.flowType)(e))
+          case a => None
+        }
         state.edge match {
 
             // todo 王琦 optimize
@@ -29,10 +34,9 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             val allPoints = e.getAllDataPointsName(state)  // 所有需要设置为used的数据点
             var newPoints = state.points
             allPoints.foreach(ap => newPoints = newPoints + (ap -> newPoints(ap).copy(used = true)))  // for side effect of newPoints
-
             state = state.copy(
               decision = arrow.end,
-              edge = arrow.edge,
+              edge = newEdge,
               histories = arrow :: state.histories,
               points = newPoints
             )
@@ -40,7 +44,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
           case a =>
             state = state.copy(
               decision  = arrow.end,
-              edge      = arrow.edge,
+              edge      = newEdge,
               histories = arrow :: state.histories
             )
         }

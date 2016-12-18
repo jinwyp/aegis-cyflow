@@ -179,7 +179,8 @@ object Flow {
     override def toString = name
   }
 
-  val EdgeStart = new Edge("Start") // start edge
+  val Start = "Start"
+  val EdgeStart = new Edge(Start) // start edge
 
   // common judges
   val FlowSuccess = "FlowSuccess"
@@ -197,7 +198,8 @@ object Flow {
 
   case class Graph(edges: Map[String, EdgeDescription], state: State, dataDescription: Map[String, String])
 
-  case class Arrow(end: String, edge: Option[Edge])
+  //case class Arrow(end: String, edge: Option[Edge])
+  case class Arrow(end: String, edge:Option[String])
 
 }
 

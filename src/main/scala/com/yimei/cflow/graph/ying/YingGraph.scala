@@ -1,7 +1,6 @@
 package com.yimei.cflow.graph.ying
 
-import akka.actor.{ActorLogging, ActorRef, Props}
-import akka.event.Logging
+import akka.actor.Props
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
@@ -88,14 +87,14 @@ object YingGraph extends FlowGraph {
   val E6 = Edge("E6")
 
   def J0(state: State): Arrow = {
-    Arrow(V1, Some(E1))
+    Arrow(V1, Some("E1"))
   }
 
-  def J1(state: State): Arrow = Arrow(V2, Some(E2))
+  def J1(state: State): Arrow = Arrow(V2, Some("E2"))
 
   def J2(state: State): Arrow = {
 
-    Arrow(V3,Some(E3))
+    Arrow(V3,Some("E3"))
 //    //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
 //    if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
 //      Arrow(V3,Some(E3))
@@ -109,7 +108,7 @@ object YingGraph extends FlowGraph {
     state.points.filter(entry => List(point_PU1,point_PU2,point_PG1,point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 200 => Arrow(V4, Some(E4))
+      case 200 => Arrow(V4, Some("E4"))
       case _ => Arrow(FlowFail, None)
     }
   }
@@ -118,9 +117,10 @@ object YingGraph extends FlowGraph {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 100 => Arrow(V5, Some(E5))
+      case 100 => Arrow(V5, Some("E5"))
       case m =>
-        Arrow(FlowFail, Some(EdgeStart))
+       // Arrow(FlowFail, Some(EdgeStart))
+        Arrow(FlowFail, None)
     }
   }
 
@@ -133,7 +133,8 @@ object YingGraph extends FlowGraph {
     } match {
       case 150 => if(count>0) {
         count = count - 1
-        Arrow(V3, Some(EdgeStart))
+        //Arrow(V3, Some(EdgeStart))
+        Arrow(V3,Some("E6"))
       }
       else
         Arrow(FlowSuccess, None)
