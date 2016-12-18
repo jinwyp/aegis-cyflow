@@ -10,7 +10,10 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.{AutoActor, FlowGraph}
 import com.yimei.cflow.core.Flow.{Arrow, CommandPoints, DataPoint, State}
 
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.reflect.ClassTag
 
 case class AutoPoint(value: String)
 
@@ -21,6 +24,9 @@ class AutoActor(
                )
   extends Actor
     with ActorLogging {
+
+  import scala.concurrent.ExecutionContext;
+  import ExecutionContext.Implicits.global
 
   override def receive: Receive = {
     case task: CommandAutoTask =>
@@ -54,12 +60,22 @@ object AutoWrapper extends App {
     }
   }
 
+  def v0(state: State): Arrow = {
+    println("hello")
+    Arrow("v1", Some("edge"))
+  }
+
+  val autoMap = getAutoMap(AutoWrapper.getClass)
+  val deciMap = getDeciderMap(AutoWrapper.getClass)
+
+
+
 
   var classLoader = new java.net.URLClassLoader(Array(new File("module.jar").toURI.toURL),
     this.getClass.getClassLoader)
 
   val name = "com.yimei.cflow.graph.ying.YingGraph$"
-  val module = this.getClass.getClassLoader.loadClass(name)
+  val module: Class[_] = this.getClass.getClassLoader.loadClass(name)
   try {
     module.getField("MODULE$").get(null).asInstanceOf[FlowGraph]
   } catch {
@@ -68,27 +84,28 @@ object AutoWrapper extends App {
       throw e
   }
 
-  def getAutoMap = {
+  def getAutoMap(m: Class[_]) = {
 
-    val methods: Array[Method] = module.getMethods
+    val methods: Array[Method] = m.getMethods
     val parameterTypes = classOf[CommandAutoTask]
+
     // 所有的 autoMethod
-    val autoMap: Map[String, Method] = methods.filter { m =>
+    methods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
-      m.getReturnType == classOf[Map[String,String]]
+      m.getReturnType == classOf[Future[Map[String,String]]]
     }.map { am =>
       (am.getName -> am)
     }.toMap
 
   }
 
-  def getDeciderMap = {
-    val methods: Array[Method] = module.getMethods
-    val parameterTypes = classOf[CommandAutoTask]
+  def getDeciderMap(m: Class[_]) = {
+    val methods: Array[Method] = m.getMethods
+    val parameterTypes = classOf[State]
     // 所有的 autoMethod
-    val autoMap: Map[String, Method] = methods.filter { m =>
+    methods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
@@ -96,6 +113,8 @@ object AutoWrapper extends App {
     }.map { am =>
       (am.getName -> am)
     }.toMap
+
+
   }
 
   // 加载actor

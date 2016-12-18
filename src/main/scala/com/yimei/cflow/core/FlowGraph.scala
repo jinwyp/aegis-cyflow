@@ -24,6 +24,9 @@ class AutoActor(
   extends Actor
     with ActorLogging {
 
+  import scala.concurrent.ExecutionContext;
+  import ExecutionContext.Implicits.global
+
   override def receive: Receive = {
     case task: CommandAutoTask =>
       auto(task).map { values =>
