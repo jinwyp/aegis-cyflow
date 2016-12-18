@@ -30,7 +30,7 @@ object FlowRegistry {
   // case class Graph(edges: Map[String, EdgeDescription], points: Map[String, String])
   // PersistentFlow does not need Graph parameters
   // todo
-  var graphs = Map[String, Graph]
+  var graphs: Map[String, Graph] = Map()
 
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
