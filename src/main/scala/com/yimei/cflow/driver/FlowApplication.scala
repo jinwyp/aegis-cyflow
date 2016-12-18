@@ -7,8 +7,8 @@ import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry
 import com.yimei.cflow.graph.cang.CangRoute
-import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.graph.ying2.YingConfig._
+import com.yimei.cflow.graph.ying2.YingGraph
 import com.yimei.cflow.http._
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}

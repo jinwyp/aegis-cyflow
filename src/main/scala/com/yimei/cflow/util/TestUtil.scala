@@ -7,7 +7,7 @@ import com.yimei.cflow.ServiceTest._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow.{Graph, _}
 import com.yimei.cflow.core.FlowProtocol
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.ying2.YingConfig._
 import com.yimei.cflow.group.Group
 import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
@@ -122,7 +122,7 @@ class TestClient(proxy: ActorRef) extends Actor
     coreSystem.log.info(s"处理用户任务: ${taskId}")
     var points: Map[String, DataPoint] = null
     //设置参与方用户
-    if (task.taskName == "TKUP1") {
+    if (task.taskName == "TKPU1") {
       points = taskPointMap(task.taskName).map { pname =>
         //(pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
         (pname -> DataPoint(values(task.flowId)._1+"-"+values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))

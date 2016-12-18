@@ -58,8 +58,8 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val supervisorUploadContractFormat = jsonFormat1(SupervisorUploadContract)
 
   /** 港口上传合同, 填写确认吨数 **/
-  case class PortUploadContract(contractFileList: FileObjList)
-  implicit val portUploadContractFormat = jsonFormat1(PortUploadContract)
+  case class PortUploadContract(confirmCoalAmount: BigDecimal, contractFileList: FileObjList)
+  implicit val portUploadContractFormat = jsonFormat2(PortUploadContract)
 
   /** 贸易商审核 **/
   case class TraffickerAudit(statusId: Int, fundProviderInterestRate: BigDecimal)

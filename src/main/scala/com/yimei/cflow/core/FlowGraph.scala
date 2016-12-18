@@ -13,10 +13,7 @@ import scala.concurrent.Future
 //
 trait GraphJar {
   def getDeciders: Map[String, State => Arrow]
-  def getAutoProperties: Array[AutoProperty]
-  def edge(name: String) = {
-
-  }
+  def getAutoProperties: Map[String,AutoProperty]
 }
 
 class AutoActor(
@@ -39,6 +36,8 @@ class AutoActor(
       }
   }
 }
+
+
 
 object FlowGraph {
 
