@@ -163,9 +163,35 @@ object CangConfig {
     judge_afterTraffickerNoticePortReleaseGoods -> "贸易商通知港口放款后, 产生1个任务, 流程到达港口, 待港口放货.",
     judge_afterPortReleaseGoods -> "港口放货后, 产生1个任务, 流程到达贸易商, 待贸易商审核是否已经回款完成.",
     judge_afterTraffickerAuditIfCompletePayment -> "贸易商审核是否已经回款完成, 如果回款未完成, 流程到达融资方, 继续回款, 如果已经回款完成, 流程再次到贸易商, 待贸易商确认付款给资金方.",
-    judge_afterTraffickerFinancePayToFundProvider -> "贸易商确认同意回款给资金方后, 产生1个任务, 流程到达贸易商财务, 待贸易商财务付款给资金方.",
+    judge_afterTraffickerConfirmPayToFundProvider -> "贸易商确认同意回款给资金方后, 产生1个任务, 流程到达贸易商财务, 待贸易商财务付款给资金方.",
     judge_afterTraffickerFinancePayToFundProvider -> "贸易商财务付款给资金方后, 流程走完, 结束."
 
   )
+
+
+  /**
+    * 所有数据 key 值
+    */
+  val initData = "初始化数据"
+  val traffickerUserId = "初始化时, 带入流程的贸易商业务人员用户id"
+  val traffickerFinanceUserId = "初始化时, 带入流程的贸易商财务人员用户id"
+  val portUserId = "贸易商选择的港口业务人员用户id"
+  val supervisorUserId = "贸易商选择的监管业务人员用户id"
+  val fundProviderUserId = "贸易商选择的资金方业务人员用户id"
+  val fundProviderFinanceUserId = "贸易商选择的资金方财务人员用户id"
+  val customerUploadContractFile = "融资方上传的合同,财务等文件"
+  val supervisorUploadContractFile = "监管费上传的合同文件"
+  val portUploadContractFile = "港口上传的合同文件, 输入的确认吨数"
+  val traffickerAuditData = "贸易商审核提交的数据, 审核状态id, 货权接收方公司名称"
+  val traffickerFinanceAuditData = "贸易商财务审核提交的数据, 放款金额, 放款建议"
+  val fundProviderAuditData = "资金方审核提交的数据, 审核状态id"
+  val fundProviderFinanceLoadStatus = "资金方财务放款状态id, 0 or 1"
+  val serviceTransferAccountsToCustomerStatus = "系统转账给融资方状态id, 0 or 1"
+  val customerPaymentToTraffickerData = "融资方付款给贸易商提交的数据, 回款本金, 回款利息"
+  val traffickerNoticePortReleaseGoodsData = "贸易商通知港口放货数据, 放货吨数, 货权接收方"
+  val portReleaseGoodsData = "港口每次放货状态数据, 第几次, 状态"
+  val traffickerAuditIfCompletePayment = "贸易商每次确认是否回款完成状态数据, 第几次, 状态"
+  val traffickerConfirmPayToFundProviderStatus = "贸易商确认同意回款给资金方状态, 0 or 1"
+  val traffickerFinancePayToFundProviderStatus = "贸易商财务回款给资金方状态, 0 or 1"
 
 }
