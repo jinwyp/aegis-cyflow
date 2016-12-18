@@ -50,6 +50,9 @@ object AutoWrapper extends App {
     "auto_D" -> autoA _
   );
 
+  import scala.concurrent.ExecutionContext
+  import ExecutionContext.Implicits.global
+
   def autoA(autoTask: CommandAutoTask): Future[Map[String, String]] = {
     val state: State = null // todo should come from autoTask
     Future {

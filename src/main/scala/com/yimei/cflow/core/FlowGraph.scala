@@ -1,5 +1,6 @@
 package com.yimei.cflow.core
 
+import java.lang.reflect.Method
 import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
@@ -128,6 +129,25 @@ trait FlowGraph {
     */
   def getDeciders: Map[String, State => Arrow]
 
+
+  /**
+    *
+    * @return
+    */
+  def getAutoMap: Map[String, Method]
+
+  /**
+    *
+    * @return
+    */
+  def getDeciMap: Map[String, Method]
+
+
+  /**
+    *
+    * @return
+    */
+  def getGraphJar: AnyRef
 }
 
 

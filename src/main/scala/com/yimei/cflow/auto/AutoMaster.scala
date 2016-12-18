@@ -1,12 +1,16 @@
 package com.yimei.cflow.auto
 
+import java.lang.reflect.Method
+
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.State
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
-import com.yimei.cflow.core.FlowRegistry
+import com.yimei.cflow.core.{AutoActor, FlowRegistry}
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
+
+import scala.concurrent.Future
 
 /**
   * Created by hary on 16/12/3.
@@ -51,15 +55,6 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
       actors(flowType)(actorName) forward  get
   }
 
-//  // create all child actors
-//  override def initHook(): Unit = {
-//    log.debug("DataMaster initHook now!!!!")
-//    for (elem: (String, Map[String, (Array[String], (Map[String, ActorRef]) => Props)]) <- FlowRegistry.autoTask) {
-//      log.debug(s"begin create flowType ${elem._1}....")
-//      actors = actors + (elem._1 -> elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1))) )
-//    }
-//    log.debug(s"all AutoActors are $actors")
-//  }
 
   // create all child actors
   override def initHook(): Unit = {
@@ -68,6 +63,7 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
     for ((flowType, autoTasks: Map[String, AutoProperty]) <- FlowRegistry.autoTask) {
       log.debug(s"begin create flowType ${flowType}....")
       for ((actorName, autoProp) <- autoTasks) {
+
         val actor = context.actorOf(autoProp.prop(modules), s"${flowType}.${actorName}")
         if (actors.contains(flowType)) {
           val entry = actors(flowType) + (actorName -> actor)
@@ -75,11 +71,32 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
         } else {
           actors = actors + (flowType -> Map(actorName -> actor))
         }
+
       }
     }
 
     // actors = actors + (elem._1 -> elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1))) )
     log.debug(s"all AutoActors are $actors")
+  }
+
+
+  // V2
+  def startActors(flowType: String) = {
+
+    val jar = FlowRegistry.jarMap(flowType)
+
+    for ((name: String, method: Method) <- FlowRegistry.autoMeth(flowType)) {
+      val behavior : CommandAutoTask => Future[Map[String, String]]  =
+        task => method.invoke(jar,task).asInstanceOf[Future[Map[String,String]]]
+
+      val actor = context.actorOf(Props(new AutoActor(name, modules, behavior)), s"${flowType}.${name}")
+      if (actors.contains(flowType)) {
+        val entry = actors(flowType) + (name -> actor)
+        actors = actors + (flowType -> entry)
+      } else {
+        actors = actors + (flowType -> Map(name -> actor))
+      }
+    }
   }
 
 }

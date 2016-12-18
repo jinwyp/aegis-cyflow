@@ -1,5 +1,7 @@
 package com.yimei.cflow.core
 
+import java.lang.reflect.Method
+
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow._
 
@@ -32,12 +34,24 @@ object FlowRegistry {
   // todo
   var graphs: Map[String, Graph] = Map()
 
+  // flowType -> actorName -> Method
+  var autoMeth: Map[String, Map[String, Method]]  = Map()
+  var deciMeth: Map[String, Map[String, Method]]  = Map()
+
+  // flowType -> AnyRef
+  var jarMap: Map[String, AnyRef] = Map()
+
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
     autoTask = autoTask + (flowType -> graph.getAutoTask)
     userTask = userTask + (flowType -> graph.getUserTask)
     deciders = deciders + (flowType -> graph.getDeciders)
 
+    // todo hary
+    autoMeth = autoMeth + ( flowType -> graph.getAutoMap)
+    deciMeth = deciMeth + ( flowType -> graph.getDeciMap)
+    jarMap = jarMap + (flowType -> graph.getGraphJar)
+    // todo end
 
     edges = Map(flowType-> graph.getEdges)
   }
