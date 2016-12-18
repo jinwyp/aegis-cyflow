@@ -6,9 +6,8 @@ import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 //
 trait GraphJar {
-  val flowType: String
-  def flowGraph: FlowGraph = FlowRegistry.getFlowGraph(flowType)
   def getDeciders: Map[String, State => Arrow]
+  def getAutoProperties: Array[AutoProperty]
 }
 
 abstract class AutoActor(modules: Map[String, ActorRef]) extends Actor with ActorLogging

@@ -3,6 +3,8 @@
 
 .idea/
 
+flows/
+
 # sbt specific
 .cache
 data/

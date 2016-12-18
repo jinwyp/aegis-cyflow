@@ -2,6 +2,7 @@ package com.yimei.cflow.graph.ying
 
 import akka.actor.ActorRef
 import com.yimei.cflow.core.Flow.{Arrow, Graph, State}
+import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{AutoActor, FlowProtocol, GraphJar}
 
 /**
@@ -11,7 +12,7 @@ object YingGraphJar extends GraphJar with FlowProtocol {
 
   import com.yimei.cflow.core.PointUtil._
 
-  override val flowType: String = "ying"
+  val flowType: String = "ying"
 
   override def getDeciders: Map[String, (State) => Arrow] = Map(
     "V0" -> v0,
@@ -21,6 +22,12 @@ object YingGraphJar extends GraphJar with FlowProtocol {
     "V4" -> v4,
     "V5" -> v5
   )
+  override def getAutoProperties: Array[AutoProperty] = ???
+
+
+  /////////////////////////////////////////////////////////////////////////
+  // 私有实现!!!!!!!
+  /////////////////////////////////////////////////////////////////////////
 
   def v0(state: State): Arrow = {
     val unwrapped = state.points("Hello").unwrap[Graph]

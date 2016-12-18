@@ -106,7 +106,6 @@ object GraphLoader extends CoreConfig {
     }
   }
 
-
   def getClassLoader() = {
     var classLoader = new java.net.URLClassLoader(Array(new File("module.jar").toURI.toURL),
       this.getClass.getClassLoader)
