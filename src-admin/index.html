@@ -1,22 +1,22 @@
 <!DOCTYPE html>  <!-- HTML5 document type -->
 <html>
 	<head>
-        <style>
-            #cy, #cy2{
-                position:absolute; top:0; left:0;
-            }
-        </style>
+        <link rel="stylesheet" href="lib/jquery.qtip.css"/>
+        <link rel="stylesheet" href="css/fc.css">
 	</head>
 	<body>
 	<div id="cy"
      style="width:600px; height:400px; background-color: #DAE4E4;"></div>
      <div id="cy2"
      style="width:600px; height:400px; background-color: transparent"></div>
+
      <script src='lib/jquery.js'></script>
+     <script src="lib/jquery.qtip.js"></script>
      <script src='lib/cytoscape.js'></script>
+     <script src="lib/cytoscape-qtip.js"></script>
      <script src="lib/dagre.js"></script>
      <script src="lib/cytoscape-dagre.js"></script>
-     <script src='fc.js'></script>
+     <script src='js/fc.js'></script>
      <script>
         var cy = new FC('cy');
         var cy2 = new FC('cy2');
