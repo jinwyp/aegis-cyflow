@@ -36,4 +36,4 @@ POST /auto/:flowType/:flowId/:autoTask   -- 手动触发指定流程的指定任
 POST /flow/user/:class/:class_id/:userId?flowType=:flowType                     -- 创建流程
 GET  /flow/user/:class/:class_id/:userId?flowType=:flowType&limit=10&offset=20  -- 查询用户流程
 GET  /flow/:flowId                                                              -- 查询指定流程
-PUT  /flow/admin/:flowId?action=:action                                         -- 流程admin, action = fail(让流程失败), action = trigger(触发流程在当且点继续执行)
+PUT  /flow/admin/:flowId?action=:hijack                                         -- 流程admin, action = hijack   JSON: CommandHijack

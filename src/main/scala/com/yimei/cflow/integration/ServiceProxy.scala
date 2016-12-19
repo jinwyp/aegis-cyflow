@@ -45,9 +45,11 @@ object ServiceProxy extends CoreConfig {
   def flowState(proxy: ActorRef, flowId: String) =
     (proxy ? CommandFlowState(flowId)).mapTo[Flow.State]
 
-  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String]): Future[Flow.State] =
-    (proxy ? CommandUpdatePoints(flowId, updatePoint)).mapTo[Flow.State]
+  def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String], trigger: Boolean): Future[Flow.State] =
+    (proxy ? CommandUpdatePoints(flowId, updatePoint, false)).mapTo[Flow.State]   // todo
 
+  def flowHijack(proxy: ActorRef, flowId: String, updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean): Future[Flow.State] =
+    (proxy ? CommandHijack(flowId, updatePoints, decision, trigger)).mapTo[Flow.State]   // todo
   // 1> 创建用户
   // 2> 查询用户
   // 3> 用户提交任务

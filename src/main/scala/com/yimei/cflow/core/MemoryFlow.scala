@@ -59,6 +59,10 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         entry._1 -> DataPoint(entry._2, None, None, uuid, new Date().getTime)
       }
       updateState(PointsUpdated(points))
+      if( cmd.trigger) {
+        makeDecision()
+      }
+      sender() ! state
   }
 
   //

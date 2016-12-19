@@ -19,6 +19,12 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   //
   def updateState(ev: Event) = {
     ev match {
+      case Hijacked(updatePoints, updateDecision) => updateDecision match {
+        case Some(v) =>
+          state = state.copy(points = state.points ++ updatePoints, decision = v)
+        case None =>
+          state = state.copy(points = state.points ++ updatePoints)
+      }
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
       case DecisionUpdated(arrow) =>
@@ -29,11 +35,11 @@ abstract class AbstractFlow extends Actor with ActorLogging {
         }
         state.edge match {
 
-            // todo 王琦 optimize
+          // todo 王琦 optimize
           case Some(e) =>
-            val allPoints = e.getAllDataPointsName(state)  // 所有需要设置为used的数据点
-            var newPoints = state.points
-            allPoints.foreach(ap => newPoints = newPoints + (ap -> newPoints(ap).copy(used = true)))  // for side effect of newPoints
+            val allPoints = e.getAllDataPointsName(state) // 所有需要设置为used的数据点
+          var newPoints = state.points
+            allPoints.foreach(ap => newPoints = newPoints + (ap -> newPoints(ap).copy(used = true))) // for side effect of newPoints
             state = state.copy(
               decision = arrow.end,
               edge = newEdge,
@@ -43,12 +49,12 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
           case a =>
             state = state.copy(
-              decision  = arrow.end,
-              edge      = newEdge,
+              decision = arrow.end,
+              edge = newEdge,
               histories = arrow :: state.histories
             )
         }
-        log.info("new status: {}",state)
+        log.info("new status: {}", state)
     }
   }
 
