@@ -129,7 +129,10 @@
         var cy = cytoscape({
             container: document.getElementById(self.id),
             boxSelectionEnabled: false,
-            autounselectify: true,
+            autounselectify: false,
+            userZoomingEnabled: false,
+            userPanningEnabled: false,
+            autoungrabify: false,
             layout: {
                 name: 'dagre'
             },
@@ -217,6 +220,7 @@
                 }
             }
         })
+        
     }
 
     var autotaskTmpl = function(model, type){
