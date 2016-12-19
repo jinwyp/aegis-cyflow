@@ -10,11 +10,11 @@ object YingGraphJar {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def V0(state: State): Arrow = Arrow(J1, Some("E1"))
-
-  def V1(state: State): Arrow = Arrow(J2, Some("E2"))
-
-  def V2(state: State): Arrow = Arrow(J3, Some("E3"))
+//  def V0(state: State): Arrow = Arrow(J1, Some("E1"))
+//
+//  def V1(state: State): Arrow = Arrow(J2, Some("E2"))
+//
+//  def V2(state: State): Arrow = Arrow(J3, Some("E3"))
 
   def V3(state: State): Arrow = {
     //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过

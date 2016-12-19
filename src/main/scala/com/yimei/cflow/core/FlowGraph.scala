@@ -131,14 +131,17 @@ trait FlowGraph {
     *
     * @return
     */
-  def getDeciMeth: Map[String, Method] = {
+  def getDeciders: Map[String, State => Arrow] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
         m.getReturnType == classOf[Arrow]
     }.map { am =>
-      (am.getName -> am)
+
+      val behavior: State => Arrow  = (state: State)  =>
+        am.invoke(this, state).asInstanceOf[Arrow]
+      (am.getName -> behavior)
     }.toMap
   }
 
