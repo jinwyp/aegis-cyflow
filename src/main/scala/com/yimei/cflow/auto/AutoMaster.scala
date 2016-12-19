@@ -6,9 +6,8 @@ import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.State
-import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.core.{AutoActor, FlowRegistry}
-import com.yimei.cflow.core.FlowRegistry.AutoProperty
+import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 import scala.concurrent.Future
 
@@ -25,8 +24,7 @@ object AutoMaster {
     */
   def fetch(flowType:String, actorName: String, state: State, autoMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if ( refetchIfExists ||
-      // FlowRegistry.autoTask(flowType)(actorName)._1.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
-      FlowRegistry.autoTask(flowType)(actorName).points.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
+      FlowRegistry.autoTask(flowType)(actorName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
       autoMaster ! CommandAutoTask(state.flowId, flowType, actorName)
     }
@@ -55,32 +53,13 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
       actors(flowType)(actorName) forward  get
   }
 
-
   // create all child actors
   override def initHook(): Unit = {
-    log.debug("DataMaster initHook now!!!!")
-
-    for ((flowType, autoTasks: Map[String, AutoProperty]) <- FlowRegistry.autoTask) {
-      log.debug(s"begin create flowType ${flowType}....")
-      for ((actorName, autoProp) <- autoTasks) {
-
-        val actor = context.actorOf(autoProp.prop(modules), s"${flowType}.${actorName}")
-        if (actors.contains(flowType)) {
-          val entry = actors(flowType) + (actorName -> actor)
-          actors = actors + (flowType -> entry)
-        } else {
-          actors = actors + (flowType -> Map(actorName -> actor))
-        }
-
-      }
-    }
-
-    // actors = actors + (elem._1 -> elem._2.foldLeft(Map[String,ActorRef]())((t, e)=>t + (e._1 -> context.actorOf(e._2._2(modules),e._1))) )
-    log.debug(s"all AutoActors are $actors")
+    log.info("DataMaster initHook now!!!!")
+    FlowRegistry.autoTask.keys.foreach(startActors(_))
+    1;
   }
 
-
-  // V2
   def startActors(flowType: String) = {
 
     val jar = FlowRegistry.jarMap(flowType)

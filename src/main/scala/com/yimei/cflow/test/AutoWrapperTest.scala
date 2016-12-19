@@ -1,60 +1,25 @@
-package com.yimei.cflow
+package com.yimei.cflow.test
 
 import java.io.File
 import java.lang.reflect.{Constructor, Method}
-import java.util.UUID
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.{Arrow, CommandPoints, DataPoint, State}
-import com.yimei.cflow.core.FlowGraph
+import com.yimei.cflow.core.Flow.{Arrow, State}
+import com.yimei.cflow.core.{AutoActor, FlowGraph}
 
 import scala.concurrent.Future
 
-case class AutoPoint(value: String)
-
-class AutoActor(
-                 name: String,
-                 modules: Map[String, ActorRef],
-                 auto: CommandAutoTask => Future[Map[String, String]]
-               )
-  extends Actor
-    with ActorLogging {
-
-  import scala.concurrent.ExecutionContext
-  import ExecutionContext.Implicits.global
-
-  override def receive: Receive = {
-    case task: CommandAutoTask =>
-      auto(task).map { values =>
-        modules(module_flow) ! CommandPoints(
-          task.flowId,
-          values.map { entry =>
-            ((entry._1) -> DataPoint(entry._2, None, Some(name), UUID.randomUUID().toString, 10, false))
-          }
-        )
-      }
-  }
-}
 
 /**
   * Created by hary on 16/12/18.
   */
-object AutoWrapper extends App {
-
-  val autos = Map(
-    "auto_A" -> autoA _,
-    "auto_B" -> autoA _,
-    "auto_C" -> autoA _,
-    "auto_D" -> autoA _
-  );
+object AutoWrapperTest extends App {
 
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
   def autoA(autoTask: CommandAutoTask): Future[Map[String, String]] = {
-    val state: State = null // todo should come from autoTask
     Future {
       Map("hello" -> "world")
     }
@@ -65,8 +30,8 @@ object AutoWrapper extends App {
     Arrow("v1", Some("edge"))
   }
 
-  val autoMap = getAutoMap(AutoWrapper.getClass)
-  val deciMap: Map[String, Method] = getDeciderMap(AutoWrapper.getClass)
+  val autoMap = getAutoMap(AutoWrapperTest.getClass)
+  val deciMap: Map[String, Method] = getDeciderMap(AutoWrapperTest.getClass)
 
   println(deciMap("v0").invoke(this, null))
 

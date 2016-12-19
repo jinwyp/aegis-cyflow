@@ -2,10 +2,8 @@ package com.yimei.cflow.graph.cang
 
 import java.lang.reflect.Method
 
-import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, Edge, Graph, State}
+import com.yimei.cflow.core.Flow.{Edge, Graph, State}
 import com.yimei.cflow.core.FlowGraph
-import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 /**
   * Created by hary on 16/12/13.
@@ -38,19 +36,16 @@ object CangGraph extends FlowGraph {
 
 
   /**
-    *
-    */
-  override def getAutoTask: Map[String, AutoProperty] = ???
-
-  /**
     * 注册用户任务
     */
   override def getUserTask: Map[String, Array[String]] = ???
 
+
   /**
-    * 所有决策点
+    *
+    * @return
     */
-  override def getDeciders: Map[String, (State) => Arrow] = ???
+  override def getAutoTask: Map[String, Array[String]] = ???
 
   /**
     *
@@ -61,13 +56,13 @@ object CangGraph extends FlowGraph {
     *
     * @return
     */
-  override def getAutoMap: Map[String, Method] = ???
+  override def getAutoMeth: Map[String, Method] = ???
 
   /**
     *
     * @return
     */
-  override def getDeciMap: Map[String, Method] = ???
+  override def getDeciMeth: Map[String, Method] = ???
 
   /**
     *

@@ -122,8 +122,7 @@ object Flow {
     def check(state: State): Boolean = {
 
       // 没有任何任务!!!
-      if (
-        autoTasks.length == 0 &&
+      if ( autoTasks.length == 0 &&
           userTasks.length == 0 &&
           partUTasks.size == 0 &&
           partGTasks.size == 0
@@ -136,7 +135,7 @@ object Flow {
       val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
+      autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
         allUserTasks.foldLeft(true)((t, ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t => (!t._2.used)).contains(_)))
     }
 
@@ -155,7 +154,7 @@ object Flow {
       */
     def getAllDataPointsName(state: State): Seq[String] = {
       val allTasks = getNonReusedTask()
-      allTasks._1.foldLeft(Seq[String]())((a, at) => autoTask(state.flowType)(at).points ++: a) ++
+      allTasks._1.foldLeft(Seq[String]())((a, at) => autoTask(state.flowType)(at) ++: a) ++
         allTasks._2.foldLeft(Seq[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
     }
   }
