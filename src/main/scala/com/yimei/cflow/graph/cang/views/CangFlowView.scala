@@ -19,6 +19,27 @@ object CangFlowView extends DefaultJsonProtocol {
   case class AssignUserPage(portList: List[AssignUser], supervisorList: List[AssignUser], fundProviderList: List[AssignUser2])
   implicit val assignUserPageFormat = jsonFormat3(AssignUserPage)
 
+  /** 融资方详细页面 **/
+  case class CustomerDetailPage(paidDeposit: BigDecimal,                  //已经缴纳保证金
+                                confirmFinancingAmount: BigDecimal,       //实际放款金额
+                                coalIndex_NCV: Int,
+                                coalIndex_RS: BigDecimal,
+                                coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
+                                contractFileNumber: Int,                  //合同文件份数
+                                financeFileNumber: Int,                   //财务文件份数
+                                businessFileNumber: Int,                  //业务文件份数
+                                alreadyPayPrinciple: BigDecimal,          //已回款本金
+                                waitPayPrinciple: BigDecimal)             //待回款本金
+  implicit val customerDetailPageFormat = jsonFormat10(CustomerDetailPage)
+
+  /** 融资方货权明细列表字段 **/
+  case class CustomerGoodsDetail(transactionFlow: String,                 //交易流水编号 - 这批货转移时支付流水编号
+                                 amount: BigDecimal,                      //交易吨数
+                                 goodsTransferCompanyName: String,        //货权转让方 - 公司名称
+                                 goodsReceiveCompanyName: String,         //货权接收方 - 公司名称
+                                 transactionRemarks: String,              //交易内容
+                                 createTime: Timestamp)                   //这批货交易时间
+
   /** 监管员上传合同页面 **/
   case class SupervisorUploadContractPage(businessCode: String,        //业务编号
                                           currentOwner: String,        //当前货主
