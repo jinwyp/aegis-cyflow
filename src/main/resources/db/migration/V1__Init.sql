@@ -61,9 +61,21 @@ create table party_user(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- 用户群组表
+create table user_group(
+  id BIGINT not null auto_increment,
+  party_id BIGINT not null,
+  gid varchar(32) not null,            -- 参与方组id
+  user_id varchar(10) not null,
+  ts_c timestamp default current_timestamp,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 -- 每一类运营方的组是预先定义好的 字典表
 --
-create table user_group(
+create table party_group(
 
   id BIGINT not null auto_increment,
   party_class varchar(32) not null,    -- 参与方类别
