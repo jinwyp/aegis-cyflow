@@ -205,6 +205,52 @@ object CangConfig {
     traffickerFinancePayToFundProviderStatus -> "贸易商财务回款给资金方状态, 0 or 1"
   )
 
+  /**
+    * 流程状态
+    */
+  val status_waitTraffickerAssignUsers = Map[String, String]("status" -> "financingStep11")
+  val status_waitThreePartyUploadContractFile = Map[String, String]("status" -> "financingStep12", "subStatus1" -> "0", "subStatus2" -> "0", "subStatus3" -> "0")
+  val status_waitTraffickerAudit = Map[String, String]("status" -> "financingStep13")
+  val status_waitForTraffickerFinanceAudit = Map[String, String]("status" -> "financingStep14")
+  val status_waitForFundProviderAudit = Map[String, String]("status" -> "financingStep15")
+  val status_waitForFundProviderFinanceLoad = Map[String, String]("status" -> "financingStep16")
+  val status_waitServiceTransferToCustomer = Map[String, String]("status" -> "financingStep17")
+
+  val status_waitCustomerPayToTrafficker = Map[String, String]("status" -> "repaymentStep31")
+  val status_waitCustomerContinuePayToTrafficker = Map[String, String]("status" -> "repaymentStep32")
+  val status_waitTraffickerNoticePortReleaseGoods = Map[String, String]("status" -> "repaymentStep33")
+  val status_waitPortReleaseGoods = Map[String, String]("status" -> "repaymentStep34")
+  val status_waitTraffickerAuditIfCompletePayment = Map[String, String]("status" -> "repaymentStep35")
+  val status_waitTraffickerConfirmPayToFundProvider = Map[String, String]("status" -> "repaymentStep36")
+  val status_waitTraffickerFinancePayToFundProvider = Map[String, String]("status" -> "repaymentStep37")
+
+  val status_traffickerAuditNotPass = Map[String, String]("status" -> "financingStep51")
+  val status_fundProviderAuditNotPass = Map[String, String]("status" -> "financingStep52")
+  val status_completed = Map[String, String]("status" -> "financing53")
+  val status_endByUnusualSituation = Map[String, String]("status" -> "financing54")
+
+  val statusDescription = Map[Map[String, String], String](
+    status_waitTraffickerAssignUsers -> "等待贸易商选择港口,监管和监管方",
+    status_waitThreePartyUploadContractFile -> "等待融资方,港口,监管上传合同和单据等文件, 此状态包含3个子状态, subStatus1: 融资方上传合同状态, 0:未上传, 1:已上传, subStatus2: 港口上传合同状态, subStatus3: 监管方上传合同状态",
+    status_waitTraffickerAudit -> "等待贸易商审核",
+    status_traffickerAuditNotPass -> "贸易商审核不通过",
+    status_waitForTraffickerFinanceAudit -> "等待贸易商财务审核, 给出确认金额等",
+    status_waitForFundProviderAudit -> "等待资金方审核",
+    status_fundProviderAuditNotPass -> "资金方审核不通过",
+    status_waitForFundProviderFinanceLoad -> "等待资金方财务放款",
+    status_waitServiceTransferToCustomer -> "资金方财务放款后, 系统检测前是否到贸易商账上, 等待系统转账给融资方",
+    status_waitCustomerPayToTrafficker -> "等待融资方付款给贸易商",
+    status_waitCustomerContinuePayToTrafficker -> "等待融资方继续付款给贸易商, 不是第一次付款",
+    status_waitTraffickerNoticePortReleaseGoods -> "等待贸易商通知港口放货",
+    status_waitPortReleaseGoods -> "等待港口放货",
+    status_waitTraffickerAuditIfCompletePayment -> "等待贸易商确认是否已经回款完成",
+    status_waitTraffickerConfirmPayToFundProvider -> "等待贸易商确认是否付款给资金方",
+    status_waitTraffickerFinancePayToFundProvider -> "等待贸易商财务付款给资金方",
+    status_completed -> "流程完成",
+    status_endByUnusualSituation -> "非正常情况结束, 处置货权"
+  )
+
+
 
 
 }
