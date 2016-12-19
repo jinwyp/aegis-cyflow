@@ -37,7 +37,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val edgeDescriptionFormat = jsonFormat6(EdgeDescription)
 
-  implicit val graphFormat = jsonFormat3(Graph)
+  implicit val graphFormat = jsonFormat6(Graph)
 
 
 }
