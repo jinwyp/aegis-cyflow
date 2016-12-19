@@ -24,6 +24,9 @@ object FlowRegistry {
   // flowType -> edgeName -> edge
   var edges: Map[String,Map[String,Edge]] = Map()
 
+  // flowType -> vertex -> in Edges
+  var inEdges: Map[String, Map[String, Array[String]]] = Map()
+
   // flowType -> Graph
   var graphs: Map[String, Graph] = Map()
 
@@ -47,7 +50,6 @@ object FlowRegistry {
         entry._2.invoke(graph.getGraphJar, state).asInstanceOf[Arrow]
       (entry._1, behavior)
     })
-
 
     jarMap   = jarMap   + (flowType -> graph.getGraphJar)
 

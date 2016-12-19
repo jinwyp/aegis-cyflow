@@ -41,7 +41,7 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if ( flowType == "wang") {
+    if (flowType == "wang") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
@@ -94,6 +94,12 @@ object GraphLoader extends App {
         graphConfig.userTasks,
         graphConfig.autoTasks
       )
+
+      def getInEdges = graphConfig.edges.groupBy { entry =>
+        entry._2.end
+      }.map { e =>
+        (e._1, e._2.keySet.toArray)
+      }
 
       override def getFlowInitial: String = initial
 

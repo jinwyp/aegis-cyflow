@@ -87,6 +87,12 @@ trait FlowGraph {
   def getFlowGraph(state: State): Graph
 
   /**
+    *
+    * @return
+    */
+//  def getInEdges: Map[String, Array[String]]
+
+  /**
     * flow type
     *
     * @return
