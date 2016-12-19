@@ -17,6 +17,7 @@ object CangFlowModel extends DefaultJsonProtocol {
   /** 进入仓押系统,初始化, 开始流程 **/
   case class StartFlow(applyUserId: BigInt, applyUserName: String, applyUserPhone: String, applyCompanyId: BigInt,
                        applyCompanyName: String,         //申请人-融资方 信息
+                       businessCode: String,             //业务编号
                        financeCreateTime: Timestamp,     //审批开始时间
                        financeEndTime: Timestamp,        //审批结束时间
                        downstreamCompanyName: String,    //下游签约公司-公司名称
@@ -30,7 +31,7 @@ object CangFlowModel extends DefaultJsonProtocol {
                        stockPort: String,                //库存港口
                        coalAmount: BigDecimal,           //总质押吨数
                        auditFileList: FileObjList)       //审批文件列表
-  implicit val startFlowFormat = jsonFormat18(StartFlow)
+  implicit val startFlowFormat = jsonFormat19(StartFlow)
 
   /**
     * 贸易商选择
