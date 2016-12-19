@@ -24,31 +24,31 @@ object AutoActors extends CoreConfig {
 
   class A(modules: Map[String, ActorRef]) extends Actor with ActorLogging {
     def receive = {
-      case CommandAutoTask(flowId,flowType, name) =>
-        context.system.scheduler.scheduleOnce( 100 millis, modules(module_flow), CommandPoint(flowId, "A", point))
+      case CommandAutoTask(state,flowType, name) =>
+        context.system.scheduler.scheduleOnce( 100 millis, modules(module_flow), CommandPoint(state.flowId, "A", point))
     }
   }
 
   class B(modules: Map[String, ActorRef])  extends Actor {
     // println(s"modules in B is $modules")
     def receive = {
-      case CommandAutoTask(flowId, flowType,name) =>
-        context.system.scheduler.scheduleOnce(100 millis, modules(module_flow), CommandPoint(flowId, "B", point))
+      case CommandAutoTask(state, flowType,name) =>
+        context.system.scheduler.scheduleOnce(100 millis, modules(module_flow), CommandPoint(state.flowId, "B", point))
     }
   }
 
   class C(modules: Map[String, ActorRef])  extends Actor {
     def receive = {
-      case CommandAutoTask(flowId,flowType, name) =>
-        context.system.scheduler.scheduleOnce(100 millis, modules(module_flow), CommandPoint(flowId, "C", point))
+      case CommandAutoTask(state,flowType, name) =>
+        context.system.scheduler.scheduleOnce(100 millis, modules(module_flow), CommandPoint(state.flowId, "C", point))
     }
   }
 
   class DEF(modules: Map[String, ActorRef])  extends Actor {
     def receive = {
-      case CommandAutoTask(flowId,flowType, name) =>
+      case CommandAutoTask(state,flowType, name) =>
         context.system.scheduler.scheduleOnce(100 millis, modules(module_flow),
-          CommandPoints(flowId, Map( point_D -> point, point_E -> point, point_F -> point)))
+          CommandPoints(state.flowId, Map( point_D -> point, point_E -> point, point_F -> point)))
     }
   }
 }

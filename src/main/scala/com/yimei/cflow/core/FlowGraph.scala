@@ -25,7 +25,7 @@ class AutoActor(
     case task: CommandAutoTask =>
       auto(task).map { values =>
         modules(module_flow) ! CommandPoints(
-          task.flowId,
+          task.state.flowId,
           values.map { entry =>
             ((entry._1) -> DataPoint(entry._2, None, Some(name), UUID.randomUUID().toString, 10, false))
           }
