@@ -99,6 +99,25 @@ object CangFlowView extends DefaultJsonProtocol {
                                         status: String)                      //当前状态
   implicit val fundProviderFinancePayPageFormat = jsonFormat10(FundProviderFinancePayPage)
 
+  /** 融资方列表 **/
+  case class customerList(businessCode: String, downstreamCompanyName: String,
+                          financeCreateTime: Timestamp, stockPort: String,
+                          coalAmount: BigDecimal,                   //总质押吨数,
+                          waitRedeemAmount: BigDecimal,             //待赎回数量
+                          confirmFinancingAmount: BigDecimal,       //融资金额
+                          paidDeposit: BigDecimal,                  //已经缴纳保证金
+                          alreadyPayPrinciple: BigDecimal,          //已回款本金
+                          waitPayPrinciple: BigDecimal,             //待回款本金
+                          capitalCost: BigDecimal,                  //资金成本
+                          financingDays: Int,                       //融资天数
+                          coalType: String,                         //煤炭种类
+                          coalIndex_NCV: Int,
+                          coalIndex_RS: BigDecimal,
+                          coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
+                          status: String)                           //当前状态
+
+
+
 
 
 
