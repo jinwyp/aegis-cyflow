@@ -38,13 +38,13 @@ object CangFlowModel extends DefaultJsonProtocol {
     * 监管 业务人员,
     * 资金方 业务人员, 财务
     */
-  case class TraffickerAssignUsers(portSalesmanUserId: String,                //港口业务人员 用户id
-                                   portCompanyId: String,                     //港口公司id
-                                   supervisorSalesmanUserId: String,          //监管业务人员 用户id
-                                   supervisorCompanyId: String,               //监管公司id
-                                   fundProviderSalesmanUserId: String,        //资金方业务人员 用户id
-                                   fundProviderFinanceUserId: String,         //资金方财务 用户id
-                                   fundProviderCompanyId: String)             //资金方公司id
+  case class TraffickerAssignUsers(portUserId: String,                       //港口业务人员 用户id
+                                   portCompanyId: String,                    //港口公司id
+                                   supervisorUserId: String,                 //监管业务人员 用户id
+                                   supervisorCompanyId: String,              //监管公司id
+                                   fundProviderUserId: String,               //资金方业务人员 用户id
+                                   fundProviderFinanceUserId: String,        //资金方财务 用户id
+                                   fundProviderCompanyId: String)            //资金方公司id
   implicit val traffickerAssignUsersFormat = jsonFormat7(TraffickerAssignUsers)
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
