@@ -166,5 +166,12 @@ object CangFlowView extends DefaultJsonProtocol {
                             status: String)                           //当前状态
   implicit val traffickerListFormat = jsonFormat22(TraffickerList)
 
+  /** 贸易商财务列表 **/
+  case class TraffickerFinanceList(applyCompanyName: String,                 //融资方公司名称
+                                   confirmFinancingAmount: BigDecimal,       //放款总金额
+                                   alreadyPayPrinciple: BigDecimal,          //已回款本金
+                                   waitPayPrinciple: BigDecimal,             //待回款本金
+                                   status: String)                           //当前状态
+  implicit val traffickerFinanceListFormat = jsonFormat5(TraffickerFinanceList)
 
 }
