@@ -159,7 +159,7 @@ object CangFlowView extends DefaultJsonProtocol {
                             interestIncome: BigDecimal,               //融资方利息收入
                             paidDeposit: BigDecimal,                  //已经缴纳保证金
                             alreadyPayPrinciple: BigDecimal,          //已回款本金
-                            loanTime: Timestamp,                      //放款时间
+                            fundProviderLoanTime: Timestamp,          //资金方放款时间
                             fundProviderCompanyName: String,          //资金方公司名称
                             fundProviderInterestRate: BigDecimal,     //资金方利率
                             fundProviderInterestIncome: BigDecimal,   //资金方利息
@@ -173,5 +173,32 @@ object CangFlowView extends DefaultJsonProtocol {
                                    waitPayPrinciple: BigDecimal,             //待回款本金
                                    status: String)                           //当前状态
   implicit val traffickerFinanceListFormat = jsonFormat5(TraffickerFinanceList)
+
+  /** 资金方列表 **/
+  case class FundProviderList(applyCompanyName: String,                 //融资方公司名称
+                              businessCode: String,                     //业务编号
+                              confirmFinancingAmount: BigDecimal,       //放款总金额
+                              fundProviderInterestRate: BigDecimal,     //资金方利率
+                              fundProviderInterestIncome: BigDecimal,   //资金方利息
+                              alreadyPayPrinciple: BigDecimal,          //已回款本金
+                              fundProviderLoanTime: Timestamp,          //资金方放款时间
+                              actualSettleInterest: Timestamp,          //实际结息日
+                              financingDays: Int,                       //融资天数
+                              stockPort: String,                        //库存港口
+                              coalAmount: BigDecimal,                   //总质押吨数
+                              waitRedeemAmount: BigDecimal,             //待赎回数量
+                              status: String)                           //当前状态
+  implicit val fundProviderListFormat = jsonFormat13(FundProviderList)
+
+  /** 资金方财务列表 **/
+  case class FundProviderFinanceList(applyCompanyName: String,                 //融资方公司名称
+                                     confirmFinancingAmount: BigDecimal,       //放款总金额
+                                     paidDeposit: BigDecimal,                  //已经缴纳保证金
+                                     alreadyPayPrinciple: BigDecimal,          //已回款本金
+                                     waitPayPrinciple: BigDecimal,             //待回款本金
+                                     status: String)                           //当前状态
+  implicit val fundProviderFinanceListFormat = jsonFormat6(FundProviderFinanceList)
+
+
 
 }
