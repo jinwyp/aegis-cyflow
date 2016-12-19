@@ -40,7 +40,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                  financeCreateTime: Timestamp,             //审批开始时间
                                  financingAmount: BigDecimal,              //拟融资金额
                                  financingDays: Int,                       //融资天数
-                                 confirmFinancingAmount: BigDecimal,        //实际放款金额
+                                 confirmFinancingAmount: BigDecimal,       //实际放款金额
                                  paidDeposit: BigDecimal,                  //已经缴纳保证金
                                  coalAmount: BigDecimal,                   //总质押吨数
                                  alreadyRedeemAmount: BigDecimal,          //已赎回数量
@@ -100,8 +100,10 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val fundProviderFinancePayPageFormat = jsonFormat10(FundProviderFinancePayPage)
 
   /** 融资方列表 **/
-  case class customerList(businessCode: String, downstreamCompanyName: String,
-                          financeCreateTime: Timestamp, stockPort: String,
+  case class CustomerList(businessCode: String,                     //业务编号
+                          downstreamCompanyName: String,            //下游签约公司-公司名称
+                          financeCreateTime: Timestamp,             //审批开始时间
+                          stockPort: String,                        //库存港口
                           coalAmount: BigDecimal,                   //总质押吨数,
                           waitRedeemAmount: BigDecimal,             //待赎回数量
                           confirmFinancingAmount: BigDecimal,       //融资金额
@@ -115,8 +117,14 @@ object CangFlowView extends DefaultJsonProtocol {
                           coalIndex_RS: BigDecimal,
                           coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
                           status: String)                           //当前状态
+  implicit val customerListFormat = jsonFormat17(CustomerList)
 
-
+  /** 港口列表 **/
+  case class PortList(businessCode: String,                     //业务编号
+                      currentOwner: String,                     //当前货主
+                      coalAmount: BigDecimal,                   //总质押吨数(原有总库存)
+                      actualAmount: BigDecimal,                 //实际库存,  抵押前，数值等于原有总库存，抵押后，数值等于 待赎回库存
+                      status: String)                           //当前状态
 
 
 
