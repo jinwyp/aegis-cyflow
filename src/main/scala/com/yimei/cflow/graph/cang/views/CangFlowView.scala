@@ -1,7 +1,6 @@
 package com.yimei.cflow.graph.cang.views
 
 import java.sql.Timestamp
-import java.time.temporal.TemporalAmount
 
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.graph.cang.models.BaseFormatter._
