@@ -73,10 +73,10 @@ object GraphLoader extends App {
     val graphJar = module.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
-    val autoMap = getAutoMap(module.getClass)
+    val autoMap = getAutoMap(module)
 
     // deciMap from graphJar
-    val deciMap = getDeciderMap(module.getClass)
+    val deciMap = getDeciderMap(module)
 
     // graph intial vertex
     val initial = graphConfig.initial
