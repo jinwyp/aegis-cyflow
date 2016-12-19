@@ -82,10 +82,10 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
         val graph = FlowRegistry.getFlowGraph(flowType)
         if (persist) {
           log.info(s"创建persistent flow..........")
-          PersistentFlow.props(graph, flowId, modules, persistenceId, guid)
+          PersistentFlow.props(graph, flowId, modules, persistenceId, guid, initData)
         } else {
           log.info(s"创建non-persistent flow..........")
-          MemoryFlow.props(graph, flowId, modules, guid)
+          MemoryFlow.props(graph, flowId, modules, guid, initData)
         }
     }
 

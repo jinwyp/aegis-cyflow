@@ -14,8 +14,8 @@ object MemoryFlow {
     * @param guid    global userId (userType + userId)
     * @return
     */
-  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String) = {
-    Props(new MemoryFlow(graph, flowId, modules, guid))
+  def props(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String, initData: Map[String, String]) = {
+    Props(new MemoryFlow(graph, flowId, modules, guid, initData))
   }
 
 }
@@ -26,11 +26,16 @@ object MemoryFlow {
   * @param flowId flow id(flowType-userType-userId-persistenceId)
   * @param guid   global userId (userType + userId)
   */
-class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String) extends AbstractFlow {
+class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef], guid: String, initData: Map[String, String]) extends AbstractFlow {
 
   import Flow._
 
-  override var state: State = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
+
+  val initPoints = initData.map{ entry =>
+    (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
+  }
+
+  override var state: State = State(flowId, guid, initPoints, graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
 
   override def genGraph(state: State): Graph = graph.getFlowGraph(state)
 
