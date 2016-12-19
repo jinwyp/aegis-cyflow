@@ -172,26 +172,50 @@ object CangConfig {
   /**
     * 所有数据 key 值
     */
-  val initData = "初始化数据"
-  val traffickerUserId = "初始化时, 带入流程的贸易商用户id"
-  val traffickerFinanceUserId = "初始化时, 带入流程的贸易商财务人员用户id"
-  val portUserId = "贸易商选择的港口用户id"
-  val supervisorUserId = "贸易商选择的监管用户id"
-  val fundProviderUserId = "贸易商选择的资金方用户id"
-  val fundProviderFinanceUserId = "贸易商选择的资金方财务人员用户id"
-  val customerUploadContractFile = "融资方上传的合同,财务等文件"
-  val supervisorUploadContractFile = "监管方上传的合同文件"
-  val portUploadContractFile = "港口上传的合同文件, 输入的确认吨数"
-  val traffickerAuditData = "贸易商审核提交的数据, 审核状态id, 货权接收方公司名称"
-  val traffickerFinanceAuditData = "贸易商财务审核提交的数据, 放款金额, 放款建议"
-  val fundProviderAuditData = "资金方审核提交的数据, 审核状态id"
-  val fundProviderFinanceLoadStatus = "资金方财务放款状态id, 0 or 1"
-  val serviceTransferAccountsToCustomerStatus = "系统转账给融资方状态id, 0 or 1"
-  val customerPaymentToTraffickerData = "融资方付款给贸易商提交的数据, 回款本金, 回款利息"
-  val traffickerNoticePortReleaseGoodsData = "贸易商通知港口放货数据, 放货吨数, 货权接收方"
-  val portReleaseGoodsData = "港口每次放货状态数据, 第几次, 状态"
-  val traffickerAuditIfCompletePayment = "贸易商每次确认是否回款完成状态数据, 第几次, 状态"
-  val traffickerConfirmPayToFundProviderStatus = "贸易商确认同意回款给资金方状态, 0 or 1"
-  val traffickerFinancePayToFundProviderStatus = "贸易商财务回款给资金方状态, 0 or 1"
+  val initData = "initData"
+  val traffickerUserId = "traffickerUserId"
+  val traffickerFinanceUserId = "traffickerFinanceUserId"
+  val portUserId = "portUserId"
+  val supervisorUserId = "supervisorUserId"
+  val fundProviderUserId = "fundProviderUserId"
+  val fundProviderFinanceUserId = "fundProviderFinanceUserId"
+  val customerUploadContractFile = "customerUploadContractFile"
+  val supervisorUploadContractFile = "supervisorUploadContractFile"
+  val portUploadContractFile = "portUploadContractFile"
+  val traffickerAuditData = "traffickerAuditData"
+  val traffickerFinanceAuditData = "traffickerFinanceAuditData"
+  val fundProviderAuditData = "fundProviderAuditData"
+  val fundProviderFinanceLoadStatus = "fundProviderFinanceLoadStatus"
+  val serviceTransferAccountsToCustomerStatus = "serviceTransferAccountsToCustomerStatus"
+  val customerPaymentToTraffickerData = "customerPaymentToTraffickerData"
+  val traffickerNoticePortReleaseGoodsData = "traffickerNoticePortReleaseGoodsData"
+  val portReleaseGoodsData = "portReleaseGoodsData"
+  val traffickerAuditIfCompletePayment = "traffickerAuditIfCompletePayment"
+  val traffickerConfirmPayToFundProviderStatus = "traffickerConfirmPayToFundProviderStatus"
+  val traffickerFinancePayToFundProviderStatus = "traffickerFinancePayToFundProviderStatus"
+
+  val keyDescription = Map[String, String](
+  initData -> "初始化数据",
+  traffickerUserId -> "初始化时, 带入流程的贸易商用户id",
+  traffickerFinanceUserId -> "初始化时, 带入流程的贸易商财务人员用户id",
+  portUserId -> "贸易商选择的港口用户id",
+  supervisorUserId -> "贸易商选择的监管用户id",
+  fundProviderUserId -> "贸易商选择的资金方用户id",
+  fundProviderFinanceUserId -> "贸易商选择的资金方财务人员用户id",
+  customerUploadContractFile -> "融资方上传的合同,财务等文件",
+  supervisorUploadContractFile -> "监管方上传的合同文件",
+  portUploadContractFile -> "港口上传的合同文件, 输入的确认吨数",
+  traffickerAuditData -> "贸易商审核提交的数据, 审核状态id, 货权接收方公司名称",
+  traffickerFinanceAuditData -> "贸易商财务审核提交的数据, 放款金额, 放款建议",
+  fundProviderAuditData -> "资金方审核提交的数据, 审核状态id",
+  fundProviderFinanceLoadStatus -> "资金方财务放款状态id, 0 or 1",
+  serviceTransferAccountsToCustomerStatus -> "系统转账给融资方状态id, 0 or 1",
+  customerPaymentToTraffickerData -> "融资方付款给贸易商提交的数据, 回款本金, 回款利息",
+  traffickerNoticePortReleaseGoodsData -> "贸易商通知港口放货数据, 放货吨数, 货权接收方",
+  portReleaseGoodsData -> "港口每次放货状态数据, 第几次, 状态",
+  traffickerAuditIfCompletePayment -> "贸易商每次确认是否回款完成状态数据, 第几次, 状态",
+  traffickerConfirmPayToFundProviderStatus -> "贸易商确认同意回款给资金方状态, 0 or 1",
+  traffickerFinancePayToFundProviderStatus -> "贸易商财务回款给资金方状态, 0 or 1"
+  )
 
 }
