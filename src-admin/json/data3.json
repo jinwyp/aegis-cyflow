@@ -1,0 +1,285 @@
+{
+    "userTasks": {
+        "TKPG1": [
+            "KPG1"
+        ],
+        "TKPU1": [
+            "KPU1"
+        ],
+        "PU": [
+            "PU1",
+            "PU2"
+        ],
+        "PG": [
+            "PG1",
+            "PG2"
+        ],
+        "UA": [
+            "UA1",
+            "UA2"
+        ]
+    },
+    "state": {
+        "guid": "001-hary1",
+        "flowType": "ying",
+        "decision": "FlowSuccess",
+        "edge":"E5",
+        "points": {
+            "E": {
+                "used": true,
+                "timestamp": 10,
+                "id": "e6267aa2-6871-475a-ac5f-454c6bb6f8eb",
+                "operator": "DEF",
+                "value": "50"
+            },
+            "PU2": {
+                "used": true,
+                "timestamp": 1482119502366,
+                "id": "79a0a025-78cc-4108-a878-ee6c3b4f5331",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "PU1": {
+                "used": true,
+                "timestamp": 1482119502366,
+                "id": "6948af8e-1f9a-47cb-9711-199f2d7da6b8",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "F": {
+                "used": true,
+                "timestamp": 10,
+                "id": "b199170b-f674-4d5c-a5be-86997ae38af6",
+                "operator": "DEF",
+                "value": "50"
+            },
+            "A": {
+                "used": true,
+                "timestamp": 10,
+                "id": "2f1d5d62-62d5-4e45-8cf8-a31157c88f75",
+                "operator": "A",
+                "value": "50"
+            },
+            "PG1": {
+                "used": true,
+                "timestamp": 1482119507363,
+                "id": "b82676fc-529e-4c2c-88bc-e428657e8166",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "UA2": {
+                "used": true,
+                "timestamp": 1482119527363,
+                "id": "d6f70a03-fa75-482e-bc76-c5e03c2c281d",
+                "operator": "001-hary1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "B": {
+                "used": true,
+                "timestamp": 10,
+                "id": "b8d8e548-63f7-4721-8b70-598aa192c406",
+                "operator": "B",
+                "value": "50"
+            },
+            "PG2": {
+                "used": true,
+                "timestamp": 1482119507363,
+                "id": "e31f3bac-4af6-42fb-b63d-28d17c21fcf9",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "C": {
+                "used": true,
+                "timestamp": 10,
+                "id": "d1d70c06-a936-4d78-871a-8758cb26d73b",
+                "operator": "C",
+                "value": "50"
+            },
+            "UA1": {
+                "used": true,
+                "timestamp": 1482119527363,
+                "id": "ae186627-0a4c-4b2c-abd3-276c50a36f73",
+                "operator": "001-hary1",
+                "value": "50",
+                "memo": "userdata"
+            },
+            "KPU1": {
+                "used": true,
+                "timestamp": 1482119497367,
+                "id": "ef7aa13c-3f37-4461-8632-28c1bd6ff6c8",
+                "operator": "001-hary1",
+                "value": "fund1-wangqiId1",
+                "memo": "userdata"
+            },
+            "KPG1": {
+                "used": true,
+                "timestamp": 1482119497369,
+                "id": "c625809a-11a6-4666-abe8-bbb1dcde718e",
+                "operator": "001-hary1",
+                "value": "fund1-wqGroup1",
+                "memo": "userdata"
+            },
+            "D": {
+                "used": true,
+                "timestamp": 10,
+                "id": "084aae36-d6c8-4216-841f-e89a50ccff70",
+                "operator": "DEF",
+                "value": "50"
+            }
+        },
+        "flowId": "ying-001-hary1-1",
+        "histories": [
+            {
+                "end": "FlowSuccess"
+            },
+            {
+                "end": "V4",
+                "edge": "E4"
+            },
+            {
+                "end": "V4",
+                "edge": "E4"
+            },
+            {
+                "end": "V4",
+                "edge": "E4"
+            },
+            {
+                "end": "V4",
+                "edge": "E4"
+            },
+            {
+                "end": "V3",
+                "edge": "E3"
+            },
+            {
+                "end": "V2",
+                "edge": "E2"
+            },
+            {
+                "end": "V1",
+                "edge": "E1"
+            }
+        ]
+    },
+    "autoTasks": {
+        "A": [
+            "A"
+        ],
+        "B": [
+            "B"
+        ],
+        "C": [
+            "C"
+        ],
+        "DEF": [
+            "D",
+            "E",
+            "F"
+        ]
+    },
+    "points": {
+        "E": "征信平分5",
+        "PU2": "partition user1 采集数据点2",
+        "PU1": "partition user1 采集数据点1",
+        "F": "征信平分6",
+        "A": "征信平分1",
+        "PG1": "partition group1 采集数据点1",
+        "UA2": "流程发起者任务数据",
+        "B": "征信平分2",
+        "PG2": "partition group1 采集数据点2",
+        "C": "征信平分3",
+        "UA1": "流程发起者任务数据",
+        "KPU1": "设置资金方 user1",
+        "KPG1": "设置融资方 group1",
+        "D": "征信平分4"
+    },
+    "edges": {
+        "E3": {
+            "userTasks": [],
+            "partGTasks": [
+                {
+                    "ggidKey": "KPG1",
+                    "tasks": [
+                        "PG"
+                    ]
+                }
+            ],
+            "begin": "V2",
+            "partUTasks": [
+                {
+                    "guidKey": "KPU1",
+                    "tasks": [
+                        "PU"
+                    ]
+                }
+            ],
+            "autoTasks": [],
+            "end": "V3"
+        },
+        "E2": {
+            "userTasks": [
+                "TKPU1",
+                "TKPG1"
+            ],
+            "partGTasks": [],
+            "begin": "V1",
+            "partUTasks": [],
+            "autoTasks": [],
+            "end": "V2"
+        },
+        "E1": {
+            "userTasks": [],
+            "partGTasks": [],
+            "begin": "V0",
+            "partUTasks": [],
+            "autoTasks": [
+                "A",
+                "B",
+                "C"
+            ],
+            "end": "V1"
+        },
+        "E6": {
+            "userTasks": [],
+            "partGTasks": [],
+            "begin": "V5",
+            "partUTasks": [],
+            "autoTasks": [],
+            "end": "V6"
+        },
+        "E5": {
+            "userTasks": [],
+            "partGTasks": [],
+            "begin": "V4",
+            "partUTasks": [],
+            "autoTasks": [
+                "DEF"
+            ],
+            "end": "V5"
+        },
+        "E4": {
+            "userTasks": [
+                "UA"
+            ],
+            "partGTasks": [],
+            "begin": "V3",
+            "partUTasks": [],
+            "autoTasks": [],
+            "end": "V4"
+        }
+    },
+    "vertices": {
+        "V4": "判断4",
+        "V3": "判断3",
+        "V2": "判断2",
+        "V1": "判断1",
+        "V5": "判断5",
+        "V0": "判断0"
+    }
+}
