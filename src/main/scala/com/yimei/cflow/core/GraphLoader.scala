@@ -34,23 +34,20 @@ object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
 object GraphLoader extends App {
 
   def loadall() =
-    new File("flows").listFiles()
+    new File("flows")
+      .listFiles()
       .filter(_.isDirectory())
       .map(_.getName)
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-
-    if ( flowType == "ying") {
-      // get jars
+    if ( flowType == "cang") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
-
-      // create classloader
       new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-    } else if (flowType == "cang") {
+    } else if (flowType == "ying") {
       YingGraphJar.getClass.getClassLoader
     } else {
       throw new Exception(s"does not support $flowType")
@@ -115,40 +112,26 @@ object GraphLoader extends App {
     }
   }
 
-
   def getAutoMap(m: Class[_]) = {
-    m.getMethods.filter { m =>
-      val ptypes = m.getParameterTypes
+    m.getMethods.filter { method =>
+      val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
-        m.getReturnType == classOf[Future[Map[String, String]]]
+        method.getReturnType == classOf[Future[Map[String, String]]]
     }.map { am =>
       (am.getName -> am)
     }.toMap
   }
 
   def getDeciderMap(m: Class[_]) = {
-    m.getMethods.filter { m =>
-      val ptypes = m.getParameterTypes
+    m.getMethods.filter { method =>
+      val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
-        m.getReturnType == classOf[Arrow]
+        method.getReturnType == classOf[Arrow]
     }.map { am =>
       (am.getName -> am)
     }.toMap
   }
 
-
-  // 测试, 先看能否动态加载
-  def kload: FlowGraph = {
-    val name = "com.yimei.cflow.graph.ying2.YingGraph$"
-    val module = this.getClass.getClassLoader.loadClass(name)
-    try {
-      module.getField("MODULE$").get(null).asInstanceOf[FlowGraph]
-    } catch {
-      case e: java.lang.ClassCastException =>
-        printf(" - %s is not Module\n", module)
-        throw e
-    }
-  }
 }

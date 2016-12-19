@@ -30,8 +30,6 @@ object FlowRegistry {
   // flowType -> actorName -> Method
   var autoMeth: Map[String, Map[String, Method]]  = Map()
 
-  // var deciMeth: Map[String, Map[String, Method]]  = Map()
-
   // flowType -> AnyRef
   var jarMap: Map[String, AnyRef] = Map()
 
