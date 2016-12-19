@@ -54,7 +54,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
               histories = arrow +: state.histories
             )
         }
-        log.info("new status: {}", state)
+        log.debug("new status: {}", state)
     }
   }
 
