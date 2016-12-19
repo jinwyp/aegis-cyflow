@@ -20,19 +20,19 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val assignUserPageFormat = jsonFormat3(AssignUserPage)
 
   /** 监管员上传合同页面 **/
-  case class SupervisorUploadContractPage(businessCode: String,      //业务编号
-                                          status: String,            //当前状态
-                                          currentOwner: String,      //当前货主
-                                          coalType: String,          //煤炭种类
-                                          stockPort: String)         //库存港口
+  case class SupervisorUploadContractPage(businessCode: String,        //业务编号
+                                          currentOwner: String,        //当前货主
+                                          coalType: String,            //煤炭种类
+                                          stockPort: String,           //库存港口
+                                          status: Map[String, String]) //当前状态
   implicit val supervisorUploadContractPageFormat = jsonFormat5(SupervisorUploadContractPage)
 
   /** 港口上传合同页面 **/
-  case class PortUploadContractPage(businessCode: String,      //业务编号
-                                    status: String,            //当前状态
-                                    currentOwner: String,      //当前货主
-                                    coalType: String,          //煤炭种类
-                                    stockPort: String)         //库存港口
+  case class PortUploadContractPage(businessCode: String,        //业务编号
+                                    currentOwner: String,        //当前货主
+                                    coalType: String,            //煤炭种类
+                                    stockPort: String,           //库存港口
+                                    status: Map[String, String]) //当前状态
   implicit val portUploadContractPageFormat = jsonFormat5(PortUploadContractPage)
 
   /** 贸易商审核页面 **/
@@ -54,7 +54,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                  customerBusinessFileList: FileObjList,    //融资方上传业务文件列表
                                  supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
                                  portContractFileList: FileObjList,        //港口上传合同文件列表
-                                 status: String)                           //当前状态
+                                 status: Map[String, String])              //当前状态
   implicit val traffickerAuditPageFormat = jsonFormat19(TraffickerAuditPage)
 
   /** 贸易商财务审核,给出放款建议页面 **/
@@ -67,7 +67,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                         confirmFinancingAmount: BigDecimal,       //放款金额/实际融资金额
                                         alreadyPayPrinciple: BigDecimal,          //已回款本金
                                         waitPayPrinciple: BigDecimal,             //待回款本金
-                                        status: String)                           //当前状态
+                                        status: Map[String, String])              //当前状态
   implicit val traffickerFinanceAuditPageFormat = jsonFormat10(TraffickerFinanceAuditPage)
 
   /** 资金方审核页面 **/
@@ -89,7 +89,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                    customerBusinessFileList: FileObjList,    //融资方上传业务文件列表
                                    supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
                                    portContractFileList: FileObjList,        //港口上传合同文件列表
-                                   status: String)                           //当前状态
+                                   status: Map[String, String])              //当前状态
   implicit val fundProviderAuditPageFormat = jsonFormat19(FundProviderAuditPage)
 
   /** 资金方财务查看,付款页面 **/
@@ -102,7 +102,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                         confirmFinancingAmount: BigDecimal,  //放款金额/实际融资金额
                                         alreadyPayPrinciple: BigDecimal,     //已回款本金
                                         waitPayPrinciple: BigDecimal,        //待回款本金
-                                        status: String)                      //当前状态
+                                        status: Map[String, String])         //当前状态
   implicit val fundProviderFinancePayPageFormat = jsonFormat10(FundProviderFinancePayPage)
 
   /** 融资方列表 **/
@@ -122,7 +122,7 @@ object CangFlowView extends DefaultJsonProtocol {
                           coalIndex_NCV: Int,
                           coalIndex_RS: BigDecimal,
                           coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
-                          status: String)                           //当前状态
+                          status: Map[String, String])              //当前状态
   implicit val customerListFormat = jsonFormat17(CustomerList)
 
   /** 港口列表 **/
@@ -130,7 +130,7 @@ object CangFlowView extends DefaultJsonProtocol {
                       currentOwner: String,                     //当前货主
                       coalAmount: BigDecimal,                   //总质押吨数(原有总库存)
                       actualAmount: BigDecimal,                 //实际库存,  抵押前，数值等于原有总库存，抵押后，数值等于 待赎回库存
-                      status: String)                           //当前状态
+                      status: Map[String, String])              //当前状态
   implicit val portListFormat = jsonFormat5(PortList)
 
   /** 监管列表 **/
@@ -138,7 +138,7 @@ object CangFlowView extends DefaultJsonProtocol {
                             currentOwner: String,                     //当前货主
                             coalAmount: BigDecimal,                   //总质押吨数(原有总库存)
                             actualAmount: BigDecimal,                 //实际库存,  抵押前，数值等于原有总库存，抵押后，数值等于 待赎回库存
-                            status: String)                           //当前状态
+                            status: Map[String, String])              //当前状态
   implicit val supervisorListFormat = jsonFormat5(SupervisorList)
 
   /** 贸易商列表 **/
@@ -163,7 +163,7 @@ object CangFlowView extends DefaultJsonProtocol {
                             fundProviderCompanyName: String,          //资金方公司名称
                             fundProviderInterestRate: BigDecimal,     //资金方利率
                             fundProviderInterestIncome: BigDecimal,   //资金方利息
-                            status: String)                           //当前状态
+                            status: Map[String, String])              //当前状态
   implicit val traffickerListFormat = jsonFormat22(TraffickerList)
 
   /** 贸易商财务列表 **/
@@ -171,7 +171,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                    confirmFinancingAmount: BigDecimal,       //放款总金额
                                    alreadyPayPrinciple: BigDecimal,          //已回款本金
                                    waitPayPrinciple: BigDecimal,             //待回款本金
-                                   status: String)                           //当前状态
+                                   status: Map[String, String])              //当前状态
   implicit val traffickerFinanceListFormat = jsonFormat5(TraffickerFinanceList)
 
   /** 资金方列表 **/
@@ -187,7 +187,7 @@ object CangFlowView extends DefaultJsonProtocol {
                               stockPort: String,                        //库存港口
                               coalAmount: BigDecimal,                   //总质押吨数
                               waitRedeemAmount: BigDecimal,             //待赎回数量
-                              status: String)                           //当前状态
+                              status: Map[String, String])              //当前状态
   implicit val fundProviderListFormat = jsonFormat13(FundProviderList)
 
   /** 资金方财务列表 **/
@@ -196,7 +196,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                      paidDeposit: BigDecimal,                  //已经缴纳保证金
                                      alreadyPayPrinciple: BigDecimal,          //已回款本金
                                      waitPayPrinciple: BigDecimal,             //待回款本金
-                                     status: String)                           //当前状态
+                                     status: Map[String, String])              //当前状态
   implicit val fundProviderFinanceListFormat = jsonFormat6(FundProviderFinanceList)
 
 
