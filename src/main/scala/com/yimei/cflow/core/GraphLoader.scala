@@ -83,7 +83,14 @@ object GraphLoader extends App {
 
     // 返回流程
     new FlowGraph {
-      override def getFlowGraph(state: State): Graph = Graph(graphConfig.edges, state, graphConfig.poinsts)
+      override def getFlowGraph(state: State): Graph = Graph(
+        graphConfig.edges,
+        graphConfig.deciders,
+        state,
+        graphConfig.poinsts,
+        graphConfig.userTasks,
+        graphConfig.autoTasks
+      )
 
       override def getFlowInitial: String = initial
 

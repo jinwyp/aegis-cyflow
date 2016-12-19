@@ -39,7 +39,7 @@ object YingGraph extends FlowGraph {
     * @return
     */
   def getFlowGraph(state: State): Graph =
-    GraphBuilder.jsonGraph(state) { implicit builder =>
+    GraphBuilder.jsonGraph(state, judgeDecription, pointDescription, autoPointMap, taskPointMap) { implicit builder =>
       import GraphBuilder._
       J0 ~> E1 ~> J1
       J1 ~> E2 ~> J2

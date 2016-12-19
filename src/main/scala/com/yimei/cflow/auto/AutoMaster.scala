@@ -26,16 +26,16 @@ object AutoMaster {
     if ( refetchIfExists ||
       FlowRegistry.autoTask(flowType)(actorName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
-      autoMaster ! CommandAutoTask(state.flowId, flowType, actorName)
+      autoMaster ! CommandAutoTask(state, flowType, actorName)
     }
   }
 
   /**
     *
-    * @param flowId   flowId
+    * @param state   State
     * @param actorName actorName
     */
-  case class CommandAutoTask(flowId: String, flowType:String, actorName: String)
+  case class CommandAutoTask(state: State, flowType:String, actorName: String)
 
   def props(dependOn: Array[String]) = Props(new AutoMaster(dependOn))
 
@@ -57,7 +57,6 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
   override def initHook(): Unit = {
     log.info("DataMaster initHook now!!!!")
     FlowRegistry.autoTask.keys.foreach(startActors(_))
-    1;
   }
 
   def startActors(flowType: String) = {

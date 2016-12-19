@@ -195,7 +195,14 @@ object Flow {
                               end: String
                             )
 
-  case class Graph(edges: Map[String, EdgeDescription], state: State, dataDescription: Map[String, String])
+  case class Graph(
+                    edges: Map[String, EdgeDescription],
+                    vertices: Map[String, String],
+                    state: State,
+                    points: Map[String, String],
+                    userTasks: Map[String, Array[String]],
+                    autoTasks: Map[String, Array[String]]
+                  )
 
   //case class Arrow(end: String, edge: Option[Edge])
   case class Arrow(end: String, edge:Option[String])
