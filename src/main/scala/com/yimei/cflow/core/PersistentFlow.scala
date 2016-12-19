@@ -15,8 +15,10 @@ object PersistentFlow {
             flowId: String,
             modules: Map[String, ActorRef],
             pid: String,
-            guid: String): Props =
-    Props(new PersistentFlow(graph, flowId, modules, pid, guid))
+            guid: String,
+            initData: Map[String, String]
+           ): Props =
+    Props(new PersistentFlow(graph, flowId, modules, pid, guid, initData))
 }
 
 /**
@@ -35,7 +37,9 @@ class PersistentFlow(
                       flowId: String,
                       modules: Map[String, ActorRef],
                       pid: String,
-                      guid: String) extends AbstractFlow with PersistentActor {
+                      guid: String,
+                      initData: Map[String, String]
+                    ) extends AbstractFlow with PersistentActor {
 
   import Flow._
 
@@ -47,7 +51,11 @@ class PersistentFlow(
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
+  val initPoints = initData.map{ entry =>
+    (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
+  }
+
+  override var state = State(flowId, guid, initPoints, graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
 
   //
   override def genGraph(state: State): Graph = graph.getFlowGraph(state)
@@ -96,7 +104,7 @@ class PersistentFlow(
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         updateState(event)
-        if( cmd.trigger) {
+        if (cmd.trigger) {
           makeDecision()
         }
         sender() ! state // 返回流程状态
@@ -106,7 +114,7 @@ class PersistentFlow(
 
       persist(Hijacked(updatePoints, updateDecision)) { event =>
         updateState(event)
-        if ( trigger) {
+        if (trigger) {
           makeDecision()
         }
         sender() ! state

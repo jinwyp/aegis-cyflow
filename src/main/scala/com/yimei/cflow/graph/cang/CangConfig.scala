@@ -13,11 +13,6 @@ object CangConfig {
   /**
     * 所有的数据点名称
     */
-  val point_A = "pa"
-  val point_B = "pb"
-  val point_X = "px"
-  val point_Y = "py"
-
   val point_start = "startPoint"
   val point_traffickerAssignUsers = "traffickerAssignUsersPoint"
   val point_customerUploadContract = "customerUploadContractPoint"
@@ -40,9 +35,6 @@ object CangConfig {
     * 所有数据点的描述
     */
   val pointDescription = Map[String, String](
-    point_A -> "xxxxx",
-    point_B -> "xxxxx",
-
     point_start -> "进入仓押系统时,带入的数据",
     point_traffickerAssignUsers -> "贸易商分配 港口, 监管, 资金方时提交的数据",
     point_customerUploadContract -> "融资方上传合同,文件时提交的数据",
@@ -73,11 +65,8 @@ object CangConfig {
     * 数据采集点与数据点对应关系
     */
   val dataPointMap: Map[String, Array[String]] = Map(
-    data_AB -> Array(point_A, point_B),
-
     data_start -> Array(point_start),
     data_transferAccountsToCustomer -> Array(point_serviceTransferAccountsToCustomer)
-
   )
 
 
@@ -106,8 +95,6 @@ object CangConfig {
     * 所有用户任务与数据点的对应关系
     */
   val taskPointMap: Map[String, Array[String]] = Map(
-    task_A -> Array(point_X,point_Y),
-
     task_traffickerAssignUsers -> Array(point_traffickerAssignUsers),
     task_customerUploadContract -> Array(point_customerUploadContract),
     task_supervisorUploadContract -> Array(point_supervisorUploadContract),
