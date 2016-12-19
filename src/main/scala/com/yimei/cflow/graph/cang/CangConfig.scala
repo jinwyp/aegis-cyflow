@@ -6,18 +6,13 @@ package com.yimei.cflow.graph.cang
 object CangConfig {
 
   /**
-    *  流程类型
+    * 流程类型
     */
   val flow_cang = "cang"
 
   /**
     * 所有的数据点名称
     */
-  val point_A = "pa"
-  val point_B = "pb"
-  val point_X = "px"
-  val point_Y = "py"
-
   val point_start = "startPoint"
   val point_traffickerAssignUsers = "traffickerAssignUsersPoint"
   val point_customerUploadContract = "customerUploadContractPoint"
@@ -40,9 +35,6 @@ object CangConfig {
     * 所有数据点的描述
     */
   val pointDescription = Map[String, String](
-    point_A -> "xxxxx",
-    point_B -> "xxxxx",
-
     point_start -> "进入仓押系统时,带入的数据",
     point_traffickerAssignUsers -> "贸易商分配 港口, 监管, 资金方时提交的数据",
     point_customerUploadContract -> "融资方上传合同,文件时提交的数据",
@@ -73,11 +65,8 @@ object CangConfig {
     * 数据采集点与数据点对应关系
     */
   val dataPointMap: Map[String, Array[String]] = Map(
-    data_AB -> Array(point_A, point_B),
-
     data_start -> Array(point_start),
     data_transferAccountsToCustomer -> Array(point_serviceTransferAccountsToCustomer)
-
   )
 
 
@@ -106,8 +95,6 @@ object CangConfig {
     * 所有用户任务与数据点的对应关系
     */
   val taskPointMap: Map[String, Array[String]] = Map(
-    task_A -> Array(point_X,point_Y),
-
     task_traffickerAssignUsers -> Array(point_traffickerAssignUsers),
     task_customerUploadContract -> Array(point_customerUploadContract),
     task_supervisorUploadContract -> Array(point_supervisorUploadContract),
@@ -147,7 +134,7 @@ object CangConfig {
 
 
   /**
-    *  所有决策点描述
+    * 所有决策点描述
     */
   val judgeDescription = Map[String, String](
     judge_afterStart -> "流程开始后, 产生1个任务, 任务到贸易商, 待贸易商分配人员.",
@@ -195,27 +182,75 @@ object CangConfig {
   val traffickerFinancePayToFundProviderStatus = "traffickerFinancePayToFundProviderStatus"
 
   val keyDescription = Map[String, String](
-  initData -> "初始化数据",
-  traffickerUserId -> "初始化时, 带入流程的贸易商用户id",
-  traffickerFinanceUserId -> "初始化时, 带入流程的贸易商财务人员用户id",
-  portUserId -> "贸易商选择的港口用户id",
-  supervisorUserId -> "贸易商选择的监管用户id",
-  fundProviderUserId -> "贸易商选择的资金方用户id",
-  fundProviderFinanceUserId -> "贸易商选择的资金方财务人员用户id",
-  customerUploadContractFile -> "融资方上传的合同,财务等文件",
-  supervisorUploadContractFile -> "监管方上传的合同文件",
-  portUploadContractFile -> "港口上传的合同文件, 输入的确认吨数",
-  traffickerAuditData -> "贸易商审核提交的数据, 审核状态id, 货权接收方公司名称",
-  traffickerFinanceAuditData -> "贸易商财务审核提交的数据, 放款金额, 放款建议",
-  fundProviderAuditData -> "资金方审核提交的数据, 审核状态id",
-  fundProviderFinanceLoadStatus -> "资金方财务放款状态id, 0 or 1",
-  serviceTransferAccountsToCustomerStatus -> "系统转账给融资方状态id, 0 or 1",
-  customerPaymentToTraffickerData -> "融资方付款给贸易商提交的数据, 回款本金, 回款利息",
-  traffickerNoticePortReleaseGoodsData -> "贸易商通知港口放货数据, 放货吨数, 货权接收方",
-  portReleaseGoodsData -> "港口每次放货状态数据, 第几次, 状态",
-  traffickerAuditIfCompletePayment -> "贸易商每次确认是否回款完成状态数据, 第几次, 状态",
-  traffickerConfirmPayToFundProviderStatus -> "贸易商确认同意回款给资金方状态, 0 or 1",
-  traffickerFinancePayToFundProviderStatus -> "贸易商财务回款给资金方状态, 0 or 1"
+    initData -> "初始化数据",
+    traffickerUserId -> "初始化时, 带入流程的贸易商用户id",
+    traffickerFinanceUserId -> "初始化时, 带入流程的贸易商财务人员用户id",
+    portUserId -> "贸易商选择的港口用户id",
+    supervisorUserId -> "贸易商选择的监管用户id",
+    fundProviderUserId -> "贸易商选择的资金方用户id",
+    fundProviderFinanceUserId -> "贸易商选择的资金方财务人员用户id",
+    customerUploadContractFile -> "融资方上传的合同,财务等文件",
+    supervisorUploadContractFile -> "监管方上传的合同文件",
+    portUploadContractFile -> "港口上传的合同文件, 输入的确认吨数",
+    traffickerAuditData -> "贸易商审核提交的数据, 审核状态id, 货权接收方公司名称",
+    traffickerFinanceAuditData -> "贸易商财务审核提交的数据, 放款金额, 放款建议",
+    fundProviderAuditData -> "资金方审核提交的数据, 审核状态id",
+    fundProviderFinanceLoadStatus -> "资金方财务放款状态id, 0 or 1",
+    serviceTransferAccountsToCustomerStatus -> "系统转账给融资方状态id, 0 or 1",
+    customerPaymentToTraffickerData -> "融资方付款给贸易商提交的数据, 回款本金, 回款利息",
+    traffickerNoticePortReleaseGoodsData -> "贸易商通知港口放货数据, 放货吨数, 货权接收方",
+    portReleaseGoodsData -> "港口每次放货状态数据, 第几次, 状态",
+    traffickerAuditIfCompletePayment -> "贸易商每次确认是否回款完成状态数据, 第几次, 状态",
+    traffickerConfirmPayToFundProviderStatus -> "贸易商确认同意回款给资金方状态, 0 or 1",
+    traffickerFinancePayToFundProviderStatus -> "贸易商财务回款给资金方状态, 0 or 1"
   )
+
+  /**
+    * 流程状态
+    */
+  val status_waitTraffickerAssignUsers = Map[String, String]("status" -> "financingStep11")
+  val status_waitThreePartyUploadContractFile = Map[String, String]("status" -> "financingStep12", "subStatus1" -> "0", "subStatus2" -> "0", "subStatus3" -> "0")
+  val status_waitTraffickerAudit = Map[String, String]("status" -> "financingStep13")
+  val status_waitForTraffickerFinanceAudit = Map[String, String]("status" -> "financingStep14")
+  val status_waitForFundProviderAudit = Map[String, String]("status" -> "financingStep15")
+  val status_waitForFundProviderFinanceLoad = Map[String, String]("status" -> "financingStep16")
+  val status_waitServiceTransferToCustomer = Map[String, String]("status" -> "financingStep17")
+
+  val status_waitCustomerPayToTrafficker = Map[String, String]("status" -> "repaymentStep31")
+  val status_waitCustomerContinuePayToTrafficker = Map[String, String]("status" -> "repaymentStep32")
+  val status_waitTraffickerNoticePortReleaseGoods = Map[String, String]("status" -> "repaymentStep33")
+  val status_waitPortReleaseGoods = Map[String, String]("status" -> "repaymentStep34")
+  val status_waitTraffickerAuditIfCompletePayment = Map[String, String]("status" -> "repaymentStep35")
+  val status_waitTraffickerConfirmPayToFundProvider = Map[String, String]("status" -> "repaymentStep36")
+  val status_waitTraffickerFinancePayToFundProvider = Map[String, String]("status" -> "repaymentStep37")
+
+  val status_traffickerAuditNotPass = Map[String, String]("status" -> "financingStep51")
+  val status_fundProviderAuditNotPass = Map[String, String]("status" -> "financingStep52")
+  val status_completed = Map[String, String]("status" -> "financing53")
+  val status_endByUnusualSituation = Map[String, String]("status" -> "financing54")
+
+  val statusDescription = Map[Map[String, String], String](
+    status_waitTraffickerAssignUsers -> "等待贸易商选择港口,监管和监管方",
+    status_waitThreePartyUploadContractFile -> "等待融资方,港口,监管上传合同和单据等文件, 此状态包含3个子状态, subStatus1: 融资方上传合同状态, 0:未上传, 1:已上传, subStatus2: 港口上传合同状态, subStatus3: 监管方上传合同状态",
+    status_waitTraffickerAudit -> "等待贸易商审核",
+    status_traffickerAuditNotPass -> "贸易商审核不通过",
+    status_waitForTraffickerFinanceAudit -> "等待贸易商财务审核, 给出确认金额等",
+    status_waitForFundProviderAudit -> "等待资金方审核",
+    status_fundProviderAuditNotPass -> "资金方审核不通过",
+    status_waitForFundProviderFinanceLoad -> "等待资金方财务放款",
+    status_waitServiceTransferToCustomer -> "资金方财务放款后, 系统检测前是否到贸易商账上, 等待系统转账给融资方",
+    status_waitCustomerPayToTrafficker -> "等待融资方付款给贸易商",
+    status_waitCustomerContinuePayToTrafficker -> "等待融资方继续付款给贸易商, 不是第一次付款",
+    status_waitTraffickerNoticePortReleaseGoods -> "等待贸易商通知港口放货",
+    status_waitPortReleaseGoods -> "等待港口放货",
+    status_waitTraffickerAuditIfCompletePayment -> "等待贸易商确认是否已经回款完成",
+    status_waitTraffickerConfirmPayToFundProvider -> "等待贸易商确认是否付款给资金方",
+    status_waitTraffickerFinancePayToFundProvider -> "等待贸易商财务付款给资金方",
+    status_completed -> "流程完成",
+    status_endByUnusualSituation -> "非正常情况结束, 处置货权"
+  )
+
+
+
 
 }

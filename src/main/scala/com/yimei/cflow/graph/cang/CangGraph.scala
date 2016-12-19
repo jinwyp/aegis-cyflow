@@ -1,77 +1,34 @@
 package com.yimei.cflow.graph.cang
 
-import java.lang.reflect.Method
-
-import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.Flow.{Arrow, Edge, Graph, State}
+import com.yimei.cflow.core.Flow.{Edge, Graph, State}
 import com.yimei.cflow.core.FlowGraph
-import com.yimei.cflow.core.FlowRegistry.AutoProperty
+import com.yimei.cflow.graph.cang.CangConfig._
 
 /**
   * Created by hary on 16/12/13.
   */
 object CangGraph extends FlowGraph {
-  /**
-    * initial decision point
-    *
-    * @return
-    */
-  override def getFlowInitial: String = ???
 
-  /**
-    *
-    * @param state
-    * @return
-    */
+  override def getTimeout: Long = 1 * 60 * 60
+
+  override def getFlowInitial: String = judge_afterStart
+
+  override def getFlowType: String = flow_cang
+
+  override def getUserTask: Map[String, Array[String]] = taskPointMap
+
+  override def getAutoTask: Map[String, Array[String]] = dataPointMap
+
+
+  /////////////////////////////////////////////////////////////
+  //  定义点
+  /////////////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////////////
+  //  定义边
+  /////////////////////////////////////////////////////////////
+
   override def getFlowGraph(state: State): Graph = ???
 
-  /**
-    * flow type
-    *
-    * @return
-    */
-  override def getFlowType: String = ???
-
-  /**
-    *
-    */
-
-
-  /**
-    *
-    */
-  override def getAutoTask: Map[String, AutoProperty] = ???
-
-  /**
-    * 注册用户任务
-    */
-  override def getUserTask: Map[String, Array[String]] = ???
-
-  /**
-    * 所有决策点
-    */
-  override def getDeciders: Map[String, (State) => Arrow] = ???
-
-  /**
-    *
-    */
   override def getEdges: Map[String, Edge] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getAutoMap: Map[String, Method] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getDeciMap: Map[String, Method] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getGraphJar: AnyRef = ???
 }

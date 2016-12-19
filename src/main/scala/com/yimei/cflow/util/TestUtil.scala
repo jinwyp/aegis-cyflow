@@ -7,7 +7,7 @@ import com.yimei.cflow.ServiceTest._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow.{Graph, _}
 import com.yimei.cflow.core.FlowProtocol
-import com.yimei.cflow.graph.ying2.YingConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.group.Group
 import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
@@ -24,14 +24,14 @@ object TestUtil extends CoreConfig {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  def test(proxy: ActorRef, testClient: ActorRef, userType: String, userId: String,
+  def test(flowType: String, proxy: ActorRef, testClient: ActorRef, userType: String, userId: String,
            pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) = {
 
     val fall = for {
       u <- userCreate(proxy, userType, userId)
       pu <- userCreate(proxy, pUserType, pUserId)
       pg <- groupCreate(proxy, pGroupType, pGroupId)
-      fs <- flowCreate(proxy, userType, userId, flow_ying)
+      fs <- flowCreate(proxy, userType, userId, flowType)
     } yield (userType, userId, fs.flowId, pUserType, pUserId, pGroupType, pGroupId)
 
     fall onSuccess {
@@ -105,7 +105,7 @@ class TestClient(proxy: ActorRef) extends Actor
       )
 
     // 收到流程图
-    case g@Graph(_, state, _) =>
+    case g@Graph(_, _, state, _, _, _) =>
       if (state.decision == FlowSuccess || state.decision == FlowFail) {
         schedulers(state.flowId).cancel()
         schedulers = schedulers - state.flowId

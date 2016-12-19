@@ -22,6 +22,9 @@ trait FlowProtocol extends DefaultJsonProtocol {
       case _ => throw new DeserializationException("Error info you want here ...")
     }
   }
+  implicit val dataPointFormat = jsonFormat6(DataPoint)
+
+  implicit val commandHijackFormat = jsonFormat4(CommandHijack)
 
   implicit val partUTaskFormat = jsonFormat2(PartUTask)
 
@@ -29,7 +32,6 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val edgeFormat = jsonFormat5(Edge)
 
-  implicit val dataPointFormat = jsonFormat6(DataPoint)
 
   implicit val arrowFormat =jsonFormat2(Arrow)
 
@@ -37,7 +39,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val edgeDescriptionFormat = jsonFormat6(EdgeDescription)
 
-  implicit val graphFormat = jsonFormat3(Graph)
+  implicit val graphFormat = jsonFormat6(Graph)
 
 
 }

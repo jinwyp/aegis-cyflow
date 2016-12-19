@@ -1,7 +1,6 @@
 package com.yimei.cflow.core
 
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.graph.ying2.YingConfig._
 
 /**
   * Created by hary on 16/12/6.
@@ -24,10 +23,15 @@ object GraphBuilder {
         v))
   }
 
-  def jsonGraph(state: State)(routine: GraphBuilder => GraphBuilder): Graph = {
+  def jsonGraph(state: State,
+                judges: Map[String, String],
+                points: Map[String, String],
+                autoTasks: Map[String, Array[String]],
+                userTasks: Map[String, Array[String]]
+               )(routine: GraphBuilder => GraphBuilder): Graph = {
     val builder = new GraphBuilder(Map[String, EdgeDescription]())
     routine(builder)
-    Graph(builder.lines, state, pointDescription)
+    Graph(builder.lines, judges, state, points,autoTasks, userTasks)
   }
 
   class GraphBuilder(var lines: Map[String, EdgeDescription])

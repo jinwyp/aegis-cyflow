@@ -1,4 +1,4 @@
-package com.yimei.cflow.graph.ying2
+package com.yimei.cflow.graph.ying
 
 /**
   * Created by wangqi on 16/12/13.
@@ -40,7 +40,7 @@ object YingConfig {
   val flow_ying = "ying"
 
   // 采集点actor, 与能够采集的数据点名称
-  val dataPointMap = Map[String, Array[String]](
+  val autoPointMap = Map[String, Array[String]](
     auto_A -> Array(point_A),
     auto_B -> Array(point_B),
     auto -> Array(point_C),
@@ -85,21 +85,21 @@ object YingConfig {
   )
 
   // 决策点
-  val V0 = "V0"
-  val V1 = "V1"
-  val V2 = "V2"
-  val V3 = "V3"
-  val V4 = "V4"
-  val V5 = "V5"
+  val J0 = "V0"
+  val J1 = "V1"
+  val J2 = "V2"
+  val J3 = "V3"
+  val J4 = "V4"
+  val J5 = "V5"
 
   // 决策点描述
   val judgeDecription = Map[String, String](
-    V0 -> "V0",
-    V1 -> "V1",
-    V2 -> "V2",
-    V3 -> "V3",
-    V4 -> "V4",
-    V5 -> "V5"
+    J0 -> "V0",
+    J1 -> "V1",
+    J2 -> "V2",
+    J3 -> "V3",
+    J4 -> "V4",
+    J5 -> "V5"
   )
 }
 

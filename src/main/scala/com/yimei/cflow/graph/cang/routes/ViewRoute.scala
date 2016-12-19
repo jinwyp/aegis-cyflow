@@ -107,12 +107,12 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   def putCangPoints: Route = put {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
-        parameter("points") { p =>
+        parameters("points", "trigger") { (p, trigger) =>
           entity(as[Map[String, String]]) { points =>
             val ips = points.map { entry =>
               entry._1 -> entry._2
             }
-            complete(ServiceProxy.flowUpdatePoints(proxy, flowId, ips))
+            complete(ServiceProxy.flowUpdatePoints(proxy, flowId, ips, false))
           }
         }
       }

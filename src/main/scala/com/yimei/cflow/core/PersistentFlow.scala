@@ -15,8 +15,10 @@ object PersistentFlow {
             flowId: String,
             modules: Map[String, ActorRef],
             pid: String,
-            guid: String): Props =
-    Props(new PersistentFlow(graph, flowId, modules, pid, guid))
+            guid: String,
+            initData: Map[String, String]
+           ): Props =
+    Props(new PersistentFlow(graph, flowId, modules, pid, guid, initData))
 }
 
 /**
@@ -35,18 +37,25 @@ class PersistentFlow(
                       flowId: String,
                       modules: Map[String, ActorRef],
                       pid: String,
-                      guid: String) extends AbstractFlow with PersistentActor {
+                      guid: String,
+                      initData: Map[String, String]
+                    ) extends AbstractFlow with PersistentActor {
 
   import Flow._
 
   override def persistenceId: String = pid
 
   // 钝化超时时间
-  val timeout = context.system.settings.config.getInt(s"flow.${graph.getFlowType}.timeout")
+  val timeout = graph.getTimeout
+
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  override var state = State(flowId, guid, Map[String, DataPoint](), graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
+  val initPoints = initData.map{ entry =>
+    (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
+  }
+
+  override var state = State(flowId, guid, initPoints, graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
 
   //
   override def genGraph(state: State): Graph = graph.getFlowGraph(state)
@@ -86,15 +95,31 @@ class PersistentFlow(
 
     // 管理员更新数据点驱动流程
     case cmd: CommandUpdatePoints =>
+
       val uuid = UUID.randomUUID().toString
       val points: Map[String, DataPoint] = cmd.points.map { entry =>
         entry._1 -> DataPoint(entry._2, None, None, uuid, new Date().getTime)
       }
+
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
-        makeDecision()
+        updateState(event)
+        if (cmd.trigger) {
+          makeDecision()
+        }
         sender() ! state // 返回流程状态
       }
+
+    case CommandHijack(_, updatePoints, updateDecision, trigger) =>
+
+      persist(Hijacked(updatePoints, updateDecision)) { event =>
+        updateState(event)
+        if (trigger) {
+          makeDecision()
+        }
+        sender() ! state
+      }
+
 
     // received 超时
     case ReceiveTimeout =>
