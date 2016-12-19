@@ -206,7 +206,7 @@ object CangConfig {
   )
 
   /**
-    * 流程状态
+    * 流程所有状态 status
     */
   val status_waitTraffickerAssignUsers = Map[String, String]("status" -> "financingStep11")
   val status_waitThreePartyUploadContractFile = Map[String, String]("status" -> "financingStep12", "subStatus1" -> "0", "subStatus2" -> "0", "subStatus3" -> "0")
