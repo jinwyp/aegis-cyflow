@@ -36,7 +36,9 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val portUploadContractPageFormat = jsonFormat5(PortUploadContractPage)
 
   /** 贸易商审核页面 **/
-  case class TraffickerAuditPage(customerCompanyName: String, businessCode: String, coalType: String,
+  case class TraffickerAuditPage(applyCompanyName: String,                 //融资方公司名称
+                                 businessCode: String,                     //业务编号
+                                 coalType: String,                         //煤炭种类
                                  financeCreateTime: Timestamp,             //审批开始时间
                                  financingAmount: BigDecimal,              //拟融资金额
                                  financingDays: Int,                       //融资天数
@@ -56,7 +58,8 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val traffickerAuditPageFormat = jsonFormat19(TraffickerAuditPage)
 
   /** 贸易商财务审核,给出放款建议页面 **/
-  case class TraffickerFinanceAuditPage(customerCompanyName: String, businessCode: String,
+  case class TraffickerFinanceAuditPage(applyCompanyName: String,                 //融资方公司名称
+                                        businessCode: String,                     //业务编号
                                         financeCreateTime: Timestamp,             //审批开始时间
                                         financingAmount: BigDecimal,              //拟融资金额
                                         financingDays: Int,                       //融资天数
@@ -68,7 +71,9 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val traffickerFinanceAuditPageFormat = jsonFormat10(TraffickerFinanceAuditPage)
 
   /** 资金方审核页面 **/
-  case class FundProviderAuditPage(customerCompanyName: String, businessCode: String, coalType: String,
+  case class FundProviderAuditPage(applyCompanyName: String,                 //融资方公司名称
+                                   businessCode: String,                     //业务编号
+                                   coalType: String,                         //煤炭种类
                                    financeCreateTime: Timestamp,             //审批开始时间
                                    financingAmount: BigDecimal,              //拟融资金额
                                    financingDays: Int,                       //融资天数
@@ -88,7 +93,8 @@ object CangFlowView extends DefaultJsonProtocol {
   implicit val fundProviderAuditPageFormat = jsonFormat19(FundProviderAuditPage)
 
   /** 资金方财务查看,付款页面 **/
-  case class FundProviderFinancePayPage(customerCompanyName: String, businessCode: String,
+  case class FundProviderFinancePayPage(applyCompanyName: String,            //融资方公司名称
+                                        businessCode: String,                //业务编号
                                         financeCreateTime: Timestamp,        //审批开始时间
                                         financingAmount: BigDecimal,         //拟融资金额
                                         financingDays: Int,                  //融资天数
@@ -104,7 +110,7 @@ object CangFlowView extends DefaultJsonProtocol {
                           downstreamCompanyName: String,            //下游签约公司-公司名称
                           financeCreateTime: Timestamp,             //审批开始时间
                           stockPort: String,                        //库存港口
-                          coalAmount: BigDecimal,                   //总质押吨数,
+                          coalAmount: BigDecimal,                   //总质押吨数
                           waitRedeemAmount: BigDecimal,             //待赎回数量
                           confirmFinancingAmount: BigDecimal,       //融资金额
                           paidDeposit: BigDecimal,                  //已经缴纳保证金
@@ -125,8 +131,40 @@ object CangFlowView extends DefaultJsonProtocol {
                       coalAmount: BigDecimal,                   //总质押吨数(原有总库存)
                       actualAmount: BigDecimal,                 //实际库存,  抵押前，数值等于原有总库存，抵押后，数值等于 待赎回库存
                       status: String)                           //当前状态
+  implicit val portListFormat = jsonFormat5(PortList)
 
+  /** 监管列表 **/
+  case class SupervisorList(businessCode: String,                     //业务编号
+                            currentOwner: String,                     //当前货主
+                            coalAmount: BigDecimal,                   //总质押吨数(原有总库存)
+                            actualAmount: BigDecimal,                 //实际库存,  抵押前，数值等于原有总库存，抵押后，数值等于 待赎回库存
+                            status: String)                           //当前状态
+  implicit val supervisorListFormat = jsonFormat5(SupervisorList)
 
+  /** 贸易商列表 **/
+  case class TraffickerList(applyCompanyName: String,                 //融资方公司名称
+                            downstreamCompanyName: String,            //下游签约公司-公司名称
+                            businessCode: String,                     //业务编号
+                            financeStartTime: Timestamp,              //审批开始时间
+                            stockPort: String,                        //库存港口
+                            coalAmount: BigDecimal,                   //总质押吨数
+                            waitRedeemAmount: BigDecimal,             //待赎回数量
+                            coalType: String,                         //煤炭种类
+                            coalIndex_NCV: Int,
+                            coalIndex_RS: BigDecimal,
+                            coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
+                            contractNo: String,                       //合同编号 上游合同编号-下游合同编号
+                            confirmFinancingAmount: BigDecimal,       //放款总金额
+                            interestRate: BigDecimal,                 //融资方利率
+                            interestIncome: BigDecimal,               //融资方利息收入
+                            paidDeposit: BigDecimal,                  //已经缴纳保证金
+                            alreadyPayPrinciple: BigDecimal,          //已回款本金
+                            loanTime: Timestamp,                      //放款时间
+                            fundProviderCompanyName: String,          //资金方公司名称
+                            fundProviderInterestRate: BigDecimal,     //资金方利率
+                            fundProviderInterestIncome: BigDecimal,   //资金方利息
+                            status: String)                           //当前状态
+  implicit val traffickerListFormat = jsonFormat22(TraffickerList)
 
 
 }
