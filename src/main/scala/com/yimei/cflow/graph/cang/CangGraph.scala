@@ -9,6 +9,10 @@ import com.yimei.cflow.core.FlowGraph
   * Created by hary on 16/12/13.
   */
 object CangGraph extends FlowGraph {
+
+
+  override def getTimeout: Long = ???
+
   /**
     * initial decision point
     *

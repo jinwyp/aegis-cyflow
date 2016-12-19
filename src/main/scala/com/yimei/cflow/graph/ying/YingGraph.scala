@@ -15,6 +15,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 object YingGraph extends FlowGraph {
 
+
+  override def getTimeout: Long = 15
+
   /**
     * 注册用户任务
     */

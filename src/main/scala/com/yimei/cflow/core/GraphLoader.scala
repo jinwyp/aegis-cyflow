@@ -41,7 +41,7 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if ( flowType == "cang") {
+    if ( flowType == "wang") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
@@ -83,6 +83,9 @@ object GraphLoader extends App {
 
     // 返回流程
     new FlowGraph {
+
+      override def getTimeout: Long = graphConfig.timeout
+
       override def getFlowGraph(state: State): Graph = Graph(
         graphConfig.edges,
         graphConfig.deciders,

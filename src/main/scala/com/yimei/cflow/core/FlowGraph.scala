@@ -77,6 +77,8 @@ trait FlowGraph {
     */
   def getFlowInitial: String
 
+  def getTimeout: Long
+
   /**
     *
     * @param state

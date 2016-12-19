@@ -21,11 +21,9 @@ GET  /user/:class/:class_id/:userId                 查询用户  -- 应该拿�
 GET  /user/:class/:class_id?limit=10&offset=20      用户列表  -- 拿到用户的列表信息
 PUT  /user/:class/:class_id:/:userId                更新用户  -- 更新用户的基本信息
 
-// 用户任务管理
+// 用户任务管理  and 运营组任务管理
 GET /utask/:class/:class_id/:userId?history                   -- 查询用户任务, 如果有history参数, 则也包含history信息
 PUT /utask/:class/:class_id/:userId/:taskId                   -- 提交用户提交任务
-
-// 运营组任务管理
 GET /gtask/:class/:class_id/:userId?limit=10&offset=20        -- 查询用户组任务列表 - 只要是用户所在的组, 任务都查出来
 PUT /gtask/:class/:class_id/:userId/:taskId                   -- claim任务
 
@@ -36,4 +34,4 @@ POST /auto/:flowType/:flowId/:autoTask   -- 手动触发指定流程的指定任
 POST /flow/user/:class/:class_id/:userId?flowType=:flowType                     -- 创建流程
 GET  /flow/user/:class/:class_id/:userId?flowType=:flowType&limit=10&offset=20  -- 查询用户流程
 GET  /flow/:flowId                                                              -- 查询指定流程
-PUT  /flow/admin/:flowId?action=:action                                         -- 流程admin, action = fail(让流程失败), action = trigger(触发流程在当且点继续执行)
+PUT  /flow/admin/:flowId?action=:hijack                                         -- 流程admin, action = hijack   JSON: CommandHijack

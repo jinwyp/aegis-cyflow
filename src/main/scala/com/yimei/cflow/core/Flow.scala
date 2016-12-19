@@ -44,7 +44,13 @@ object Flow {
   case class CommandFlowState(flowId: String) extends Command
 
   // 手动更新points
-  case class CommandUpdatePoints(flowId: String, points: Map[String, String]) extends Command
+  case class CommandUpdatePoints(flowId: String, points: Map[String, String], trigger: Boolean) extends Command
+
+  // 流程劫持
+  case class CommandHijack( flowId: String,
+                            points: Map[String, DataPoint],
+                            decision: Option[String],
+                            trigger: Boolean) extends Command
 
   // persistent事件
   trait Event
@@ -54,6 +60,8 @@ object Flow {
   case class PointsUpdated(pionts: Map[String, DataPoint]) extends Event
 
   case class DecisionUpdated(arrow: Arrow) extends Event
+
+  case class Hijacked(points: Map[String,DataPoint], decision: Option[String]) extends Event
 
   // 状态
   case class State(
