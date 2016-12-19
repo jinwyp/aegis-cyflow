@@ -1,35 +1,32 @@
 package com.yimei.cflow.core
 
 import java.io.File
+import java.lang.reflect.Method
 import java.net.URLClassLoader
-import java.util.Map.Entry
-import java.util.function.Consumer
 
-import com.typesafe.config.{Config, ConfigValue}
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
-import com.yimei.cflow.graph.ying2.YingGraph
 import spray.json.DefaultJsonProtocol
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.concurrent.Future
 import scala.io.Source
 
 case class GraphConfig(
-                     graphJar: String,
-                     persistent: Boolean,
-                     timeout: Int,
-                     initial: String,
-                     poinsts: Map[String, String],
-                     autoTasks: Map[String, Array[String]],
-                     userTasks: Map[String, Array[String]],
-                     deciders: Map[String,String],
-                     edges: Map[String, EdgeDescription]
-                     )
+                        graphJar: String,
+                        persistent: Boolean,
+                        timeout: Int,
+                        initial: String,
+                        poinsts: Map[String, String],
+                        autoTasks: Map[String, Array[String]],
+                        userTasks: Map[String, Array[String]],
+                        deciders: Map[String, String],
+                        edges: Map[String, EdgeDescription]
+                      )
 
 object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
   implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
 }
-
 
 
 /**
@@ -50,62 +47,6 @@ object GraphLoader extends App {
 
     // 2>
     graphs.foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
-  }
-
-
-
-  // 加载deciders
-  def loadDeciders(classLoader: ClassLoader): Map[String, State => Arrow] = ???
-
-  // 加载actors
-  def loadActors(classLoader: ClassLoader): Map[String, AutoProperty] = ???
-
-
-
-  def getStringArray(absoluteKey: String, rootConfig: Config) = {
-    import scala.collection.JavaConversions._
-    val buffer = ArrayBuffer[String]()
-    rootConfig.getStringList(absoluteKey).forEach(new Consumer[String] {
-      override def accept(t: String) = buffer.add(t)
-    })
-    buffer.toArray
-  }
-
-
-  def getPartUTask(absoluteKey: String, rootConfig: Config): List[PartUTask] = {
-    import scala.collection.JavaConversions._
-    val buffer = ListBuffer[PartUTask]()
-    //val buffer = ArrayBuffer[String]()
-    rootConfig.getConfig(absoluteKey).entrySet().forEach(new Consumer[Entry[String, ConfigValue]] {
-      override def accept(t: Entry[String, ConfigValue]) = {
-        buffer.add(PartUTask(t.getKey, getStringArray(absoluteKey + "." + t.getKey, rootConfig).toList))
-      }
-    })
-    buffer.toList
-  }
-
-  def getPartGTask(absoluteKey: String, rootConfig: Config): List[PartGTask] = {
-    import scala.collection.JavaConversions._
-    val buffer = ListBuffer[PartGTask]()
-    //val buffer = ArrayBuffer[String]()
-    rootConfig.getConfig(absoluteKey).entrySet().forEach(new Consumer[Entry[String, ConfigValue]] {
-      override def accept(t: Entry[String, ConfigValue]) = {
-        buffer.add(PartGTask(t.getKey, getStringArray(absoluteKey + "." + t.getKey, rootConfig).toList))
-      }
-    })
-    buffer.toList
-  }
-
-
-  def getEdgeDescription(edgeName: String, rootConfig: Config) = {
-    EdgeDescription(
-      getStringArray(s"$edgeName.autoTasks", rootConfig).toList,
-      getStringArray(s"$edgeName.userTasks", rootConfig).toList,
-      getPartUTask(s"$edgeName.partUTasks", rootConfig),
-      getPartGTask(s"$edgeName.partGTasks", rootConfig),
-      rootConfig.getString(s"$edgeName.begin"),
-      rootConfig.getString(s"$edgeName.end")
-    )
   }
 
 
@@ -131,12 +72,10 @@ object GraphLoader extends App {
     val module = classLoader.loadClass(graphJarName + "$")
     val graphJar = module.getField("MODULE$").get(null).asInstanceOf[GraphJar]
 
-    // 拿到deciders
-
-    // 拿到autoProperties
-
-
     val initial = graphConfig.initial
+
+    val autoMap: Map[String, Method] = getAutoMap(module.getClass)
+    val deciMap: Map[String, Method] = getDeciderMap(module.getClass)
 
 
     // 返回流程
@@ -154,15 +93,52 @@ object GraphLoader extends App {
       override def getDeciders: Map[String, (State) => Arrow] = graphJar.getDeciders
 
       override def getEdges: Map[String, Edge] = graphConfig.edges.map(entry =>
-            (entry._1, Edge(
-              entry._1,
-              entry._2.autoTasks,
-              entry._2.userTasks,
-              entry._2.partUTasks,
-              entry._2.partGTasks
-            ))
+        (entry._1, Edge(
+          entry._1,
+          entry._2.autoTasks,
+          entry._2.userTasks,
+          entry._2.partUTasks,
+          entry._2.partGTasks
+        ))
       )
+
+      // new approach
+      override def getAutoMap: Map[String, Method] = autoMap
+      override def getDeciMap: Map[String, Method] = deciMap
+      override def getGraphJar: AnyRef = module
     }
+  }
+
+
+  def getAutoMap(m: Class[_]) = {
+
+    val methods: Array[Method] = m.getMethods
+    val parameterTypes = classOf[CommandAutoTask]
+
+    // 所有的 auto Method
+    methods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[CommandAutoTask] &&
+        m.getReturnType == classOf[Future[Map[String, String]]]
+    }.map { am =>
+      (am.getName -> am)
+    }.toMap
+
+  }
+
+  def getDeciderMap(m: Class[_]) = {
+    val methods: Array[Method] = m.getMethods
+    val parameterTypes = classOf[State]
+    // 所有的 Decider Method
+    methods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[State] &&
+        m.getReturnType == classOf[Arrow]
+    }.map { am =>
+      (am.getName -> am)
+    }.toMap
   }
 
 

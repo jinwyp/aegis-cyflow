@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.ying2
 
+import java.lang.reflect.Method
+
 import akka.actor.Props
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
@@ -159,7 +161,23 @@ object YingGraph extends FlowGraph {
   //             |
   //             |---------------->                                 EdgeStart
   ///////////////////////////////////////////////////////////////////////////////////////
+  /**
+    *
+    * @return
+    */
+  override def getAutoMap: Map[String, Method] = ???
 
+  /**
+    *
+    * @return
+    */
+  override def getDeciMap: Map[String, Method] = ???
+
+  /**
+    *
+    * @return
+    */
+  override def getGraphJar: AnyRef = ???
 }
 
 

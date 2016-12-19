@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.cang
 
+import java.lang.reflect.Method
+
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow.{Arrow, Edge, Graph, State}
 import com.yimei.cflow.core.FlowGraph
@@ -54,4 +56,22 @@ object CangGraph extends FlowGraph {
     *
     */
   override def getEdges: Map[String, Edge] = ???
+
+  /**
+    *
+    * @return
+    */
+  override def getAutoMap: Map[String, Method] = ???
+
+  /**
+    *
+    * @return
+    */
+  override def getDeciMap: Map[String, Method] = ???
+
+  /**
+    *
+    * @return
+    */
+  override def getGraphJar: AnyRef = ???
 }
