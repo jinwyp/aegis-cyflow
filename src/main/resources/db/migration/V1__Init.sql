@@ -55,8 +55,6 @@ create table party_user(
   phone varchar(32),
   email varchar(128),
   name varchar(128) not null,
-
-  gid varchar(32),          -- 用户所属的组
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
