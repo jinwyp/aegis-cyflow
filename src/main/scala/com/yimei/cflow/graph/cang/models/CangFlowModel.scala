@@ -38,64 +38,77 @@ object CangFlowModel extends DefaultJsonProtocol {
     * 监管 业务人员,
     * 资金方 业务人员, 财务
     */
-  case class TraffickerAssignUsers(portUserId: String,                       //港口业务人员 用户id
+  case class TraffickerAssignUsers(taskId: String,
+                                   portUserId: String,                       //港口业务人员 用户id
                                    portCompanyId: String,                    //港口公司id
                                    supervisorUserId: String,                 //监管业务人员 用户id
                                    supervisorCompanyId: String,              //监管公司id
                                    fundProviderUserId: String,               //资金方业务人员 用户id
                                    fundProviderFinanceUserId: String,        //资金方财务 用户id
                                    fundProviderCompanyId: String)            //资金方公司id
-  implicit val traffickerAssignUsersFormat = jsonFormat7(TraffickerAssignUsers)
+  implicit val traffickerAssignUsersFormat = jsonFormat8(TraffickerAssignUsers)
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
-  case class CustomerUploadContract(contractFileList: FileObjList,
+  case class CustomerUploadContract(taskId: String,
+                                    contractFileList: FileObjList,
                                     financeFileList: FileObjList,
                                     businessFileList: FileObjList)
-  implicit val customerUploadContractFormat = jsonFormat3(CustomerUploadContract)
+  implicit val customerUploadContractFormat = jsonFormat4(CustomerUploadContract)
 
   /** 监管方上传合同 **/
-  case class SupervisorUploadContract(contractFileList: FileObjList)
-  implicit val supervisorUploadContractFormat = jsonFormat1(SupervisorUploadContract)
+  case class SupervisorUploadContract(taskId: String,
+                                      contractFileList: FileObjList)
+  implicit val supervisorUploadContractFormat = jsonFormat2(SupervisorUploadContract)
 
   /** 港口上传合同, 填写确认吨数 **/
-  case class PortUploadContract(confirmCoalAmount: BigDecimal, contractFileList: FileObjList)
-  implicit val portUploadContractFormat = jsonFormat2(PortUploadContract)
+  case class PortUploadContract(taskId: String,
+                                confirmCoalAmount: BigDecimal,
+                                contractFileList: FileObjList)
+  implicit val portUploadContractFormat = jsonFormat3(PortUploadContract)
 
   /** 贸易商审核 **/
-  case class TraffickerAudit(statusId: Int, fundProviderInterestRate: BigDecimal)
-  implicit val traffickerAuditFormat = jsonFormat2(TraffickerAudit)
+  case class TraffickerAudit(taskId: String,
+                             statusId: Int,
+                             fundProviderInterestRate: BigDecimal)
+  implicit val traffickerAuditFormat = jsonFormat3(TraffickerAudit)
 
   /** 贸易商财务给出放款建议, 放款金额 **/
-  case class TraffickerFinanceAudit(confirmFinancingAmount: BigDecimal, financingAdvice: String)
-  implicit val traffickerFinanceAuditFormat = jsonFormat2(TraffickerFinanceAudit)
+  case class TraffickerFinanceAudit(taskId: String,
+                                    confirmFinancingAmount: BigDecimal,
+                                    financingAdvice: String)
+  implicit val traffickerFinanceAuditFormat = jsonFormat3(TraffickerFinanceAudit)
 
   /** 资金方审核 **/
-  case class FundProviderAudit(statusId: Int)
-  implicit val fundProviderAuditFormat = jsonFormat1(FundProviderAudit)
+  case class FundProviderAudit(taskId: String, statusId: Int)
+  implicit val fundProviderAuditFormat = jsonFormat2(FundProviderAudit)
 
   /** 资金方财务付款 **/
-  case class FundProviderFinanceLoad(statusId: Int)
-  implicit val fundProviderFinanceLoadFormat = jsonFormat1(FundProviderFinanceLoad)
+  case class FundProviderFinanceLoad(taskId: String, statusId: Int)
+  implicit val fundProviderFinanceLoadFormat = jsonFormat2(FundProviderFinanceLoad)
 
   /** 融资方付款给贸易商 **/
-  case class CustomerPaymentToTrafficker(paymentPrinciple: BigDecimal, createTime: Option[Timestamp])
-  implicit val customerPaymentToTraffickerFormat = jsonFormat2(CustomerPaymentToTrafficker)
+  case class CustomerPaymentToTrafficker(taskId: String, paymentPrinciple: BigDecimal, createTime: Option[Timestamp])
+  implicit val customerPaymentToTraffickerFormat = jsonFormat3(CustomerPaymentToTrafficker)
 
   /** 贸易商通知港口放货 **/
-  case class TraffickerNoticePortReleaseGoods(releastAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: FileObjList, createTime: Option[Timestamp])
-  implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat4(TraffickerNoticePortReleaseGoods)
+  case class TraffickerNoticePortReleaseGoods(taskId: String, releaseAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: FileObjList, createTime: Option[Timestamp])
+  implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat5(TraffickerNoticePortReleaseGoods)
 
   /** 港口放货 **/
-  case class PortReleaseGoods(statusId: Int, createTime: Option[Timestamp])
-  implicit val portReleaseGoodsFormat = jsonFormat2(PortReleaseGoods)
+  case class PortReleaseGoods(taskId: String, statusId: Int, createTime: Option[Timestamp])
+  implicit val portReleaseGoodsFormat = jsonFormat3(PortReleaseGoods)
+
+  /** 贸易商审核是否已经回款完成 **/
+  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int)
+  implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat2(TraffickerAuditIfCompletePayment)
 
   /** 贸易商同意付款给资金方 **/
-  case class TraffickerConfirmPayToFundProvider(statusId: Int)
-  implicit val traffickerConfirmPayToFundProviderFormat = jsonFormat1(TraffickerConfirmPayToFundProvider)
+  case class TraffickerConfirmPayToFundProvider(taskId: String, statusId: Int)
+  implicit val traffickerConfirmPayToFundProviderFormat = jsonFormat2(TraffickerConfirmPayToFundProvider)
 
   /** 贸易商财务放款给资金方,流程结束 **/
-  case class TraffickerFinancePayToFundProvider(statusId: Int)
-  implicit val traffickerFinancePayToFundProviderFormat = jsonFormat1(TraffickerFinancePayToFundProvider)
+  case class TraffickerFinancePayToFundProvider(taskId: String, statusId: Int)
+  implicit val traffickerFinancePayToFundProviderFormat = jsonFormat2(TraffickerFinancePayToFundProvider)
 
 
 
