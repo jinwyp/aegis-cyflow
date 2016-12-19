@@ -2,11 +2,10 @@ package com.yimei.cflow.core
 
 import java.io.File
 import java.lang.reflect.Method
-import java.net.URLClassLoader
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.FlowRegistry.AutoProperty
+import com.yimei.cflow.graph.ying.YingGraphJar
 import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.Future
@@ -40,20 +39,31 @@ object GraphLoader extends App {
       .map(_.getName)
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
+  def getClassLoader(flowType: String) = {
+
+    if ( flowType == "ying") {
+      // get jars
+      val jars: Array[String] = (new File("flows/" + flowType))
+        .listFiles()
+        .filter(_.isFile())
+        .map(_.getPath)
+
+      // create classloader
+      new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
+    } else if (flowType == "cang") {
+      YingGraphJar.getClass.getClassLoader
+    } else {
+      throw new Exception(s"does not support $flowType")
+    }
+  }
+
   def loadGraph(flowType: String): FlowGraph = {
     import GraphConfigProtocol._
     import spray.json._
 
-    // 1> list flows/$flowType/*.jar
-    val jars: Array[String] = (new File("flows/" + flowType))
-      .listFiles()
-      .filter(_.isFile())
-      .map(_.getPath)
+    val classLoader = getClassLoader(flowType)
 
-    // 2> create classloader
-    val classLoader: URLClassLoader = new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-
-    // 3> get graph config
+    // get graph config
     val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream("flow.json"))
       .mkString
       .parseJson
@@ -61,14 +71,14 @@ object GraphLoader extends App {
 
     println(graphConfig.toJson.prettyPrint)
 
-    // 4> 拿到graphJar对象
+    // graphJar class and graphJar object
     val module = classLoader.loadClass(graphConfig.graphJar + "$")
-    val graphJar = module.getField("MODULE$").get(null).asInstanceOf[GraphJar]
+    val graphJar = module.getField("MODULE$").get(null)
 
-    // 5> auto auto actor behavior from graphJar
+    // auto auto actor behavior from graphJar
     val autoMap = getAutoMap(module.getClass)
 
-    // 6> deciders from graphJar
+    // deciMap from graphJar
     val deciMap = getDeciderMap(module.getClass)
 
     // graph intial vertex
@@ -78,15 +88,13 @@ object GraphLoader extends App {
     new FlowGraph {
       override def getFlowGraph(state: State): Graph = Graph(graphConfig.edges, state, graphConfig.poinsts)
 
-      override def getAutoTask: Map[String, AutoProperty] = graphJar.getAutoProperties
-
       override def getFlowInitial: String = initial
 
       override def getFlowType: String = flowType
 
       override def getUserTask: Map[String, Array[String]] = graphConfig.userTasks
 
-      override def getDeciders: Map[String, (State) => Arrow] = graphJar.getDeciders
+      override def getAutoTask: Map[String, Array[String]] = graphConfig.autoTasks
 
       override def getEdges: Map[String, Edge] = graphConfig.edges.map(entry =>
         (entry._1, Edge(
@@ -99,11 +107,11 @@ object GraphLoader extends App {
       )
 
       // new approach
-      override def getAutoMap: Map[String, Method] = autoMap
+      override def getAutoMeth: Map[String, Method] = autoMap
 
-      override def getDeciMap: Map[String, Method] = deciMap
+      override def getDeciMeth: Map[String, Method] = deciMap
 
-      override def getGraphJar: AnyRef = module
+      override def getGraphJar: AnyRef = graphJar
     }
   }
 

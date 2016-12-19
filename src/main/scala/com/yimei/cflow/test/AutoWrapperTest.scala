@@ -20,7 +20,6 @@ object AutoWrapperTest extends App {
   import ExecutionContext.Implicits.global
 
   def autoA(autoTask: CommandAutoTask): Future[Map[String, String]] = {
-    val state: State = null // todo should come from autoTask
     Future {
       Map("hello" -> "world")
     }

@@ -7,7 +7,7 @@ import com.yimei.cflow.ServiceTest._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.core.Flow.{Graph, _}
 import com.yimei.cflow.core.FlowProtocol
-import com.yimei.cflow.graph.ying2.YingConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.group.Group
 import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}

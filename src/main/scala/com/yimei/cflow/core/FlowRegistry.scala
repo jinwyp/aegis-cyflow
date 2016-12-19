@@ -2,7 +2,6 @@ package com.yimei.cflow.core
 
 import java.lang.reflect.Method
 
-import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.core.Flow._
 
 
@@ -11,13 +10,10 @@ import com.yimei.cflow.core.Flow._
   */
 object FlowRegistry {
 
-  // AutoActor Property
-  case class AutoProperty(points: Array[String], prop: Map[String, ActorRef] => Props)
-
   private val registries = collection.mutable.Map[String, FlowGraph]()
 
   // flowType -> actorName -> AutoProperty
-  var autoTask: Map[String, Map[String, AutoProperty]]  = Map()
+  var autoTask: Map[String, Map[String, Array[String]]]  = Map()
 
   // flowType -> userTask -> points
   var userTask: Map[String, Map[String, Array[String]]] = Map()
@@ -28,30 +24,34 @@ object FlowRegistry {
   // flowType -> edgeName -> edge
   var edges: Map[String,Map[String,Edge]] = Map()
 
-  // flowType -> Graph  and Graph should be:
-  // case class Graph(edges: Map[String, EdgeDescription], points: Map[String, String])
-  // PersistentFlow does not need Graph parameters
-  // todo
+  // flowType -> Graph
   var graphs: Map[String, Graph] = Map()
 
   // flowType -> actorName -> Method
   var autoMeth: Map[String, Map[String, Method]]  = Map()
-  var deciMeth: Map[String, Map[String, Method]]  = Map()
+
+  // var deciMeth: Map[String, Map[String, Method]]  = Map()
 
   // flowType -> AnyRef
   var jarMap: Map[String, AnyRef] = Map()
 
   def register(flowType: String, graph: FlowGraph) = {
     registries(flowType) = graph
-    autoTask = autoTask + (flowType -> graph.getAutoTask)
-    userTask = userTask + (flowType -> graph.getUserTask)
-    deciders = deciders + (flowType -> graph.getDeciders)
 
-    // todo hary
-    autoMeth = autoMeth + ( flowType -> graph.getAutoMap)
-    deciMeth = deciMeth + ( flowType -> graph.getDeciMap)
-    jarMap = jarMap + (flowType -> graph.getGraphJar)
-    // todo end
+    autoTask = autoTask + (flowType -> graph.getAutoTask)
+
+    userTask = userTask + (flowType -> graph.getUserTask)
+
+    autoMeth = autoMeth + (flowType -> graph.getAutoMeth)
+
+    deciders = deciders + (flowType -> graph.getDeciMeth.map { entry =>
+      val behavior: State => Arrow  = (state: State)  =>
+        entry._2.invoke(graph.getGraphJar, state).asInstanceOf[Arrow]
+      (entry._1, behavior)
+    })
+
+
+    jarMap   = jarMap   + (flowType -> graph.getGraphJar)
 
     edges = Map(flowType-> graph.getEdges)
   }

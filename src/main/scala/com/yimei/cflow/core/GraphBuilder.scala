@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.graph.ying2.YingConfig._
+import com.yimei.cflow.graph.ying.YingConfig._
 
 /**
   * Created by hary on 16/12/6.

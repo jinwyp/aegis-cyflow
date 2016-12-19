@@ -3,8 +3,7 @@ package com.yimei.cflow
 import akka.actor.Props
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.FlowRegistry
-import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.core.GraphLoader
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
@@ -12,13 +11,12 @@ import com.yimei.cflow.util.{TestClient, TestUtil}
 /**
   * Created by hary on 16/12/3.
   */
-object ServiceTest extends App with ApplicationConfig with CorsSupport {
+object ServiceTestJar extends App with ApplicationConfig with CorsSupport {
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-
-  FlowRegistry.register(YingGraph.getFlowType, YingGraph)
+  GraphLoader.loadall()
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
@@ -35,4 +33,6 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   }
 
 }
+
+
 

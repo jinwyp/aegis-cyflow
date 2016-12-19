@@ -7,15 +7,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
 import scala.concurrent.Future
-
-//
-trait GraphJar {
-  def getDeciders: Map[String, State => Arrow]
-  def getAutoProperties: Map[String,AutoProperty]
-}
 
 class AutoActor(
                  name: String,
@@ -25,7 +18,7 @@ class AutoActor(
   extends Actor
     with ActorLogging {
 
-  import scala.concurrent.ExecutionContext;
+  import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
   override def receive: Receive = {
@@ -42,41 +35,29 @@ class AutoActor(
 }
 
 
-
 object FlowGraph {
-
-  case class AutoBuilder(_name: String = "",
-                         _points: Array[String] =Array(),
-                         _acc: Map[String, AutoProperty] = Map()) {
-    def actor(actorName: String) = this.copy(_name = actorName)
-    def points(pointNames: Array[String]) = this.copy(_points = pointNames)
-    def prop(propfun: Map[String, ActorRef] => Props) = {
-      val curName = this._name
-      val curPoints = this._points
-      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName ->  AutoProperty(curPoints, propfun)))
-    }
-    def done = _acc
-  }
 
   case class TaskBuilder(_name: String = "", _acc: Map[String, Array[String]] = Map()) {
     def task(taskName: String) = this.copy(_name = taskName)
+
     def points(pointNames: String*) = {
       val curName = this._name
       this.copy(_name = "", _acc = this._acc + (curName -> pointNames.toArray))
 
     }
+
     def done = this._acc
   }
 
   case class DeciderBuilder(_name: String = "", _acc: Map[String, State => Arrow] = Map()) {
     def decision(name: String) = this.copy(_name = name)
+
     def is(decider: State => Arrow): DeciderBuilder = {
       this.copy(_acc = this._acc + (this._name -> decider))
     }
+
     def done = this._acc
   }
-
-  def autoBuilder = AutoBuilder()
 
   def taskBuilder = TaskBuilder()
 
@@ -91,9 +72,10 @@ object FlowGraph {
 trait FlowGraph {
   /**
     * initial decision point
+    *
     * @return
     */
-  def getFlowInitial:String
+  def getFlowInitial: String
 
   /**
     *
@@ -104,15 +86,10 @@ trait FlowGraph {
 
   /**
     * flow type
+    *
     * @return
     */
   def getFlowType: String
-
-  /**
-    *
-    */
-  // def getAutoTask: Map[String, (Array[String], Map[String, ActorRef] => Props)]
-  def getAutoTask: Map[String, AutoProperty]
 
   /**
     * 注册用户任务
@@ -121,26 +98,26 @@ trait FlowGraph {
 
   /**
     *
+    * @return
+    */
+  def getAutoTask: Map[String, Array[String]]
+
+  /**
+    *
     */
   def getEdges: Map[String, Edge]
 
   /**
-    * 所有决策点
+    *
+    * @return
     */
-  def getDeciders: Map[String, State => Arrow]
-
+  def getAutoMeth: Map[String, Method]
 
   /**
     *
     * @return
     */
-  def getAutoMap: Map[String, Method]
-
-  /**
-    *
-    * @return
-    */
-  def getDeciMap: Map[String, Method]
+  def getDeciMeth: Map[String, Method]
 
 
   /**
