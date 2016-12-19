@@ -1,76 +1,34 @@
 package com.yimei.cflow.graph.cang
 
-import java.lang.reflect.Method
-
 import com.yimei.cflow.core.Flow.{Edge, Graph, State}
 import com.yimei.cflow.core.FlowGraph
+import com.yimei.cflow.graph.cang.CangConfig._
 
 /**
   * Created by hary on 16/12/13.
   */
 object CangGraph extends FlowGraph {
 
+  override def getTimeout: Long = 1 * 60 * 60
 
-  override def getTimeout: Long = ???
+  override def getFlowInitial: String = judge_afterStart
 
-  /**
-    * initial decision point
-    *
-    * @return
-    */
-  override def getFlowInitial: String = ???
+  override def getFlowType: String = flow_cang
 
-  /**
-    *
-    * @param state
-    * @return
-    */
+  override def getUserTask: Map[String, Array[String]] = taskPointMap
+
+  override def getAutoTask: Map[String, Array[String]] = dataPointMap
+
+
+  /////////////////////////////////////////////////////////////
+  //  定义点
+  /////////////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////////////
+  //  定义边
+  /////////////////////////////////////////////////////////////
+
   override def getFlowGraph(state: State): Graph = ???
 
-  /**
-    * flow type
-    *
-    * @return
-    */
-  override def getFlowType: String = ???
-
-  /**
-    *
-    */
-
-
-  /**
-    * 注册用户任务
-    */
-  override def getUserTask: Map[String, Array[String]] = ???
-
-
-  /**
-    *
-    * @return
-    */
-  override def getAutoTask: Map[String, Array[String]] = ???
-
-  /**
-    *
-    */
   override def getEdges: Map[String, Edge] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getAutoMeth: Map[String, Method] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getDeciMeth: Map[String, Method] = ???
-
-  /**
-    *
-    * @return
-    */
-  override def getGraphJar: AnyRef = ???
 }
