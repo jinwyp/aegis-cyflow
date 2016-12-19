@@ -18,8 +18,6 @@ object Flow {
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
 
-  case class RunFlowSuccess(flowId: String)
-
   // 接收命令
   trait Command {
     def flowId: String // flowType-userType-userId-uuid
