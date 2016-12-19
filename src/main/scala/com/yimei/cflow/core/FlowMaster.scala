@@ -7,13 +7,9 @@ import akka.actor.{ActorRef, Props, Terminated}
 import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow.{Command, CommandCreateFlow, CommandRunFlow}
-import com.yimei.cflow.core.IdGenerator.{CommandGetId, Id}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 import scala.concurrent.duration._
-import akka.pattern._
-
-import scala.concurrent.{Await, Future}
 
 /**
   * Created by hary on 16/12/1.
@@ -33,27 +29,29 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
     with IdBufferable {
 
   // IdBufferable need this
-  override val bufferSize: Int =  100
+  override val bufferSize: Int = 100
   override val bufferKey: String = "flow"
+
   implicit def myIdGenerator = modules(module_id)
+
   implicit val myEc = context.system.dispatcher
   implicit val myTimeout = Timeout(3 seconds)
 
   def serving: Receive = {
 
     // create and run flow
-    case command@CommandCreateFlow(flowType, guid) =>
+    case command@CommandCreateFlow(flowType, guid, initData) =>
 
       if (true) {
         val pid = nextId
         val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
-        val child = create(flowId)
+        val child = create(flowId, initData)
         child forward CommandRunFlow(flowId)
 
       } else {
         // use UUID to generate persistenceId
         val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
-        val child = create(flowId)
+        val child = create(flowId, initData)
         child forward CommandRunFlow(flowId)
       }
 
@@ -73,7 +71,7 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
     * @param flowId
     * @return
     */
-  def create(flowId: String): ActorRef = {
+  def create(flowId: String, initData: Map[String, String] = Map()): ActorRef = {
     val regex = "(\\w+)-(\\w+-\\w+)-(.*)".r
     val p = flowId match {
       case regex(flowType, guid, persistenceId) =>

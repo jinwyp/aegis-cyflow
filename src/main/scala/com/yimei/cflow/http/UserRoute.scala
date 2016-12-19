@@ -14,6 +14,8 @@ import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
+
+
 @Path("/user/:userId")
 class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
 

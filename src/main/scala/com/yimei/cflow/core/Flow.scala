@@ -13,14 +13,12 @@ object Flow {
   case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Long, used: Boolean = false)
 
   // create flow, but not run it
-  case class CommandCreateFlow(flowType: String, guid: String)
+  case class CommandCreateFlow(flowType: String, guid: String, initData: Map[String, String] = Map())
 
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
 
   case class RunFlowSuccess(flowId: String)
-
-  // shutdown the flow
 
   // 接收命令
   trait Command {
@@ -65,18 +63,21 @@ object Flow {
                     decision: String,
                     edge: Option[Edge],
                     histories: List[Arrow],
-                    flowType:String
+                    flowType: String
                   )
 
 
+  case class PartUTask(guidKey: String, tasks: Seq[String])
+  case class PartGTask(ggidKey: String, tasks: Seq[String])
+
   trait EdgeBehavior {
     val name: String
-    val autoTasks: Array[String]
-    val userTasks: Array[String]
-    val partUTasks: Map[String,Array[String]]   // key = 参与方guid对应的流程上下文key值, value = userTask名称列表
-    val partGTasks: Map[String,Array[String]]   // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
+    val autoTasks: Seq[String]
+    val userTasks: Seq[String]
+    val partUTasks: Seq[PartUTask]
+    val partGTasks: Seq[PartGTask] // key = 参与方ggid对应的流程上下文key值, value = userTask名称列表
 
-    /**
+    /*
       * 调度采集数据
       *
       * @param state   流程状态
@@ -84,34 +85,35 @@ object Flow {
       */
     def schedule(state: State, modules: Map[String, ActorRef]) = {
 
-      if ( name == "Start") {
+      if (name == "Start") {
         throw new IllegalArgumentException("StartEdge can not be scheduled")
       }
 
       //采集自动任务
       autoTasks.foreach(at =>
-        fetch(state.flowType,at,state,modules(module_auto))
+        fetch(state.flowType, at, state, modules(module_auto))
       )
 
       //采集用户任务
       userTasks.foreach(ut =>
-        ufetch(state.flowType,ut,state,modules(module_user),state.guid)
+        ufetch(state.flowType, ut, state, modules(module_user), state.guid)
       )
 
       // 参与方任务
       partUTasks.foreach { entry =>
-        entry._2.foreach{ ut =>
-          ufetch(state.flowType,ut,state,modules(module_user),state.points(entry._1).value)
+        entry.tasks.foreach { ut =>
+          ufetch(state.flowType, ut, state, modules(module_user), state.points(entry.guidKey).value)
         }
       }
 
       // 参与方组任务
-      partGTasks.foreach{ entry =>
-        entry._2.foreach{ gt =>
-          gfetch(state.flowType,gt,state,modules(module_group),state.points(entry._1).value)
+      partGTasks.foreach { entry =>
+        entry.tasks.foreach { gt =>
+          gfetch(state.flowType, gt, state, modules(module_group), state.points(entry.ggidKey).value)
         }
       }
     }
+
     /**
       *
       * @param state
@@ -121,34 +123,40 @@ object Flow {
 
       // 没有任何任务!!!
       if (
-        autoTasks.length == 0  &&
-        userTasks.length == 0 &&
-        partGTasks.size == 0 &&
-        partGTasks == 0
+        autoTasks.length == 0 &&
+          userTasks.length == 0 &&
+          partUTasks.size == 0 &&
+          partGTasks.size == 0
       ) {
         true
       }
 
-      val pUserTasks: Array[String] = partUTasks.foldLeft(Array[String]())((t, put)=>t ++ put._2)
-      val pGroupTasks: Array[String] = partGTasks.foldLeft(Array[String]())((t, gut)=> t ++ gut._2)
-      val allUserTasks: Array[String] = userTasks ++ pUserTasks ++ pGroupTasks
+      val pUserTasks: Seq[String] = partUTasks.foldLeft(Seq[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: Seq[String] = partGTasks.foldLeft(Seq[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      autoTasks.foldLeft(true)((t,at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t=>(!t._2.used)).contains(_)) ) &&
-      allUserTasks.foldLeft(true)((t,ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t=>(!t._2.used)).contains(_)))
-     }
+      autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).points.exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
+        allUserTasks.foldLeft(true)((t, ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t => (!t._2.used)).contains(_)))
+    }
 
     //获取全部不能重用的task
-    def getNonReusedTask():(Array[String],Array[String]) = (autoTasks,userTasks)
+    def getNonReusedTask(): (Seq[String], Seq[String]) = {
+      val pUserTasks: Seq[String] = partUTasks.foldLeft(Seq[String]())((t, put) => t ++: put.tasks)
+      val pGroupTasks: Seq[String] = partGTasks.foldLeft(Seq[String]())((t, gut) => t ++: gut.tasks)
+      val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
+      (autoTasks, allUserTasks)
+    }
 
     /**
-      *根据（autoTask,userTask) 获取全部的数据点
+      * 根据（autoTask,userTask) 获取全部的数据点
+      *
       * @return
       */
-    def getAllDataPointsName(state: State):Array[String] = {
+    def getAllDataPointsName(state: State): Seq[String] = {
       val allTasks = getNonReusedTask()
-        allTasks._1.foldLeft(List[String]())((a,at) => autoTask(state.flowType)(at).points ++: a) ++
-        allTasks._2.foldLeft(List[String]())((a,ut) => userTask(state.flowType)(ut) ++: a) toArray
+      allTasks._1.foldLeft(Seq[String]())((a, at) => autoTask(state.flowType)(at).points ++: a) ++
+        allTasks._2.foldLeft(Seq[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
     }
   }
 
@@ -162,15 +170,17 @@ object Flow {
   //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的ggid(参与方运营组)
   //   value为, 这个参与方运营组需要作的任务列表
   //
-  case class Edge( name: String,
-                   autoTasks: Array[String] = Array(),
-                   userTasks: Array[String] = Array(),
-                   partUTasks: Map[String,Array[String]] = Map(),
-                   partGTasks: Map[String,Array[String]] = Map()  //
+  case class Edge(name: String,
+                  autoTasks: Seq[String] = List(),
+                  userTasks: Seq[String] = List(),
+                  partUTasks: Seq[PartUTask] = List(),
+                  partGTasks: Seq[PartGTask] = List() //
                  ) extends EdgeBehavior {
     override def toString = name
   }
-  val EdgeStart = new Edge("Start")   // start edge
+
+  val Start = "Start"
+  val EdgeStart = new Edge(Start) // start edge
 
   // common judges
   val FlowSuccess = "FlowSuccess"
@@ -178,16 +188,18 @@ object Flow {
   val FlowTodo = "FlowTodo"
 
   case class EdgeDescription(
-                              autoTasks: Array[String] = Array(),
-                              userTasks: Array[String] = Array(),
-                              partUTasks: Map[String,Array[String]] = Map(),
-                              partGTasks: Map[String,Array[String]] = Map(),
+                              autoTasks: Seq[String] = List(),
+                              userTasks: Seq[String] = List(),
+                              partUTasks: Seq[PartUTask] = List(),
+                              partGTasks: Seq[PartGTask] = List(),
                               begin: String,
                               end: String
                             )
+
   case class Graph(edges: Map[String, EdgeDescription], state: State, dataDescription: Map[String, String])
 
-  case class Arrow(end: String, edge: Option[Edge])
+  //case class Arrow(end: String, edge: Option[Edge])
+  case class Arrow(end: String, edge:Option[String])
 
 }
 

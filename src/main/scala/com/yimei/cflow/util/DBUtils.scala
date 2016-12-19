@@ -11,7 +11,7 @@ import scala.concurrent.Future
 /**
   * Created by wangqi on 16/12/16.
   */
-object HelperUtil extends CoreConfig {
+object DBUtils extends CoreConfig {
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
 
   import driver.api._

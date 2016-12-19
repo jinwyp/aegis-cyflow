@@ -19,10 +19,10 @@ import scala.concurrent.duration._
 /**
   * Created by hary on 16/12/7.
   */
-@Path("/flow")
-class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
+@Path("/cang")
+class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 
-  implicit val timeout = FlowRoute.flowServiceTimeout // todo  why import User.userServiceTimeout does not work
+  implicit val timeout = ViewRoute.cangServiceTimeout // todo  why import User.userServiceTimeout does not work
 
   /**
     * 为用户创建流程
@@ -33,7 +33,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
       name = "body",
       value = "创建流程",
       required = true,
-      dataType = "com.yimei.cflow.core.Flow.State",
+      dataType = "com.yimei.cflow.core.Cang.State",
       paramType = "body"
     )
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
@@ -42,7 +42,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def postFlow: Route = post {
+  def postCang: Route = post {
     pathPrefix("flow") {
       pathEnd {
         parameters(('userType, 'userId, 'flowType)) { (userType, userId, flowType) =>
@@ -74,10 +74,10 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def getFlow: Route = get {
+  def getCang: Route = get {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
-        complete(ServiceProxy.flowQuery(proxy, flowId))
+        complete(ServiceProxy.flowGraph(proxy, flowId))
       }
     }
   }
@@ -104,7 +104,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
-  def putFlowPoints: Route = put {
+  def putCangPoints: Route = put {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
         parameter("points") { p =>
@@ -119,7 +119,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     }
   }
 
-  def route: Route = postFlow ~ getFlow ~ putFlowPoints
+  def route: Route = postCang ~ getCang ~ putCangPoints
 
 }
 
@@ -127,13 +127,13 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 /**
   * Created by hary on 16/12/2.
   */
-object FlowRoute {
+object ViewRoute {
 
-  implicit val flowServiceTimeout = Timeout(2 seconds)
+  implicit val cangServiceTimeout = Timeout(2 seconds)
 
 
-  def apply(proxy: ActorRef) = new FlowRoute(proxy)
+  def apply(proxy: ActorRef) = new ViewRoute(proxy)
 
-  def route(proxy: ActorRef): Route = FlowRoute(proxy).route
+  def route(proxy: ActorRef): Route = ViewRoute(proxy).route
 }
 

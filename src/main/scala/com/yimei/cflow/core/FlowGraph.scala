@@ -1,25 +1,49 @@
 package com.yimei.cflow.core
 
-import akka.actor.{ActorRef, Props}
+import java.lang.reflect.Method
+import java.util.UUID
+
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 
+import scala.concurrent.Future
+
+//
+trait GraphJar {
+  def getDeciders: Map[String, State => Arrow]
+  def getAutoProperties: Map[String,AutoProperty]
+}
+
+class AutoActor(
+                 name: String,
+                 modules: Map[String, ActorRef],
+                 auto: CommandAutoTask => Future[Map[String, String]]
+               )
+  extends Actor
+    with ActorLogging {
+
+  import scala.concurrent.ExecutionContext;
+  import ExecutionContext.Implicits.global
+
+  override def receive: Receive = {
+    case task: CommandAutoTask =>
+      auto(task).map { values =>
+        modules(module_flow) ! CommandPoints(
+          task.flowId,
+          values.map { entry =>
+            ((entry._1) -> DataPoint(entry._2, None, Some(name), UUID.randomUUID().toString, 10, false))
+          }
+        )
+      }
+  }
+}
+
+
 
 object FlowGraph {
-
-//  case class AutoBuilder1(_name: String = "",
-//                         _points: Array[String] =Array(),
-//                         _acc: Map[String, (Array[String], Map[String, ActorRef] => Props)] = Map()) {
-//    def actor(actorName: String) = this.copy(_name = actorName)
-//    def points(pointNames: Array[String]) = this.copy(_points = pointNames)
-//    def prop(propfun: Map[String, ActorRef] => Props) = {
-//      val curName = this._name
-//      val curPoints = this._points
-//      this.copy(_name = "", _points = Array(), _acc = this._acc + (curName -> (curPoints, propfun)))
-//    }
-//    def done = _acc
-//  }
-
 
   case class AutoBuilder(_name: String = "",
                          _points: Array[String] =Array(),
@@ -96,10 +120,34 @@ trait FlowGraph {
   def getUserTask: Map[String, Array[String]]
 
   /**
+    *
+    */
+  def getEdges: Map[String, Edge]
+
+  /**
     * 所有决策点
     */
-  def getDeciders: Map[String, State => Arrow] = Map()
+  def getDeciders: Map[String, State => Arrow]
 
+
+  /**
+    *
+    * @return
+    */
+  def getAutoMap: Map[String, Method]
+
+  /**
+    *
+    * @return
+    */
+  def getDeciMap: Map[String, Method]
+
+
+  /**
+    *
+    * @return
+    */
+  def getGraphJar: AnyRef
 }
 
 

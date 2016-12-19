@@ -1,11 +1,12 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.ying2
 
-import akka.actor.{ActorLogging, ActorRef, Props}
-import akka.event.Logging
+import java.lang.reflect.Method
+
+import akka.actor.Props
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.FlowRegistry.AutoProperty
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.ying2.YingConfig._
 
 /**
   * Created by hary on 16/12/1.
@@ -18,19 +19,11 @@ object YingGraph extends FlowGraph {
     *
     */
   override def getAutoTask: Map[String, AutoProperty] = FlowGraph.autoBuilder
-    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
-    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
-    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
-    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
+    .actor(auto_A)  .points(dataPointMap(auto_A))  .prop(modules => Props(new A(modules)))
+    .actor(auto_B)  .points(dataPointMap(auto_B))  .prop(modules => Props(new B(modules)))
+    .actor(auto)    .points(dataPointMap(auto))    .prop(modules => Props(new C(modules)))
+    .actor(auto_DEF).points(dataPointMap(auto_DEF)).prop(modules => Props(new DEF(modules)))
     .done
-
-//  //
-//  def getAutoTaskV2 = FlowGraph.AutoBuilderV2()
-//    .actor(data_A)  .points(dataPointMap(data_A))  .prop(modules => Props(new A(modules)))
-//    .actor(data_B)  .points(dataPointMap(data_B))  .prop(modules => Props(new B(modules)))
-//    .actor(data_C)  .points(dataPointMap(data_C))  .prop(modules => Props(new C(modules)))
-//    .actor(data_DEF).points(dataPointMap(data_DEF)).prop(modules => Props(new DEF(modules)))
-//    .done
 
   /**
     *
@@ -69,30 +62,46 @@ object YingGraph extends FlowGraph {
       V2 ~> E3 ~> V3
       V3 ~> E4 ~> V4
       V4 ~> E5 ~> V5
-      V5 ~> EdgeStart ~> V3
+      V5 ~> E6 ~> V3
       builder
     }
 
   override def getFlowType: String = flow_ying
 
-  val E1 = Edge("E1", autoTasks = Array(data_A, data_B, data_C))
-  val E2 = Edge("E2", userTasks = Array(task_K_PU1,task_K_PG1))
-  val E3 = Edge("E3", partUTasks = Map(point_K_PU1->Array(task_PU)), partGTasks = Map(point_K_PG1->Array(task_PG)))
-  val E4 = Edge("E4", userTasks = Array(task_A))
-  val E5 = Edge("E5", autoTasks = Array(data_DEF))
+
+  /**
+    *
+    */
+  override def getEdges: Map[String, Edge] = Map(
+    "E1" -> E1,
+    "E2" -> E2,
+    "E3" -> E3,
+    "E4" -> E4,
+    "E5" -> E5,
+    "E6" -> E6
+  )
+
+  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
+  val E2 = Edge("E2", userTasks = List(task_K_PU1,task_K_PG1))
+  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1,List(task_PU))), partGTasks = List(PartGTask(point_KPG_1,List(task_PG))))
+  val E4 = Edge("E4", userTasks = List(task_A))
+  val E5 = Edge("E5", autoTasks = List(auto_DEF))
+  val E6 = Edge("E6")
 
   def J0(state: State): Arrow = {
-    Arrow(V1, Some(E1))
+    Arrow(V1, Some("E1"))
   }
 
-  def J1(state: State): Arrow = Arrow(V2, Some(E2))
+  def J1(state: State): Arrow = Arrow(V2, Some("E2"))
 
   def J2(state: State): Arrow = {
-    //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
-    if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
-      Arrow(V3,Some(E3))
-    else
-      Arrow(FlowFail, None)
+
+    Arrow(V3,Some("E3"))
+//    //当选择的user为fund-wangqiId，且group为fund-wqGroup是才通过
+//    if(state.points(point_K_PU1).value == "fund-wangqiId" && state.points(point_K_PG1).value == "fund-wqGroup" )
+//      Arrow(V3,Some(E3))
+//    else
+//      Arrow(FlowFail, None)
   }
 
   def J3(state: State): Arrow = {
@@ -101,7 +110,7 @@ object YingGraph extends FlowGraph {
     state.points.filter(entry => List(point_PU1,point_PU2,point_PG1,point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 200 => Arrow(V4, Some(E4))
+      case 200 => Arrow(V4, Some("E4"))
       case _ => Arrow(FlowFail, None)
     }
   }
@@ -110,9 +119,10 @@ object YingGraph extends FlowGraph {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 100 => Arrow(V5, Some(E5))
+      case 100 => Arrow(V5, Some("E5"))
       case m =>
-        Arrow(FlowFail, Some(EdgeStart))
+       // Arrow(FlowFail, Some(EdgeStart))
+        Arrow(FlowFail, None)
     }
   }
 
@@ -120,12 +130,13 @@ object YingGraph extends FlowGraph {
 
   def J5(state: State): Arrow = {
 
-    state.points.filter(entry =>dataPointMap(data_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+    state.points.filter(entry =>dataPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if(count>0) {
         count = count - 1
-        Arrow(V3, Some(EdgeStart))
+        //Arrow(V3, Some(EdgeStart))
+        Arrow(V3,Some("E6"))
       }
       else
         Arrow(FlowSuccess, None)
@@ -150,7 +161,23 @@ object YingGraph extends FlowGraph {
   //             |
   //             |---------------->                                 EdgeStart
   ///////////////////////////////////////////////////////////////////////////////////////
+  /**
+    *
+    * @return
+    */
+  override def getAutoMap: Map[String, Method] = ???
 
+  /**
+    *
+    * @return
+    */
+  override def getDeciMap: Map[String, Method] = ???
+
+  /**
+    *
+    * @return
+    */
+  override def getGraphJar: AnyRef = ???
 }
 
 

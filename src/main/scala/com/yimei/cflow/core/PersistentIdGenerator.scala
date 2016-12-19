@@ -44,12 +44,6 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
         log.info(s"event $event persisted")
         sender()! Id(old + 1)
 
-//        cnt = cnt + 1
-//        if ( cnt == 50) {
-//          log.debug(s"save snapshot of IdGenerator now...")
-//          saveSnapshot(state)
-//        }
-
       }
   }
 }

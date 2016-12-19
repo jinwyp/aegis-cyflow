@@ -9,6 +9,8 @@ import com.yimei.cflow.core.FlowRegistry._
 import scala.concurrent.duration._
 
 object PersistentFlow {
+  def props(): Props = ???
+
   def props(graph: FlowGraph,
             flowId: String,
             modules: Map[String, ActorRef],
@@ -71,7 +73,7 @@ class PersistentFlow(
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
-      sender() ! genGraph(state)
+      sender() ! state
       makeDecision
 
     case cmd: CommandPoint =>
@@ -91,7 +93,7 @@ class PersistentFlow(
       persist(PointsUpdated(points)) { event =>
         log.info(s"${event} persisted")
         makeDecision()
-        sender() ! genGraph(state) // 返回流程状态
+        sender() ! state // 返回流程状态
       }
 
     // received 超时
@@ -163,13 +165,13 @@ class PersistentFlow(
                 updateState(event) // @todo 王琦
               }
             } else {
-              if (e.check(state)) {
+              if (edges(graph.getFlowType)(e).check(state)) {
                 // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
                 log.info(s"continue...")
                 makeDecision()
               } else {
                 log.info(s"schedule ${e}")
-                e.schedule(state, modules)
+                edges(graph.getFlowType)(e).schedule(state, modules)
               }
             }
         }

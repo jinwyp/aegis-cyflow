@@ -23,6 +23,13 @@ create table flow_task(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- 参与方类别
+create table party_class (
+  id BIGINT not null auto_increment,
+  class_name varchar(8),       -- 参与方类别名称
+  description varchar(64) ,    -- 参与方类别描述
+  PRIMARY KEY (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 参与方实体:
 -- 如:

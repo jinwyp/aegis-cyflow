@@ -14,28 +14,33 @@ message DataPoint {
     required bool   used = 6;
 }
 
-message Arrow {
-    required Decision end = 1;
-    optional Edge edge = 2;
+message PartUTask {
+    required string guid = 1;
+    repeated string tasks = 2;
 }
 
-// Judge("success")
-// Judge("fail")
-// Judge("todo")
-// Judge("xxxx")
-// Judge("A")
-message Judge {
-    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.JudgeBehavior";
-    required string name = 1;
+message PartGTask {
+    required string ggid = 1;
+    repeated string tasks = 2;
 }
+
 
 // Edge(Seq("auto1", "auto2"), Seq("task1", "task2")
 // Edge(Seq(), Seq())
 message Edge {
     option (scalapb.message).extends = "com.yimei.cflow.core.Flow.EdgeBehavior";
-    repeated String autoTasks = 1;
-    repeated String userTasks = 2;
+    required string name = 1;
+    repeated string autoTasks = 2;
+    repeated string userTasks = 3;
+    repeated PartUTask partUTasks = 4;
+    repeated PartGTask partGTasks = 5;
 }
+
+message Arrow {
+    optional Edge edge = 1;
+    required string end = 2;
+}
+
 
 message PointUpdated {
   option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
@@ -51,7 +56,17 @@ message PointsUpdated {
 
 message DecisionUpdated {
     option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
-    required Decision decision = 1;
+    required string decision = 1;
+}
+
+message State {
+    required string flowId = 1;
+    required string guid = 2;
+    map<string, DataPoint> points = 3;
+    required string decision = 4;
+    optional Edge edge = 5;
+    repeated Arrow histories = 6;
+    required string flowType = 7;
 }
 
 

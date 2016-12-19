@@ -3,9 +3,14 @@
 
 .idea/
 
+flows/
+!flows/README.md
+
 # sbt specific
 .cache
 data/
+!data/journal/README.md
+!data/snapshots/README.md
 logs/
 .history
 .lib/

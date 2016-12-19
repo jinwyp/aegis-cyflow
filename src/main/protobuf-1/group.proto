@@ -2,8 +2,7 @@ import "scalapb/scalapb.proto";
 
 package com.yimei.cflow;
 
-
-message CommondGroupTask {
+message CommandGroupTask {
     required string flowId = 1;
     required string ggid = 2;
     required string taskName = 3;

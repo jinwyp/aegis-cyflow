@@ -5,7 +5,7 @@ import java.util.{Date, UUID}
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import akka.pattern._
 import akka.util.Timeout
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.ying2.YingConfig._
 import com.yimei.cflow.core.Flow
 import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
 import com.yimei.cflow.core.Flow.Graph

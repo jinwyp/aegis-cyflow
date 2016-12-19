@@ -3,7 +3,7 @@ package com.yimei.cflow.core
 import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.core.FlowRegistry.deciders
+import com.yimei.cflow.core.FlowRegistry._
 
 object MemoryFlow {
   /**
@@ -42,7 +42,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"收到${cmd}")
-      sender() ! RunFlowSuccess(flowId)
+      sender() ! state
       makeDecision() // 注意顺序
 
     case cmd: CommandPoint =>
@@ -92,10 +92,10 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         log.info(s"schedule edge = ${e}")
 
         // 继续执行图!!!
-        if (e.check(state)) {
+        if (edges(graph.getFlowType)(e).check(state)) {
           makeDecision()
         } else {
-          e.schedule(state, modules)
+          edges(graph.getFlowType)(e).schedule(state, modules)
         }
 
       case Arrow(FlowTodo, None) =>

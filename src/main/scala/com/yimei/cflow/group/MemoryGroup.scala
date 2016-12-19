@@ -50,7 +50,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
   }
 
   override def unhandled(message: Any): Unit = {
-    log.error(s"收到未处理消息 $message")
+    log.error(s"收到未处理消息! {} from {}",message,sender())
     super.unhandled(message)
   }
 }

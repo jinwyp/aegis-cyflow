@@ -14,7 +14,9 @@ import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-@Path("/user/:userId")
+
+
+@Path("/group/:userId")
 class GroupRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport {
 
   implicit val timeout = GroupRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work

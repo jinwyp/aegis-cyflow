@@ -5,9 +5,6 @@ package com.yimei.cflow.config
   */
 object GlobalConfig {
 
-
-
-
   /**
     * 全局模块名称
     */
@@ -17,8 +14,5 @@ object GlobalConfig {
   val module_auto   = "AutoMaster"
   val module_proxy  = "ServiceProxy"
   val module_id     = "IdGenerator"
-
-
-
 }
 

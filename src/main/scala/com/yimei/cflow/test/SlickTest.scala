@@ -3,12 +3,10 @@ package com.yimei.cflow.test
 import java.sql.Timestamp
 import java.time.Instant
 
-import com.yimei.cflow.config.FlywayConfig
-import com.yimei.cflow.user.models.{FlowInstanceEntity, FlowInstanceTable}
-import com.yimei.cflow.util.HelperUtil._
 import com.yimei.cflow.config.DatabaseConfig._
-
-import scala.concurrent.Future
+import com.yimei.cflow.config.FlywayConfig
+import com.yimei.cflow.user.db.{FlowInstanceEntity, FlowInstanceTable}
+import com.yimei.cflow.util.DBUtils._
 
 /**
   * Created by wangqi on 16/12/16.

@@ -1,4 +1,4 @@
-package com.yimei.cflow.user.models
+package com.yimei.cflow.user.db
 import com.yimei.cflow.config.DatabaseConfig._
 
 import java.sql.Timestamp
