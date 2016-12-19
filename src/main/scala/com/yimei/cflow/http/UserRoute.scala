@@ -24,16 +24,20 @@ import scala.concurrent.duration._
 
 
 
-case class AddUserModel(password:String, phone:Option[String],email:Option[String], name:String, gid:Option[String])
+case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String)
 
-trait UserModelProtocol extends DefaultJsonProtocol {
+case class QueryUserResult(userInfo:PartyUserEntity,status:State)
 
-  implicit val addUserModelFormat = jsonFormat5(AddUserModel)
+trait UserModelProtocol extends DefaultJsonProtocol with UserProtocol {
+
+  implicit val addUserModelFormat = jsonFormat4(UserInfo)
+  implicit val queryUserResult = jsonFormat2(QueryUserResult)
 }
 
 
+
 @Path("/user/:userId")
-class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport with PartyUserTable with UserModelProtocol with PartyInstanceTable{
+class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with PartyInstanceTable{
 
   implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
   import driver.api._
@@ -59,7 +63,7 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport with
   def postUser: Route = post {
     pathPrefix("user" / Segment / Segment  / Segment) { (party,instance_id,userId) =>
        {
-         entity(as[AddUserModel]) { user =>
+         entity(as[UserInfo]) { user =>
 
           val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
               p.party_class === party &&
@@ -113,14 +117,68 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport with
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getUser: Route = get {
-    pathPrefix("user" / Segment) { userId =>
+    pathPrefix("user" / Segment / Segment  / Segment) { (party,instance_id,userId) =>
       pathEnd {
-        parameter("userType") { userType =>
-          complete(ServiceProxy.userQuery(proxy, userType, userId))
+        val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
+          p.party_class === party &&
+            p.instance_id === instance_id
+        ).result.head) recover {
+          case _ => throw new DatabaseException("不存在该公司")
+        }
+
+        def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
+          dbrun(partyUser.filter(u=>
+            u.user_id===userId &&
+            u.party_id===p.id
+          ).result.head) recover {
+            case _ => throw new DatabaseException("不存在该用户")
+          }
+        }
+
+        val result: Future[QueryUserResult] = for{
+          p <- pi
+          u <- getUser(p)
+          s <- ServiceProxy.userQuery(proxy, p.party_class+"-"+p.instance_id, u.user_id)
+        } yield {
+          QueryUserResult(u,s)
+        }
+        complete(result)
+        }
+      }
+
+  }
+
+
+  def getUserList: Route = get {
+    pathPrefix("user" / Segment / Segment ) { (party,instance_id) =>
+        ( parameter('limit.as[Int]) & parameter('offset.as[Int]) ) { (limit,offset) =>
+
+          val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
+            p.party_class === party &&
+              p.instance_id === instance_id
+          ).result.head) recover {
+            case _ => throw new DatabaseException("不存在该公司")
+          }
+
+          def getUserList(p: PartyInstanceEntity): Future[Seq[PartyUserEntity]] = {
+            dbrun(partyUser.filter(u =>
+                u.party_id === p.id
+            ).result) recover {
+              case _ => throw new DatabaseException("不存在该用户")
+            }
+          }
+
+          val result: Future[Seq[PartyUserEntity]] = for {
+            p <- pi
+            u <- getUserList(p)
+          } yield {
+            u
+          }
+          complete(result)
         }
       }
     }
-  }
+
 
   /**
     * 查询用户
@@ -143,17 +201,45 @@ class UserRoute(proxy: ActorRef) extends UserProtocol with SprayJsonSupport with
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putUser: Route = put {
-    pathPrefix("user" / Segment) { userId =>
-      pathEnd {
-        parameter("userType") { userType =>
-          val k: Future[User.State] = ServiceProxy.userCreate(proxy, userType, userId)
-          complete("put success")
+    pathPrefix("user" / Segment / Segment / Segment) { (party,instance_id,userId)  =>
+      entity(as[UserInfo]) { user =>
+
+        val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
+          p.party_class === party &&
+            p.instance_id === instance_id
+        ).result.head) recover {
+          case _ => throw new DatabaseException("不存在该公司")
         }
+
+        def updateUser(p:PartyInstanceEntity): Future[String] = {
+
+          val pu = partyUser.filter(u=>
+            u.user_id===userId &&
+              u.party_id===p.id
+          ).map(t=>(t.password,t.phone,t.email,t.name)).update(
+            user.password,user.phone,user.email,user.name
+          )
+
+          dbrun(pu) map { i =>
+            i match {
+              case 1 => "success"
+              case _ => "fail"
+            }
+          } recover {
+            case _ => "fail"
+          }
+        }
+        complete(for {
+          p <- pi
+          r <- updateUser(p)
+        } yield {
+          r
+        })
       }
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList
 }
 
 

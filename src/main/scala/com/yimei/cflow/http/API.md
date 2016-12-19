@@ -1,8 +1,8 @@
 // 参与方类别管理
 GET  /party?limit=10&offset=20         参与方类别列表
-POST /party/:class                     创建参与方类别
-GET  /party/:class                     查询参与方类别
-PUT  /party/:class                     更新参与方类别
+POST /party/:party                     创建参与方类别
+GET  /party/:party                     查询参与方类别
+PUT  /party/:party                     更新参与方类别
 
 // 参与方运营组管理
 GET    /group/:party?limit=10&offset=20  参与方运营组列表
