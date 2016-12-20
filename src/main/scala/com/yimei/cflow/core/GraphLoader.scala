@@ -2,7 +2,6 @@ package com.yimei.cflow.core
 
 import java.io.File
 import java.lang.reflect.Method
-import java.net.URLClassLoader
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
@@ -62,7 +61,7 @@ object GraphLoader extends App {
 
     val classLoader = getClassLoader(gFlowType)
 
-    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream( if (gFlowType == "ying") "ying.json" else "flow.json") )
+    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(if (gFlowType == "ying") "ying.json" else "flow.json"))
       .mkString
       .parseJson
       .convertTo[GraphConfig]
