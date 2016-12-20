@@ -91,7 +91,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         if (!e.check(state)) {
           Arrow(FlowTodo, None)
         } else {
-          deciders(graph.flowType)(cur)(state)
+          registries(graph.flowType).deciders(cur)(state)
         }
     }
 
@@ -101,10 +101,10 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         log.info(s"schedule edge = ${e}")
 
         // 继续执行图!!!
-        if (edges(graph.flowType)(e).check(state)) {
+        if (registries(graph.flowType).edges(e).check(state)) {
           makeDecision()
         } else {
-          edges(graph.flowType)(e).schedule(state, modules)
+          registries(graph.flowType).edges(e).schedule(state, modules)
         }
 
       case Arrow(FlowTodo, None) =>
