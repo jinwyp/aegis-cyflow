@@ -24,6 +24,9 @@ object FlowRegistry {
   // flowType -> edgeName -> edge
   var edges: Map[String,Map[String,Edge]] = Map()
 
+  // flowType -> vertex -> in Edges
+  var inEdges: Map[String, Map[String, Array[String]]] = Map()
+
   // flowType -> Graph
   var graphs: Map[String, Graph] = Map()
 
@@ -42,12 +45,7 @@ object FlowRegistry {
 
     autoMeth = autoMeth + (flowType -> graph.getAutoMeth)
 
-    deciders = deciders + (flowType -> graph.getDeciMeth.map { entry =>
-      val behavior: State => Arrow  = (state: State)  =>
-        entry._2.invoke(graph.getGraphJar, state).asInstanceOf[Arrow]
-      (entry._1, behavior)
-    })
-
+    deciders = deciders + (flowType -> graph.getDeciders)
 
     jarMap   = jarMap   + (flowType -> graph.getGraphJar)
 

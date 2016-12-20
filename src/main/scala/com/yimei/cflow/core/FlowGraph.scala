@@ -87,6 +87,12 @@ trait FlowGraph {
   def getFlowGraph(state: State): Graph
 
   /**
+    *
+    * @return
+    */
+//  def getInEdges: Map[String, Array[String]]
+
+  /**
     * flow type
     *
     * @return
@@ -109,24 +115,41 @@ trait FlowGraph {
     */
   def getEdges: Map[String, Edge]
 
-  /**
-    *
-    * @return
-    */
-  def getAutoMeth: Map[String, Method]
+
+  def getAutoMeth: Map[String, Method] = {
+    this.getClass.getMethods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[CommandAutoTask] &&
+        m.getReturnType == classOf[Future[Map[String, String]]]
+    }.map { am =>
+      (am.getName -> am)
+    }.toMap
+  }
 
   /**
     *
     * @return
     */
-  def getDeciMeth: Map[String, Method]
+  def getDeciders: Map[String, State => Arrow] = {
+    this.getClass.getMethods.filter { m =>
+      val ptypes = m.getParameterTypes
+      ptypes.length == 1 &&
+        ptypes(0) == classOf[State] &&
+        m.getReturnType == classOf[Arrow]
+    }.map { am =>
 
+      val behavior: State => Arrow  = (state: State)  =>
+        am.invoke(this, state).asInstanceOf[Arrow]
+      (am.getName -> behavior)
+    }.toMap
+  }
 
   /**
     *
     * @return
     */
-  def getGraphJar: AnyRef
+  def getGraphJar: AnyRef = this
 }
 
 

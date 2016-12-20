@@ -18,8 +18,6 @@ object Flow {
   // response of CommandCreateFlow
   case class CreateFlowSuccess(flowId: String)
 
-  case class RunFlowSuccess(flowId: String)
-
   // 接收命令
   trait Command {
     def flowId: String // flowType-userType-userId-uuid
@@ -70,7 +68,7 @@ object Flow {
                     points: Map[String, DataPoint],
                     decision: String,
                     edge: Option[Edge],
-                    histories: List[Arrow],
+                    histories: Seq[Arrow],
                     flowType: String
                   )
 

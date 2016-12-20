@@ -43,7 +43,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             state = state.copy(
               decision = arrow.end,
               edge = newEdge,
-              histories = arrow :: state.histories,
+              histories = arrow +: state.histories,
               points = newPoints
             )
 
@@ -51,10 +51,10 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             state = state.copy(
               decision = arrow.end,
               edge = newEdge,
-              histories = arrow :: state.histories
+              histories = arrow +: state.histories
             )
         }
-        log.info("new status: {}", state)
+        log.debug("new status: {}", state)
     }
   }
 

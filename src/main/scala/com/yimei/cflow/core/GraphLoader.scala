@@ -11,6 +11,8 @@ import spray.json.DefaultJsonProtocol
 import scala.concurrent.Future
 import scala.io.Source
 
+case class DefaultVertex(description: String, arrows: Seq[Arrow])
+
 case class GraphConfig(
                         graphJar: String,
                         persistent: Boolean,
@@ -19,11 +21,12 @@ case class GraphConfig(
                         poinsts: Map[String, String],
                         autoTasks: Map[String, Array[String]],
                         userTasks: Map[String, Array[String]],
-                        deciders: Map[String, String],
+                        vertices: Map[String, DefaultVertex],
                         edges: Map[String, EdgeDescription]
                       )
 
 object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
+  implicit val defaultVertexFormat = jsonFormat2(DefaultVertex)
   implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
 }
 
@@ -41,7 +44,7 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if ( flowType == "wang") {
+    if (flowType == "wang") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
@@ -69,14 +72,21 @@ object GraphLoader extends App {
     println(graphConfig.toJson.prettyPrint)
 
     // graphJar class and graphJar object
-    val module = classLoader.loadClass(graphConfig.graphJar + "$")
-    val graphJar = module.getField("MODULE$").get(null)
+    val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
+    val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
-    val autoMap = getAutoMap(module)
+    val autoMap = getAutoMap(mclass)
 
-    // deciMap from graphJar
-    val deciMap = getDeciderMap(module)
+    // deciders from graphJar  + default decider
+    var deciders: Map[String, State => Arrow] =
+    graphConfig.vertices.map{ entry =>
+      (entry._1, entry._2.arrows)
+    }.filter(_._2.length == 1)   // 暂时只处理长度为1的(非并发执行流)
+     .map{ e =>
+      (e._1, { st: State => e._2(0) })
+    }
+    deciders = deciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -88,12 +98,18 @@ object GraphLoader extends App {
 
       override def getFlowGraph(state: State): Graph = Graph(
         graphConfig.edges,
-        graphConfig.deciders,
+        graphConfig.vertices.map{ entry => (entry._1, entry._2.description)},
         state,
         graphConfig.poinsts,
         graphConfig.userTasks,
         graphConfig.autoTasks
       )
+
+      def getInEdges = graphConfig.edges.groupBy { entry =>
+        entry._2.end
+      }.map { e =>
+        (e._1, e._2.keySet.toArray)
+      }
 
       override def getFlowInitial: String = initial
 
@@ -116,7 +132,7 @@ object GraphLoader extends App {
       // new approach
       override def getAutoMeth: Map[String, Method] = autoMap
 
-      override def getDeciMeth: Map[String, Method] = deciMap
+      override def getDeciders: Map[String, State => Arrow] = deciders
 
       override def getGraphJar: AnyRef = graphJar
     }
@@ -133,14 +149,16 @@ object GraphLoader extends App {
     }.toMap
   }
 
-  def getDeciderMap(m: Class[_]) = {
+  def getDeciders(m: Class[_], module: AnyRef) = {
     m.getMethods.filter { method =>
       val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
         method.getReturnType == classOf[Arrow]
     }.map { am =>
-      (am.getName -> am)
+      val behavior: State => Arrow  = (state: State)  =>
+        am.invoke(module, state).asInstanceOf[Arrow]
+      (am.getName -> behavior)
     }.toMap
   }
 

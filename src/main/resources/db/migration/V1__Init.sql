@@ -30,6 +30,7 @@ create table party_class (
   description varchar(64) ,    -- 参与方类别描述
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- class_name 唯一索引
 
 -- 参与方实体:
 -- 如:
@@ -44,6 +45,7 @@ create table  party_instance (
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- party_class+instance_id 唯一索引
 
 -- 用户表
 create table party_user(
@@ -55,12 +57,10 @@ create table party_user(
   phone varchar(32),
   email varchar(128),
   name varchar(128) not null,
-
-  gid varchar(32),          -- 用户所属的组
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+-- party_id+user_id 唯一索引
 
 -- 用户群组表
 create table user_group(

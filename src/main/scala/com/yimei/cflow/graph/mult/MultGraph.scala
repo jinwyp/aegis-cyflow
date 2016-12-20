@@ -1,9 +1,9 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.mult
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.mult.MultConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -11,7 +11,7 @@ import scala.concurrent.Future
 /**
   * Created by hary on 16/12/1.
   */
-object YingGraph extends FlowGraph {
+object MultGraph extends FlowGraph {
 
 
   override def getTimeout: Long = 15
@@ -132,23 +132,6 @@ object YingGraph extends FlowGraph {
     }
 
   }
-
-  ///////////////////////////////////////////////////////////////////////////////////////
-  //      \ ----------------------> always true                     VoidEdge
-  //      V0
-  //       \ ---------------------> A(data_A) B(data_B) C(data_C)   E1
-  //       V1
-  //         \-------------------->  point_K_PU1,point_K_PG1        E2
-  //         v2
-  //           \------------------> [pu_1,pu_2](pg-1,pg-2)          E3
-  //            V3
-  //           /  \---------------> [UA1, UA2](task_A)              E4
-  //          /    V4
-  //         /      \-------------> [UB1, UB2](partTask_A)          E5
-  //         --<----V5
-  //             |
-  //             |---------------->                                 EdgeStart
-  ///////////////////////////////////////////////////////////////////////////////////////
 
 }
 

@@ -25,13 +25,13 @@ object FlowClusterApp extends App {
     // Create an Akka system
     val system = ActorSystem("ClusterSystem", config)
 
-    startupSharedJournal(system, startStore = (port == "2551"), path =
+    startupSharedJournal(system, startStore = (port == 2551), path =
       ActorPath.fromString("akka.tcp://ClusterSystem@127.0.0.1:2551/user/store"))
 
     // 流程
     val flowRegion = ClusterSharding(system).start(
       typeName = FlowClusterSupport.shardName,
-      entityProps = PersistentFlow.props(),
+      entityProps = null, // PersistentFlow.props(),
       settings = ClusterShardingSettings(system),
       extractEntityId = FlowClusterSupport.extractEntityId,
       extractShardId = FlowClusterSupport.extractShardId)
