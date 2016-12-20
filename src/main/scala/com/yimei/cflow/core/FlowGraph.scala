@@ -70,53 +70,51 @@ object FlowGraph {
   *
   */
 trait FlowGraph {
-  /**
-    * initial decision point
-    *
-    * @return
-    */
-  def getFlowInitial: String
+  val flowInitial: String
+  val timeout: Long
 
-  def getTimeout: Long
+  def graph(state: State): Graph
 
-  /**
-    *
-    * @param state
-    * @return
-    */
-  def getFlowGraph(state: State): Graph
+  val blueprint: Graph = graph(null)
+  val edges: Map[String, Edge]
+  val inEdges: Map[String, Array[String]] = Map()
+  val flowType: String
+  val userTasks: Map[String, Array[String]]
+  val autoTasks: Map[String, Array[String]]
+  val pointEdges: Map[String, String]
 
-  /**
-    *
-    * @return
-    */
-//  def getInEdges: Map[String, Array[String]]
+  // todo 王琦优化!!!!
+  protected def  pointEdgesImpl: Map[String, String] = {
+    def process(name: String, e: Edge) = {
 
-  /**
-    * flow type
-    *
-    * @return
-    */
-  def getFlowType: String
+      val userPointMap = e.userTasks.map { (ut: String) =>
+        userTasks(ut).map( pt =>
+          (pt -> name)
+        ).toMap
+      }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
 
-  /**
-    * 注册用户任务
-    */
-  def getUserTask: Map[String, Array[String]]
+      val autoPointMap = e.autoTasks.map { (ut: String) =>
+        autoTasks(ut).map( pt =>
+          (pt -> name)
+        ).toMap
+      }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
 
-  /**
-    *
-    * @return
-    */
-  def getAutoTask: Map[String, Array[String]]
+      val partGPointMap = e.partGTasks.map(_.ggidKey).map{ _ -> name}.toMap
 
-  /**
-    *
-    */
-  def getEdges: Map[String, Edge]
+      val partUPointMap = e.partUTasks.map(_.guidKey).map{ _ -> name}.toMap
 
+      autoPointMap ++ userPointMap ++ partUPointMap ++ partGPointMap
+    }
 
-  def getAutoMeth: Map[String, Method] = {
+    var ret: Map[String, String] = Map()
+    for ((name, ed) <- edges) {
+      ret = ret ++ process(name, ed)
+    }
+
+    ret
+  }
+
+  val autoMethods: Map[String, Method] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
@@ -127,11 +125,7 @@ trait FlowGraph {
     }.toMap
   }
 
-  /**
-    *
-    * @return
-    */
-  def getDeciders: Map[String, State => Arrow] = {
+  val deciders: Map[String, State => Arrow] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
@@ -139,17 +133,13 @@ trait FlowGraph {
         m.getReturnType == classOf[Arrow]
     }.map { am =>
 
-      val behavior: State => Arrow  = (state: State)  =>
+      val behavior: State => Arrow = (state: State) =>
         am.invoke(this, state).asInstanceOf[Arrow]
       (am.getName -> behavior)
     }.toMap
   }
 
-  /**
-    *
-    * @return
-    */
-  def getGraphJar: AnyRef = this
+  val moduleJar: AnyRef = this
 }
 
 

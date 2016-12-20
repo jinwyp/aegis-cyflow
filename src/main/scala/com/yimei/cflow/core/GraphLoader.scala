@@ -44,27 +44,24 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if (flowType == "wang") {
+    if (flowType != "ying") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
       new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-    } else if (flowType == "ying") {
-      YingGraphJar.getClass.getClassLoader
     } else {
-      throw new Exception(s"does not support $flowType")
+      YingGraphJar.getClass.getClassLoader
     }
   }
 
-  def loadGraph(flowType: String): FlowGraph = {
+  def loadGraph(gFlowType: String): FlowGraph = {
     import GraphConfigProtocol._
     import spray.json._
 
-    val classLoader = getClassLoader(flowType)
+    val classLoader = getClassLoader(gFlowType)
 
-    // get graph config
-    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream("flow.json"))
+    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(if (gFlowType == "ying") "ying.json" else "flow.json"))
       .mkString
       .parseJson
       .convertTo[GraphConfig]
@@ -79,63 +76,80 @@ object GraphLoader extends App {
     val autoMap = getAutoMap(mclass)
 
     // deciders from graphJar  + default decider
-    var deciders: Map[String, State => Arrow] =
-    graphConfig.vertices.map{ entry =>
-      (entry._1, entry._2.arrows)
-    }.filter(_._2.length == 1)   // 暂时只处理长度为1的(非并发执行流)
-     .map{ e =>
-      (e._1, { st: State => e._2(0) })
-    }
-    deciders = deciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
+    var allDeciders: Map[String, State => Arrow] =
+      graphConfig.vertices.map { entry =>
+        (entry._1, entry._2.arrows)
+      }.filter(_._2.length == 1) // 暂时只处理长度为1的(非并发执行流)
+        .map { e =>
+        (e._1, { st: State => e._2(0) })
+      }
+    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
+
+    val graphEdges = graphConfig.edges.map(entry =>
+      (entry._1, Edge(
+        entry._1,
+        entry._2.autoTasks,
+        entry._2.userTasks,
+        entry._2.partUTasks,
+        entry._2.partGTasks
+      ))
+    )
 
     // graph intial vertex
     val initial = graphConfig.initial
 
     // 返回流程
-    new FlowGraph {
+    val g = new FlowGraph {
 
-      override def getTimeout: Long = graphConfig.timeout
+      override val timeout: Long = graphConfig.timeout
 
-      override def getFlowGraph(state: State): Graph = Graph(
+      override def graph(state: State): Graph = Graph(
+
         graphConfig.edges,
-        graphConfig.vertices.map{ entry => (entry._1, entry._2.description)},
-        state,
+        graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
+        Some(state),
         graphConfig.poinsts,
         graphConfig.userTasks,
         graphConfig.autoTasks
       )
 
-      def getInEdges = graphConfig.edges.groupBy { entry =>
+      override val blueprint: Graph = Graph(
+        graphConfig.edges,
+        graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
+        None,
+        graphConfig.poinsts,
+        graphConfig.userTasks,
+        graphConfig.autoTasks
+      )
+
+      override val inEdges: Map[String, Array[String]] = graphConfig.edges.groupBy { entry =>
         entry._2.end
       }.map { e =>
         (e._1, e._2.keySet.toArray)
       }
 
-      override def getFlowInitial: String = initial
 
-      override def getFlowType: String = flowType
 
-      override def getUserTask: Map[String, Array[String]] = graphConfig.userTasks
+      override val flowInitial: String = initial
 
-      override def getAutoTask: Map[String, Array[String]] = graphConfig.autoTasks
+      override val flowType: String = gFlowType
 
-      override def getEdges: Map[String, Edge] = graphConfig.edges.map(entry =>
-        (entry._1, Edge(
-          entry._1,
-          entry._2.autoTasks,
-          entry._2.userTasks,
-          entry._2.partUTasks,
-          entry._2.partGTasks
-        ))
-      )
+      override val userTasks: Map[String, Array[String]] = graphConfig.userTasks
 
-      // new approach
-      override def getAutoMeth: Map[String, Method] = autoMap
+      override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
 
-      override def getDeciders: Map[String, State => Arrow] = deciders
+      override val edges: Map[String, Edge] = graphEdges
 
-      override def getGraphJar: AnyRef = graphJar
+      override val pointEdges = pointEdgesImpl
+
+      override val autoMethods: Map[String, Method] = autoMap
+
+      override val deciders: Map[String, State => Arrow] = allDeciders
+
+      override val moduleJar: AnyRef = graphJar
     }
+
+    g
   }
 
   def getAutoMap(m: Class[_]) = {
@@ -156,7 +170,7 @@ object GraphLoader extends App {
         ptypes(0) == classOf[State] &&
         method.getReturnType == classOf[Arrow]
     }.map { am =>
-      val behavior: State => Arrow  = (state: State)  =>
+      val behavior: State => Arrow = (state: State) =>
         am.invoke(module, state).asInstanceOf[Arrow]
       (am.getName -> behavior)
     }.toMap

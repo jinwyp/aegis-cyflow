@@ -45,7 +45,7 @@ class PersistentFlow(
   override def persistenceId: String = pid
 
   // 钝化超时时间
-  val timeout = graph.getTimeout
+  val timeout = graph.timeout
 
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
@@ -54,10 +54,10 @@ class PersistentFlow(
     (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
   }
 
-  override var state = State(flowId, guid, initPoints, graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
+  override var state = State(flowId, guid, initPoints, graph.flowInitial, Some(EdgeStart), Nil, graph.flowType)
 
   //
-  override def genGraph(state: State): Graph = graph.getFlowGraph(state)
+  override def genGraph(state: State): Graph = graph.graph(state)
 
   //  override def modules: Map[String, ActorRef] = dependOn
 
@@ -166,7 +166,7 @@ class PersistentFlow(
         if (!e.check(state)) {
           Arrow(FlowTodo, None)
         } else {
-          deciders(graph.getFlowType)(cur)(state)
+          graph.deciders(cur)(state)
         }
     }
 
@@ -189,13 +189,13 @@ class PersistentFlow(
                 updateState(event) // @todo 王琦
               }
             } else {
-              if (edges(graph.getFlowType)(e).check(state)) {
+              if (graph.edges(e).check(state)) {
                 // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
                 log.info(s"continue...")
                 makeDecision()
               } else {
                 log.info(s"schedule ${e}")
-                edges(graph.getFlowType)(e).schedule(state, modules)
+                graph.edges(e).schedule(state, modules)
               }
             }
         }

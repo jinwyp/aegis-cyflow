@@ -9,15 +9,15 @@ import com.yimei.cflow.graph.cang.CangConfig._
   */
 object CangGraph extends FlowGraph {
 
-  override def getTimeout: Long = 1 * 60 * 60
+  override val timeout: Long = 1 * 60 * 60
 
-  override def getFlowInitial: String = judge_afterStart
+  override val flowInitial: String = judge_afterStart
 
-  override def getFlowType: String = flow_cang
+  override val flowType: String = flow_cang
 
-  override def getUserTask: Map[String, Array[String]] = taskPointMap
+  override val userTasks: Map[String, Array[String]] = taskPointMap
 
-  override def getAutoTask: Map[String, Array[String]] = dataPointMap
+  override val autoTasks: Map[String, Array[String]] = dataPointMap
 
 
   /////////////////////////////////////////////////////////////
@@ -28,7 +28,8 @@ object CangGraph extends FlowGraph {
   //  定义边
   /////////////////////////////////////////////////////////////
 
-  override def getFlowGraph(state: State): Graph = ???
+  override def graph(state: State): Graph = ???
 
-  override def getEdges: Map[String, Edge] = ???
+  override val edges: Map[String, Edge] = ???
+  override val pointEdges: Map[String, String] = Map()
 }

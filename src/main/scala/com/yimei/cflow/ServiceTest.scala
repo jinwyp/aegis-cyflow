@@ -18,7 +18,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testEc = coreExecutor
 
 
-  FlowRegistry.register(YingGraph.getFlowType, YingGraph)
+  FlowRegistry.register(YingGraph.flowType, YingGraph)
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)

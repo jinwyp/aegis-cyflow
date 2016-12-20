@@ -11,11 +11,8 @@ object CangFlowModel extends DefaultJsonProtocol {
   case class FileObj(name: String, url: String, createTime: Option[Timestamp])
   implicit val fileObjFormat = jsonFormat3(FileObj)
 
-  case class FileObjList(fileList: List[FileObj])
-  implicit val fileObjListFormat = jsonFormat1(FileObjList)
-
   /** 进入仓押系统,初始化, 开始流程 **/
-  case class StartFlow(applyUserId: BigInt, applyUserName: String, applyUserPhone: String, applyCompanyId: BigInt,
+  case class StartFlow(applyUserId: Long, applyUserName: String, applyUserPhone: String, applyCompanyId: Long,
                        applyCompanyName: String,         //申请人-融资方 信息
                        businessCode: String,             //业务编号
                        financeCreateTime: Timestamp,     //审批开始时间
@@ -30,7 +27,7 @@ object CangFlowModel extends DefaultJsonProtocol {
                        coalIndex_ADV: BigDecimal,        //煤炭 热值,硫分,空干基挥发分
                        stockPort: String,                //库存港口
                        coalAmount: BigDecimal,           //总质押吨数
-                       auditFileList: FileObjList)       //审批文件列表
+                       auditFileList: List[FileObj])      //审批文件列表
   implicit val startFlowFormat = jsonFormat19(StartFlow)
 
   /**
@@ -44,27 +41,25 @@ object CangFlowModel extends DefaultJsonProtocol {
                                    portCompanyId: String,                    //港口公司id
                                    supervisorUserId: String,                 //监管业务人员 用户id
                                    supervisorCompanyId: String,              //监管公司id
-                                   fundProviderUserId: String,               //资金方业务人员 用户id
-                                   fundProviderFinanceUserId: String,        //资金方财务 用户id
                                    fundProviderCompanyId: String)            //资金方公司id
-  implicit val traffickerAssignUsersFormat = jsonFormat8(TraffickerAssignUsers)
+  implicit val traffickerAssignUsersFormat = jsonFormat6(TraffickerAssignUsers)
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
   case class CustomerUploadContract(taskId: String,
-                                    contractFileList: FileObjList,
-                                    financeFileList: FileObjList,
-                                    businessFileList: FileObjList)
+                                    contractFileList: List[FileObj],
+                                    financeFileList: List[FileObj],
+                                    businessFileList: List[FileObj])
   implicit val customerUploadContractFormat = jsonFormat4(CustomerUploadContract)
 
   /** 监管方上传合同 **/
   case class SupervisorUploadContract(taskId: String,
-                                      contractFileList: FileObjList)
+                                      contractFileList: List[FileObj])
   implicit val supervisorUploadContractFormat = jsonFormat2(SupervisorUploadContract)
 
   /** 港口上传合同, 填写确认吨数 **/
   case class PortUploadContract(taskId: String,
                                 confirmCoalAmount: BigDecimal,
-                                contractFileList: FileObjList)
+                                contractFileList: List[FileObj])
   implicit val portUploadContractFormat = jsonFormat3(PortUploadContract)
 
   /** 贸易商审核 **/
@@ -88,11 +83,11 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val fundProviderFinanceLoadFormat = jsonFormat2(FundProviderFinanceLoad)
 
   /** 融资方付款给贸易商 **/
-  case class CustomerPaymentToTrafficker(taskId: String, paymentPrinciple: BigDecimal, createTime: Option[Timestamp])
-  implicit val customerPaymentToTraffickerFormat = jsonFormat3(CustomerPaymentToTrafficker)
+  case class CustomerPaymentToTrafficker(taskId: String, statusId: Int, paymentPrinciple: BigDecimal, createTime: Option[Timestamp])
+  implicit val customerPaymentToTraffickerFormat = jsonFormat4(CustomerPaymentToTrafficker)
 
   /** 贸易商通知港口放货 **/
-  case class TraffickerNoticePortReleaseGoods(taskId: String, releaseAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: FileObjList, createTime: Option[Timestamp])
+  case class TraffickerNoticePortReleaseGoods(taskId: String, releaseAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: List[FileObj], createTime: Option[Timestamp])
   implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat5(TraffickerNoticePortReleaseGoods)
 
   /** 港口放货 **/

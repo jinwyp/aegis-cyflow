@@ -29,9 +29,9 @@ object GraphBuilder {
                 autoTasks: Map[String, Array[String]],
                 userTasks: Map[String, Array[String]]
                )(routine: GraphBuilder => GraphBuilder): Graph = {
-    val builder = new GraphBuilder(Map[String, EdgeDescription]())
-    routine(builder)
-    Graph(builder.lines, judges, state, points,autoTasks, userTasks)
+      val builder = new GraphBuilder(Map[String, EdgeDescription]())
+      routine(builder)
+      Graph(builder.lines, judges, if (state != null) Some(state) else None, points, autoTasks, userTasks)
   }
 
   class GraphBuilder(var lines: Map[String, EdgeDescription])
