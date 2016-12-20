@@ -58,11 +58,11 @@ object GraphLoader extends App {
     }
   }
 
-  def loadGraph(flowType: String): FlowGraph = {
+  def loadGraph(gFlowType: String): FlowGraph = {
     import GraphConfigProtocol._
     import spray.json._
 
-    val classLoader = getClassLoader(flowType)
+    val classLoader = getClassLoader(gFlowType)
 
     // get graph config
     val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(s"flow.json"))
@@ -80,14 +80,14 @@ object GraphLoader extends App {
     val autoMap = getAutoMap(mclass)
 
     // deciders from graphJar  + default decider
-    var deciders: Map[String, State => Arrow] =
+    var allDeciders: Map[String, State => Arrow] =
     graphConfig.vertices.map{ entry =>
       (entry._1, entry._2.arrows)
     }.filter(_._2.length == 1)   // 暂时只处理长度为1的(非并发执行流)
      .map{ e =>
       (e._1, { st: State => e._2(0) })
     }
-    deciders = deciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
+    allDeciders = allDeciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
 
     val graphEdges = graphConfig.edges.map(entry =>
       (entry._1, Edge(
@@ -103,7 +103,7 @@ object GraphLoader extends App {
     val initial = graphConfig.initial
 
     // 返回流程
-    new FlowGraph {
+    val g = new FlowGraph {
 
       override val timeout: Long = graphConfig.timeout
 
@@ -124,7 +124,7 @@ object GraphLoader extends App {
 
       override val flowInitial: String = initial
 
-      override val flowType: String = flowType
+      override val flowType: String = gFlowType
 
       override val userTasks: Map[String, Array[String]] = graphConfig.userTasks
 
@@ -134,10 +134,12 @@ object GraphLoader extends App {
 
       override val autoMethods: Map[String, Method] = autoMap
 
-      override val deciders: Map[String, State => Arrow] = deciders
+      override val deciders: Map[String, State => Arrow] = allDeciders
 
       override val moduleJar: AnyRef = graphJar
     }
+
+    g
   }
 
   def getAutoMap(m: Class[_]) = {
