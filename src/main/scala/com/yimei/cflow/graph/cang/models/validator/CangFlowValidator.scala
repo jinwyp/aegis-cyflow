@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerUploadContract, FileObj, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerUploadContract, FileObj, FundProviderAudit, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerFinanceAudit}
 
 object CangFlowValidator {
   /** 文件 **/
@@ -38,6 +38,7 @@ object CangFlowValidator {
         startFlow.financeCreateTime as "审批开始时间" is notNull
         startFlow.financeEndTime as "审批完成时间" is notNull
         startFlow.financingAmount as "拟融资金额" is notNull
+        startFlow.financingAmount as "拟融资金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         startFlow.financingDays as "拟融资天数" must > (0)
         startFlow.interestRate as "利率" is notNull
         startFlow.stockPort as "库存港口" is notEmpty
@@ -83,7 +84,37 @@ object CangFlowValidator {
       portUploadContract =>
         portUploadContract.taskId as "任务id" is notEmpty
         portUploadContract.confirmCoalAmount as "确认吨数" is notNull
+        portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         portUploadContract.contractFileList.each is valid
+    }
+
+  /** 贸易商审核 **/
+  implicit val traffickerAuditValidator: Validator[TraffickerAudit] =
+    validator[TraffickerAudit] {
+      traffickerAssignUsers =>
+        traffickerAssignUsers.taskId as "任务id" is notEmpty
+        traffickerAssignUsers.statusId as "审核状态id" is between(0, 1)
+        traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is notNull
+        traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
+    }
+
+  /** 贸易商财务给出放款建议 **/
+  implicit val traffickerFinanceAuditValidator: Validator[TraffickerFinanceAudit] =
+    validator[TraffickerFinanceAudit] {
+      traffickerFinanceAudit =>
+        traffickerFinanceAudit.taskId as "任务id" is notEmpty
+        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is notNull
+        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        traffickerFinanceAudit.financingAdvice.length as "放款建议字段长度" is between(0, 500)
+    }
+
+  /** 资金方审核 **/
+  implicit val fundProviderAuditValidator: Validator[FundProviderAudit] =
+    validator[FundProviderAudit] {
+      fundProviderAudit =>
+        fundProviderAudit.taskId as "任务id" is notEmpty
+        fundProviderAudit.statusId as "审核状态id" min(0)
+        fundProviderAudit.statusId as "审核状态id" max(0)
     }
 
 }
