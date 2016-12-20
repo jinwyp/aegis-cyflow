@@ -87,7 +87,11 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val customerPaymentToTraffickerFormat = jsonFormat4(CustomerPaymentToTrafficker)
 
   /** 贸易商通知港口放货 **/
-  case class TraffickerNoticePortReleaseGoods(taskId: String, releaseAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: List[FileObj], createTime: Option[Timestamp])
+  case class TraffickerNoticePortReleaseGoods(taskId: String,
+                                              releaseAmount: BigDecimal,
+                                              goodsReceiveCompanyName: String,
+                                              goodsFileList: List[FileObj],
+                                              createTime: Option[Timestamp])
   implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat5(TraffickerNoticePortReleaseGoods)
 
   /** 港口放货 **/
@@ -95,8 +99,8 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val portReleaseGoodsFormat = jsonFormat3(PortReleaseGoods)
 
   /** 贸易商审核是否已经回款完成 **/
-  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int)
-  implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat2(TraffickerAuditIfCompletePayment)
+  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int, createTime: OptionFormat[Timestamp])
+  implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat3(TraffickerAuditIfCompletePayment)
 
   /** 贸易商同意付款给资金方 **/
   case class TraffickerConfirmPayToFundProvider(taskId: String, statusId: Int)
