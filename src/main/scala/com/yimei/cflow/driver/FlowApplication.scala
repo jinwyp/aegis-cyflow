@@ -31,7 +31,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
   // 3> http
   val routes: Route = FlowRoute.route(proxy) ~
     UserRoute.route(proxy) ~
-    GroupRoute.route(proxy) ~
+    GroupRoute.route() ~
     TaskRoute.route(proxy) ~
     AutoRoute.route(proxy) ~
     CangRoute.route(proxy) ~

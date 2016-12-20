@@ -1,9 +1,9 @@
-package com.yimei.cflow.graph.ying
+package com.yimei.cflow.graph.mult
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
-import com.yimei.cflow.graph.ying.YingConfig._
+import com.yimei.cflow.graph.mult.MultConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -11,28 +11,35 @@ import scala.concurrent.Future
 /**
   * Created by hary on 16/12/1.
   */
-object YingGraph extends FlowGraph {
+object MultGraph extends FlowGraph {
 
-  override val flowType: String = flow_ying
+
   override val timeout: Long = 15
+
+  /**
+    * 注册用户任务
+    */
   override val userTasks: Map[String, Array[String]] = taskPointMap
+
+
+  /**
+    *
+    * @return
+    */
   override val autoTasks: Map[String, Array[String]] = autoPointMap
+
+  /**
+    *
+    * @return
+    */
   override val flowInitial: String = J0
-
-
-  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
-  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
-  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
-  val E4 = Edge("E4", userTasks = List(task_A))
-  val E5 = Edge("E5", autoTasks = List(auto_DEF))
-  val E6 = Edge("E6")
 
   /**
     *
     * @param state
     * @return
     */
-  override def graph(state: State): Graph =
+  def graph(state: State): Graph =
     GraphBuilder.jsonGraph(state, judgeDecription, pointDescription, autoPointMap, taskPointMap) { implicit builder =>
       import GraphBuilder._
       J0 ~> E1 ~> J1
@@ -43,11 +50,18 @@ object YingGraph extends FlowGraph {
       J5 ~> E6 ~> J3
       builder
     }
+
   override val blueprint: Graph = graph(null)
 
-  /**
-    *
-    */
+  override val flowType: String = flow_ying
+
+  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
+  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
+  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
+  val E4 = Edge("E4", userTasks = List(task_A))
+  val E5 = Edge("E5", autoTasks = List(auto_DEF))
+  val E6 = Edge("E6")
+
   override val edges: Map[String, Edge] = Map(
     "E1" -> E1,
     "E2" -> E2,
@@ -56,16 +70,9 @@ object YingGraph extends FlowGraph {
     "E5" -> E5,
     "E6" -> E6
   )
-  override val inEdges: Map[String, Array[String]] = Map(
-    J1 -> Array("E1"),
-    J2 -> Array("E1"),
-    J3 -> Array("E1", "E6"),
-    J4 -> Array("E1"),
-    J5 -> Array("E1")
-  )
 
 
-  override val pointEdges: Map[String, String] = Map()
+  override val pointEdges: Map[String, String] = ???
 
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")
@@ -126,23 +133,6 @@ object YingGraph extends FlowGraph {
     }
 
   }
-
-  ///////////////////////////////////////////////////////////////////////////////////////
-  //      \ ----------------------> always true                     VoidEdge
-  //      V0
-  //       \ ---------------------> A(data_A) B(data_B) C(data_C)   E1
-  //       V1
-  //         \-------------------->  point_K_PU1,point_K_PG1        E2
-  //         v2
-  //           \------------------> [pu_1,pu_2](pg-1,pg-2)          E3
-  //            V3
-  //           /  \---------------> [UA1, UA2](task_A)              E4
-  //          /    V4
-  //         /      \-------------> [UB1, UB2](partTask_A)          E5
-  //         --<----V5
-  //             |
-  //             |---------------->                                 EdgeStart
-  ///////////////////////////////////////////////////////////////////////////////////////
 
 }
 

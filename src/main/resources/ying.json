@@ -19,13 +19,11 @@
     "PG1" : "partition group1 采集数据点1" ,
     "PG2" : "partition group1 采集数据点2"
   },
-  "deciders": {
-    "V0": "判断0",
-    "V1": "判断1",
-    "V2": "判断2",
-    "V3": "判断3",
-    "V4": "判断4",
-    "V5": "判断5"
+  "vertices": {
+    "V0": { "description":"判断0","arrows":[{"end":"V1","edge":"E1"}]},
+    "V1": { "description":"判断1","arrows":[{"end":"V2","edge":"E2"}]},
+    "V2": { "description":"判断2","arrows":[{"end":"V3","edge":"E3"}]},
+    "V3": { "description":"判断3","arrows":[{"end":"V4","edge":"E4"}]}
   },
   "autoTasks": {
     "A" :["A"],

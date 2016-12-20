@@ -30,7 +30,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
       case DecisionUpdated(arrow) =>
         //把当前边里不能重用的点设置为used = true
         val newEdge = arrow.edge match {
-          case Some(e) => Some(edges(state.flowType)(e))
+          case Some(e) => Some(registries(state.flowType).edges(e))
           case a => None
         }
         state.edge match {
@@ -43,7 +43,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             state = state.copy(
               decision = arrow.end,
               edge = newEdge,
-              histories = arrow :: state.histories,
+              histories = arrow +: state.histories,
               points = newPoints
             )
 
@@ -51,10 +51,10 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             state = state.copy(
               decision = arrow.end,
               edge = newEdge,
-              histories = arrow :: state.histories
+              histories = arrow +: state.histories
             )
         }
-        log.info("new status: {}", state)
+        log.debug("new status: {}", state)
     }
   }
 

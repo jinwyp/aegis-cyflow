@@ -35,9 +35,9 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
     (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
   }
 
-  override var state: State = State(flowId, guid, initPoints, graph.getFlowInitial, Some(EdgeStart), Nil, graph.getFlowType)
+  override var state: State = State(flowId, guid, initPoints, graph.flowInitial, Some(EdgeStart), Nil, graph.flowType)
 
-  override def genGraph(state: State): Graph = graph.getFlowGraph(state)
+  override def genGraph(state: State): Graph = graph.graph(state)
 
   //   override def modules: Map[String, ActorRef] = dependOn
 
@@ -91,7 +91,7 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         if (!e.check(state)) {
           Arrow(FlowTodo, None)
         } else {
-          deciders(graph.getFlowType)(cur)(state)
+          registries(graph.flowType).deciders(cur)(state)
         }
     }
 
@@ -101,10 +101,10 @@ class MemoryFlow(graph: FlowGraph, flowId: String, modules: Map[String, ActorRef
         log.info(s"schedule edge = ${e}")
 
         // 继续执行图!!!
-        if (edges(graph.getFlowType)(e).check(state)) {
+        if (registries(graph.flowType).edges(e).check(state)) {
           makeDecision()
         } else {
-          edges(graph.getFlowType)(e).schedule(state, modules)
+          registries(graph.flowType).edges(e).schedule(state, modules)
         }
 
       case Arrow(FlowTodo, None) =>

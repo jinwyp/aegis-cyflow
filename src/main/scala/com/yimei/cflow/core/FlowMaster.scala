@@ -79,7 +79,7 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
         log.info(s"flowId in flowProp is ${flowId}, ${guid}, ${persistenceId}")
 
 
-        val graph = FlowRegistry.getFlowGraph(flowType)
+        val graph = FlowRegistry.flowGraph(flowType)
         if (persist) {
           log.info(s"创建persistent flow..........")
           PersistentFlow.props(graph, flowId, modules, persistenceId, guid, initData)

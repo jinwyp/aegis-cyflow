@@ -68,7 +68,7 @@ object Flow {
                     points: Map[String, DataPoint],
                     decision: String,
                     edge: Option[Edge],
-                    histories: List[Arrow],
+                    histories: Seq[Arrow],
                     flowType: String
                   )
 
@@ -141,8 +141,8 @@ object Flow {
       val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      autoTasks.foldLeft(true)((t, at) => t && !autoTask(state.flowType)(at).exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
-        allUserTasks.foldLeft(true)((t, ut) => t && !userTask(state.flowType)(ut).exists(!state.points.filter(t => (!t._2.used)).contains(_)))
+      autoTasks.foldLeft(true)((t, at) => t && !registries(state.flowType).autoTasks(at).exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
+        allUserTasks.foldLeft(true)((t, ut) => t && !registries(state.flowType).userTasks(ut).exists(!state.points.filter(t => (!t._2.used)).contains(_)))
     }
 
     //获取全部不能重用的task
@@ -160,8 +160,8 @@ object Flow {
       */
     def getAllDataPointsName(state: State): Seq[String] = {
       val allTasks = getNonReusedTask()
-      allTasks._1.foldLeft(Seq[String]())((a, at) => autoTask(state.flowType)(at) ++: a) ++
-        allTasks._2.foldLeft(Seq[String]())((a, ut) => userTask(state.flowType)(ut) ++: a)
+      allTasks._1.foldLeft(Seq[String]())((a, at) => registries(state.flowType).autoTasks(at) ++: a) ++
+        allTasks._2.foldLeft(Seq[String]())((a, ut) => registries(state.flowType).userTasks(ut) ++: a)
     }
   }
 
@@ -204,7 +204,7 @@ object Flow {
   case class Graph(
                     edges: Map[String, EdgeDescription],
                     vertices: Map[String, String],
-                    state: State,
+                    state: Option[State],
                     points: Map[String, String],
                     userTasks: Map[String, Array[String]],
                     autoTasks: Map[String, Array[String]]
