@@ -68,7 +68,7 @@ object Flow {
                     points: Map[String, DataPoint],
                     decision: String,
                     edge: Option[Edge],
-                    histories: List[Arrow],
+                    histories: Seq[Arrow],
                     flowType: String
                   )
 

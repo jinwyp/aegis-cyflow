@@ -55,7 +55,7 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
 
   // create all child actors
   override def initHook(): Unit = {
-    log.info("DataMaster initHook now!!!!")
+    log.debug("DataMaster initHook now!!!!")
     FlowRegistry.autoTask.keys.foreach(startActors(_))
   }
 
