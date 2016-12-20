@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 
 import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.user.User.{CommandUserTask, State}
-import com.yimei.cflow.user.db.{PartyClassEntity, PartyUserEntity}
+import com.yimei.cflow.user.db.{FlowTaskEntity, PartyClassEntity, PartyUserEntity}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 /**
@@ -21,6 +21,8 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
   implicit val partClassFormat = jsonFormat3(PartyClassEntity)
 
   implicit val partUserFormat = jsonFormat8(PartyUserEntity)
+
+  implicit val flowTaskEntityFormat = jsonFormat8(FlowTaskEntity)
 
   implicit object TimeStampJsonFormat extends RootJsonFormat[Timestamp] {
 
