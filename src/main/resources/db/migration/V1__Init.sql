@@ -22,6 +22,8 @@ create table flow_task(
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- flow_id和task_id唯一索引
+
 
 -- 参与方类别
 create table party_class (
@@ -71,7 +73,7 @@ create table user_group(
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+-- party_id,gid,user_id
 
 -- 每一类运营方的组是预先定义好的 字典表
 --
