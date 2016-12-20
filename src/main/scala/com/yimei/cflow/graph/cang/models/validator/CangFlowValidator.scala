@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerUploadContract, FileObj, FundProviderAudit, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerFinanceAudit}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
 
 object CangFlowValidator {
   /** 文件 **/
@@ -27,7 +27,7 @@ object CangFlowValidator {
         startFlow.applyUserPhone as "融资方用户手机号" is notEmpty
         startFlow.auditFileList.each is valid
         startFlow.businessCode as "业务编号" is notEmpty
-        startFlow.coalAmount as "总质押吨数" must > (BigDecimal.valueOf(0))
+        startFlow.coalAmount as "总质押吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         startFlow.coalIndex_ADV as "空干基挥发分" must(between(BigDecimal.valueOf(0.01), BigDecimal.valueOf(50)))
         startFlow.coalIndex_NCV as "热值" must(between(1, 7500))
         startFlow.coalIndex_RS as "硫分" must(between(BigDecimal.valueOf(0.01), BigDecimal.valueOf(10)))
@@ -115,6 +115,72 @@ object CangFlowValidator {
         fundProviderAudit.taskId as "任务id" is notEmpty
         fundProviderAudit.statusId as "审核状态id" min(0)
         fundProviderAudit.statusId as "审核状态id" max(0)
+    }
+
+  /** 资金方财务放款 **/
+  implicit val fundProviderFinanceLoadValidator: Validator[FundProviderFinanceLoad] =
+    validator[FundProviderFinanceLoad] {
+      fundProviderFinanceLoad =>
+        fundProviderFinanceLoad.taskId as "任务id" is notEmpty
+        fundProviderFinanceLoad.statusId as "放款状态id" min(0)
+        fundProviderFinanceLoad.statusId as "放款状态id" max(1)
+    }
+
+  /** 融资方付款给贸易商 **/
+  implicit val customerPaymentToTraffickerValidator: Validator[CustomerPaymentToTrafficker] =
+    validator[CustomerPaymentToTrafficker] {
+      customerPaymentToTrafficker =>
+        customerPaymentToTrafficker.taskId as "任务id" is notEmpty
+        customerPaymentToTrafficker.statusId as "付款状态id" min(0)
+        customerPaymentToTrafficker.statusId as "付款状态id" max(1)
+        customerPaymentToTrafficker.paymentPrinciple as "付款本金" is notNull
+    }
+
+  /** 贸易商通知港口放货 **/
+  implicit val traffickerNoticePortReleaseGoodsValidator: Validator[TraffickerNoticePortReleaseGoods] =
+    validator[TraffickerNoticePortReleaseGoods] {
+      traffickerNoticePortReleaseGoods =>
+        traffickerNoticePortReleaseGoods.taskId as "任务id" is notEmpty
+        traffickerNoticePortReleaseGoods.goodsFileList.each is valid
+        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is notNull
+        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
+        traffickerNoticePortReleaseGoods.goodsReceiveCompanyName as "接收方公司名称" is notEmpty
+    }
+
+  /** 港口放货 **/
+  implicit val portReleaseGoodsValidator: Validator[PortReleaseGoods] =
+    validator[PortReleaseGoods] {
+      portReleaseGoods =>
+        portReleaseGoods.taskId as "任务id" is notEmpty
+        portReleaseGoods.statusId as "放货状态id" min(0)
+        portReleaseGoods.statusId as "放货状态id" max(1)
+    }
+
+  /** 贸易商审核是否回款完成 **/
+  implicit val traffickerAuditIfCompletePaymentValidator: Validator[TraffickerAuditIfCompletePayment] =
+    validator[TraffickerAuditIfCompletePayment] {
+      traffickerAuditIfCompletePayment =>
+        traffickerAuditIfCompletePayment.taskId as "任务id" is notEmpty
+        traffickerAuditIfCompletePayment.statusId as "审核状态id" min(0)
+        traffickerAuditIfCompletePayment.statusId as "审核状态id" max(1)
+    }
+
+  /** 贸易商同意付款给资金方 **/
+  implicit val traffickerConfirmPayToFundProviderValidator: Validator[TraffickerConfirmPayToFundProvider] =
+    validator[TraffickerConfirmPayToFundProvider] {
+      traffickerConfirmPayToFundProvider =>
+        traffickerConfirmPayToFundProvider.taskId as "任务id" is notEmpty
+        traffickerConfirmPayToFundProvider.statusId as "审核状态id" min(0)
+        traffickerConfirmPayToFundProvider.statusId as "审核状态id" max(1)
+    }
+
+  /** 贸易商财务放款给资金方,流程结束 **/
+  implicit val traffickerFinancePayToFundProviderValidator: Validator[TraffickerFinancePayToFundProvider] =
+    validator[TraffickerFinancePayToFundProvider] {
+      traffickerFinancePayToFundProvider =>
+        traffickerFinancePayToFundProvider.taskId as "任务id" is notEmpty
+        traffickerFinancePayToFundProvider.statusId as "付款状态id" min(0)
+        traffickerFinancePayToFundProvider.statusId as "付款状态id" max(1)
     }
 
 }
