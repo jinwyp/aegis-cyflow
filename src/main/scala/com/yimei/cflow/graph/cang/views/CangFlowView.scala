@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.graph.cang.models.BaseFormatter._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObjList
+import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 object CangFlowView extends DefaultJsonProtocol {
 
@@ -70,11 +70,11 @@ object CangFlowView extends DefaultJsonProtocol {
                                  waitRedeemAmount: BigDecimal,             //待赎回数量
                                  confirmCoalAmount: BigDecimal,            //港口确认吨数
                                  stockPort: String,                        //库存港口
-                                 customerContractFileList: FileObjList,    //融资方上传合同文件列表
-                                 customerFinanceFileList: FileObjList,     //融资方上传财务文件列表
-                                 customerBusinessFileList: FileObjList,    //融资方上传业务文件列表
-                                 supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
-                                 portContractFileList: FileObjList,        //港口上传合同文件列表
+                                 customerContractFileList: List[FileObj],  //融资方上传合同文件列表
+                                 customerFinanceFileList: List[FileObj],   //融资方上传财务文件列表
+                                 customerBusinessFileList: List[FileObj],  //融资方上传业务文件列表
+                                 supervisorContractFileList: List[FileObj],//监管方上传合同文件列表
+                                 portContractFileList: List[FileObj],      //港口上传合同文件列表
                                  status: Map[String, String])              //当前状态
   implicit val traffickerAuditPageFormat = jsonFormat19(TraffickerAuditPage)
 
@@ -105,11 +105,11 @@ object CangFlowView extends DefaultJsonProtocol {
                                    waitRedeemAmount: BigDecimal,             //待赎回数量
                                    confirmCoalAmount: BigDecimal,            //港口确认吨数
                                    stockPort: String,                        //库存港口
-                                   customerContractFileList: FileObjList,    //融资方上传合同文件列表
-                                   customerFinanceFileList: FileObjList,     //融资方上传财务文件列表
-                                   customerBusinessFileList: FileObjList,    //融资方上传业务文件列表
-                                   supervisorContractFileList: FileObjList,  //监管方上传合同文件列表
-                                   portContractFileList: FileObjList,        //港口上传合同文件列表
+                                   customerContractFileList: List[FileObj],  //融资方上传合同文件列表
+                                   customerFinanceFileList: List[FileObj],   //融资方上传财务文件列表
+                                   customerBusinessFileList: List[FileObj],  //融资方上传业务文件列表
+                                   supervisorContractFileList: List[FileObj],//监管方上传合同文件列表
+                                   portContractFileList: List[FileObj],      //港口上传合同文件列表
                                    status: Map[String, String])              //当前状态
   implicit val fundProviderAuditPageFormat = jsonFormat19(FundProviderAuditPage)
 
