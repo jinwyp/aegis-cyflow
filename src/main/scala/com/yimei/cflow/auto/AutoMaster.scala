@@ -24,7 +24,7 @@ object AutoMaster {
     */
   def fetch(flowType:String, actorName: String, state: State, autoMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if ( refetchIfExists ||
-      FlowRegistry.autoTask(flowType)(actorName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
+      FlowRegistry.registries(flowType).autoTasks(actorName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
       autoMaster ! CommandAutoTask(state, flowType, actorName)
     }
@@ -55,27 +55,29 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
 
   // create all child actors
   override def initHook(): Unit = {
-    log.debug("DataMaster initHook now!!!!")
-    FlowRegistry.autoTask.keys.foreach(startActors(_))
+    startActors
   }
 
-  def startActors(flowType: String) = {
+  def startActors() = {
 
-    val jar = FlowRegistry.jarMap(flowType)
+    FlowRegistry.registries.foreach{ e =>
+      val flowType = e._1
+      val graph = e._2
+      val jar = graph.moduleJar
 
-    for ((name: String, method: Method) <- FlowRegistry.autoMeth(flowType)) {
-      val behavior : CommandAutoTask => Future[Map[String, String]]  =
-        task => method.invoke(jar,task).asInstanceOf[Future[Map[String,String]]]
+      for (( name: String, method: Method) <- graph.autoMethods) {
+        val behavior : CommandAutoTask => Future[Map[String, String]]  =
+          task => method.invoke(jar,task).asInstanceOf[Future[Map[String,String]]]
 
-      val actor = context.actorOf(Props(new AutoActor(name, modules, behavior)), s"${flowType}.${name}")
-      if (actors.contains(flowType)) {
-        val entry = actors(flowType) + (name -> actor)
-        actors = actors + (flowType -> entry)
-      } else {
-        actors = actors + (flowType -> Map(name -> actor))
-      }
+        val actor = context.actorOf(Props(new AutoActor(name, modules, behavior)), s"${flowType}.${name}")
+        if (actors.contains(flowType)) {
+          val entry = actors(flowType) + (name -> actor)
+          actors = actors + (flowType -> entry)
+        } else {
+          actors = actors + (flowType -> Map(name -> actor))
+        }
+       }
     }
   }
-
 }
 
