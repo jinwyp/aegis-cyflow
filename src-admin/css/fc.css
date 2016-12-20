@@ -8,7 +8,7 @@
     max-width: 1000px;
 }
 .edgeTip{
-    width: 600px; min-height:100px; max-height:400px; overflow-y:auto;
+    width: 400px; min-height:100px; max-height:400px; overflow-y:auto;
 }
 .taskTitle{
     line-height:30px;

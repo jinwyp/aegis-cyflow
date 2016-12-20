@@ -51,6 +51,14 @@
             },
 
             {
+                selector: 'node.task.autoTasks',
+                style: {
+                    'shape': 'star',
+                    'width': 110
+                }
+            },
+
+            {
                 selector: 'edge',
                 style: {
                     'width': 4,
@@ -306,7 +314,7 @@
     var taskTip = function(){
         var self = this;
         var taskId = this._private.data.id;
-        var taskType = this._private.data.taskType;
+        var taskType = (this._private.data.taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
         var points = this._private.data.original[taskType][taskId];
         var phtml = ''; 
         (points.length>0) && points.forEach(function(p, pi){
