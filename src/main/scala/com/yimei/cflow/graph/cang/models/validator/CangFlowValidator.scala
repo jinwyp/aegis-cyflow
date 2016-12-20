@@ -77,7 +77,7 @@ object CangFlowValidator {
         supervisorUploadContract.contractFileList.each is valid
     }
 
-  /** 方扣上传合同 **/
+  /** 港口上传合同 **/
   implicit val portUploadContractValidator: Validator[PortUploadContract] =
     validator[PortUploadContract] {
       portUploadContract =>
