@@ -10,8 +10,8 @@ import spray.json.DefaultJsonProtocol
 
 trait GroupProtocol extends DefaultJsonProtocol {
 
-  implicit val userCommandGroupTaskFormat = jsonFormat4(CommandGroupTask)
+  implicit val groupCommandGroupTaskFormat = jsonFormat4(CommandGroupTask)
 
-  implicit val userStateFormat = jsonFormat3(State)
+  implicit val groupStateFormat = jsonFormat3(State)
 }
 
