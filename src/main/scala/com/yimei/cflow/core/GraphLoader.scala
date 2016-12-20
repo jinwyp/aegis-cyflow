@@ -18,11 +18,11 @@ case class GraphConfig(
                         persistent: Boolean,
                         timeout: Int,
                         initial: String,
-                        poinsts: Map[String, String],
+                        points: Map[String, String],
                         autoTasks: Map[String, Array[String]],
                         userTasks: Map[String, Array[String]],
                         vertices: Map[String, DefaultVertex],
-                        edges: Map[String, EdgeDescription]
+                        edges: Map[String, Edge]
                       )
 
 object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
@@ -76,24 +76,14 @@ object GraphLoader extends App {
     val autoMap = getAutoMap(mclass)
 
     // deciders from graphJar  + default decider
-    var allDeciders: Map[String, State => Arrow] =
+    var allDeciders: Map[String, State => Seq[Arrow]] =
       graphConfig.vertices.map { entry =>
         (entry._1, entry._2.arrows)
       }.filter(_._2.length == 1) // 暂时只处理长度为1的(非并发执行流)
         .map { e =>
-        (e._1, { st: State => e._2(0) })
+        (e._1, { st: State => Seq(e._2(0)) })
       }
     allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
-
-    val graphEdges = graphConfig.edges.map(entry =>
-      (entry._1, Edge(
-        entry._1,
-        entry._2.autoTasks,
-        entry._2.userTasks,
-        entry._2.partUTasks,
-        entry._2.partGTasks
-      ))
-    )
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -103,12 +93,19 @@ object GraphLoader extends App {
 
       override val timeout: Long = graphConfig.timeout
 
-      override def graph(state: State): Graph = Graph(
+      override val points: Map[String, String] = graphConfig.points
 
+      override val vertices: Map[String, String] = {
+        graphConfig.vertices.map{ entry =>
+          ( entry._1, entry._2.description)
+        }
+      }
+
+      override def graph(state: State): Graph = Graph(
         graphConfig.edges,
         graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
         Some(state),
-        graphConfig.poinsts,
+        graphConfig.points,
         graphConfig.userTasks,
         graphConfig.autoTasks
       )
@@ -117,7 +114,7 @@ object GraphLoader extends App {
         graphConfig.edges,
         graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
         None,
-        graphConfig.poinsts,
+        graphConfig.points,
         graphConfig.userTasks,
         graphConfig.autoTasks
       )
@@ -129,7 +126,6 @@ object GraphLoader extends App {
       }
 
 
-
       override val flowInitial: String = initial
 
       override val flowType: String = gFlowType
@@ -138,13 +134,13 @@ object GraphLoader extends App {
 
       override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
 
-      override val edges: Map[String, Edge] = graphEdges
+      override val edges: Map[String, Edge] = graphConfig.edges + ("start" -> Edge( name = "start", end = graphConfig.initial))
 
       override val pointEdges = pointEdgesImpl
 
       override val autoMethods: Map[String, Method] = autoMap
 
-      override val deciders: Map[String, State => Arrow] = allDeciders
+      override val deciders: Map[String, State => Seq[Arrow]] = allDeciders
 
       override val moduleJar: AnyRef = graphJar
     }
@@ -170,8 +166,8 @@ object GraphLoader extends App {
         ptypes(0) == classOf[State] &&
         method.getReturnType == classOf[Arrow]
     }.map { am =>
-      val behavior: State => Arrow = (state: State) =>
-        am.invoke(module, state).asInstanceOf[Arrow]
+      val behavior: State => Seq[Arrow] = (state: State) =>
+        am.invoke(module, state).asInstanceOf[Seq[Arrow]]
       (am.getName -> behavior)
     }.toMap
   }

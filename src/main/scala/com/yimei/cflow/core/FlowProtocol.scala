@@ -30,16 +30,12 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val partGTaskFormat = jsonFormat2(PartGTask)
 
-  implicit val edgeFormat = jsonFormat5(Edge)
-
+  implicit val edgeFormat = jsonFormat7(Edge)
 
   implicit val arrowFormat =jsonFormat2(Arrow)
 
-  implicit val stateFormat = jsonFormat7(State)
-
-  implicit val edgeDescriptionFormat = jsonFormat6(EdgeDescription)
+  implicit val stateFormat = jsonFormat6(State)
 
   implicit val graphFormat = jsonFormat6(Graph)
-
 
 }

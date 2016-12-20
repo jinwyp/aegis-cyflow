@@ -24,15 +24,8 @@ object PersistentFlow {
   * Created by hary on 16/12/6.
   */
 
-/**
-  *
-  * @param graph  流程图
-  * @param flowId 流程id
-  * @param pid    持久化id
-  * @param guid   全局用户id
-  */
 class PersistentFlow(
-                      graph: FlowGraph,
+                      val graph: FlowGraph,
                       flowId: String,
                       modules: Map[String, ActorRef],
                       pid: String,
@@ -50,11 +43,12 @@ class PersistentFlow(
   log.info(s"timeout is $timeout")
   context.setReceiveTimeout(timeout seconds)
 
-  val initPoints = initData.map{ entry =>
+  // 流程初始化数据
+  val initPoints = initData.map { entry =>
     (entry._1, DataPoint(entry._2, None, None, "init", new Date().getTime, false))
   }
 
-  override var state = State(flowId, guid, initPoints, graph.flowInitial, Some(EdgeStart), Nil, graph.flowType)
+  override var state = State(flowId, guid, initPoints, Map("start" -> true), Nil, graph.flowType)
 
   //
   override def genGraph(state: State): Graph = graph.graph(state)
@@ -67,9 +61,11 @@ class PersistentFlow(
     case ev: Event =>
       log.info(s"recover with event: $ev")
       updateState(ev)
+
     case SnapshotOffer(_, snapshot: State) =>
       state = snapshot
       log.info(s"snapshot recovered")
+
     case RecoveryCompleted =>
       logState("recovery completed")
 
@@ -82,7 +78,7 @@ class PersistentFlow(
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
       sender() ! state
-      makeDecision
+      makeDecision(state.edges.keys)  // 用当前的edges开始决策!!!!
 
     case cmd: CommandPoint =>
       log.info(s"received ${cmd.name}")
@@ -104,7 +100,8 @@ class PersistentFlow(
         log.info(s"${event} persisted")
         updateState(event)
         if (cmd.trigger) {
-          makeDecision()
+          val tocheck = points.keys.map(graph.pointEdges(_)).toSet.toIterable
+          makeDecision(tocheck)
         }
         sender() ! state // 返回流程状态
       }
@@ -114,7 +111,8 @@ class PersistentFlow(
       persist(Hijacked(updatePoints, updateDecision)) { event =>
         updateState(event)
         if (trigger) {
-          makeDecision()
+          val tocheck = updatePoints.keys.map(graph.pointEdges(_)).toSet
+          makeDecision(tocheck)
         }
         sender() ! state
       }
@@ -131,93 +129,67 @@ class PersistentFlow(
 
   override def unhandled(msg: Any): Unit = log.error(s"received unhandled message: $msg")
 
-  // 处理命令
   protected def processCommandPoint(cmd: CommandPoint) = {
-
     persist(PointUpdated(cmd.name, cmd.point)) {
       event =>
-
-        // 更新状体
         log.info(s"${event} persisted")
         updateState(event)
-
-        // 作决定!!!
-        makeDecision
+        makeDecision(Seq(graph.pointEdges(cmd.name)))
     }
   }
 
-  // 处理复合命令
   protected def processCommandPoints(cmds: CommandPoints) = {
     persist(PointsUpdated(cmds.points)) {
       event =>
         log.info(s"${event} persisted")
         updateState(event)
-        makeDecision // 作决定
+        val tocheck = cmds.points.keys.map(graph.pointEdges(_)).toSet
+        makeDecision(tocheck)
     }
   }
 
-  protected def makeDecision(): Unit = {
-
-    val cur = state.decision
-    val arrow: Arrow = state.edge match {
-      case None =>
-        throw new IllegalArgumentException("impossible here")
-      case Some(e) =>
-        if (!e.check(state)) {
-          Arrow(FlowTodo, None)
-        } else {
-          graph.deciders(cur)(state)
+  /**
+    * 所有可以决策的边
+    *
+    * @param edgeNames
+    */
+  protected def makeDecision(edgeNames: Iterable[String]) = {
+    edgeNames.foreach { name =>
+      val e = graph.edges(name);
+      if (e.check((state))) {
+        persist(EdgeCompleted(name)) { event =>
+          updateState(event)
+          make(e)
         }
+      }
     }
+  }
 
+  /**
+    *  对每条决策边,
+    *
+    * @param e
+    */
+  protected def make(e: Edge): Unit = {
+    val arrows: Seq[Arrow] = graph.deciders(e.end)(state)
 
-    arrow match {
-      case arrow@Arrow(j, Some(e)) =>
-        logState("before judge")
+    persist(DecisionUpdated(e.end, arrows)) { event =>
 
-        log.info(s"arrow is ${arrow}!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        persist(DecisionUpdated(arrow)) {
-          event => log.info(s"${event} persisted")
-            updateState(event)
-            logState("after judge")
-            log.info(s"check ${e}")
+      updateState(event)
 
-            // circular
-            if (cur == j) {
-              // clear the points from State where j.in is responsible for
-              persist(null: Event) { event =>
-                updateState(event) // @todo 王琦
-              }
-            } else {
-              if (graph.edges(e).check(state)) {
-                // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
-                log.info(s"continue...")
-                makeDecision()
-              } else {
-                log.info(s"schedule ${e}")
-                graph.edges(e).schedule(state, modules)
-              }
-            }
+      arrows.foreach { arr =>
+        arr match {
+          case a@Arrow(j, Some(e)) =>
+            graph.edges(e).schedule(state, modules)   // 这个决策返回边是调度边, 则调度!!!
+            logState(s"$a")
+
+          case arrow@Arrow(FlowSuccess, None) =>
+            logState("FlowSuccess")
+
+          case arrow@Arrow(FlowFail, None) =>
+            logState("FlowFail")
         }
-      case arrow@Arrow(FlowSuccess, None) =>
-        logState("FlowSuccess")
-        persist(DecisionUpdated(arrow)) {
-          event =>
-            log.info(s"${event} persisted, begin snapshot")
-            updateState(event)
-            saveSnapshot(state)
-        }
-      case arrow@Arrow(FlowFail, None) =>
-        logState("FlowFail")
-        persist(DecisionUpdated(arrow)) {
-          event =>
-            log.info(s"${event} persisted, begin snapshot")
-            updateState(event)
-            saveSnapshot(state)
-        }
-      case Arrow(FlowTodo, None) =>
-        log.info(s"current decision [${state.decision}] result: FlowTodo")
+      }
     }
   }
 }
-

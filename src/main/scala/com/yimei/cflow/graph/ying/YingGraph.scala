@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.ying
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
+import com.yimei.cflow.core.{FlowGraph}
 import com.yimei.cflow.graph.ying.YingConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,36 +19,28 @@ object YingGraph extends FlowGraph {
   override val autoTasks: Map[String, Array[String]] = autoPointMap
   override val flowInitial: String = J0
 
+  override val points: Map[String, String] = pointDescription
+  override val vertices: Map[String, String] = Map(
+    "V0" -> "V0",
+    "V1" -> "V1",
+    "V2" -> "V2",
+    "V3" -> "V3",
+    "V4" -> "V4",
+    "V5" -> "V5"
+  )
 
-  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
-  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
-  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
-  val E4 = Edge("E4", userTasks = List(task_A))
-  val E5 = Edge("E5", autoTasks = List(auto_DEF))
-  val E6 = Edge("E6")
+  val E1 = Edge(name = "E1", begin = "V0", end = "V1", autoTasks = List(auto_A, auto_B, auto))
+  val E2 = Edge(name = "E2", begin = "V1", end = "V2", userTasks = List(task_K_PU1, task_K_PG1))
+  val E3 = Edge(name = "E3", begin = "V2", end = "V3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
+  val E4 = Edge(name = "E4", begin = "V3", end = "V4", userTasks = List(task_A))
+  val E5 = Edge(name = "E5", begin = "V4", end = "V5", autoTasks = List(auto_DEF))
+  val E6 = Edge(name = "E6", begin = "V5", end = "V3")
+  val start = Edge(name = "start", end = "V0")   // 起始边
 
-  /**
-    *
-    * @param state
-    * @return
-    */
-  override def graph(state: State): Graph =
-    GraphBuilder.jsonGraph(state, judgeDecription, pointDescription, autoPointMap, taskPointMap) { implicit builder =>
-      import GraphBuilder._
-      J0 ~> E1 ~> J1
-      J1 ~> E2 ~> J2
-      J2 ~> E3 ~> J3
-      J3 ~> E4 ~> J4
-      J4 ~> E5 ~> J5
-      J5 ~> E6 ~> J3
-      builder
-    }
   override val blueprint: Graph = graph(null)
 
-  /**
-    *
-    */
   override val edges: Map[String, Edge] = Map(
+    "start" -> start,
     "E1" -> E1,
     "E2" -> E2,
     "E3" -> E3,
@@ -57,6 +49,7 @@ object YingGraph extends FlowGraph {
     "E6" -> E6
   )
   override val inEdges: Map[String, Array[String]] = Map(
+    J0 -> Array("start"),
     J1 -> Array("E1"),
     J2 -> Array("E1"),
     J3 -> Array("E1", "E6"),
@@ -65,7 +58,7 @@ object YingGraph extends FlowGraph {
   )
 
 
-  override val pointEdges: Map[String, String] = Map()
+  override val pointEdges: Map[String, String] = pointEdgesImpl
 
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")
@@ -83,46 +76,43 @@ object YingGraph extends FlowGraph {
     Map("D" -> "50", "E" -> "50", "F" -> "50")
   }
 
-  def V0(state: State): Arrow = Arrow(J1, Some("E1"))
-
-  def V1(state: State): Arrow = Arrow(J2, Some("E2"))
-
-  def V2(state: State): Arrow = Arrow(J3, Some("E3"))
-
-  def V3(state: State): Arrow = {
+  def V0(state: State): Seq[Arrow] = Seq(Arrow(J1, Some("E1")))
+  def V1(state: State): Seq[Arrow] = Seq(Arrow(J2, Some("E2")))
+  def V2(state: State): Seq[Arrow] = Seq(Arrow(J3, Some("E3")))
+  def V3(state: State): Seq[Arrow] = {
     //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过
     state.points.filter(entry => List(point_PU1, point_PU2, point_PG1, point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 200 => Arrow(J4, Some("E4"))
-      case _ => Arrow(FlowFail, None)
+      case 200 => Seq(Arrow(J4, Some("E4")))
+      case _ => Seq(Arrow(FlowFail, None))
     }
   }
 
-  def V4(state: State): Arrow = {
+  def V4(state: State): Seq[Arrow] = {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 100 => Arrow(J5, Some("E5"))
+      case 100 => Seq(Arrow(J5, Some("E5")))
       case m =>
         // Arrow(FlowFail, Some(EdgeStart))
-        Arrow(FlowFail, None)
+        Seq(Arrow(FlowFail, None))
     }
   }
 
   var count = 3
 
-  def V5(state: State): Arrow = {
+  def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if (count > 0) {
         count = count - 1
-        Arrow(J3, Some("E6"))
+        Seq(Arrow(J3, Some("E6")))
       }
       else
-        Arrow(FlowSuccess, None)
-      case _ => Arrow(FlowFail, None)
+        Seq(Arrow(FlowSuccess, None))
+      case _ => Seq(Arrow(FlowFail, None))
     }
 
   }

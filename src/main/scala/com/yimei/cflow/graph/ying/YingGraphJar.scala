@@ -16,39 +16,40 @@ object YingGraphJar {
 //
 //  def V2(state: State): Arrow = Arrow(J3, Some("E3"))
 
-  def V3(state: State): Arrow = {
+  def V3(state: State): Seq[Arrow] = {
     //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过
     state.points.filter(entry => List(point_PU1, point_PU2, point_PG1, point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 200 => Arrow(J4, Some("E4"))
-      case _ => Arrow(FlowFail, None)
+      case 200 => Seq(Arrow(J4, Some("E4")))
+      case _ => Seq(Arrow(FlowFail, None))
     }
   }
 
-  def V4(state: State): Arrow = {
+  def V4(state: State): Seq[Arrow] = {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
-      case 100 => Arrow(J5, Some("E5"))
+      case 100 => Seq(Arrow(J5, Some("E5")))
       case m =>
-        Arrow(FlowFail, None)
+        Seq(Arrow(FlowFail, None))
     }
   }
 
   var count = 3
 
-  def V5(state: State): Arrow = {
+  def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if (count > 0) {
         count = count - 1
-        Arrow(J3, Some("E6"))
+        Seq(Arrow(J3, Some("E6")))
       }
       else
-        Arrow(FlowSuccess, None)
-      case _ => Arrow(FlowFail, None)
+        Seq(Arrow(FlowSuccess, None))
+
+      case _ => Seq(Arrow(FlowFail, None))
     }
 
   }

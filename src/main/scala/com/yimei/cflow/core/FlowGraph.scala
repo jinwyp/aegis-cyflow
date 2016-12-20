@@ -34,7 +34,6 @@ class AutoActor(
   }
 }
 
-
 object FlowGraph {
 
   case class TaskBuilder(_name: String = "", _acc: Map[String, Array[String]] = Map()) {
@@ -72,36 +71,46 @@ object FlowGraph {
 trait FlowGraph {
   val flowInitial: String
   val timeout: Long
-
-  def graph(state: State): Graph
-
-  val blueprint: Graph = graph(null)
+  val points: Map[String, String]
   val edges: Map[String, Edge]
+  val vertices: Map[String, String]
   val inEdges: Map[String, Array[String]] = Map()
   val flowType: String
   val userTasks: Map[String, Array[String]]
   val autoTasks: Map[String, Array[String]]
   val pointEdges: Map[String, String]
 
+  val blueprint: Graph = Graph(edges, vertices, None, points, userTasks, autoTasks)
+
+  def graph(state: State): Graph = Graph(edges, vertices, Some(state), points, userTasks, autoTasks)
+
   // todo 王琦优化!!!!
-  protected def  pointEdgesImpl: Map[String, String] = {
+  protected def pointEdgesImpl: Map[String, String] = {
     def process(name: String, e: Edge) = {
 
       val userPointMap = e.userTasks.map { (ut: String) =>
-        userTasks(ut).map( pt =>
+        userTasks(ut).map(pt =>
           (pt -> name)
         ).toMap
       }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
 
       val autoPointMap = e.autoTasks.map { (ut: String) =>
-        autoTasks(ut).map( pt =>
+        autoTasks(ut).map(pt =>
           (pt -> name)
         ).toMap
       }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
 
-      val partGPointMap = e.partGTasks.map(_.ggidKey).map{ _ -> name}.toMap
+      val partUPointMap = (for {
+        put <- e.partUTasks
+        task <- put.tasks
+        pt <- userTasks(task)
+      } yield (pt -> name)).toMap
 
-      val partUPointMap = e.partUTasks.map(_.guidKey).map{ _ -> name}.toMap
+      val partGPointMap = (for {
+        put <- e.partGTasks
+        task <- put.tasks
+        pt <- userTasks(task)
+      } yield (pt -> name)).toMap
 
       autoPointMap ++ userPointMap ++ partUPointMap ++ partGPointMap
     }
@@ -125,16 +134,16 @@ trait FlowGraph {
     }.toMap
   }
 
-  val deciders: Map[String, State => Arrow] = {
+  val deciders: Map[String, State => Seq[Arrow]] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
-        m.getReturnType == classOf[Arrow]
+        m.getReturnType == classOf[Seq[Arrow]]
     }.map { am =>
 
-      val behavior: State => Arrow = (state: State) =>
-        am.invoke(this, state).asInstanceOf[Arrow]
+      val behavior: State => Seq[Arrow] = (state: State) =>
+        am.invoke(this, state).asInstanceOf[Seq[Arrow]]
       (am.getName -> behavior)
     }.toMap
   }
