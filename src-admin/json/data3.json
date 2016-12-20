@@ -22,8 +22,8 @@
     "state": {
         "guid": "001-hary1",
         "flowType": "ying",
-        "decision": "FlowSuccess",
-        "edge":"E5",
+        "decision": ["FlowSuccess"],
+        "edge":["E5"],
         "points": {
             "E": {
                 "used": true,
@@ -47,13 +47,6 @@
                 "operator": "fund1-wangqiId1",
                 "value": "50",
                 "memo": "userdata"
-            },
-            "F": {
-                "used": true,
-                "timestamp": 10,
-                "id": "b199170b-f674-4d5c-a5be-86997ae38af6",
-                "operator": "DEF",
-                "value": "50"
             },
             "A": {
                 "used": true,

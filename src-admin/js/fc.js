@@ -15,9 +15,9 @@
             {
                 selector: 'node',
                 style: {
-                    'shape': 'roundrectangle',
-                    'width': 150,
-                    'height': 40,
+                    'shape': 'ellipse',
+                    'width': 100,
+                    'height': 100,
                     'content': 'data(id)',
                     'text-valign': 'center',
                     'text-halign': 'center',
@@ -38,6 +38,15 @@
                 selector: 'node.isFinished',
                 style: {
                     'background-color': 'green'
+                }
+            },
+
+            {
+                selector: 'node.task',
+                style: {
+                    'shape': 'roundrectangle',
+                    'width': 150,
+                    'height': 80
                 }
             },
 
@@ -93,6 +102,55 @@
     FC.prototype.getModel = function(){
         var modelData;
         var self = this;
+
+        var taskEdge = function(edge, isFinished, isProcessing, name){
+            var curEdge = edge;
+            var edges = [];
+            ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'].forEach(function(type, ti){
+                var tasks = edge[type];
+                if((tasks.length>0) && (type=='autoTasks' || type == 'userTasks')){
+                    tasks.forEach(function(t, ti){
+                        var classes = '';  
+                        if(isFinished){
+                            classes = 'isFinished';
+                        }else if(isProcessing){
+                            var complete = true;
+                            originalData[type][t].forEach(function(p, pi){
+                                !originalData.state.points.hasOwnProperty(p) && (complete=false);
+                            })
+                            !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
+                        }
+                        edges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type}, classes: classes },
+                                    { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type}, classes: classes });
+                    })
+                }
+
+                if((tasks.length>0) && (type=='partUTasks' || type == 'partGTasks')){
+                    tasks.forEach(function(t, ti){
+                        var id = t.guidKey || t.ggidKey;
+                        (t.tasks.length>0) && t.tasks.forEach(function(subt, si){
+                            var classes = '';  
+                            if(isFinished){
+                                classes = 'isFinished';
+                            }else if(isProcessing){
+                                var complete = true;
+                                originalData[type][subt].forEach(function(p, pi){
+                                    !originalData.state.points.hasOwnProperty(p) && (complete=false);
+                                })
+                                !complete && (classes = 'isProcessing')
+                            }
+                            edges.push({ data: {'source': curEdge.begin, 'target': subt, name:name, gidKey:id, sourceType:'node', endType:'task', taskType:type}, classes: classes },
+                                        { data: {'source': subt, 'target': curEdge.end, name:name, gidKey:id, sourceType:'task', endType:'node', taskType:type}, classes: classes });
+                        })
+                    })
+                }
+            });
+            if(edges.length==0){
+                edges.push({ data: {'source': curEdge.begin, 'target':curEdge.end, 'name':name, sourceType:'node', endType:'node', taskType:'edge', 'original': curEdge}, classes: (isFinished? 'isFinished' : '') +' '+  (isProcessing? 'isProcessing':'')});
+            }
+            return edges;
+        }
+
         $.getJSON('./json/data3.json', function(res){
             originalData = res;
             var node_keys = [];
@@ -103,21 +161,45 @@
                 v.edge && historyEdges.push(v.edge);
             })
             for(var i in res.edges){
-                var val = [res.edges[i].begin, res.edges[i].end];
+                var curEdge = res.edges[i];
                 var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
-                var isProcessing = res.state.edge ? (i==res.state.edge) : false;
-                edges.push({ data: {'source': val[0], 'target':val[1], 'name':i, 'original': res.edges[i]}, classes: (isFinished? 'isFinished' : '') +' '+  (isProcessing? 'isProcessing':'')});
-                console.log(res.edges[i])
-                val.forEach(function(v, j){
-                    var ispro = (j==0)? false : isProcessing;
-                    if(node_keys.indexOf(v)<0){
-                        node_keys.push(v);
-                        nodes.push({data: {'id': v}, classes: (isFinished? 'isFinished' : '') +' '+  (ispro? 'isProcessing':'')});
-                    }
-                    isFinished && (nodes[node_keys.indexOf(v)].classes.indexOf('isFinished')<0) && (nodes[node_keys.indexOf(v)].classes += ' isFinished');
-                    ispro && (nodes[node_keys.indexOf(v)].classes.indexOf('isProcessing')<0) && (nodes[node_keys.indexOf(v)].classes += ' isProcessing');
-                });
+                var isProcessing = (res.state.edge && res.state.edge.length>0) ? (res.state.edge.indexOf(i)>=0) : false;
+                if(i=='E5'){
+                    console.log(isFinished+";"+isProcessing)
+                }
+                // task edges
+                (function(curEdge, isFinished, isProcessing, i){
+                    edges = edges.concat(taskEdge(curEdge, isFinished, isProcessing, i));
+                })(curEdge, isFinished, isProcessing, i)
             };
+
+            edges.forEach(function(e, ei){
+                var nArr = [e.data.source, e.data.target];
+            
+                nArr.forEach(function(n, ni){
+                    var c = '';
+                    if(e.classes.indexOf('isFinished')>=0){
+                        c = 'isFinished';
+                    }else if(e.classes.indexOf('isProcessing')>=0){
+                        c = 'isProcessing';
+                        (ni==0)&&(e.data.sourceType=='node')&&(c='isFinished');
+                    }
+                    
+                    (ni==0)&&(c+=' '+e.data.sourceType);
+                    (ni==1)&&(c+=' '+e.data.endType);
+                    c += ' ' + e.data.taskType;
+
+                    if(node_keys.indexOf(n)<0){
+                        node_keys.push(n);
+                        nodes.push({data: {id: n}, classes: c})
+                    }else{
+                        var classes = nodes[node_keys.indexOf(n)].classes;
+                        (c.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
+                        (c.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && (classes+=' isProcessing');
+                        nodes[node_keys.indexOf(n)].classes = classes;
+                    }
+                })
+            })
             modelData = {nodes: nodes, edges: edges};
         })
         return modelData;
@@ -204,22 +286,22 @@
     }    
 
     var geneCallback= function(cy){
-        cy.edges().qtip({
-            content: function(){
-                return edgeTip.apply(this);
-            },
-            position: {
-                my: 'bottom left',
-                at: 'bottom left'
-            },
-            style: {
-                classes: 'qtip-bootstrap',
-                tip: {
-                    width: 8,
-                    height: 8
-                }
-            }
-        })
+        // cy.edges().qtip({
+        //     content: function(){
+        //         return edgeTip.apply(this);
+        //     },
+        //     position: {
+        //         my: 'bottom left',
+        //         at: 'bottom left'
+        //     },
+        //     style: {
+        //         classes: 'qtip-bootstrap',
+        //         tip: {
+        //             width: 8,
+        //             height: 8
+        //         }
+        //     }
+        // })
         
     }
 
