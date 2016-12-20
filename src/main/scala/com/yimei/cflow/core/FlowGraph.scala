@@ -70,57 +70,18 @@ object FlowGraph {
   *
   */
 trait FlowGraph {
-  /**
-    * initial decision point
-    *
-    * @return
-    */
   val flowInitial: String
-
   val timeout: Long
 
-  /**
-    *
-    * @param state
-    * @return
-    */
   def graph(state: State): Graph
 
-
-  /**
-    *
-    */
   val blueprint: Graph = graph(null)
-
-  /**
-    *
-    * @return
-    */
-  val inEdges: Map[String, Array[String]] = Map()
-
-  /**
-    * flow type
-    *
-    * @return
-    */
-  val flowType: String
-
-  /**
-    * 注册用户任务
-    */
-  val userTasks: Map[String, Array[String]]
-
-  /**
-    *
-    * @return
-    */
-  val autoTasks: Map[String, Array[String]]
-
-  /**
-    *
-    */
   val edges: Map[String, Edge]
-
+  val inEdges: Map[String, Array[String]] = Map()
+  val flowType: String
+  val userTasks: Map[String, Array[String]]
+  val autoTasks: Map[String, Array[String]]
+  val pointEdges: Map[String, String] = Map()
 
   val autoMethods: Map[String, Method] = {
     this.getClass.getMethods.filter { m =>
@@ -133,10 +94,6 @@ trait FlowGraph {
     }.toMap
   }
 
-  /**
-    *
-    * @return
-    */
   val deciders: Map[String, State => Arrow] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
@@ -145,16 +102,12 @@ trait FlowGraph {
         m.getReturnType == classOf[Arrow]
     }.map { am =>
 
-      val behavior: State => Arrow  = (state: State)  =>
+      val behavior: State => Arrow = (state: State) =>
         am.invoke(this, state).asInstanceOf[Arrow]
       (am.getName -> behavior)
     }.toMap
   }
 
-  /**
-    *
-    * @return
-    */
   val moduleJar: AnyRef = this
 }
 

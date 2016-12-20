@@ -14,25 +14,9 @@ import scala.concurrent.Future
 object YingGraph extends FlowGraph {
 
   override val flowType: String = flow_ying
-
   override val timeout: Long = 15
-
-  /**
-    * 注册用户任务
-    */
   override val userTasks: Map[String, Array[String]] = taskPointMap
-
-
-  /**
-    *
-    * @return
-    */
   override val autoTasks: Map[String, Array[String]] = autoPointMap
-
-  /**
-    *
-    * @return
-    */
   override val flowInitial: String = J0
 
 
@@ -59,8 +43,6 @@ object YingGraph extends FlowGraph {
       J5 ~> E6 ~> J3
       builder
     }
-
-
   override val blueprint: Graph = graph(null)
 
   /**
@@ -74,8 +56,13 @@ object YingGraph extends FlowGraph {
     "E5" -> E5,
     "E6" -> E6
   )
-
-
+  override val inEdges: Map[String, Array[String]] = Map(
+    J1 -> Array("E1"),
+    J2 -> Array("E1"),
+    J3 -> Array("E1", "E6"),
+    J4 -> Array("E1"),
+    J5 -> Array("E1")
+  )
 
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")
