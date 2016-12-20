@@ -166,7 +166,7 @@ class PersistentFlow(
         if (!e.check(state)) {
           Arrow(FlowTodo, None)
         } else {
-          registries(graph.flowType).deciders(cur)(state)
+          graph.deciders(cur)(state)
         }
     }
 
@@ -189,13 +189,13 @@ class PersistentFlow(
                 updateState(event) // @todo 王琦
               }
             } else {
-              if (registries(graph.flowType).edges(e).check(state)) {
+              if (graph.edges(e).check(state)) {
                 // 继续调度下一个节点,  maybe, 下一个节点不需要采集新的要素
                 log.info(s"continue...")
                 makeDecision()
               } else {
                 log.info(s"schedule ${e}")
-                registries(graph.flowType).edges(e).schedule(state, modules)
+                graph.edges(e).schedule(state, modules)
               }
             }
         }
