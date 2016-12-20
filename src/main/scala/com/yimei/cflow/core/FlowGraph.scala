@@ -86,6 +86,12 @@ trait FlowGraph {
     */
   def graph(state: State): Graph
 
+
+  /**
+    *
+    */
+  val blueprint: Graph = graph(null)
+
   /**
     *
     * @return

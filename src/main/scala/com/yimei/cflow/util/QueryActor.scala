@@ -73,9 +73,9 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
           )
       }
 
-    case json: Graph =>
-      log.info(s"flow[${json.state.flowId}] = ${json.state.decision}")
-      if ( json.state.decision == FlowFail || json.state.decision == FlowSuccess) {
+    case json @ Graph(_, _, Some(state), _, _, _) =>
+      log.info(s"flow[${state.flowId}] = ${state.decision}")
+      if ( state.decision == FlowFail || state.decision == FlowSuccess) {
         k1.cancel()
         k2.cancel()
         log.info("测试结束")

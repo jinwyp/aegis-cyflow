@@ -48,7 +48,7 @@ object TestUtil extends CoreConfig {
 }
 
 object TempValue {
-  var values : Map[String,(String,String,String)] = Map()
+  var values: Map[String, (String, String, String)] = Map()
 
 }
 
@@ -62,11 +62,11 @@ class TestClient(proxy: ActorRef) extends Actor
 
   var count = 0
 
-//  var gUserId: String = null
-//  var gUserType:String = null
-//
-//  var gId:String = null
-//  var gType:String = null
+  //  var gUserId: String = null
+  //  var gUserType:String = null
+  //
+  //  var gId:String = null
+  //  var gType:String = null
 
   import TempValue._
 
@@ -74,11 +74,11 @@ class TestClient(proxy: ActorRef) extends Actor
 
     // 收到查询任务, 给自己发tick
     case (userType: String, userId: String, flowId: String, pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) =>
-//      gUserId = pUserId
-//      gUserType = pUserType
-//      gId = pGroupId
-//      gType = pGroupType
-      values = values + (flowId -> (pUserType,pUserId,pGroupId))
+      //      gUserId = pUserId
+      //      gUserType = pUserType
+      //      gId = pGroupId
+      //      gType = pGroupType
+      values = values + (flowId ->(pUserType, pUserId, pGroupId))
       val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userType, userId, flowId,
         pUserType, pUserId, pGroupType, pGroupId, 1))
       schedulers = schedulers + (flowId -> q)
@@ -90,7 +90,7 @@ class TestClient(proxy: ActorRef) extends Actor
       proxy ! CommandQueryGroup(s"${pGroupType}-${pGroupId}")
       proxy ! CommandFlowGraph(flowId)
 
-      // 收到用户状态, 就自动处理用户任务
+    // 收到用户状态, 就自动处理用户任务
     case state: User.State =>
       log.info("!!!!state:{}", state)
       state.tasks.foreach { (entry: (String, CommandUserTask)) =>
@@ -105,14 +105,17 @@ class TestClient(proxy: ActorRef) extends Actor
       )
 
     // 收到流程图
-    case g@Graph(_, _, state, _, _, _) =>
-      if (state.decision == FlowSuccess || state.decision == FlowFail) {
-        schedulers(state.flowId).cancel()
-        schedulers = schedulers - state.flowId
-        count = count + 1
-        log.info(s"${state.flowId} completed, completed total = ${count}")
-        import spray.json._
-        log.info(s"final graph is ${g.toJson}")
+    case g@Graph(_, _, st, _, _, _) =>
+      st match {
+        case Some(state) =>
+          if (state.decision == FlowSuccess || state.decision == FlowFail) {
+            schedulers(state.flowId).cancel()
+            schedulers = schedulers - state.flowId
+            count = count + 1
+            log.info(s"${state.flowId} completed, completed total = ${count}")
+            import spray.json._
+            log.info(s"final graph is ${g.toJson}")
+          }
       }
   }
 
@@ -125,14 +128,14 @@ class TestClient(proxy: ActorRef) extends Actor
     if (task.taskName == "TKPU1") {
       points = taskPointMap(task.taskName).map { pname =>
         //(pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1+"-"+values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 设置参与方组
     else if (task.taskName == "TKPG1") {
       points = taskPointMap(task.taskName).map { pname =>
         //(pname -> DataPoint("fund-wqGroup", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1+"-"+values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 其他为用户任务

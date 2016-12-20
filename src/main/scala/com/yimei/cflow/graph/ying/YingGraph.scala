@@ -61,7 +61,7 @@ object YingGraph extends FlowGraph {
     }
 
 
-
+  override val blueprint: Graph = graph(null)
 
   /**
     *

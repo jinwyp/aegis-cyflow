@@ -51,6 +51,8 @@ object MultGraph extends FlowGraph {
       builder
     }
 
+  override val blueprint: Graph = graph(null)
+
   override val flowType: String = flow_ying
 
   val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))

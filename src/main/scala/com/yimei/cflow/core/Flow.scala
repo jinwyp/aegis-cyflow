@@ -204,7 +204,7 @@ object Flow {
   case class Graph(
                     edges: Map[String, EdgeDescription],
                     vertices: Map[String, String],
-                    state: State,
+                    state: Option[State],
                     points: Map[String, String],
                     userTasks: Map[String, Array[String]],
                     autoTasks: Map[String, Array[String]]

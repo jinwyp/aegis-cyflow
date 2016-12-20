@@ -104,9 +104,19 @@ object GraphLoader extends App {
       override val timeout: Long = graphConfig.timeout
 
       override def graph(state: State): Graph = Graph(
+
         graphConfig.edges,
         graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
-        state,
+        Some(state),
+        graphConfig.poinsts,
+        graphConfig.userTasks,
+        graphConfig.autoTasks
+      )
+
+      override val blueprint: Graph = Graph(
+        graphConfig.edges,
+        graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
+        None,
         graphConfig.poinsts,
         graphConfig.userTasks,
         graphConfig.autoTasks
