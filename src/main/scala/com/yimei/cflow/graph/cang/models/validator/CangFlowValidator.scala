@@ -5,6 +5,7 @@ import com.wix.accord.dsl._
 import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
 
 object CangFlowValidator {
+
   /** 文件 **/
   implicit val fileObjValidator: Validator[FileObj] =
     validator[FileObj] {
