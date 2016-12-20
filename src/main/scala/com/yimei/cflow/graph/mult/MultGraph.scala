@@ -71,6 +71,9 @@ object MultGraph extends FlowGraph {
     "E6" -> E6
   )
 
+
+  override val pointEdges: Map[String, String] = ???
+
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")
   }

@@ -64,6 +64,9 @@ object YingGraph extends FlowGraph {
     J5 -> Array("E1")
   )
 
+
+  override val pointEdges: Map[String, String] = Map()
+
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")
   }

@@ -31,4 +31,5 @@ object CangGraph extends FlowGraph {
   override def graph(state: State): Graph = ???
 
   override val edges: Map[String, Edge] = ???
+  override val pointEdges: Map[String, String] = Map()
 }

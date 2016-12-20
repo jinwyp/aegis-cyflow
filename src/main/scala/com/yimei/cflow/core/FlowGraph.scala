@@ -81,7 +81,38 @@ trait FlowGraph {
   val flowType: String
   val userTasks: Map[String, Array[String]]
   val autoTasks: Map[String, Array[String]]
-  val pointEdges: Map[String, String] = Map()
+  val pointEdges: Map[String, String]
+
+  // todo 王琦优化!!!!
+  protected def  pointEdgesImpl: Map[String, String] = {
+    def process(name: String, e: Edge) = {
+
+      val userPointMap = e.userTasks.map { (ut: String) =>
+        userTasks(ut).map( pt =>
+          (pt -> name)
+        ).toMap
+      }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
+
+      val autoPointMap = e.autoTasks.map { (ut: String) =>
+        autoTasks(ut).map( pt =>
+          (pt -> name)
+        ).toMap
+      }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
+
+      val partGPointMap = e.partGTasks.map(_.ggidKey).map{ _ -> name}.toMap
+
+      val partUPointMap = e.partUTasks.map(_.guidKey).map{ _ -> name}.toMap
+
+      autoPointMap ++ userPointMap ++ partUPointMap ++ partGPointMap
+    }
+
+    var ret: Map[String, String] = Map()
+    for ((name, ed) <- edges) {
+      ret = ret ++ process(name, ed)
+    }
+
+    ret
+  }
 
   val autoMethods: Map[String, Method] = {
     this.getClass.getMethods.filter { m =>
