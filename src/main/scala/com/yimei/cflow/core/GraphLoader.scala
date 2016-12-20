@@ -45,16 +45,14 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if (flowType == "wang") {
+    if (flowType != "ying") {
       val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
       new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-    } else if (flowType == "ying") {
-      YingGraphJar.getClass.getClassLoader
     } else {
-      throw new Exception(s"does not support $flowType")
+      YingGraphJar.getClass.getClassLoader
     }
   }
 
@@ -64,8 +62,7 @@ object GraphLoader extends App {
 
     val classLoader = getClassLoader(gFlowType)
 
-    // get graph config
-    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(s"flow.json"))
+    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream( if (gFlowType == "ying") "ying.json" else "flow.json") )
       .mkString
       .parseJson
       .convertTo[GraphConfig]
@@ -81,13 +78,13 @@ object GraphLoader extends App {
 
     // deciders from graphJar  + default decider
     var allDeciders: Map[String, State => Arrow] =
-    graphConfig.vertices.map{ entry =>
-      (entry._1, entry._2.arrows)
-    }.filter(_._2.length == 1)   // 暂时只处理长度为1的(非并发执行流)
-     .map{ e =>
-      (e._1, { st: State => e._2(0) })
-    }
-    allDeciders = allDeciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
+      graphConfig.vertices.map { entry =>
+        (entry._1, entry._2.arrows)
+      }.filter(_._2.length == 1) // 暂时只处理长度为1的(非并发执行流)
+        .map { e =>
+        (e._1, { st: State => e._2(0) })
+      }
+    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
     val graphEdges = graphConfig.edges.map(entry =>
       (entry._1, Edge(
@@ -109,7 +106,7 @@ object GraphLoader extends App {
 
       override def graph(state: State): Graph = Graph(
         graphConfig.edges,
-        graphConfig.vertices.map{ entry => (entry._1, entry._2.description)},
+        graphConfig.vertices.map { entry => (entry._1, entry._2.description) },
         state,
         graphConfig.poinsts,
         graphConfig.userTasks,
@@ -160,7 +157,7 @@ object GraphLoader extends App {
         ptypes(0) == classOf[State] &&
         method.getReturnType == classOf[Arrow]
     }.map { am =>
-      val behavior: State => Arrow  = (state: State)  =>
+      val behavior: State => Arrow = (state: State) =>
         am.invoke(module, state).asInstanceOf[Arrow]
       (am.getName -> behavior)
     }.toMap
