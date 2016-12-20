@@ -13,8 +13,8 @@ object CangFlowView extends DefaultJsonProtocol {
   case class AssignUser(userId: String, userName: String, companyId: String, companyName: String)
   implicit val assignUserFormat = jsonFormat4(AssignUser)
 
-  case class AssignUser2(userId1: String, userId2: String, companyId: String, companyName: String)
-  implicit val assignUser2Format = jsonFormat4(AssignUser2)
+  case class AssignUser2(companyId: String, companyName: String)
+  implicit val assignUser2Format = jsonFormat2(AssignUser2)
 
   case class AssignUserPage(portList: List[AssignUser], supervisorList: List[AssignUser], fundProviderList: List[AssignUser2])
   implicit val assignUserPageFormat = jsonFormat3(AssignUserPage)

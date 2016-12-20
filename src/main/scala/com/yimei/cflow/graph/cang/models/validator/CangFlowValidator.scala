@@ -57,8 +57,6 @@ object CangFlowValidator {
         traffickerAssignUsers.supervisorCompanyId as "监管公司id" is notEmpty
         traffickerAssignUsers.supervisorUserId as "监管用户id" is notEmpty
         traffickerAssignUsers.fundProviderCompanyId as "资金方公司id" is notEmpty
-        traffickerAssignUsers.fundProviderUserId as "资金方用户id" is notEmpty
-        traffickerAssignUsers.fundProviderFinanceUserId as "资金方财务id" is notEmpty
     }
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
