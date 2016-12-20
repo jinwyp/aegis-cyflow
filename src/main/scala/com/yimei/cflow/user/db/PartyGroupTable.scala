@@ -21,6 +21,6 @@ trait PartyGroupTable {
     def * = (id,party_class,gid,description,ts_c) <> (PartyGroupEntity.tupled,PartyGroupEntity.unapply)
   }
 
-  protected val groupGroup = TableQuery[PartyGroup]
+  protected val partyGroup = TableQuery[PartyGroup]
 
 }

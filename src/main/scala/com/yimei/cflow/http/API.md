@@ -6,9 +6,9 @@ PUT  /party/:class                     更新参与方类别
 
 // 参与方运营组管理
 GET    /group/:party?limit=10&offset=20  参与方运营组列表
-POST   /group/:party/:gname              创建参与方运营组
-DELETE /group/:party/:gname              删除参与方运营组
-PUT    /group/:party/:gname              更新参与方运营组
+POST   /group/:party/:gid                创建参与方运营组
+DELETE /group/:party/:gid                删除参与方运营组
+PUT    /group/:party/:gid                更新参与方运营组
 
 // 参与方实例管理
 POST /inst/:party/:class_id           创建参与方实例
