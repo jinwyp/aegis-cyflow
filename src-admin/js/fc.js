@@ -120,8 +120,8 @@
                             })
                             !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
                         }
-                        edges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type}, classes: classes },
-                                    { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type}, classes: classes });
+                        edges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: classes },
+                                    { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: classes });
                     })
                 }
 
@@ -139,8 +139,8 @@
                                 })
                                 !complete && (classes = 'isProcessing')
                             }
-                            edges.push({ data: {'source': curEdge.begin, 'target': subt, name:name, gidKey:id, sourceType:'node', endType:'task', taskType:type}, classes: classes },
-                                        { data: {'source': subt, 'target': curEdge.end, name:name, gidKey:id, sourceType:'task', endType:'node', taskType:type}, classes: classes });
+                            edges.push({ data: {'source': curEdge.begin, 'target': subt, name:name, gidKey:id, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: classes },
+                                        { data: {'source': subt, 'target': curEdge.end, name:name, gidKey:id, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: classes });
                         })
                     })
                 }
@@ -164,9 +164,7 @@
                 var curEdge = res.edges[i];
                 var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
                 var isProcessing = (res.state.edge && res.state.edge.length>0) ? (res.state.edge.indexOf(i)>=0) : false;
-                if(i=='E5'){
-                    console.log(isFinished+";"+isProcessing)
-                }
+    
                 // task edges
                 (function(curEdge, isFinished, isProcessing, i){
                     edges = edges.concat(taskEdge(curEdge, isFinished, isProcessing, i));
@@ -191,7 +189,7 @@
 
                     if(node_keys.indexOf(n)<0){
                         node_keys.push(n);
-                        nodes.push({data: {id: n}, classes: c})
+                        nodes.push({data: {id: n, taskType:e.data.taskType, original: originalData}, classes: c})
                     }else{
                         var classes = nodes[node_keys.indexOf(n)].classes;
                         (c.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
@@ -286,25 +284,47 @@
     }    
 
     var geneCallback= function(cy){
-        // cy.edges().qtip({
-        //     content: function(){
-        //         return edgeTip.apply(this);
-        //     },
-        //     position: {
-        //         my: 'bottom left',
-        //         at: 'bottom left'
-        //     },
-        //     style: {
-        //         classes: 'qtip-bootstrap',
-        //         tip: {
-        //             width: 8,
-        //             height: 8
-        //         }
-        //     }
-        // })
+        cy.nodes('.task').qtip({
+            content: function(){
+                return taskTip.apply(this);
+            },
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        })
         
     }
 
+    var taskTip = function(){
+        var self = this;
+        var taskId = this._private.data.id;
+        var taskType = this._private.data.taskType;
+        var points = this._private.data.original[taskType][taskId];
+        var phtml = ''; 
+        (points.length>0) && points.forEach(function(p, pi){
+            var status;
+            if(!!self._private.classes.isFinished){
+                status = '已完成';
+            }
+            if(!!self._private.classes.isProcessing){
+                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('已完成；结果：' + self._private.data.original.state.points[p].value) : '进行中';
+            }
+            if(!self._private.classes.isProcessing && !self._private.classes.isFinished){
+                status = '未开始';
+            }
+            
+            phtml += '<li><span class="point">'+ p +':</span><span class="pointState">'+ status +'</span></li>'
+        })
+        return '<ul class="edgeTip">'+ phtml +'</ul>';
+    }
     var autotaskTmpl = function(model, type){
         var items = '';
         var autotask = '';
