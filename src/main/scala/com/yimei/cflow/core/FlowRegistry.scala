@@ -37,19 +37,20 @@ object FlowRegistry {
   var jarMap: Map[String, AnyRef] = Map()
 
   def register(flowType: String, graph: FlowGraph) = {
+
     registries(flowType) = graph
 
-    autoTask = autoTask + (flowType -> graph.getAutoTask)
+    autoTask = autoTask + (flowType -> graph.autoTasks)
 
-    userTask = userTask + (flowType -> graph.getUserTask)
+    userTask = userTask + (flowType -> graph.userTasks)
 
-    autoMeth = autoMeth + (flowType -> graph.getAutoMeth)
+    autoMeth = autoMeth + (flowType -> graph.autoMethods)
 
-    deciders = deciders + (flowType -> graph.getDeciders)
+    deciders = deciders + (flowType -> graph.deciders)
 
-    jarMap   = jarMap   + (flowType -> graph.getGraphJar)
+    jarMap   = jarMap   + (flowType -> graph.moduleJar)
 
-    edges = Map(flowType-> graph.getEdges)
+    edges = Map(flowType -> graph.edges)
   }
 
   def getFlowGraph(flowType: String) = registries(flowType)

@@ -2,6 +2,7 @@ package com.yimei.cflow.core
 
 import java.io.File
 import java.lang.reflect.Method
+import java.net.URLClassLoader
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
@@ -64,7 +65,7 @@ object GraphLoader extends App {
     val classLoader = getClassLoader(flowType)
 
     // get graph config
-    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream("flow.json"))
+    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(s"flow.json"))
       .mkString
       .parseJson
       .convertTo[GraphConfig]
@@ -88,15 +89,25 @@ object GraphLoader extends App {
     }
     deciders = deciders ++ getDeciders(mclass, graphJar)  // 用jar中的覆盖配置中的
 
+    val graphEdges = graphConfig.edges.map(entry =>
+      (entry._1, Edge(
+        entry._1,
+        entry._2.autoTasks,
+        entry._2.userTasks,
+        entry._2.partUTasks,
+        entry._2.partGTasks
+      ))
+    )
+
     // graph intial vertex
     val initial = graphConfig.initial
 
     // 返回流程
     new FlowGraph {
 
-      override def getTimeout: Long = graphConfig.timeout
+      override val timeout: Long = graphConfig.timeout
 
-      override def getFlowGraph(state: State): Graph = Graph(
+      override def graph(state: State): Graph = Graph(
         graphConfig.edges,
         graphConfig.vertices.map{ entry => (entry._1, entry._2.description)},
         state,
@@ -105,36 +116,27 @@ object GraphLoader extends App {
         graphConfig.autoTasks
       )
 
-      def getInEdges = graphConfig.edges.groupBy { entry =>
+      override val inEdges: Map[String, Array[String]] = graphConfig.edges.groupBy { entry =>
         entry._2.end
       }.map { e =>
         (e._1, e._2.keySet.toArray)
       }
 
-      override def getFlowInitial: String = initial
+      override val flowInitial: String = initial
 
-      override def getFlowType: String = flowType
+      override val flowType: String = flowType
 
-      override def getUserTask: Map[String, Array[String]] = graphConfig.userTasks
+      override val userTasks: Map[String, Array[String]] = graphConfig.userTasks
 
-      override def getAutoTask: Map[String, Array[String]] = graphConfig.autoTasks
+      override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
 
-      override def getEdges: Map[String, Edge] = graphConfig.edges.map(entry =>
-        (entry._1, Edge(
-          entry._1,
-          entry._2.autoTasks,
-          entry._2.userTasks,
-          entry._2.partUTasks,
-          entry._2.partGTasks
-        ))
-      )
+      override val edges: Map[String, Edge] = graphEdges
 
-      // new approach
-      override def getAutoMeth: Map[String, Method] = autoMap
+      override val autoMethods: Map[String, Method] = autoMap
 
-      override def getDeciders: Map[String, State => Arrow] = deciders
+      override val deciders: Map[String, State => Arrow] = deciders
 
-      override def getGraphJar: AnyRef = graphJar
+      override val moduleJar: AnyRef = graphJar
     }
   }
 

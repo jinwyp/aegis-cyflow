@@ -13,33 +13,42 @@ import scala.concurrent.Future
   */
 object YingGraph extends FlowGraph {
 
+  override val flowType: String = flow_ying
 
-  override def getTimeout: Long = 15
+  override val timeout: Long = 15
 
   /**
     * 注册用户任务
     */
-  override def getUserTask: Map[String, Array[String]] = taskPointMap
+  override val userTasks: Map[String, Array[String]] = taskPointMap
 
 
   /**
     *
     * @return
     */
-  override def getAutoTask: Map[String, Array[String]] = autoPointMap
+  override val autoTasks: Map[String, Array[String]] = autoPointMap
 
   /**
     *
     * @return
     */
-  def getFlowInitial: String = J0
+  override val flowInitial: String = J0
+
+
+  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
+  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
+  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
+  val E4 = Edge("E4", userTasks = List(task_A))
+  val E5 = Edge("E5", autoTasks = List(auto_DEF))
+  val E6 = Edge("E6")
 
   /**
     *
     * @param state
     * @return
     */
-  def getFlowGraph(state: State): Graph =
+  override def graph(state: State): Graph =
     GraphBuilder.jsonGraph(state, judgeDecription, pointDescription, autoPointMap, taskPointMap) { implicit builder =>
       import GraphBuilder._
       J0 ~> E1 ~> J1
@@ -51,13 +60,13 @@ object YingGraph extends FlowGraph {
       builder
     }
 
-  override def getFlowType: String = flow_ying
+
 
 
   /**
     *
     */
-  override def getEdges: Map[String, Edge] = Map(
+  override val edges: Map[String, Edge] = Map(
     "E1" -> E1,
     "E2" -> E2,
     "E3" -> E3,
@@ -66,12 +75,7 @@ object YingGraph extends FlowGraph {
     "E6" -> E6
   )
 
-  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
-  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
-  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
-  val E4 = Edge("E4", userTasks = List(task_A))
-  val E5 = Edge("E5", autoTasks = List(auto_DEF))
-  val E6 = Edge("E6")
+
 
   def A(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
     Map("A" -> "50")

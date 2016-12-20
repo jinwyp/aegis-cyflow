@@ -75,48 +75,48 @@ trait FlowGraph {
     *
     * @return
     */
-  def getFlowInitial: String
+  val flowInitial: String
 
-  def getTimeout: Long
+  val timeout: Long
 
   /**
     *
     * @param state
     * @return
     */
-  def getFlowGraph(state: State): Graph
+  def graph(state: State): Graph
 
   /**
     *
     * @return
     */
-//  def getInEdges: Map[String, Array[String]]
+  val inEdges: Map[String, Array[String]] = Map()
 
   /**
     * flow type
     *
     * @return
     */
-  def getFlowType: String
+  val flowType: String
 
   /**
     * 注册用户任务
     */
-  def getUserTask: Map[String, Array[String]]
+  val userTasks: Map[String, Array[String]]
 
   /**
     *
     * @return
     */
-  def getAutoTask: Map[String, Array[String]]
+  val autoTasks: Map[String, Array[String]]
 
   /**
     *
     */
-  def getEdges: Map[String, Edge]
+  val edges: Map[String, Edge]
 
 
-  def getAutoMeth: Map[String, Method] = {
+  val autoMethods: Map[String, Method] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
@@ -131,7 +131,7 @@ trait FlowGraph {
     *
     * @return
     */
-  def getDeciders: Map[String, State => Arrow] = {
+  val deciders: Map[String, State => Arrow] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
@@ -149,7 +149,7 @@ trait FlowGraph {
     *
     * @return
     */
-  def getGraphJar: AnyRef = this
+  val moduleJar: AnyRef = this
 }
 
 
