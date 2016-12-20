@@ -10,9 +10,8 @@ import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.core.Flow.DataPoint
-import com.yimei.cflow.core.FlowProtocol
+import com.yimei.cflow.core.{Flow, FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.group.Group.State
 import com.yimei.cflow.group.{Group, GroupProtocol}
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.db._
@@ -211,7 +210,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           ).length.result)
         }
 
-        def getTasks(ugs:Seq[UserGroupEntity],p:PartyInstanceEntity): Future[Seq[State]] = {
+        def getTasks(ugs:Seq[UserGroupEntity],p:PartyInstanceEntity): Future[Seq[Group.State]] = {
          Future.sequence(ugs.map(ug => ServiceProxy.groupQuery(proxy,p.party_class+"-"+p.instance_id,ug.gid)))
         }
 
@@ -220,7 +219,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           u <- getUser(p)
           num <- getGropCount(p,u)
           gs: Seq[UserGroupEntity] <- getGroups(p,u)
-          tsk: Seq[State] <- getTasks(gs,p)
+          tsk: Seq[Group.State] <- getTasks(gs,p)
         } yield {
           GroupTaskResult(tsk,num)
         }
@@ -238,7 +237,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
     * @return
     */
   def claimTask = put {
-    pathPrefix("utask" / Segment / Segment / Segment / Segment / Segment) { (party, instance_id, user_id, task_id, gid) => {
+    pathPrefix("gtask" / Segment / Segment / Segment / Segment / Segment) { (party, instance_id, user_id, task_id, gid) => {
       val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
         p.party_class === party &&
           p.instance_id === instance_id
@@ -277,10 +276,29 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
     }
   }
 
+  /**
+    * 发起自动任务
+    * @return
+    */
+  def autoTask = post {
+    pathPrefix("auto"/ Segment / Segment / Segment) { (flowType,flowId,taskName) =>
+
+
+      val state: Future[Flow.State] = ServiceProxy.flowState(proxy,flowId)
+
+      complete(for {
+        s <- state
+      } yield {
+        ServiceProxy.autoTask(proxy,s,flowType,taskName)
+        "success"
+      })
+    }
+  }
 
 
 
-  def route: Route = getUTask ~ getUTaskHistory ~ putTask ~ getGTask ~ claimTask
+
+  def route: Route = getUTask ~ getUTaskHistory ~ putTask ~ getGTask ~ claimTask ~ autoTask
 }
 
 /**

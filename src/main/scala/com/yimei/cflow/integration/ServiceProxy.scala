@@ -3,6 +3,7 @@ package com.yimei.cflow.integration
 import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.pattern._
 import com.yimei.cflow.auto.AutoMaster
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.Flow._
@@ -36,8 +37,8 @@ object ServiceProxy extends CoreConfig {
   // 1> 创建流程 - 自动运行
   // 2> 查询流程
   // 3> 管理员更新数据点
-  def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String) =
-    (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}")).mapTo[Flow.State]
+  def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String,init:Map[String,String] = Map()) =
+    (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}",init)).mapTo[Flow.State]
 
   def flowGraph(proxy: ActorRef, flowId: String) =
     (proxy ? CommandFlowGraph(flowId)).mapTo[Flow.Graph]
@@ -86,6 +87,9 @@ object ServiceProxy extends CoreConfig {
   def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String, flowType: String): Unit =
     proxy ! CommandGroupTask(flowType, flowId, s"${userType}-${gid}", taskName)
 
+  def autoTask(proxy:ActorRef, state:Flow.State, flowType:String, actorName:String) =
+    proxy ! CommandAutoTask(state,flowType,actorName)
+
 }
 
 /**
@@ -115,7 +119,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
     // 数据模块交互
     case cmd: AutoMaster.CommandAutoTask =>
       log.debug(s"收到 ${cmd}")
-      modules.get(module_flow).foreach(_ forward cmd)
+      modules.get(module_auto).foreach(_ forward cmd)
 
     // 与用户组模块交互
     case cmd: Group.Command =>
