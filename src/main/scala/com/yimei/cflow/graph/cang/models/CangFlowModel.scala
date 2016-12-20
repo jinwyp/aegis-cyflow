@@ -85,8 +85,8 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val fundProviderFinanceLoadFormat = jsonFormat2(FundProviderFinanceLoad)
 
   /** 融资方付款给贸易商 **/
-  case class CustomerPaymentToTrafficker(taskId: String, statusId: Int, paymentPrinciple: BigDecimal, paymentInterest: BigDecimal, createTime: Option[Timestamp])
-  implicit val customerPaymentToTraffickerFormat = jsonFormat5(CustomerPaymentToTrafficker)
+  case class CustomerPaymentToTrafficker(taskId: String, statusId: Int, paymentPrinciple: BigDecimal, createTime: Option[Timestamp])
+  implicit val customerPaymentToTraffickerFormat = jsonFormat4(CustomerPaymentToTrafficker)
 
   /** 贸易商通知港口放货 **/
   case class TraffickerNoticePortReleaseGoods(taskId: String, releaseAmount: BigDecimal, goodsReceiveCompanyName: String, goodsFileList: List[FileObj], createTime: Option[Timestamp])
