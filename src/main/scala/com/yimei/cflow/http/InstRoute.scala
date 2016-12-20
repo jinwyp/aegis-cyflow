@@ -20,7 +20,7 @@ import javax.ws.rs.Path
 class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSupport{
   import driver.api._
 
-  //POST /inst/:party/:class_id           创建参与方实例
+  //POST /inst/:party_class/:instance_id/:party_name          创建参与方实例
   def createPartyInstance: Route = post {
     pathPrefix("inst" / Segment / Segment / Segment) { (pc, ii, pn) =>
       val entity: Future[PartyInstanceEntity] = dbrun(
@@ -30,14 +30,14 @@ class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSuppo
     }
   }
 
-  //GET  /inst/:party/:class_id           查询参与方实例
+  //GET  /inst/:party/:instance_id           查询参与方实例
   def queryPartyInstance: Route = get {
     pathPrefix("inst" / Segment / Segment) { (pc, ii) =>
       complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result))
     }
   }
 
-  //PUT  /inst/:party/:class_id           更新参与方实例
+  //PUT  /inst/:id/:party/:instance_id/:party_name          更新参与方实例
   def updatePartyInstance: Route = put {
     pathPrefix("inst" / Segment / Segment / Segment / Segment) { (id, pc, ii, pn) =>
       val update = partyInstance.filter(_.id === id.toLong).map(p => (p.party_class, p.instance_id, p.party_name)).update(pc, ii, pn)

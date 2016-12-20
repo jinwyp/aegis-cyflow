@@ -19,153 +19,53 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import com.yimei.cflow.user.db._
 
-
-
-//@Path("/group/:userId")
-class GroupRoute(proxy: ActorRef) extends UserProtocol with PartyGroupTable with SprayJsonSupport {
+class GroupRoute extends UserProtocol with PartyGroupTable with SprayJsonSupport {
 
   import driver.api._
 
-//  implicit val timeout = GroupRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
-//
-//  /**
-//    * 创建用户
-//    */
-//  @ApiOperation(value = "userState", notes = "", nickname = "创建用户", httpMethod = "POST")
-//  @ApiImplicitParams(Array(
-//    new ApiImplicitParam(
-//      name = "body",
-//      value = "创建用户",
-//      required = true,
-//      dataType = "com.yimei.cflow.user.User.State",
-//      paramType = "body"
-//    )
-//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-//  ))
-//  @ApiResponses(Array(
-//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
-//    new ApiResponse(code = 500, message = "Internal server error")
-//  ))
-//  def postUser: Route = post {
-//    pathPrefix("user" / Segment) { userId =>
-//      pathEnd {
-//        parameter('userType) { userType =>
-//          complete(ServiceProxy.userCreate(proxy, userType, userId))
-//        }
-//      }
-//    }
-//  }
-
+  //GET    /group/:party_class?limit=10&offset=20     参与方运营组列表
   def getGroupParty: Route = get {
-    (pathPrefix("group") & parameter("limit".as[Int]) & parameter("offset".as[Int])) { (limit,offset) =>
-      complete(dbrun(partyGroup.drop(offset).take(limit).result))
+    pathPrefix("group" / Segment) { pc =>
+      pathEnd {
+        (parameter("limit".as[Int]) & parameter("offset".as[Int])) { (limit, offset) =>
+          complete(dbrun(partyGroup.filter(_.party_class === pc).drop(offset).take(limit).result))
+        }
+      }
     }
   }
 
+  //POST   /group/:party_class/:gid/description       创建参与方运营组
   def createGroupParty: Route = post {
-    pathPrefix("group" / Segment) { pc =>
-      pathEnd {
-        parameter("gid") { gid =>
-          val entity: Future[PartyGroupEntity] = dbrun(
-            (partyGroup returning partyGroup.map(_.id)) into ((pg, id) => pg.copy(id = id)) += PartyGroupEntity(None, pc, gid, "", Timestamp.from(Instant.now))
-          )
-          complete(entity map { e => e})
-        }
-      }
+    pathPrefix("group" / Segment / Segment / Segment) { (pc, gid, desc) =>
+      val entity: Future[PartyGroupEntity] = dbrun(
+        (partyGroup returning partyGroup.map(_.id)) into ((pg, id) => pg.copy(id = id)) += PartyGroupEntity(None, pc, gid, desc, Timestamp.from(Instant.now))
+      )
+      complete(entity map { e => e})
     }
   }
 
+  //DELETE /group/:party_class/:gid                    删除参与方运营组
   def deleteGroupParty: Route = delete {
-    pathPrefix("group" / Segment) { pc =>
-      pathEnd {
-        parameter("gid") { gid =>
-          val delete = partyGroup.filter(pg => pg.party_class === pc && pg.gid === gid).delete
-          val result = dbrun(delete) map { count =>
-            if(count > 0) "success" else "fail"
-          }
-          complete(result)
-        }
+    pathPrefix("group" / Segment / Segment) { (pc, gid) =>
+      val delete = partyGroup.filter(pg => pg.party_class === pc && pg.gid === gid).delete
+      val result = dbrun(delete) map { count =>
+        if (count > 0) "success" else "fail"
       }
+      complete(result)
     }
   }
 
+  //PUT    /group/id/:party_class/:gid/:description                更新参与方运营组
   def updateGroupParty: Route = put {
-    pathPrefix("group") {
-      (parameter("id".as[Long]) & parameter("party") & parameter("gid")) { (id, pc, gid) =>
-        val update = partyGroup.filter(_.id === id).map(p => (p.party_class, p.gid)).update(pc, gid)
+    pathPrefix("group" / Segment / Segment / Segment / Segment) { (id, pc, gid, desc) =>
+        val update = partyGroup.filter(_.id === id.toLong).map(p => (p.party_class, p.gid, p.description)).update(pc, gid, desc)
         val result = dbrun(update) map { count =>
           if(count > 0) "success" else "fail"
         }
         complete(result)
       }
-    }
   }
 
-//  // todo 1: add hierachy info support
-//  // todo 2: idempotent processing in backend
-//
-//  /**
-//    * 查询用户
-//    *
-//    * @return
-//    */
-//  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
-//  @ApiImplicitParams(Array(
-//    new ApiImplicitParam(
-//      name = "body",
-//      value = "查询用户状态",
-//      required = true,
-//      dataType = "com.yimei.cflow.user.User.State",
-//      paramType = "body"
-//    )
-//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-//  ))
-//  @ApiResponses(Array(
-//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
-//    new ApiResponse(code = 500, message = "Internal server error")
-//  ))
-//  def getUser: Route = get {
-//    pathPrefix("user" / Segment) { userId =>
-//      pathEnd {
-//        parameter("userType") { userType =>
-//          complete(ServiceProxy.userQuery(proxy, userType, userId))
-//        }
-//      }
-//    }
-//  }
-//
-//  /**
-//    * 查询用户
-//    *
-//    * @return
-//    */
-//  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "PUT")
-//  @ApiImplicitParams(Array(
-//    new ApiImplicitParam(
-//      name = "body",
-//      value = "查询用户状态",
-//      required = true,
-//      dataType = "com.yimei.cflow.user.User.State",
-//      paramType = "body"
-//    )
-//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-//  ))
-//  @ApiResponses(Array(
-//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
-//    new ApiResponse(code = 500, message = "Internal server error")
-//  ))
-//  def putUser: Route = put {
-//    pathPrefix("user" / Segment) { userId =>
-//      pathEnd {
-//        parameter("userType") { userType =>
-//          val k: Future[User.State] = ServiceProxy.userCreate(proxy, userType, userId)
-//          complete("put success")
-//        }
-//      }
-//    }
-//  }
-
-//  def route: Route = postUser ~ getUser ~ putUser
   def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty
 }
 
@@ -178,8 +78,8 @@ object GroupRoute {
   implicit val userServiceTimeout = Timeout(2 seconds)
 
 
-  def apply(proxy: ActorRef) = new GroupRoute(proxy)
+  def apply() = new GroupRoute()
 
-  def route(proxy: ActorRef): Route = GroupRoute(proxy).route
+  def route(): Route = GroupRoute().route
 }
 
