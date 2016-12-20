@@ -218,8 +218,8 @@
             container: document.getElementById(self.id),
             boxSelectionEnabled: false,
             autounselectify: false,
-            userZoomingEnabled: false,
-            userPanningEnabled: false,
+            userZoomingEnabled: true,
+            userPanningEnabled: true,
             autoungrabify: false,
             layout: {
                 name: 'dagre'
@@ -241,15 +241,17 @@
             canvas = $(cy._private.container).find('canvas')[2],
             ctx = canvas.getContext("2d");
         var offset = 0;
-        
+
+        var count = 0;
+
         function drawfn(){
+            count++;
             offset+=5;
             if (offset > 50) {
                 offset = 0;
             }
             
             ctx.clearRect(0,0, canvas.width, canvas.height);
-            
             var pro_edges = cy.$('edge.isProcessing');
 
             pro_edges.forEach(function(v, i){
@@ -281,12 +283,13 @@
                         }
                         break;
                 }
+
                 ctx.stroke();
             })
-
+            
             setTimeout(drawfn, 150);
         }
-
+        
         drawfn();
     
     }    
@@ -310,6 +313,10 @@
         })
         
     }
+
+    window.FC = FC;
+
+
 
     var taskTip = function(){
         var self = this;
@@ -389,7 +396,7 @@
                     '</div>';
         return html;
     }
-    window.FC = FC;
+
 })(window, jQuery, cytoscape)
 
 
