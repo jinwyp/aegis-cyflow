@@ -122,9 +122,9 @@
                         if(isFinished){
                             classes = 'isFinished';
                         }else if(isProcessing){
-                            var complete = true;
+                            var complete = false;
                             originalData[type][t].forEach(function(p, pi){
-                                !originalData.state.points.hasOwnProperty(p) && (complete=false);
+                                originalData.state.points.hasOwnProperty(p) && (complete=true);
                             })
                             !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
                         }
@@ -141,11 +141,11 @@
                             if(isFinished){
                                 classes = 'isFinished';
                             }else if(isProcessing){
-                                var complete = true;
-                                originalData[type][subt].forEach(function(p, pi){
-                                    !originalData.state.points.hasOwnProperty(p) && (complete=false);
+                                var complete = false;
+                                originalData['userTasks'][subt].forEach(function(p, pi){
+                                    originalData.state.points.hasOwnProperty(p) && (complete=true);
                                 })
-                                !complete && (classes = 'isProcessing')
+                                !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
                             }
                             edges.push({ data: {'source': curEdge.begin, 'target': subt, name:name, gidKey:id, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: classes },
                                         { data: {'source': subt, 'target': curEdge.end, name:name, gidKey:id, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: classes });
@@ -159,19 +159,21 @@
             return edges;
         }
 
-        $.getJSON('./json/data3.json', function(res){
+        $.getJSON('./json/data4.json', function(res){
             originalData = res;
             var node_keys = [];
             var nodes = [];
             var edges = [];
             var historyEdges = [];
-            res.state.histories.forEach(function(v,i){
-                v.edge && historyEdges.push(v.edge);
-            })
+            historyEdges = res.state.histories;
+
             for(var i in res.edges){
+                if(['success', 'fail', 'start'].indexOf(i)>=0){
+                    continue;
+                }
                 var curEdge = res.edges[i];
                 var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
-                var isProcessing = (res.state.edge && res.state.edge.length>0) ? (res.state.edge.indexOf(i)>=0) : false;
+                var isProcessing = (res.state.edges) ? (res.state.edges.hasOwnProperty(i)) : false;
     
                 // task edges
                 (function(curEdge, isFinished, isProcessing, i){
@@ -311,6 +313,26 @@
                 }
             }
         })
+
+        cy.nodes('.node').qtip({
+            content: function(){
+                var data = this._private.data;
+                var id = data.id;
+                var vertices = data.original.vertices;
+                return vertices[id];
+            },
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        })
         
     }
 
@@ -322,21 +344,22 @@
         var self = this;
         var taskId = this._private.data.id;
         var taskType = (this._private.data.taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
+        var originalPoints = this._private.data.original.points;
         var points = this._private.data.original[taskType][taskId];
         var phtml = ''; 
         (points.length>0) && points.forEach(function(p, pi){
             var status;
             if(!!self._private.classes.isFinished){
-                status = '已完成';
+                status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self._private.data.original.state.points[p].value + '</i>';
             }
             if(!!self._private.classes.isProcessing){
-                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('已完成；结果：' + self._private.data.original.state.points[p].value) : '进行中';
+                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self._private.data.original.state.points[p].value) + '</i>' : '进行中';
             }
             if(!self._private.classes.isProcessing && !self._private.classes.isFinished){
                 status = '未开始';
             }
             
-            phtml += '<li><span class="point">'+ p +':</span><span class="pointState">'+ status +'</span></li>'
+            phtml += '<li><span class="point">'+ originalPoints[p] +'：</span><span class="pointState">'+ status +'</span></li>'
         })
         return '<ul class="edgeTip">'+ phtml +'</ul>';
     }

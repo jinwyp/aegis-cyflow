@@ -30,22 +30,6 @@
                 "operator": "DEF",
                 "value": "50"
             },
-            "PU2": {
-                "used": false,
-                "timestamp": 1482288581168,
-                "id": "9b65687e-03ce-4c4e-ab3d-0f60a17fb689",
-                "operator": "fund1-wangqiId1",
-                "value": "50",
-                "memo": "userdata"
-            },
-            "PU1": {
-                "used": false,
-                "timestamp": 1482288581168,
-                "id": "b764d561-24d4-4274-8b94-00458fbe696c",
-                "operator": "fund1-wangqiId1",
-                "value": "50",
-                "memo": "userdata"
-            },
             "F": {
                 "used": false,
                 "timestamp": 10,
@@ -131,11 +115,8 @@
             }
         },
         "flowId": "ying-001-hary1-1",
-        "edges": {},
+        "edges": {"E3":true},
         "histories": [
-            "E5",
-            "E4",
-            "E3",
             "E2",
             "E1",
             "start"
