@@ -152,7 +152,7 @@ class PersistentFlow(
   /**
     */
   protected def makeDecision(name: String) = {
-    val e = graph.edges(name);
+    val e = graph.edges(name)
     if (e.check((state))) {
       persist(EdgeCompleted(name)) { event =>
         updateState(event)
@@ -186,7 +186,11 @@ class PersistentFlow(
             val ne = graph.edges(nextEdge)
             if (ne.check(state)) {
               // true边是无法触发的!!!!
-              make(ne)
+              //先删除这个边
+              persist(EdgeCompleted(nextEdge)){ event =>
+                updateState(event)
+                make(ne)
+              }
             } else {
               ne.schedule(state, modules) // 这个决策返回边是调度边, 则调度!!!
               logState(s"$a")
