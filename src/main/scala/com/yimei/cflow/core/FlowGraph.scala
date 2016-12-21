@@ -71,6 +71,7 @@ object FlowGraph {
 trait FlowGraph {
   val flowInitial: String
   val timeout: Long
+  val persistent: Boolean
   val points: Map[String, String]
   val edges: Map[String, Edge]
   val vertices: Map[String, String]

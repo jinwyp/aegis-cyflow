@@ -100,6 +100,8 @@ object GraphLoader extends App {
 
       override val timeout: Long = graphConfig.timeout
 
+      override val persistent: Boolean = graphConfig.persistent
+
       override val points: Map[String, String] = graphConfig.points
 
       override val vertices: Map[String, String] = {

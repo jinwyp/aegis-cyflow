@@ -21,35 +21,34 @@ object DaemonMaster {
     * 采用持久化流程还是非持久化流程
     *
     * @param name
-    * @param persist
     * @return
     */
-  def moduleProps(name: String, persist: Boolean): Props = {
+  def moduleProps(name: String, persistent: Boolean = true): Props = {
     name match {
-      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_group, module_id), persist)    // todo 依赖是确定的???
-      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_group, module_id), persist)
-      case `module_group` => GroupMaster.props(Array(module_user), persist)
+      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_group, module_id))    // todo 依赖是确定的???
+      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_group, module_id))
+      case `module_group` => GroupMaster.props(Array(module_user))
       case `module_auto`  => AutoMaster.props(Array(module_user, module_flow, module_id))
-      case `module_id`    => IdGenerator.props(name, persist)
+      case `module_id`    => IdGenerator.props(name, persistent)
     }
   }
 
-  def props(names: Array[String], persist: Boolean = true) = Props(new DaemonMaster(names, persist))
+  def props(names: Array[String]) = Props(new DaemonMaster(names))
 
 }
 
 /**
   *
   * @param names
-  * @param persist 是否为持久化流程
   */
-class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor with ActorLogging {
+class DaemonMaster(names: Array[String]) extends Actor with ActorLogging {
 
   import DaemonMaster._
 
+  val idPersistent = context.system.settings.config.getBoolean("flow.id.persistent")
+
   var modules = names.map { name =>
-    log.debug(s"开始创建${name} with persist = ${persist}")
-    val m = context.actorOf(moduleProps(name, persist), name)
+    val m = context.actorOf(moduleProps(name, idPersistent), name)
     context.watch(m)
     (name, m)
   }.toMap
@@ -64,7 +63,7 @@ class DaemonMaster(names: Array[String], persist: Boolean = true) extends Actor 
       modules = rest
       died.foreach { entry =>
         log.warning(s"!!!!!!!!!!!!!!!!!!${entry._1} died, restarting...")
-        val m = context.actorOf(moduleProps(entry._1, persist), entry._1)
+        val m = context.actorOf(moduleProps(entry._1), entry._1)
         context.watch(m)
         modules = modules + (entry._1 -> m)
       }

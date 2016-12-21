@@ -15,6 +15,8 @@ object CangGraph extends FlowGraph {
 
   override val timeout: Long = 1 * 60 * 60
 
+  override val persistent: Boolean = true
+
   override val flowInitial: String = judge_afterStart
 
   override val flowType: String = flow_cang
