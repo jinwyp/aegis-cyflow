@@ -78,7 +78,7 @@ class PersistentFlow(
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
       sender() ! state
-      makeDecision(state.edges.keys)  // 用当前的edges开始决策!!!!
+      makeDecision(state.edges.keys.head) // 用当前的edges开始决策!!!!
 
     case cmd: CommandPoint =>
       log.info(s"received ${cmd.name}")
@@ -100,18 +100,18 @@ class PersistentFlow(
         log.info(s"${event} persisted")
         updateState(event)
         if (cmd.trigger) {
-          val tocheck = points.keys.map(graph.pointEdges(_)).toSet.toIterable
+          val tocheck = graph.pointEdges(points.keys.head)
           makeDecision(tocheck)
         }
         sender() ! state // 返回流程状态
       }
 
-    case CommandHijack(_, updatePoints, updateDecision, trigger) =>
+    case CommandHijack(_, points, updateDecision, trigger) =>
 
-      persist(Hijacked(updatePoints, updateDecision)) { event =>
+      persist(Hijacked(points, updateDecision)) { event =>
         updateState(event)
         if (trigger) {
-          val tocheck = updatePoints.keys.map(graph.pointEdges(_)).toSet
+          val tocheck = graph.pointEdges(points.keys.head)
           makeDecision(tocheck)
         }
         sender() ! state
@@ -134,7 +134,7 @@ class PersistentFlow(
       event =>
         log.info(s"${event} persisted")
         updateState(event)
-        makeDecision(Seq(graph.pointEdges(cmd.name)))
+        makeDecision(graph.pointEdges(cmd.name))
     }
   }
 
@@ -143,22 +143,20 @@ class PersistentFlow(
       event =>
         log.info(s"${event} persisted")
         updateState(event)
-        val tocheck = cmds.points.keys.map(graph.pointEdges(_)).toSet
+        // val tocheck = cmds.points.keys.map(graph.pointEdges(_)).toSet
+        val tocheck = graph.pointEdges(cmds.points.keys.head)
         makeDecision(tocheck)
     }
   }
 
   /**
-    * 所有可以决策的边
-    *
-    * @param edgeNames
     */
-  protected def makeDecision(edgeNames: Iterable[String]) = {
-    edgeNames.foreach { name =>
-      val e = graph.edges(name);
-      if (e.check((state))) {
-        persist(EdgeCompleted(name)) { event =>
-          updateState(event)
+  protected def makeDecision(name: String) = {
+    val e = graph.edges(name);
+    if (e.check((state))) {
+      persist(EdgeCompleted(name)) { event =>
+        updateState(event)
+        if (!graph.inEdges(e.end).exists(state.edges.contains(_))) {
           make(e)
         }
       }
@@ -166,12 +164,13 @@ class PersistentFlow(
   }
 
   /**
-    *  对每条决策边,
+    * 对每条决策边,
     *
     * @param e
     */
   protected def make(e: Edge): Unit = {
-    val arrows: Seq[Arrow] = graph.deciders(e.end)(state)
+
+    val arrows = graph.deciders(e.end)(state)
 
     persist(DecisionUpdated(e.end, arrows)) { event =>
 
@@ -179,15 +178,22 @@ class PersistentFlow(
 
       arrows.foreach { arr =>
         arr match {
-          case a@Arrow(j, Some(e)) =>
-            graph.edges(e).schedule(state, modules)   // 这个决策返回边是调度边, 则调度!!!
-            logState(s"$a")
 
-          case arrow@Arrow(FlowSuccess, None) =>
+          case ArrowSuccess =>
             logState("FlowSuccess")
 
-          case arrow@Arrow(FlowFail, None) =>
+          case ArrowFail =>
             logState("FlowFail")
+
+          case a@Arrow(j, Some(nextEdge)) =>
+            val ne = graph.edges(nextEdge)
+            if (ne.check(state)) {
+              // true边是无法触发的!!!!
+              make(ne)
+            } else {
+              ne.schedule(state, modules) // 这个决策返回边是调度边, 则调度!!!
+              logState(s"$a")
+            }
         }
       }
     }

@@ -32,6 +32,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
         // 边完成
       case EdgeCompleted(name) =>
+        log.info(s"edge[$name] completed")
         state = state.copy(
           edges = state.edges - name,
           histories = name +: state.histories
@@ -49,8 +50,10 @@ abstract class AbstractFlow extends Actor with ActorLogging {
             newPoints = newPoints + (ap -> newPoints(ap).copy(used = true))
           }
 
+        log.info(s"!!!!!($name, $arrows) ---> ${arrows.filter( _.edge.nonEmpty).map( e => (e.edge.get -> true)).toMap}")
+
         state = state.copy(
-          edges = state.edges ++ arrows.map(_.edge).map(e => (e.get -> true)).toMap,
+          edges = state.edges ++ arrows.filter( _.edge.nonEmpty).map( e => (e.edge.get -> true)).toMap,
           points = newPoints
         )
 

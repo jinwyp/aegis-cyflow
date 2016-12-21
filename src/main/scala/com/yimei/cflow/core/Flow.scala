@@ -68,8 +68,8 @@ object Flow {
                     flowId: String,
                     guid: String,
                     points: Map[String, DataPoint],
-                    edges: Map[String, Boolean],
-                    histories: Seq[String],
+                    edges: Map[String, Boolean],     // edges to be eliminated
+                    histories: Seq[String],          // edges already eliminated
                     flowType: String
                   )
 
@@ -192,6 +192,9 @@ object Flow {
                    begin: String = "God"
                  ) extends EdgeBehavior
 
+  val EdgeSuccess = Edge(name = "success", end = "success")
+  val EdgeFail = Edge(name = "fail", end = "fail")
+
   case class Graph(
                     edges: Map[String, Edge],
                     vertices: Map[String, String],
@@ -203,6 +206,9 @@ object Flow {
 
   //case class Arrow(end: String, edge: Option[Edge])
   case class Arrow(end: String, edge: Option[String])
+
+  val ArrowSuccess = Arrow("success", None)
+  val ArrowFail = Arrow("success", None)
 
 }
 

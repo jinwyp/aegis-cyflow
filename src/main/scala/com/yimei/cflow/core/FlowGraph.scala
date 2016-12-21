@@ -141,11 +141,10 @@ trait FlowGraph {
         ptypes(0) == classOf[State] &&
         m.getReturnType == classOf[Seq[Arrow]]
     }.map { am =>
-
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(this, state).asInstanceOf[Seq[Arrow]]
       (am.getName -> behavior)
-    }.toMap
+    }.toMap  ++ Map( "success" -> null, "fail" -> null)
   }
 
   val moduleJar: AnyRef = this

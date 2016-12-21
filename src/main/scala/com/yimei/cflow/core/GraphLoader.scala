@@ -134,7 +134,11 @@ object GraphLoader extends App {
 
       override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
 
-      override val edges: Map[String, Edge] = graphConfig.edges + ("start" -> Edge( name = "start", end = graphConfig.initial))
+      override val edges: Map[String, Edge] = graphConfig.edges ++ Map(
+        "start" -> Edge( name = "start", end = graphConfig.initial),
+        "success" -> Edge( name = "success", end = "success"),
+        "fail" -> Edge( name = "fail", end = "success")
+        )
 
       override val pointEdges = pointEdgesImpl
 

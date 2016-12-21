@@ -41,6 +41,8 @@ object YingGraph extends FlowGraph {
 
   override val edges: Map[String, Edge] = Map(
     "start" -> start,
+    "success" -> EdgeSuccess,
+    "fail" -> EdgeFail,
     "E1" -> E1,
     "E2" -> E2,
     "E3" -> E3,
@@ -85,7 +87,7 @@ object YingGraph extends FlowGraph {
       acc + entry._2.value.toInt
     } match {
       case 200 => Seq(Arrow(J4, Some("E4")))
-      case _ => Seq(Arrow(FlowFail, None))
+      case _ => Seq(ArrowFail)
     }
   }
 
@@ -96,11 +98,11 @@ object YingGraph extends FlowGraph {
       case 100 => Seq(Arrow(J5, Some("E5")))
       case m =>
         // Arrow(FlowFail, Some(EdgeStart))
-        Seq(Arrow(FlowFail, None))
+        Seq(ArrowFail)
     }
   }
 
-  var count = 3
+  var count = 2
 
   def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
@@ -111,8 +113,8 @@ object YingGraph extends FlowGraph {
         Seq(Arrow(J3, Some("E6")))
       }
       else
-        Seq(Arrow(FlowSuccess, None))
-      case _ => Seq(Arrow(FlowFail, None))
+        Seq(ArrowSuccess)
+      case _ => Seq(ArrowFail)
     }
 
   }
