@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.graph.cang.models.BaseFormatter._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{FileObj, TraffickerConfirmPayToFundProvider}
 
 object CangFlowView extends DefaultJsonProtocol {
 
@@ -56,27 +56,65 @@ object CangFlowView extends DefaultJsonProtocol {
                                     status: Map[String, String]) //当前状态
   implicit val portUploadContractPageFormat = jsonFormat5(PortUploadContractPage)
 
-  /** 贸易商审核页面 **/
-  case class TraffickerAuditPage(applyCompanyName: String,                 //融资方公司名称
+  /** 贸易商详细页面 - 基本信息 **/
+  case class TraffickerBasicInfo(applyCompanyName: String,                 //融资方公司名称
                                  businessCode: String,                     //业务编号
                                  coalType: String,                         //煤炭种类
+                                 coalAmount: BigDecimal,                   //总质押吨数
+                                 financeType: String,                      //融资类型
                                  financeCreateTime: Timestamp,             //审批开始时间
                                  financingAmount: BigDecimal,              //拟融资金额
                                  financingDays: Int,                       //融资天数
-                                 confirmFinancingAmount: BigDecimal,       //实际放款金额
-                                 paidDeposit: BigDecimal,                  //已经缴纳保证金
-                                 coalAmount: BigDecimal,                   //总质押吨数
-                                 alreadyRedeemAmount: BigDecimal,          //已赎回数量
-                                 waitRedeemAmount: BigDecimal,             //待赎回数量
-                                 confirmCoalAmount: BigDecimal,            //港口确认吨数
                                  stockPort: String,                        //库存港口
-                                 customerContractFileList: List[FileObj],  //融资方上传合同文件列表
-                                 customerFinanceFileList: List[FileObj],   //融资方上传财务文件列表
-                                 customerBusinessFileList: List[FileObj],  //融资方上传业务文件列表
-                                 supervisorContractFileList: List[FileObj],//监管方上传合同文件列表
-                                 portContractFileList: List[FileObj],      //港口上传合同文件列表
+                                 coalIndex_NCV: Int,
+                                 coalIndex_RS: BigDecimal,
+                                 coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
+                                 upstreamContractNo: String,               //上游合同编号
+                                 downstreamContractNo: String,             //下游合同编号
                                  status: Map[String, String])              //当前状态
-  implicit val traffickerAuditPageFormat = jsonFormat19(TraffickerAuditPage)
+  implicit val traffickerBasicInfoFormat = jsonFormat15(TraffickerBasicInfo)
+
+  /** 贸易商详细页面 - 放款过程信息 **/
+  case class TraffickerLoadInfo(applyCompanyName: String,                  //融资方公司名称
+                                 downstreamCompanyName: String,            //下游公司名称
+                                 confirmFinancingAmount: BigDecimal,       //实际放款金额
+                                 interestRate: BigDecimal,                 //融资方利率
+                                 interestIncome: BigDecimal,               //融资方利息收入
+                                 alreadyPayPrinciple: BigDecimal,          //已回款本金
+                                 waitPayPrinciple: BigDecimal,             //待回款本金
+                                 paidDeposit: BigDecimal,                  //已经缴纳保证金
+                                 fundProviderLoanTime: Timestamp,          //资金方放款时间
+                                 actualSettleInterest: Timestamp,          //实际结息日
+                                 projectDueDate: Timestamp,                //项目到期日
+                                 alreadyRedeemAmount: BigDecimal,          //已赎回数量
+                                 waitRedeemAmount: BigDecimal)             //待赎回数量
+  implicit val traffickerLoadInfoFormat = jsonFormat13(TraffickerLoadInfo)
+
+  /** 贸易商详细页面 - 回款过程信息 **/
+  case class TraffickerPaymentInfo(fundProviderCompanyName: String,            //资金方公司名称
+                                   confirmFinancingAmount: BigDecimal,         //实际放款金额
+                                   fundProviderInterestRate: BigDecimal,       //资金方利率
+                                   fundProviderInterestIncome: BigDecimal,     //资金方利息
+                                   alreadyPayPrincipleFundProvider: BigDecimal,//已回款本金 - 贸易商回款给资金方
+                                   waitPayPrincipleFundProvider: BigDecimal,   //待回款本金 - 贸易商回款给资金方
+                                   fundProviderLoanTime: Timestamp,            //资金方放款时间
+                                   payToFundProviderTime: Timestamp)           //回款给资金方时间
+  implicit val traffickerPaymentInfoFormat = jsonFormat8(TraffickerPaymentInfo)
+
+  /** 贸易商详细页面 - 合同单据信息 **/
+  case class TraffickerFileInfo(customerContractFileList: List[FileObj],   //融资方上传合同文件列表
+                                customerFinanceFileList: List[FileObj],    //融资方上传财务文件列表
+                                customerBusinessFileList: List[FileObj],   //融资方上传业务文件列表
+                                supervisorContractFileList: List[FileObj], //监管方上传合同文件列表
+                                portContractFileList: List[FileObj])       //港口上传合同文件列表
+  implicit val traffickerFileInfoFormat = jsonFormat5(TraffickerFileInfo)
+
+  /** 贸易商详细页面 **/
+  case class TraffickerDetailPage(basicInfo: TraffickerBasicInfo,
+                                  loadInfo: TraffickerLoadInfo,
+                                  fileInfo: TraffickerFileInfo,
+                                  paymentInfo: TraffickerPaymentInfo)              //当前状态
+  implicit val traffickerAuditPageFormat = jsonFormat4(TraffickerDetailPage)
 
   /** 贸易商财务审核,给出放款建议页面 **/
   case class TraffickerFinanceAuditPage(applyCompanyName: String,                 //融资方公司名称
