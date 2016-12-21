@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.cang
 
+import com.yimei.cflow.core.Flow.TaskInfo
+
 /**
   * Created by hary on 16/12/15.
   */
@@ -64,9 +66,9 @@ object CangConfig {
   /**
     * 数据采集点与数据点对应关系
     */
-  val dataPointMap: Map[String, Array[String]] = Map(
-    data_start -> Array(point_start),
-    data_transferAccountsToCustomer -> Array(point_serviceTransferAccountsToCustomer)
+  val dataPointMap: Map[String, TaskInfo] = Map(
+    data_start -> TaskInfo("描述", Seq(point_start)),
+    data_transferAccountsToCustomer -> TaskInfo("描述", Seq(point_serviceTransferAccountsToCustomer))
   )
 
 
@@ -94,21 +96,22 @@ object CangConfig {
   /**
     * 所有用户任务与数据点的对应关系
     */
-  val taskPointMap: Map[String, Array[String]] = Map(
-    task_traffickerAssignUsers -> Array(point_traffickerAssignUsers),
-    task_customerUploadContract -> Array(point_customerUploadContract),
-    task_supervisorUploadContract -> Array(point_supervisorUploadContract),
-    task_portUploadContract -> Array(point_portUploadContract),
-    task_traffickerAudit -> Array(point_traffickerAudit),
-    task_traffickerFinanceAudit -> Array(point_traffickerFinanceAudit),
-    task_fundProviderAudit -> Array(point_fundProviderAudit),
-    task_fundProviderFinanceLoad -> Array(point_fundProviderFinanceLoad),
-    task_customerPayToTrafficker -> Array(point_customerPayToTrafficker),
-    task_traffickerNoticePortReleaseGoods -> Array(point_traffickerNoticePortReleaseGoods),
-    task_portReleaseGoods -> Array(point_portReleaseGoods),
-    task_traffickerAuditIfCompletePayment -> Array(point_traffickerAuditIfCompletePayment),
-    task_traffickerConfirmPayToFundProvider -> Array(point_traffickerConfirmPayToFundProvider),
-    task_traffickerFinancePayToFundProvider -> Array(point_traffickerFinancePayToFundProvider)
+  val taskPointMap: Map[String, TaskInfo] = Map(
+    task_traffickerAssignUsers -> TaskInfo("描述", Seq(point_traffickerAssignUsers)),
+    task_customerUploadContract -> TaskInfo("描述", Seq(point_customerUploadContract)),
+    task_supervisorUploadContract -> TaskInfo("描述", Seq(point_supervisorUploadContract)),
+    task_portUploadContract -> TaskInfo("描述", Seq(point_portUploadContract)),
+    task_traffickerAudit -> TaskInfo("描述", Seq(point_traffickerAudit)),
+    task_traffickerFinanceAudit -> TaskInfo("描述", Seq(point_traffickerFinanceAudit)),
+    task_fundProviderAudit -> TaskInfo("描述", Seq(point_fundProviderAudit)),
+    task_fundProviderFinanceLoad -> TaskInfo("描述", Seq(point_fundProviderFinanceLoad)),
+    task_customerPayToTrafficker -> TaskInfo("描述", Seq(point_customerPayToTrafficker)),
+    task_traffickerNoticePortReleaseGoods -> TaskInfo("描述", Seq(point_traffickerNoticePortReleaseGoods)),
+    task_portReleaseGoods -> TaskInfo("描述", Seq(point_portReleaseGoods)),
+    task_traffickerAuditIfCompletePayment -> TaskInfo("描述", Seq(point_traffickerAuditIfCompletePayment)),
+    task_traffickerConfirmPayToFundProvider -> TaskInfo("描述", Seq(point_traffickerConfirmPayToFundProvider)),
+    task_traffickerFinancePayToFundProvider -> TaskInfo("描述", Seq(point_traffickerFinancePayToFundProvider))
+  
   )
 
 

@@ -1,6 +1,6 @@
 package com.yimei.cflow.graph.cang
 
-import com.yimei.cflow.core.Flow.{Edge, Graph, State}
+import com.yimei.cflow.core.Flow.{Edge, Graph, State, TaskInfo}
 import com.yimei.cflow.core.FlowGraph
 import com.yimei.cflow.graph.cang.CangConfig._
 
@@ -19,9 +19,9 @@ object CangGraph extends FlowGraph {
 
   override val flowType: String = flow_cang
 
-  override val userTasks: Map[String, Array[String]] = taskPointMap
+  override val userTasks: Map[String, TaskInfo] = taskPointMap
 
-  override val autoTasks: Map[String, Array[String]] = dataPointMap
+  override val autoTasks: Map[String, TaskInfo] = dataPointMap
 
 
   /////////////////////////////////////////////////////////////

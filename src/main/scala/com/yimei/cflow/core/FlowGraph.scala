@@ -76,8 +76,8 @@ trait FlowGraph {
   val vertices: Map[String, String]
   val inEdges: Map[String, Array[String]] = Map()
   val flowType: String
-  val userTasks: Map[String, Array[String]]
-  val autoTasks: Map[String, Array[String]]
+  val userTasks: Map[String, TaskInfo]
+  val autoTasks: Map[String, TaskInfo]
   val pointEdges: Map[String, String]
 
   val blueprint: Graph = Graph(edges, vertices, None, points, userTasks, autoTasks)
@@ -89,13 +89,13 @@ trait FlowGraph {
     def process(name: String, e: Edge) = {
 
       val userPointMap = e.userTasks.map { (ut: String) =>
-        userTasks(ut).map(pt =>
+        userTasks(ut).points.map(pt =>
           (pt -> name)
         ).toMap
       }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
 
       val autoPointMap = e.autoTasks.map { (ut: String) =>
-        autoTasks(ut).map(pt =>
+        autoTasks(ut).points.map(pt =>
           (pt -> name)
         ).toMap
       }.foldLeft(Map[String, String]())((acc, elem) => acc ++ elem)
@@ -103,13 +103,13 @@ trait FlowGraph {
       val partUPointMap = (for {
         put <- e.partUTasks
         task <- put.tasks
-        pt <- userTasks(task)
+        pt <- userTasks(task).points
       } yield (pt -> name)).toMap
 
       val partGPointMap = (for {
         put <- e.partGTasks
         task <- put.tasks
-        pt <- userTasks(task)
+        pt <- userTasks(task).points
       } yield (pt -> name)).toMap
 
       autoPointMap ++ userPointMap ++ partUPointMap ++ partGPointMap

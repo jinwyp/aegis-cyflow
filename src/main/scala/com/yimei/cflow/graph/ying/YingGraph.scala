@@ -15,8 +15,8 @@ object YingGraph extends FlowGraph {
 
   override val flowType: String = flow_ying
   override val timeout: Long = 15
-  override val userTasks: Map[String, Array[String]] = taskPointMap
-  override val autoTasks: Map[String, Array[String]] = autoPointMap
+  override val userTasks: Map[String, TaskInfo] = taskPointMap
+  override val autoTasks: Map[String, TaskInfo] = autoPointMap
   override val flowInitial: String = J0
 
   override val points: Map[String, String] = pointDescription
@@ -102,10 +102,10 @@ object YingGraph extends FlowGraph {
     }
   }
 
-  var count = 2
+  var count = 0
 
   def V5(state: State): Seq[Arrow] = {
-    state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+    state.points.filter(entry => autoPointMap(auto_DEF).points.contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if (count > 0) {

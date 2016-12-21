@@ -22,7 +22,7 @@ object YingGraphJar {
       acc + entry._2.value.toInt
     } match {
       case 200 => Seq(Arrow(J4, Some("E4")))
-      case _ => Seq(Arrow(FlowFail, None))
+      case _ => Seq(ArrowFail)
     }
   }
 
@@ -31,15 +31,14 @@ object YingGraphJar {
       acc + entry._2.value.toInt
     } match {
       case 100 => Seq(Arrow(J5, Some("E5")))
-      case m =>
-        Seq(Arrow(FlowFail, None))
+      case m => Seq(ArrowFail)
     }
   }
 
-  var count = 3
+  var count = 0
 
   def V5(state: State): Seq[Arrow] = {
-    state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
+    state.points.filter(entry => autoPointMap(auto_DEF).points.contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if (count > 0) {
@@ -47,9 +46,9 @@ object YingGraphJar {
         Seq(Arrow(J3, Some("E6")))
       }
       else
-        Seq(Arrow(FlowSuccess, None))
+        Seq(ArrowSuccess)
 
-      case _ => Seq(Arrow(FlowFail, None))
+      case m => Seq(ArrowFail)
     }
 
   }

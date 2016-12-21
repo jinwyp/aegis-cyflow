@@ -126,21 +126,21 @@ class TestClient(proxy: ActorRef) extends Actor
     var points: Map[String, DataPoint] = null
     //设置参与方用户
     if (task.taskName == "TKPU1") {
-      points = taskPointMap(task.taskName).map { pname =>
+      points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
         (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 设置参与方组
     else if (task.taskName == "TKPG1") {
-      points = taskPointMap(task.taskName).map { pname =>
+      points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wqGroup", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
         (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 其他为用户任务
     else {
-      points = taskPointMap(task.taskName).map { pname =>
+      points = taskPointMap(task.taskName).points.map { pname =>
         (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date().getTime)) // uuid为采集id
       }.toMap
     }
