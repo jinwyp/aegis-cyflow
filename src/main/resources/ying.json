@@ -3,7 +3,7 @@
   "graphJar": "com.yimei.cflow.graph.ying.YingGraphJar",
   "timeout": 100,
   "persistent": true,
-  "poinsts": {
+  "points": {
     "A" : "征信平分1",
     "B" : "征信平分2",
     "C" : "征信平分3",
@@ -40,6 +40,7 @@
   },
   "edges": {
     "E1": {
+      "name": "E1",
       "begin": "V0",
       "end": "V1",
       "userTasks": [],
@@ -48,6 +49,7 @@
       "autoTasks": ["A", "B", "C"]
     },
     "E2": {
+      "name": "E2",
       "begin": "V1",
       "end": "V2",
       "userTasks": ["TKPU1", "TKPG1"],
@@ -56,6 +58,7 @@
       "autoTasks": []
     },
     "E3": {
+      "name": "E3",
       "begin": "V2",
       "end": "V3",
       "userTasks": [],
@@ -70,6 +73,7 @@
       }]
     },
     "E4": {
+      "name": "E4",
       "begin": "V3",
       "end": "V4",
       "userTasks": ["UA"],
@@ -78,6 +82,7 @@
       "autoTasks": []
     },
     "E5": {
+      "name": "E5",
       "begin": "V4",
       "end": "V5",
       "userTasks": [],
@@ -86,8 +91,9 @@
       "autoTasks": ["DEF"]
     },
     "E6": {
+      "name": "E6",
       "begin": "V5",
-      "end": "V6",
+      "end": "V3",
       "userTasks": [],
       "partGTasks": [],
       "partUTasks": [],

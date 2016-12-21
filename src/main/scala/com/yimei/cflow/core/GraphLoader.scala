@@ -61,10 +61,17 @@ object GraphLoader extends App {
 
     val classLoader = getClassLoader(gFlowType)
 
-    val graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(if (gFlowType == "ying") "ying.json" else "flow.json"))
+    var graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(if (gFlowType == "ying") "ying.json" else "flow.json"))
       .mkString
       .parseJson
       .convertTo[GraphConfig]
+
+    graphConfig = graphConfig.copy(edges = graphConfig.edges ++ Map(
+      "start" -> Edge( name = "start", begin = "God", end = graphConfig.initial),
+      "success" -> Edge( name = "success", end = "success"),
+      "fail" -> Edge( name = "fail", end = "success")
+      )
+    )
 
     println(graphConfig.toJson.prettyPrint)
 
@@ -134,11 +141,7 @@ object GraphLoader extends App {
 
       override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
 
-      override val edges: Map[String, Edge] = graphConfig.edges ++ Map(
-        "start" -> Edge( name = "start", end = graphConfig.initial),
-        "success" -> Edge( name = "success", end = "success"),
-        "fail" -> Edge( name = "fail", end = "success")
-        )
+      override val edges: Map[String, Edge] = graphConfig.edges
 
       override val pointEdges = pointEdgesImpl
 
@@ -168,7 +171,7 @@ object GraphLoader extends App {
       val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[State] &&
-        method.getReturnType == classOf[Arrow]
+        method.getReturnType == classOf[Seq[Arrow]]
     }.map { am =>
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(module, state).asInstanceOf[Seq[Arrow]]
