@@ -123,7 +123,7 @@
                             classes = 'isFinished';
                         }else if(isProcessing){
                             var complete = false;
-                            originalData[type][t].forEach(function(p, pi){
+                            originalData[type][t].points.forEach(function(p, pi){
                                 originalData.state.points.hasOwnProperty(p) && (complete=true);
                             })
                             !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
@@ -142,7 +142,7 @@
                                 classes = 'isFinished';
                             }else if(isProcessing){
                                 var complete = false;
-                                originalData['userTasks'][subt].forEach(function(p, pi){
+                                originalData['userTasks'][subt].points.forEach(function(p, pi){
                                     originalData.state.points.hasOwnProperty(p) && (complete=true);
                                 })
                                 !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
@@ -348,7 +348,7 @@
         var taskId = this._private.data.id;
         var taskType = (this._private.data.taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
         var originalPoints = this._private.data.original.points;
-        var points = this._private.data.original[taskType][taskId];
+        var points = this._private.data.original[taskType][taskId].points;
         var phtml = ''; 
         (points.length>0) && points.forEach(function(p, pi){
             var status;
@@ -364,7 +364,7 @@
             
             phtml += '<li><span class="point">'+ originalPoints[p] +'：</span><span class="pointState">'+ status +'</span></li>'
         })
-        return '<ul class="edgeTip">'+ phtml +'</ul>';
+        return '<h5>'+ this._private.data.original[taskType][taskId].description +'</h5><ul class="edgeTip">'+ phtml +'</ul>';
     }
     var autotaskTmpl = function(model, type){
         var items = '';

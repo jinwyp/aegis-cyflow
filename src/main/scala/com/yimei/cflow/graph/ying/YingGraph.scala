@@ -41,8 +41,8 @@ object YingGraph extends FlowGraph {
 
   override val edges: Map[String, Edge] = Map(
     "start" -> start,
-    "success" -> EdgeSuccess,
-    "fail" -> EdgeFail,
+    //"success" -> EdgeSuccess,
+    //"fail" -> EdgeFail,
     "E1" -> E1,
     "E2" -> E2,
     "E3" -> E3,

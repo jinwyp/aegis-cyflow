@@ -48,6 +48,10 @@ object CangFlowValidator {
         startFlow.interestRate as "利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
         startFlow.stockPort as "库存港口" is notEmpty
         startFlow.stockPort.length as "库存港口字段长度" is between(1, 200)
+        startFlow.upstreamContractNo as "上游合同编号" is notEmpty
+        startFlow.upstreamContractNo.length as "上游合同编号字段长度" is between(1, 30)
+        startFlow.downstreamContractNo as "下游合同编号" is notEmpty
+        startFlow.downstreamCompanyName.length as "下游合同编号字段长度" is between(1, 30)
     }
 
   /** 贸易商选择 港口, 监管, 资金方 业务人员, 财务 **/

@@ -26,8 +26,10 @@ object CangFlowModel extends DefaultJsonProtocol {
                        coalIndex_ADV: BigDecimal,        //煤炭 热值,硫分,空干基挥发分
                        stockPort: String,                //库存港口
                        coalAmount: BigDecimal,           //总质押吨数
+                       upstreamContractNo: String,       //上游合同编号
+                       downstreamContractNo: String,     //下游合同编号
                        auditFileList: List[FileObj])     //审批文件列表
-  implicit val startFlowFormat = jsonFormat19(StartFlow)
+  implicit val startFlowFormat = jsonFormat21(StartFlow)
 
   /**
     * 贸易商选择
