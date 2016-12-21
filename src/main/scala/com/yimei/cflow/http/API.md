@@ -36,4 +36,13 @@ POST /auto/:flowType/:flowId/:autoTask   -- 手动触发指定流程的指定任
 POST /flow/user/:party/:instance_id/:userId?flowType=:flowType                     -- 创建流程
 GET  /flow/user/:party/:instance_id/:userId?flowType=:flowType&status=:status&limit=10&offset=20  -- 查询用户流程, 如果没有指定类型就是全部类型流程  !!!
 GET  /flow/:flowId                                                              -- 查询指定流程()
+GET  /flow?
+flowId=:flowId&
+flowType=:flowType&
+userType=:userType&
+userId=:userId&
+status=:status&
+limit=:limit&
+offset=:offset&
+
 PUT  /flow/admin/hijack/:flowId                                                 --  hijack 流程

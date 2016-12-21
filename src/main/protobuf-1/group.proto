@@ -1,6 +1,6 @@
 import "scalapb/scalapb.proto";
 
-package com.yimei.cflow;
+package com.yimei.cflow.models;
 
 message CommandGroupTask {
     required string flowId = 1;

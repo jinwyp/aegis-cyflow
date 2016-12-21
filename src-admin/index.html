@@ -18,8 +18,20 @@
      <script src="lib/cytoscape-dagre.js"></script>
      <script src='js/fc.js'></script>
      <script>
-
         var cy = new FC('cy');
+
+        var count = 0;
+        $('#cy canvas').css('visibility','hidden');
+        cy.cy.onRender(function(){
+            count ++;
+            if(count==2){
+                cy.cy.zoom(0).center();
+                setTimeout(function(){
+                    $('#cy canvas').css('visibility','visible');
+                }, 100)
+                cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
+            }
+        })
         // var cy2 = new FC('cy2');
 
         // cy2.cy.ready(function(){

@@ -1,6 +1,9 @@
 *{
     margin:0; padding:0; 
 }
+#cy>canvas{
+    visibility: hidden;
+}
 #cy, #cy2{
     position:absolute; top:20px; left:20px;
 }
