@@ -22,14 +22,14 @@ object UserMaster extends CoreConfig {
 
 
 
-  def props(dependOn: Array[String], persist: Boolean = true) = Props(new UserMaster(dependOn, persist))
+  def props(dependOn: Array[String], persist: Boolean = true) = Props(new UserMaster(dependOn))
 
 }
 
 /**
   * Created by hary on 16/12/2.
   */
-class UserMaster(dependOn: Array[String], persist: Boolean = true)
+class UserMaster(dependOn: Array[String])
   extends ModuleMaster(module_user, dependOn)
   with ServicableBehavior {
 
@@ -59,7 +59,8 @@ class UserMaster(dependOn: Array[String], persist: Boolean = true)
   }
 
   private def create(guid: String) = {
-    val p = persist match {
+
+    val prop = context.system.settings.config.getBoolean("flow.user.persistent") match {
       case true  =>  {
         log.info(s"创建persistent user")
         Props(new PersistentUser(guid, modules, 20))
@@ -69,7 +70,7 @@ class UserMaster(dependOn: Array[String], persist: Boolean = true)
         Props(new MemoryUser(guid, modules))
       }
     }
-    context.actorOf(p, guid)
+    context.actorOf(prop, guid)
   }
 
 }

@@ -18,18 +18,19 @@ object GroupMaster {
     }
   }
 
-  def props(dependOn: Array[String],persist: Boolean = true): Props = Props(new GroupMaster(dependOn,persist))
+  def props(dependOn: Array[String]): Props = Props(new GroupMaster(dependOn))
 }
 
 /**
   * Created by hary on 16/12/12.
   */
-class GroupMaster(dependOn: Array[String], persist: Boolean = true)
+class GroupMaster(dependOn: Array[String])
   extends ModuleMaster(module_group, dependOn)
   with ServicableBehavior {
 
   def create(ggid: String): ActorRef = {
-    val p = persist match {
+
+    val prop = context.system.settings.config.getBoolean("flow.group.persistent") match {
       case true  =>  {
         log.info(s"创建persistent group")
         Props(new PersistentGroup(ggid, modules, 20))
@@ -39,8 +40,7 @@ class GroupMaster(dependOn: Array[String], persist: Boolean = true)
         Props(new MemoryGroup(ggid, modules))
       }
     }
-
-    context.actorOf(p,ggid)
+    context.actorOf(prop,ggid)
   }
 
   override def serving: Receive = {

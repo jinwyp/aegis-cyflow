@@ -14,6 +14,7 @@ import scala.concurrent.Future
 object YingGraph extends FlowGraph {
 
   override val flowType: String = flow_ying
+  override val persistent: Boolean = true
   override val timeout: Long = 15
   override val userTasks: Map[String, TaskInfo] = taskPointMap
   override val autoTasks: Map[String, TaskInfo] = autoPointMap
