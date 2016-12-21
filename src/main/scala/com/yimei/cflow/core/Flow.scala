@@ -178,9 +178,9 @@ object Flow {
   //   value为, 这个参与方运营组需要作的任务列表
   //
   // common judges
-  val FlowSuccess = "FlowSuccess"
-  val FlowFail = "FlowFail"
-  val FlowTodo = "FlowTodo"
+//  val FlowSuccess = "FlowSuccess"
+//  val FlowFail = "FlowFail"
+//  val FlowTodo = "FlowTodo"
 
   case class Edge(
                    autoTasks: Seq[String] = List(),
@@ -210,7 +210,7 @@ object Flow {
   case class Arrow(end: String, edge: Option[String])
 
   val ArrowSuccess = Arrow("success", None)
-  val ArrowFail = Arrow("success", None)
+  val ArrowFail = Arrow("fail", None)
 
 }
 
