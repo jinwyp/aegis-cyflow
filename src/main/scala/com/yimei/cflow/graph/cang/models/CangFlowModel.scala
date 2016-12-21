@@ -36,8 +36,7 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val startFlowBasicInfoFormat = jsonFormat21(StartFlowBasicInfo)
 
   /** 尽调报告信息 **/
-  case class StartFlowInvestigationInfo(financeId: Long,                      //金融单id
-                                        applyCompanyName: String,             //申请公司/融资方
+  case class StartFlowInvestigationInfo(applyCompanyName: String,             //申请公司/融资方
                                         ourContractCompany: String,           //我方签约公司
                                         upstreamContractCompany:String,       //上游签约单位
                                         downstreamContractCompany: String,    //下游签约单位
@@ -56,11 +55,10 @@ object CangFlowModel extends DefaultJsonProtocol {
                                         businessRiskPoint: String,            //业务风险点
                                         performanceCreditAbilityEval: String, //履约信用及能力评估
                                         finalConclusion: String)              //综合意见/最终结论
-  implicit val startFlowInvestigationInfoFormat = jsonFormat20(StartFlowInvestigationInfo)
+  implicit val startFlowInvestigationInfoFormat = jsonFormat19(StartFlowInvestigationInfo)
 
   /** 监管报告信息 **/
-  case class StartFlowSupervisorInfo(financeId: Long,                     //金融单id
-                                     storageLocation: String,             //煤炭仓储地
+  case class StartFlowSupervisorInfo(storageLocation: String,             //煤炭仓储地
                                      storageProperty: String,             //仓储性质
                                      storageAddress: String,              //仓储地地址
                                      historicalCooperationDetail: String, //历史合作情况
@@ -68,8 +66,8 @@ object CangFlowModel extends DefaultJsonProtocol {
                                      portStandardDegree: String,          //保管及进出口流程规范程度
                                      supervisionCooperateDetail: String,  //监管配合情况
                                      supervisionScheme: String,           //监管方案
-                                     finalConclusion: String)                                  //最终结论/综合意见
-  implicit val startFlowSupervisorInfoFormat = jsonFormat10(StartFlowSupervisorInfo)
+                                     finalConclusion: String)             //最终结论/综合意见
+  implicit val startFlowSupervisorInfoFormat = jsonFormat9(StartFlowSupervisorInfo)
 
   case class StartFlow(basicInfo: StartFlowBasicInfo,
                        investigationInfo: StartFlowInvestigationInfo,
