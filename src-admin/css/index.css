@@ -1,0 +1,6 @@
+body{
+    background:#3c5b78;
+}
+header, .container{
+    width:1200px; margin:0 auto;
+}

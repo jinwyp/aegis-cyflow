@@ -319,7 +319,7 @@
 
         cy.nodes('.node').qtip({
             content: function(){
-                var data = this._private.data;
+                var data = this.data();
                 var id = data.id;
                 var vertices = data.original.vertices;
                 return vertices[id];
@@ -345,18 +345,18 @@
 
     var taskTip = function(){
         var self = this;
-        var taskId = this._private.data.id;
-        var taskType = (this._private.data.taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
-        var originalPoints = this._private.data.original.points;
-        var points = this._private.data.original[taskType][taskId].points;
+        var taskId = this.data().id;
+        var taskType = (this.data().taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
+        var originalPoints = this.data().original.points;
+        var points = this.data().original[taskType][taskId].points;
         var phtml = ''; 
         (points.length>0) && points.forEach(function(p, pi){
             var status;
             if(!!self._private.classes.isFinished){
-                status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self._private.data.original.state.points[p].value + '</i>';
+                status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self.data().original.state.points[p].value + '</i>';
             }
             if(!!self._private.classes.isProcessing){
-                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self._private.data.original.state.points[p].value) + '</i>' : '<i class="ing">进行中</i>';
+                status = self.data().original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self.data().original.state.points[p].value) + '</i>' : '<i class="ing">进行中</i>';
             }
             if(!self._private.classes.isProcessing && !self._private.classes.isFinished){
                 status = '<i class="wait">未开始</i>';
@@ -364,7 +364,7 @@
             
             phtml += '<li><span class="point">'+ originalPoints[p] +'：</span><span class="pointState">'+ status +'</span></li>'
         })
-        return '<h5>'+ this._private.data.original[taskType][taskId].description +'</h5><ul class="edgeTip">'+ phtml +'</ul>';
+        return '<h5>'+ this.data().original[taskType][taskId].description +'</h5><ul class="edgeTip">'+ phtml +'</ul>';
     }
     var autotaskTmpl = function(model, type){
         var items = '';
@@ -403,7 +403,7 @@
     }
 
     var edgeTip = function(){
-        var data = this._private.data.original;
+        var data = this.data().original;
         var autotask, usertask, partgtask, partutask;
         autotask = usertask = partgtask = partutask = '';
 

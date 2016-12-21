@@ -1,44 +1,13 @@
 <!DOCTYPE html>  <!-- HTML5 document type -->
 <html>
 	<head>
-        <link rel="stylesheet" href="lib/jquery.qtip.css"/>
-        <link rel="stylesheet" href="css/fc.css">
+        <link rel="stylesheet" href="css/index.css">
 	</head>
 	<body>
-	<div id="cy"
-     style="width:600px; height:600px; background-color: #DAE4E4;"></div>
-     <!--<div id="cy2"
-     style="width:600px; height:600px; background-color: transparent"></div>-->
-
-     <script src='lib/jquery.js'></script>
-     <script src="lib/jquery.qtip.js"></script>
-     <script src='lib/cytoscape.js'></script>
-     <script src="lib/cytoscape-qtip.js"></script>
-     <script src="lib/dagre.js"></script>
-     <script src="lib/cytoscape-dagre.js"></script>
-     <script src='js/fc.js'></script>
-     <script>
-        var cy = new FC('cy');
-
-        var count = 0;
-        $('#cy canvas').css('visibility','hidden');
-        cy.cy.onRender(function(){
-            count ++;
-            if(count==2){
-                cy.cy.zoom(0).center();
-                setTimeout(function(){
-                    $('#cy canvas').css('visibility','visible');
-                }, 100)
-                cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
-            }
-        })
-        // var cy2 = new FC('cy2');
-
-        // cy2.cy.ready(function(){
-        //     setTimeout(function(){
-        //         cy2.drawProcessing();
-        //     }, 0)
-        // })
-     </script>
+    <header><img src="/img/logo.png" alt=""></header>
+    <div class="container"></div>
+    
+     <script src='lib/jquery.js'></script></script>
+     <script src='lib/pagination.js'></script>
 	</body>
 </html>
