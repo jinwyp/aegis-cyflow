@@ -46,6 +46,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
   with PartyUserTable
   with FlowTaskTable
   with UserGroupTable
+  with FlowInstanceTable
   with TaskProtocol
   with CoreConfig {
   import driver.api._
@@ -149,10 +150,15 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
             case _ => throw new DatabaseException("不存在该用户")
           }
         }
+
+        val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id===entity.flowId).result.head) recover {
+          case _ => throw new DatabaseException("该流程不存在")
+        }
+
         //插入数据库
-        def insertTask(p:PartyInstanceEntity, u:PartyUserEntity): Future[FlowTaskEntity] = {
+        def insertTask(p:PartyInstanceEntity, u:PartyUserEntity,f:FlowInstanceEntity): Future[FlowTaskEntity] = {
           dbrun(flowTask returning flowTask.map(_.id) into ((fl,id)=>fl.copy(id=id)) +=
-            FlowTaskEntity(None,entity.flowId,task_id,entity.taskName,entity.points.toJson.toString,p.party_class+"-"+p.instance_id,u.user_id,Timestamp.from(Instant.now))
+            FlowTaskEntity(None,f.flow_id,task_id,entity.taskName,entity.points.toJson.toString,p.party_class+"-"+p.instance_id,u.user_id,Timestamp.from(Instant.now))
           ) recover {
             case a:SQLIntegrityConstraintViolationException => throw new DatabaseException("当前任务已被提交")
           }
@@ -162,7 +168,8 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         val result: Future[User.State] = for {
           p <- pi
           u <- getUser(p)
-          f <- insertTask(p,u)
+          fw <- flow
+          f <- insertTask(p,u,fw)
           s <- ServiceProxy.userSubmit(proxy,f.user_type,f.user_id,f.task_id,entity.points)
         } yield {
           s
@@ -283,11 +290,13 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
   def autoTask = post {
     pathPrefix("auto"/ Segment / Segment / Segment) { (flowType,flowId,taskName) =>
 
-
-      val state: Future[Flow.State] = ServiceProxy.flowState(proxy,flowId)
+      val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id===flowId).result.head) recover {
+        case _ => throw new DatabaseException("该流程不存在")
+      }
 
       complete(for {
-        s <- state
+        f <- flow
+        s <- ServiceProxy.flowState(proxy,f.flow_id)
       } yield {
         ServiceProxy.autoTask(proxy,s,flowType,taskName)
         "success"

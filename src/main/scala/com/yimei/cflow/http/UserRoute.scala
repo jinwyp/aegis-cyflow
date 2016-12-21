@@ -28,10 +28,13 @@ case class UserInfo(password:String, phone:Option[String],email:Option[String], 
 
 case class QueryUserResult(userInfo:PartyUserEntity,status:State)
 
+case class UserListEntity(userList:Seq[PartyUserEntity],total:Int)
+
 trait UserModelProtocol extends DefaultJsonProtocol with UserProtocol {
 
   implicit val addUserModelFormat = jsonFormat4(UserInfo)
   implicit val queryUserResult = jsonFormat2(QueryUserResult)
+  implicit val userlistFormat = jsonFormat2(UserListEntity)
 }
 
 
@@ -75,8 +78,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
                PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))) recover {
-
-               case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
+               case _ => throw new DatabaseException("添加用户错误")
+               //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }
            val result: Future[State] = (for {
@@ -163,16 +166,25 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
           def getUserList(p: PartyInstanceEntity): Future[Seq[PartyUserEntity]] = {
             dbrun(partyUser.filter(u =>
                 u.party_id === p.id
-            ).result) recover {
+            ).drop(offset).take(limit).result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
           }
 
-          val result: Future[Seq[PartyUserEntity]] = for {
+          def getTotal(p: PartyInstanceEntity) = {
+            dbrun(partyUser.filter(u =>
+              u.party_id === p.id
+            ).length.result) recover {
+              case _ => throw new DatabaseException("不存在该用户")
+            }
+          }
+
+          val result: Future[UserListEntity] = for {
             p <- pi
             u <- getUserList(p)
+            total <- getTotal(p)
           } yield {
-            u
+            UserListEntity(u,total)
           }
           complete(result)
         }
@@ -181,7 +193,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
 
   /**
-    * 查询用户
+    *更新用户
     *
     * @return
     */

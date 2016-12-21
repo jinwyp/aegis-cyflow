@@ -5,10 +5,12 @@ create table flow_instance(
   flow_type varchar(16) not null,     -- cang   ying
   user_type varchar(32) not null,    -- 用户类型  相当于party_id
   user_id varchar(64) not null,  -- 用户id  ?????
-  points  varchar(8192),         -- 流程上下文
+  state  varchar(8192),         -- 流程上下文
+  finished TINYINT not NULL ,    -- 0：未完成 1：已完成
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- flow_id 唯一索引
 
 -- 流程任务
 create table flow_task(
