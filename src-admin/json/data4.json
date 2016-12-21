@@ -1,23 +1,38 @@
 {
     "userTasks": {
-        "TKPG1": [
-            "KPG1"
-        ],
-        "TKPU1": [
-            "KPU1"
-        ],
-        "PU": [
-            "PU1",
-            "PU2"
-        ],
-        "PG": [
-            "PG1",
-            "PG2"
-        ],
-        "UA": [
-            "UA1",
-            "UA2"
-        ]
+        "TKPG1": {
+            "description": "描述TKPG1",
+            "points": [
+                "KPG1"
+            ]
+        },
+        "TKPU1": {
+            "description": "描述TKPU1",
+            "points": [
+                "KPU1" 
+            ]
+        },
+        "PU": {
+            "description": "描述PU",
+            "points": [
+                "PU1",
+                "PU2"
+            ]
+        },
+        "PG": {
+            "description": "描述PU",
+            "points": [
+                "PG1",
+                "PG2"
+            ]
+        },
+        "UA": {
+            "description": "描述UA",
+            "points": [
+                "UA1",
+                "UA2"
+            ]
+        }
     },
     "state": {
         "guid": "001-hary1",
@@ -123,20 +138,32 @@
         ]
     },
     "autoTasks": {
-        "A": [
-            "A"
-        ],
-        "B": [
-            "B"
-        ],
-        "C": [
-            "C"
-        ],
-        "DEF": [
-            "D",
-            "E",
-            "F"
-        ]
+        "A": {
+            "description": "描述TKPG1",
+            "points": [
+                "A"
+            ]
+        },
+        "B": {
+            "description": "描述TKPG1",
+            "points": [
+                "B"
+            ]
+        },
+        "C": {
+            "description": "描述TKPG1",
+            "points": [
+                "C"
+            ]
+        },
+        "DEF": {
+            "description": "描述TKPG1",
+            "points": [
+                "D",
+                "E",
+                "F"
+            ]
+        }
     },
     "points": {
         "E": "征信平分5",
