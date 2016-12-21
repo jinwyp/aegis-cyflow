@@ -183,7 +183,7 @@
 
             edges.forEach(function(e, ei){
                 var nArr = [e.data.source, e.data.target];
-            
+
                 nArr.forEach(function(n, ni){
                     var c = '';
                     if(e.classes.indexOf('isFinished')>=0){
@@ -202,12 +202,15 @@
                         nodes.push({data: {id: n, taskType:e.data.taskType, original: originalData}, classes: c})
                     }else{
                         var classes = nodes[node_keys.indexOf(n)].classes;
-                        (c.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
-                        (c.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && (classes+=' isProcessing');
-                        nodes[node_keys.indexOf(n)].classes = classes;
+                        if(classes.indexOf('isProcessing')<0){
+                            (c.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
+                            (c.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
+                            nodes[node_keys.indexOf(n)].classes = classes;
+                        }
                     }
                 })
             })
+            
             modelData = {nodes: nodes, edges: edges};
         })
         return modelData;
@@ -353,10 +356,10 @@
                 status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self._private.data.original.state.points[p].value + '</i>';
             }
             if(!!self._private.classes.isProcessing){
-                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self._private.data.original.state.points[p].value) + '</i>' : '进行中';
+                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self._private.data.original.state.points[p].value) + '</i>' : '<i class="ing">进行中</i>';
             }
             if(!self._private.classes.isProcessing && !self._private.classes.isFinished){
-                status = '未开始';
+                status = '<i class="wait">未开始</i>';
             }
             
             phtml += '<li><span class="point">'+ originalPoints[p] +'：</span><span class="pointState">'+ status +'</span></li>'

@@ -64,6 +64,9 @@
 .edgeTip .pointState i.success{
     color:green;
 }
+.edgeTip .pointState i.ing{
+    color:orange;
+}
 .edgeTip .pointState i.result{
     color:red;
 }
