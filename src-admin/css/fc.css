@@ -57,3 +57,16 @@
 .edgeTip ul.part.taskList ul.taskList{
     width:79%; border-width:0 0 0 1px;
 }
+
+.edgeTip .pointState i{
+    font-style:normal; 
+}
+.edgeTip .pointState i.success{
+    color:green;
+}
+.edgeTip .pointState i.ing{
+    color:orange;
+}
+.edgeTip .pointState i.result{
+    color:red;
+}
