@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlow, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlowBasicInfo, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
 
 object CangFlowValidator {
 
@@ -17,8 +17,8 @@ object CangFlowValidator {
     }
 
   /** 开始流程 **/
-  implicit val startFlowValidator: Validator[StartFlow] =
-    validator[StartFlow] {
+  implicit val startFlowValidator: Validator[StartFlowBasicInfo] =
+    validator[StartFlowBasicInfo] {
       startFlow =>
         startFlow.applyCompanyId as "融资方公司id" min(1)
         startFlow.applyCompanyName as "融资方公司名称" is notEmpty
