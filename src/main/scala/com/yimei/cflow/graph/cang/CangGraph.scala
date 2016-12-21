@@ -9,6 +9,10 @@ import com.yimei.cflow.graph.cang.CangConfig._
   */
 object CangGraph extends FlowGraph {
 
+  override val points: Map[String, String] = Map()
+
+  override val vertices: Map[String, String] = Map()
+
   override val timeout: Long = 1 * 60 * 60
 
   override val flowInitial: String = judge_afterStart

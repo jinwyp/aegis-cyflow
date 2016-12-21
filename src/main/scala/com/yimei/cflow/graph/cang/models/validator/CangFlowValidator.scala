@@ -16,7 +16,6 @@ object CangFlowValidator {
         fileObj.url.length as "文件路径字段长度" is between(1, 200)
     }
 
-
   /** 开始流程 **/
   implicit val startFlowValidator: Validator[StartFlow] =
     validator[StartFlow] {
@@ -50,7 +49,6 @@ object CangFlowValidator {
         startFlow.stockPort as "库存港口" is notEmpty
         startFlow.stockPort.length as "库存港口字段长度" is between(1, 200)
     }
-
 
   /** 贸易商选择 港口, 监管, 资金方 业务人员, 财务 **/
   implicit val traffickerAssignUsersValidator: Validator[TraffickerAssignUsers] =

@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.mult
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.core.{FlowGraph, GraphBuilder}
+import com.yimei.cflow.core.FlowGraph
 import com.yimei.cflow.graph.mult.MultConfig._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,6 +14,10 @@ import scala.concurrent.Future
 object MultGraph extends FlowGraph {
 
 
+
+
+  override val points: Map[String, String] = ???
+  override val vertices: Map[String, String] = ???
   override val timeout: Long = 15
 
   /**
@@ -34,33 +38,16 @@ object MultGraph extends FlowGraph {
     */
   override val flowInitial: String = J0
 
-  /**
-    *
-    * @param state
-    * @return
-    */
-  def graph(state: State): Graph =
-    GraphBuilder.jsonGraph(state, judgeDecription, pointDescription, autoPointMap, taskPointMap) { implicit builder =>
-      import GraphBuilder._
-      J0 ~> E1 ~> J1
-      J1 ~> E2 ~> J2
-      J2 ~> E3 ~> J3
-      J3 ~> E4 ~> J4
-      J4 ~> E5 ~> J5
-      J5 ~> E6 ~> J3
-      builder
-    }
-
   override val blueprint: Graph = graph(null)
 
   override val flowType: String = flow_ying
 
-  val E1 = Edge("E1", autoTasks = List(auto_A, auto_B, auto))
-  val E2 = Edge("E2", userTasks = List(task_K_PU1, task_K_PG1))
-  val E3 = Edge("E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
-  val E4 = Edge("E4", userTasks = List(task_A))
-  val E5 = Edge("E5", autoTasks = List(auto_DEF))
-  val E6 = Edge("E6")
+  val E1 = Edge(begin = "V0", end = "V1", name = "E1", autoTasks = List(auto_A, auto_B, auto))
+  val E2 = Edge(begin = "V1", end = "V2", name = "E2", userTasks = List(task_K_PU1, task_K_PG1))
+  val E3 = Edge(begin = "V2", end = "V3", name = "E3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
+  val E4 = Edge(begin = "V3", end = "V4", name = "E4", userTasks = List(task_A))
+  val E5 = Edge(begin = "V4", end = "V5", name = "E5", autoTasks = List(auto_DEF))
+  val E6 = Edge(begin = "V5", end = "V3", name = "E6")
 
   override val edges: Map[String, Edge] = Map(
     "E1" -> E1,
@@ -119,17 +106,17 @@ object MultGraph extends FlowGraph {
 
   var count = 3
 
-  def V5(state: State): Arrow = {
+  def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
     } match {
       case 150 => if (count > 0) {
         count = count - 1
-        Arrow(J3, Some("E6"))
+        Seq(Arrow(J3, Some("E6")))
       }
       else
-        Arrow(FlowSuccess, None)
-      case _ => Arrow(FlowFail, None)
+        Seq(Arrow(FlowSuccess, None))
+      case _ => Seq(Arrow(FlowFail, None))
     }
 
   }

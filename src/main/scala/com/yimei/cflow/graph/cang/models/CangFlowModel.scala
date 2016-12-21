@@ -7,7 +7,6 @@ import BaseFormatter._;
 
 object CangFlowModel extends DefaultJsonProtocol {
 
-
   case class FileObj(name: String, url: String, createTime: Option[Timestamp])
   implicit val fileObjFormat = jsonFormat3(FileObj)
 
@@ -27,7 +26,7 @@ object CangFlowModel extends DefaultJsonProtocol {
                        coalIndex_ADV: BigDecimal,        //煤炭 热值,硫分,空干基挥发分
                        stockPort: String,                //库存港口
                        coalAmount: BigDecimal,           //总质押吨数
-                       auditFileList: List[FileObj])      //审批文件列表
+                       auditFileList: List[FileObj])     //审批文件列表
   implicit val startFlowFormat = jsonFormat19(StartFlow)
 
   /**
@@ -99,7 +98,7 @@ object CangFlowModel extends DefaultJsonProtocol {
   implicit val portReleaseGoodsFormat = jsonFormat3(PortReleaseGoods)
 
   /** 贸易商审核是否已经回款完成 **/
-  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int, createTime: OptionFormat[Timestamp])
+  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int, createTime: Option[Timestamp])
   implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat3(TraffickerAuditIfCompletePayment)
 
   /** 贸易商同意付款给资金方 **/

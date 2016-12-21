@@ -45,10 +45,10 @@ object Flow {
   case class CommandUpdatePoints(flowId: String, points: Map[String, String], trigger: Boolean) extends Command
 
   // 流程劫持
-  case class CommandHijack( flowId: String,
-                            points: Map[String, DataPoint],
-                            decision: Option[String],
-                            trigger: Boolean) extends Command
+  case class CommandHijack(flowId: String,
+                           points: Map[String, DataPoint],
+                           decision: Option[String],
+                           trigger: Boolean) extends Command
 
   // persistent事件
   trait Event
@@ -57,23 +57,25 @@ object Flow {
 
   case class PointsUpdated(pionts: Map[String, DataPoint]) extends Event
 
-  case class DecisionUpdated(arrow: Arrow) extends Event
+  case class EdgeCompleted(name: String) extends Event
 
-  case class Hijacked(points: Map[String,DataPoint], decision: Option[String]) extends Event
+  case class DecisionUpdated(name: String, arrow: Seq[Arrow]) extends Event
+
+  case class Hijacked(points: Map[String, DataPoint], decision: Option[String]) extends Event
 
   // 状态
   case class State(
                     flowId: String,
                     guid: String,
                     points: Map[String, DataPoint],
-                    decision: String,
-                    edge: Option[Edge],
-                    histories: Seq[Arrow],
+                    edges: Map[String, Boolean],     // edges to be eliminated
+                    histories: Seq[String],          // edges already eliminated
                     flowType: String
                   )
 
 
   case class PartUTask(guidKey: String, tasks: Seq[String])
+
   case class PartGTask(ggidKey: String, tasks: Seq[String])
 
   trait EdgeBehavior {
@@ -128,10 +130,10 @@ object Flow {
     def check(state: State): Boolean = {
 
       // 没有任何任务!!!
-      if ( autoTasks.length == 0 &&
-          userTasks.length == 0 &&
-          partUTasks.size == 0 &&
-          partGTasks.size == 0
+      if (autoTasks.length == 0 &&
+        userTasks.length == 0 &&
+        partUTasks.size == 0 &&
+        partGTasks.size == 0
       ) {
         true
       }
@@ -175,34 +177,26 @@ object Flow {
   //   key为流程上下文的值, 这里的意思是: 对于这个map中的每个key, 将从上下文中取出这个key对应的值, 取出来的值是某个参与方的ggid(参与方运营组)
   //   value为, 这个参与方运营组需要作的任务列表
   //
-  case class Edge(name: String,
-                  autoTasks: Seq[String] = List(),
-                  userTasks: Seq[String] = List(),
-                  partUTasks: Seq[PartUTask] = List(),
-                  partGTasks: Seq[PartGTask] = List() //
-                 ) extends EdgeBehavior {
-    override def toString = name
-  }
-
-  val Start = "Start"
-  val EdgeStart = new Edge(Start) // start edge
-
   // common judges
   val FlowSuccess = "FlowSuccess"
   val FlowFail = "FlowFail"
   val FlowTodo = "FlowTodo"
 
-  case class EdgeDescription(
-                              autoTasks: Seq[String] = List(),
-                              userTasks: Seq[String] = List(),
-                              partUTasks: Seq[PartUTask] = List(),
-                              partGTasks: Seq[PartGTask] = List(),
-                              begin: String,
-                              end: String
-                            )
+  case class Edge(
+                   autoTasks: Seq[String] = List(),
+                   userTasks: Seq[String] = List(),
+                   partUTasks: Seq[PartUTask] = List(),
+                   partGTasks: Seq[PartGTask] = List(),
+                   name: String,
+                   end: String,
+                   begin: String = "God"
+                 ) extends EdgeBehavior
+
+  val EdgeSuccess = Edge(name = "success", end = "success")
+  val EdgeFail = Edge(name = "fail", end = "fail")
 
   case class Graph(
-                    edges: Map[String, EdgeDescription],
+                    edges: Map[String, Edge],
                     vertices: Map[String, String],
                     state: Option[State],
                     points: Map[String, String],
@@ -211,7 +205,10 @@ object Flow {
                   )
 
   //case class Arrow(end: String, edge: Option[Edge])
-  case class Arrow(end: String, edge:Option[String])
+  case class Arrow(end: String, edge: Option[String])
+
+  val ArrowSuccess = Arrow("success", None)
+  val ArrowFail = Arrow("success", None)
 
 }
 

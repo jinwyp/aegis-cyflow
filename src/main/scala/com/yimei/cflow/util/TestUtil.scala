@@ -108,7 +108,7 @@ class TestClient(proxy: ActorRef) extends Actor
     case g@Graph(_, _, st, _, _, _) =>
       st match {
         case Some(state) =>
-          if (state.decision == FlowSuccess || state.decision == FlowFail) {
+          if (state.edges.size == 0 ) {
             schedulers(state.flowId).cancel()
             schedulers = schedulers - state.flowId
             count = count + 1
