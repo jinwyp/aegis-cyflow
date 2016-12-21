@@ -179,11 +179,8 @@ class PersistentFlow(
       arrows.foreach { arr =>
         arr match {
 
-          case ArrowSuccess =>
-            logState("FlowSuccess")
-
-          case ArrowFail =>
-            logState("FlowFail")
+          case Arrow(name, None) =>
+            logState(s"$name 结束")
 
           case a@Arrow(j, Some(nextEdge)) =>
             val ne = graph.edges(nextEdge)
