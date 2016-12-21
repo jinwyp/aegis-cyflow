@@ -16,6 +16,7 @@ import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.UserProtocol
 import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
 import com.yimei.cflow.util.DBUtils.dbrun
+import slick.model.Column
 import spray.json.{DefaultJsonProtocol, _}
 
 import scala.concurrent.Future
@@ -24,9 +25,18 @@ case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[S
 
 case class AllTasks(finishedTask:Seq[FlowInstanceEntity], processTask:Seq[FlowInstanceEntity],total:Int)
 
+case class FlowQuery(flowId:Option[String], flowType:Option[String], userType:Option[String], userId:Option[String], status:Option[Int],limit:Option[Int],offset:Option[Int])
+
+case class FlowQueryResponse(flows:Seq[FlowInstanceEntity],total:Int)
+
+case class FlowQueryByUserEntity(flowType:Option[String],status:Option[Int],limit:Option[Int],offset:Option[Int])
+
 trait AdminProtocol extends DefaultJsonProtocol with UserProtocol {
   implicit val hijackEntityFormat = jsonFormat3(HijackEntity)
   implicit val allTaskFormat = jsonFormat3(AllTasks)
+  implicit val flowQuery = jsonFormat7(FlowQuery)
+  implicit val flowQueryResponseFormat = jsonFormat2(FlowQueryResponse)
+  implicit val flowQueryByUserEntityFormat = jsonFormat4(FlowQueryByUserEntity)
 }
 
 /**
@@ -125,11 +135,47 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
     }
   }
 
+  /**
+    * 查询flows
+    * @return
+    */
+  def getFLows = get {
+    pathPrefix("flow") {
+      pathEnd {
+        parameters(("flowId".?,"flowType".?,"userType".?,"userId".?,"status".as[Int].?,"limit".as[Int].?,"offset".as[Int].?)).as(FlowQuery) { fq =>
+          val q = flowInstance.filter { fi =>
+            List(
+              fq.flowId.map(fi.flow_id === _),
+              fq.flowType.map(fi.flow_type === _),
+              fq.userType.map(fi.user_type === _),
+              fq.userId.map(fi.user_id === _),
+              fq.status.map(fi.finished === _)
+            ).collect({ case Some(a) => a }).reduceLeftOption(_ && _).getOrElse(true :Rep[Boolean])
+          }
+
+          val flows: Future[Seq[FlowInstanceEntity]] = (fq.limit,fq.offset) match {
+            case(Some(l),Some(o)) => dbrun(q.drop(o).take(l).result)
+            case _                => dbrun(q.result)
+          }
+          val total: Future[Int] = dbrun(q.length.result)
+
+          val result: Future[FlowQueryResponse] = for {
+            fs <- flows
+            t <- total
+          } yield {
+            FlowQueryResponse(fs,t)
+          }
+          complete(result)
+          }
+        }
+      }
+    }
+
+
 
   def getFlowByUser = get {
     pathPrefix("flow/user" / Segment / Segment / Segment) { (party,instance_id,user_id) => {
-      (parameter('limit.as[Int])&parameter('offset.as[Int])&parameterMap) { (limit,offset,params) => {
-
+      parameters(("flowType".?,"status".as[Int].?,"limit".as[Int].?,"offset".as[Int].?)).as(FlowQueryByUserEntity){ fq =>
 
         val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
           p.party_class === party         &&
@@ -147,32 +193,32 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
           }
         }
 
+
+        def getQueryStatment(p:PartyInstanceEntity,u:PartyUserEntity) = {
+          flowInstance.filter{ fi =>
+            fi.user_id   === u.user_id &&
+            fi.user_type === p.party_class + "-" + p.instance_id &&
+            List(
+              fq.flowType.map(fi.flow_type === _),
+              fq.status.map(fi.finished === _)
+            ).collect({case Some(a)=>a}).reduceLeftOption(_ && _).getOrElse(true :Rep[Boolean])
+          }
+        }
+
+
+
         def getAllFlows(p:PartyInstanceEntity,u:PartyUserEntity): Future[Seq[FlowInstanceEntity]] = {
-           params.contains("flowType") match {
-            case true => dbrun(flowInstance.filter(f =>
-              f.flow_type === params("flowType") &&
-              f.user_id   === u.user_id &&
-              f.user_type === p.party_class + "-" + p.instance_id
-            ).drop(offset).take(limit).result)
-            case false => dbrun(flowInstance.filter(f =>
-                f.user_id   === u.user_id &&
-                f.user_type === p.party_class + "-" + p.instance_id
-            ).drop(offset).take(limit).result)
+
+          val q = getQueryStatment(p, u)
+
+          (fq.limit, fq.offset) match {
+            case (Some(l), Some(o)) => dbrun(q.drop(o).take(l).result)
+            case _ => dbrun(q.result)
           }
         }
 
         def getFlowsCount(p:PartyInstanceEntity,u:PartyUserEntity): Future[Int] = {
-          params.contains("flowType") match {
-            case true => dbrun(flowInstance.filter(f =>
-              f.flow_type === params("flowType") &&
-                f.user_id   === u.user_id &&
-                f.user_type === p.party_class + "-" + p.instance_id
-            ).length.result)
-            case false => dbrun(flowInstance.filter(f =>
-              f.user_id   === u.user_id &&
-                f.user_type === p.party_class + "-" + p.instance_id
-            ).length.result)
-          }
+          dbrun(getQueryStatment(p,u).length.result)
         }
 
         complete(for {
@@ -181,16 +227,16 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
           alflow <- getAllFlows(p,u)
           total <- getFlowsCount(p,u)
         } yield {
-          AllTasks(alflow.filter(_.finished==1),alflow.filter(_.finished==0),total)
+          FlowQueryResponse(alflow,total)
         })
-      }
+
       }
     }
     }
   }
 
 
-  def route: Route = createFlow ~ getFlowById ~ hijack
+  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser
 }
 
 object AdminRoute {
