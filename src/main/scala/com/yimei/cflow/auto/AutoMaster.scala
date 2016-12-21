@@ -24,7 +24,7 @@ object AutoMaster {
     */
   def fetch(flowType:String, actorName: String, state: State, autoMaster: ActorRef, refetchIfExists: Boolean = false) = {
     if ( refetchIfExists ||
-      FlowRegistry.registries(flowType).autoTasks(actorName).filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
+      FlowRegistry.registries(flowType).autoTasks(actorName).points.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
       autoMaster ! CommandAutoTask(state, flowType, actorName)
     }

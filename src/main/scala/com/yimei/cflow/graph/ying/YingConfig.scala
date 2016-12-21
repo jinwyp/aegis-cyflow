@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.ying
 
+import com.yimei.cflow.core.Flow.TaskInfo
+
 /**
   * Created by wangqi on 16/12/13.
   */
@@ -40,11 +42,13 @@ object YingConfig {
   val flow_ying = "ying"
 
   // 采集点actor, 与能够采集的数据点名称
-  val autoPointMap = Map[String, Array[String]](
-    auto_A -> Array(point_A),
-    auto_B -> Array(point_B),
-    auto -> Array(point_C),
-    auto_DEF -> Array(point_D, point_E, point_F)
+  val autoPointMap = Map[String, TaskInfo](
+    
+    auto_A -> TaskInfo("描述", Seq(point_A)),
+    auto_B -> TaskInfo("描述", Seq(point_B)),
+    auto -> TaskInfo("描述", Seq(point_C)),
+    auto_DEF -> TaskInfo("描述", Seq(point_D, point_E, point_F))
+    
   )
 
   // 数据点描述
@@ -76,12 +80,14 @@ object YingConfig {
 
 
   // 用户任务与采集点的对应关系
-  val taskPointMap = Map[String, Array[String]](
-    task_A -> Array(point_U_A1, point_U_A2),
-    task_K_PU1 -> Array(point_KPU_1),
-    task_K_PG1 -> Array(point_KPG_1),
-    task_PU -> Array(point_PU1, point_PU2),
-    task_PG -> Array(point_PG1, point_PG2)
+  val taskPointMap = Map[String, TaskInfo](
+    
+    task_A -> TaskInfo("描述", Seq(point_U_A1, point_U_A2)),
+    task_K_PU1 -> TaskInfo("描述", Seq(point_KPU_1)),
+    task_K_PG1 -> TaskInfo("描述", Seq(point_KPG_1)),
+    task_PU -> TaskInfo("描述", Seq(point_PU1, point_PU2)),
+    task_PG -> TaskInfo("描述", Seq(point_PG1, point_PG2))
+    
   )
 
   // 决策点

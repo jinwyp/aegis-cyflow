@@ -19,8 +19,8 @@ case class GraphConfig(
                         timeout: Int,
                         initial: String,
                         points: Map[String, String],
-                        autoTasks: Map[String, Array[String]],
-                        userTasks: Map[String, Array[String]],
+                        autoTasks: Map[String, TaskInfo],
+                        userTasks: Map[String, TaskInfo],
                         vertices: Map[String, DefaultVertex],
                         edges: Map[String, Edge]
                       )
@@ -137,9 +137,9 @@ object GraphLoader extends App {
 
       override val flowType: String = gFlowType
 
-      override val userTasks: Map[String, Array[String]] = graphConfig.userTasks
+      override val userTasks: Map[String, TaskInfo] = graphConfig.userTasks
 
-      override val autoTasks: Map[String, Array[String]] = graphConfig.autoTasks
+      override val autoTasks: Map[String, TaskInfo] = graphConfig.autoTasks
 
       override val edges: Map[String, Edge] = graphConfig.edges
 

@@ -91,7 +91,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
 
   def processTask(taskId: String, task: CommandUserTask) = {
     log.info(s"处理用户任务: ${taskId}")
-    val points = taskPointMap(task.taskName).map { pname =>
+    val points = taskPointMap(task.taskName).points.map { pname =>
         (pname -> DataPoint("50", Some("userdata"), Some(task.guid), uuid, new Date().getTime))    // uuid为采集id
     }.toMap
 

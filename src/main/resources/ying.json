@@ -26,17 +26,17 @@
     "V3": { "description":"判断3","arrows":[{"end":"V4","edge":"E4"}]}
   },
   "autoTasks": {
-    "A" :["A"],
-    "B" :["B"],
-    "C" :["C"],
-    "DEF" :["D", "E", "F"]
+    "A" :{"description": "描述", "points": ["A"]},
+    "B" :{"description": "描述", "points": ["B"]},
+    "C" :{"description": "描述", "points": ["C"]},
+    "DEF" :{"description": "描述", "points": ["D", "E", "F"]}
   },
   "userTasks": {
-    "UA": ["UA1", "UA2"],
-    "TKPU1" :[ "KPU1" ],
-    "TKPG1" :[ "KPG1" ],
-    "PU"    :[ "PU1", "PU2"],
-    "PG"    :[ "PG1", "PG2"]
+    "UA": {"description": "描述", "points": ["UA1", "UA2"]},
+    "TKPU1" :{"description": "描述", "points": [ "KPU1" ]},
+    "TKPG1" :{"description": "描述", "points": [ "KPG1" ]},
+    "PU"    :{"description": "描述", "points": [ "PU1", "PU2"]},
+    "PG"    :{"description": "描述", "points": [ "PG1", "PG2"]}
   },
   "edges": {
     "E1": {

@@ -143,8 +143,8 @@ object Flow {
       val allUserTasks: Seq[String] = userTasks ++: pUserTasks ++: pGroupTasks
 
       //对于指定的flowType和taskName 所需要的全部数据点， 如果当前status中的未使用过的数据点没有完全收集完，就返回false
-      autoTasks.foldLeft(true)((t, at) => t && !registries(state.flowType).autoTasks(at).exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
-        allUserTasks.foldLeft(true)((t, ut) => t && !registries(state.flowType).userTasks(ut).exists(!state.points.filter(t => (!t._2.used)).contains(_)))
+      autoTasks.foldLeft(true)((t, at) => t && !registries(state.flowType).autoTasks(at).points.exists(!state.points.filter(t => (!t._2.used)).contains(_))) &&
+        allUserTasks.foldLeft(true)((t, ut) => t && !registries(state.flowType).userTasks(ut).points.exists(!state.points.filter(t => (!t._2.used)).contains(_)))
     }
 
     //获取全部不能重用的task
@@ -162,8 +162,8 @@ object Flow {
       */
     def getAllDataPointsName(state: State): Seq[String] = {
       val allTasks = getNonReusedTask()
-      allTasks._1.foldLeft(Seq[String]())((a, at) => registries(state.flowType).autoTasks(at) ++: a) ++
-        allTasks._2.foldLeft(Seq[String]())((a, ut) => registries(state.flowType).userTasks(ut) ++: a)
+      allTasks._1.foldLeft(Seq[String]())((a, at) => registries(state.flowType).autoTasks(at).points ++: a) ++
+        allTasks._2.foldLeft(Seq[String]())((a, ut) => registries(state.flowType).userTasks(ut).points ++: a)
     }
   }
 
@@ -195,13 +195,15 @@ object Flow {
   val EdgeSuccess = Edge(name = "success", end = "success")
   val EdgeFail = Edge(name = "fail", end = "fail")
 
+  case class TaskInfo(description: String, points: Seq[String])
+
   case class Graph(
                     edges: Map[String, Edge],
                     vertices: Map[String, String],
                     state: Option[State],
                     points: Map[String, String],
-                    userTasks: Map[String, Array[String]],
-                    autoTasks: Map[String, Array[String]]
+                    userTasks: Map[String, TaskInfo],
+                    autoTasks: Map[String, TaskInfo]
                   )
 
   //case class Arrow(end: String, edge: Option[Edge])
