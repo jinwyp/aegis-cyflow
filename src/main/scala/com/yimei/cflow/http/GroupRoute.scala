@@ -80,6 +80,6 @@ object GroupRoute {
 
   def apply() = new GroupRoute()
 
-  def route(): Route = GroupRoute().route
+  def route: Route = GroupRoute().route
 }
 
