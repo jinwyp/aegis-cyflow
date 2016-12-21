@@ -35,7 +35,7 @@ object YingGraphJar {
     }
   }
 
-  var count = 0
+  var count = 3
 
   def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).points.contains(entry._1)).foldLeft(0) { (acc, entry) =>
