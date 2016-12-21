@@ -40,6 +40,15 @@ class UserConfig {
     gkf_yewu -> "港口业务员员",
     zjf_yewu -> "资金方业务员",
     zjf_caiwu -> "资金方财务"
-  );
+  )
+
+  val status_normal = "normal"
+  val status_disabled = "disabled"
+
+  val statusDescription = Map[String, String] (
+    status_normal -> "正常",
+    status_disabled -> "已禁用"
+  )
+
 
 }

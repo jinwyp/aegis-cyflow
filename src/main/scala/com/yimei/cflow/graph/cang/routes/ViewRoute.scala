@@ -46,7 +46,7 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     pathPrefix("flow") {
       pathEnd {
         parameters(('userType, 'userId, 'flowType)) { (userType, userId, flowType) =>
-          complete(ServiceProxy.flowCreate(proxy, userType, userId, flowType))
+            complete(ServiceProxy.flowCreate(proxy, userType, userId, flowType))
           // todo 1: add hierachy info support
           // todo 2: idempotent processing in backend
         }
