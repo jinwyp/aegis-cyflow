@@ -62,7 +62,7 @@
                 selector: 'node.task:selected',
                 style: {
                     'border-width': 3,
-                    'border-color': 'orange'
+                    'border-color': '#e86e81'
                 }
             },
 
@@ -352,7 +352,7 @@
                 },
                 position: {
                     my: 'bottom right',
-                    at: 'bottom right'
+                    at: 'top right'
                 },
                 show: {
                     event: 'click'
