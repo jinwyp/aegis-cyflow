@@ -8,8 +8,6 @@ import com.yimei.cflow.api.models.id.{AbstractIdGenerator, CommandGetId, EventIn
   */
 class MemoryIdGenerator(name: String) extends AbstractIdGenerator {
 
-  import IdGenerator._
-
   override def receive: Receive = commonBehavior orElse serving
 
   def serving: Receive = {

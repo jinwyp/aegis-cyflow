@@ -41,7 +41,7 @@ object FlowClusterApp extends App {
     // 组管理
     val groupRegion = ClusterSharding(system).start(
       typeName = GroupClusterSupport.shardName,
-      entityProps = Group.props(),
+      entityProps = null,
       settings = ClusterShardingSettings(system),
       extractEntityId = GroupClusterSupport.extractEntityId,
       extractShardId = GroupClusterSupport.extractShardId)
@@ -49,7 +49,7 @@ object FlowClusterApp extends App {
     // 用户
     val userRegion = ClusterSharding(system).start(
       typeName = UserClusterSupport.shardName,
-      entityProps = Group.props(),
+      entityProps = null,
       settings = ClusterShardingSettings(system),
       extractEntityId = UserClusterSupport.extractEntityId,
       extractShardId = UserClusterSupport.extractShardId)
