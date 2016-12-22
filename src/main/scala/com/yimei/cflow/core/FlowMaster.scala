@@ -6,7 +6,7 @@ import java.util.UUID
 import akka.actor.{ActorRef, Props, Terminated}
 import akka.util.Timeout
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.{Command, CommandCreateFlow, CommandRunFlow}
+import com.yimei.cflow.api.models.flow.{Command, CommandCreateFlow, CommandRunFlow}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 
 import scala.concurrent.duration._

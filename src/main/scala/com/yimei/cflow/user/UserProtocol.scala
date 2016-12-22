@@ -3,10 +3,9 @@ package com.yimei.cflow.user
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
-import com.yimei.cflow.user.User.{CommandUserTask, State}
+import com.yimei.cflow.api.models.user.{CommandUserTask, State}
 import com.yimei.cflow.user.db._
 import com.yimei.cflow.core.FlowProtocol
-import com.yimei.cflow.user.User.{CommandUserTask, State}
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 /**

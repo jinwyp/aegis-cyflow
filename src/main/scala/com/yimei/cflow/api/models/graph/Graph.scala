@@ -1,6 +1,6 @@
 package com.yimei.cflow.api.models.graph
 
-import com.yimei.cflow.core.Flow.{Edge, TaskInfo}
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.core.FlowProtocol
 import spray.json.DefaultJsonProtocol
 

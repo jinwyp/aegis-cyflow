@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.actor.ActorRef
-import com.yimei.cflow.core.IdGenerator.{CommandGetId, Id}
+import com.yimei.cflow.api.models.id.{CommandGetId, Id}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}

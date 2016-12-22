@@ -1,6 +1,6 @@
 package com.yimei.cflow.graph.ying
 
-import com.yimei.cflow.core.Flow.TaskInfo
+import com.yimei.cflow.api.models.flow.TaskInfo
 
 /**
   * Created by wangqi on 16/12/13.

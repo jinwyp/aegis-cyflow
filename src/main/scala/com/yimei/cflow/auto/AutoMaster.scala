@@ -5,7 +5,7 @@ import java.lang.reflect.Method
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.State
+import com.yimei.cflow.api.models.flow.State
 import com.yimei.cflow.core.{AutoActor, FlowRegistry}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 

@@ -7,7 +7,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
   */
 abstract class AbstractUser extends Actor with ActorLogging {
 
-  import com.yimei.cflow.user.User._
+  import com.yimei.cflow.api.models.user._
 
 
   var state: State

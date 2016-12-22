@@ -3,15 +3,14 @@ package com.yimei.cflow.user
 import akka.actor.{ActorRef, Props, Terminated}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.State
+import com.yimei.cflow.api.models.flow.{State => FlowState}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandQueryUser}
-import com.yimei.cflow.user.User.CommandUserTask
+import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandUserTask, Command => UserCommand}
 import com.yimei.cflow.core.FlowRegistry._
 
 object UserMaster extends CoreConfig {
 
-  def ufetch(flowType:String, taskName: String, state: State, userMaster: ActorRef, guid:String ,refetchIfExists: Boolean = false) = {
+  def ufetch(flowType:String, taskName: String, state: FlowState, userMaster: ActorRef, guid:String ,refetchIfExists: Boolean = false) = {
     if (refetchIfExists ||
       registries(flowType).userTasks(taskName).points.filter(!state.points.filter(t=>(!t._2.used)).contains(_)).length > 0
     ) {
@@ -48,7 +47,7 @@ class UserMaster(dependOn: Array[String])
       child forward command
 
     // 其他用户command
-    case command: User.Command =>
+    case command: UserCommand =>
       val child = context.child(command.guid).fold {
         create(command.guid)
       }(identity)

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef}
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.User.CommandUserTask
+import com.yimei.cflow.api.models.user.CommandUserTask
 
 /**
   * Created by hary on 16/12/12.
@@ -15,7 +15,7 @@ import com.yimei.cflow.user.User.CommandUserTask
 //}
 
 class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGroup with ActorLogging {
-  import Group._
+  import com.yimei.cflow.api.models.group._
 
   // 用户id与用户类型
   val regex = "(\\w+)-(.*)".r

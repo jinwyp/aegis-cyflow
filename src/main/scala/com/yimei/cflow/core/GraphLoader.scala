@@ -5,7 +5,7 @@ import java.lang.reflect.Method
 
 import com.yimei.cflow.api.models.graph.GraphConfig
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.ying.YingGraphJar
 
 import scala.concurrent.Future
