@@ -3,6 +3,7 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
+import com.yimei.cflow.api.models.graph.GraphConfig
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.core.Flow._
 import com.yimei.cflow.graph.ying.YingGraphJar
@@ -11,24 +12,6 @@ import spray.json.DefaultJsonProtocol
 import scala.concurrent.Future
 import scala.io.Source
 
-case class DefaultVertex(description: String, arrows: Seq[Arrow])
-
-case class GraphConfig(
-                        graphJar: String,
-                        persistent: Boolean,
-                        timeout: Int,
-                        initial: String,
-                        points: Map[String, String],
-                        autoTasks: Map[String, TaskInfo],
-                        userTasks: Map[String, TaskInfo],
-                        vertices: Map[String, DefaultVertex],
-                        edges: Map[String, Edge]
-                      )
-
-object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
-  implicit val defaultVertexFormat = jsonFormat2(DefaultVertex)
-  implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
-}
 
 
 /**
@@ -56,8 +39,8 @@ object GraphLoader extends App {
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
-    import GraphConfigProtocol._
     import spray.json._
+    import com.yimei.cflow.api.models.graph.GraphConfigProtocol._
 
     val classLoader = getClassLoader(gFlowType)
 

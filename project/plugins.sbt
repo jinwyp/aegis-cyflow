@@ -22,5 +22,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.4.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-git" % "0.8.5")
 
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
+
 // Protoc-jar so we don't need the Protoc compiler
 libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b3"

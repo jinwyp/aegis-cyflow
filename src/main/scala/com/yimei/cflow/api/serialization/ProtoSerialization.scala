@@ -1,4 +1,4 @@
-package com.yimei.cflow.serialization
+package com.yimei.cflow.api.serialization
 
 import akka.serialization.SerializerWithStringManifest
 
