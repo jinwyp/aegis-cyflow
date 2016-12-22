@@ -3,6 +3,7 @@ package com.yimei.cflow.core
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import akka.remote.transport.ThrottlerTransportAdapter.Direction.Receive
+import com.yimei.cflow.api.models.id._
 
 object PersistentIdGenerator {
   def props(name: String): Props = Props(new PersistentIdGenerator(name))

@@ -6,7 +6,7 @@ import java.util.UUID
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 
 import scala.concurrent.Future
 

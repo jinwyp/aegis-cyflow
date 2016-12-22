@@ -1,7 +1,7 @@
 package com.yimei.cflow.user
 
 import akka.cluster.sharding.ShardRegion
-import com.yimei.cflow.user.User.Command
+import com.yimei.cflow.api.models.user.Command
 
 /**
   * Created by hary on 16/12/16.

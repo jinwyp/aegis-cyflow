@@ -1,12 +1,13 @@
 package com.yimei.cflow.integration
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import com.yimei.cflow.api.models.flow.{Command, CommandCreateFlow}
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.CommandCreateFlow
-import com.yimei.cflow.core.{Flow, FlowMaster, IdGenerator}
+import com.yimei.cflow.core.{FlowMaster, IdGenerator}
 import com.yimei.cflow.group.GroupMaster
 import com.yimei.cflow.user.{User, UserMaster}
+import com.yimei.cflow.api.models.user.{Command => UserCommand}
 
 // 模块注册于协商
 object DaemonMaster {
@@ -75,14 +76,14 @@ class DaemonMaster(names: Array[String]) extends Actor with ActorLogging {
       log.debug(s"收到${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
-    case cmd: Flow.Command =>
+    case cmd: Command =>
       log.debug(s"收到${cmd}")
       modules.get(module_flow).foreach(_ forward cmd)
 
     ////////////////////////////////////////////////////////////////////////
     // 测试user
     ////////////////////////////////////////////////////////////////////////
-    case cmd: User.Command =>
+    case cmd: UserCommand =>
       log.debug(s"收到$cmd")
       modules.get(module_user).foreach(_ forward cmd)
   }

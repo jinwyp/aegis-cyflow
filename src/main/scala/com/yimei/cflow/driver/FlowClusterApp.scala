@@ -7,7 +7,9 @@ import akka.persistence.journal.leveldb.{SharedLeveldbJournal, SharedLeveldbStor
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import com.yimei.cflow.core.{FlowClusterSupport, FlowGraph, PersistentFlow}
-import com.yimei.cflow.group.{Group, GroupClusterSupport}
+import com.yimei.cflow.group.GroupClusterSupport
+//import com.yimei.cflow.group.{Group, GroupClusterSupport}
+import com.yimei.cflow.api.models.group._
 import com.yimei.cflow.user.UserClusterSupport
 
 import scala.concurrent.duration._

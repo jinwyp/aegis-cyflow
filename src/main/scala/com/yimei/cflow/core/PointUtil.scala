@@ -2,7 +2,7 @@ package com.yimei.cflow.core
 
 import java.util.UUID
 
-import com.yimei.cflow.core.Flow.DataPoint
+import com.yimei.cflow.api.models.flow.DataPoint
 import spray.json._
 
 
