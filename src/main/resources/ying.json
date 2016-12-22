@@ -20,10 +20,9 @@
     "PG2" : "partition group1 采集数据点2"
   },
   "vertices": {
-    "V0": { "description":"判断0","arrows":[{"end":"V1","edge":"E1"}]},
-    "V1": { "description":"判断1","arrows":[{"end":"V2","edge":"E2"}]},
-    "V2": { "description":"判断2","arrows":[{"end":"V3","edge":"E3"}]},
-    "V3": { "description":"判断3","arrows":[{"end":"V4","edge":"E4"}]}
+    "V0": { "description":"判断0","program": "import com.yimei.cflow.core.Flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"},
+    "V1": { "description":"判断0","program": "import com.yimei.cflow.core.Flow._; (state: State) => Seq(Arrow(\"V2\", Some(\"E2\")))"},
+    "V2": { "description":"判断0","program": "import com.yimei.cflow.core.Flow._; (state: State) => Seq(Arrow(\"V3\", Some(\"E3\")))"}
   },
   "autoTasks": {
     "A" :{"description": "描述", "points": ["A"]},
