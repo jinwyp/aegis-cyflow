@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import java.time.Instant
 
 import akka.actor.ActorRef
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -50,6 +51,8 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   with SprayJsonSupport {
 
   import driver.api._
+  implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
+
 
   /**
     * 创建流程
@@ -145,6 +148,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
     pathPrefix("flow") {
       pathEnd {
         parameters(("flowId".?,"flowType".?,"userType".?,"userId".?,"status".as[Int].?,"limit".as[Int].?,"offset".as[Int].?)).as(FlowQuery) { fq =>
+          log.info("{}",fq)
           val q = flowInstance.filter { fi =>
             List(
               fq.flowId.map(fi.flow_id === _),
