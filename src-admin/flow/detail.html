@@ -39,7 +39,7 @@
                 <td><input type="text" placeholder="value" class="value"></td>
             </tr>
         </table>
-        <div id="dataView"></div>
+        <!-- <div id="dataView"></div> -->
         <div class="btn"><input type="button" class="submit" value="提交"></div>
     </form>
 </div>
@@ -60,6 +60,7 @@
             key1:'',
             key2:''
         }];
+        var lastArr = [];
         var index = null,
                 subIndex = null;
         var keyName = ['key1','key2'];
@@ -75,7 +76,7 @@
             index = parseInt(curIndex/2);
             subIndex = curIndex%2;
             submitArr[index][keyName[subIndex]] = val;
-            $('#dataView').html(JSON.stringify(submitArr));
+            // $('#dataView').html(JSON.stringify(submitArr));
         });
 
 
@@ -84,21 +85,26 @@
                 key1:'',
                 key2:''
             });
-            table.append(temp);
-            $('#dataView').html(JSON.stringify(submitArr));
+            table.append(temp.slice().join(''));
+            // $('#dataView').html(JSON.stringify(submitArr));
+
         }
 
-
         $(".submit").click(function(){
+            $.each(submitArr,function(index,item){
+                lastArr[index] = {};
+                lastArr[index][item.key1] = item.key2;
+            });
+            console.log(lastArr);
 
             $.ajax({
                 method: "POST",
                 url:"",
-                data:{ type: $("#type").val(),userId:$("#userId").val(),submitArr:JSON.stringify(submitArr)}
+                data:{ type: $("#type").val(),userId:$("#userId").val(),lastArr:lastArr}
             }).done(function(){
                 alert("提交成功！");
             }).fail(function(){
-                console.log(error);
+                // console.log(error);
             })
         })
 
