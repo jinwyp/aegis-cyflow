@@ -11,7 +11,7 @@ import com.yimei.cflow.util.{TestClient, TestUtil}
 /**
   * Created by hary on 16/12/3.
   */
-object ServiceTestJar extends App with ApplicationConfig with CorsSupport {
+object RegressionTestJar extends App with ApplicationConfig with CorsSupport {
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
