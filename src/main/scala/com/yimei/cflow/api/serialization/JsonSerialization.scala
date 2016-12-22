@@ -7,7 +7,7 @@ import akka.serialization.SerializerWithStringManifest
   */
 class JsonSerialization extends SerializerWithStringManifest{
 
-  override def identifier: Int = ???
+  override def identifier: Int = 1001
 
   override def manifest(o: AnyRef): String = ???
 

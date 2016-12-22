@@ -35,9 +35,9 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
 
   //  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
 
-  for (i <- 1 to 1) {
-    TestUtil.test("ying", proxy, client, s"00$i", s"hary$i", s"fund$i", s"wangqiId$i", s"fund$i", s"wqGroup$i")
-  }
+//  for (i <- 1 to 1) {
+//    TestUtil.test("ying", proxy, client, s"00$i", s"hary$i", s"fund$i", s"wangqiId$i", s"fund$i", s"wqGroup$i")
+//  }
 
   // 3> http
   val routes: Route = FlowRoute.route(proxy) ~
