@@ -4,8 +4,9 @@ import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SnapshotOffer}
+import com.yimei.cflow.api.models.user.CommandUserTask
 import com.yimei.cflow.config.GlobalConfig.module_user
-import com.yimei.cflow.user.User.CommandUserTask
+import com.yimei.cflow.api.models.user.CommandUserTask
 
 import scala.concurrent.duration._
 
@@ -16,7 +17,7 @@ import scala.concurrent.duration._
 
 class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTimeout: Long) extends AbstractGroup with PersistentActor with ActorLogging {
 
-  import Group._
+  import com.yimei.cflow.api.models.group._
 
   println(s"create persistenter group with guid = $ggid")
 

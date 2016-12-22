@@ -1,7 +1,7 @@
 package com.yimei.cflow.graph.ying
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.ying.YingConfig._
 
 import scala.concurrent.Future
@@ -10,12 +10,13 @@ object YingGraphJar {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-//  def V0(state: State): Arrow = Arrow(J1, Some("E1"))
+//  def V0(state: State): Seq[Arrow] = Seq(Arrow(J1, Some("E1")))
 //
-//  def V1(state: State): Arrow = Arrow(J2, Some("E2"))
+//  def V1(state: State): Seq[Arrow] = Seq(Arrow(J2, Some("E2")))
 //
-//  def V2(state: State): Arrow = Arrow(J3, Some("E3"))
+//  def V2(state: State): Seq[Arrow] = Seq(Arrow(J3, Some("E3")))
 
+  val ArrowFail = Arrow("fail", None)
   def V3(state: State): Seq[Arrow] = {
     //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过
     state.points.filter(entry => List(point_PU1, point_PU2, point_PG1, point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
@@ -46,7 +47,7 @@ object YingGraphJar {
         Seq(Arrow(J3, Some("E6")))
       }
       else
-        Seq(ArrowSuccess)
+        Seq(Arrow("success", None))
 
       case m => Seq(ArrowFail)
     }

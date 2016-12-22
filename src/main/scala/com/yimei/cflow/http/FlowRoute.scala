@@ -7,7 +7,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
-import com.yimei.cflow.core.{Flow, FlowProtocol}
+import com.yimei.cflow.core.{ FlowProtocol}
+import com.yimei.cflow.api.models.flow.State
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.User
 import io.swagger.annotations._
@@ -39,7 +40,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postFlow: Route = post {
@@ -71,7 +72,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getFlow: Route = get {
@@ -101,7 +102,7 @@ class FlowRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[Flow.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putFlowPoints: Route = put {

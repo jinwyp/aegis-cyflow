@@ -9,7 +9,7 @@ import akka.http.scaladsl.server._
 import akka.util.Timeout
 import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.User
+import com.yimei.cflow.api.models.user.State
 import io.swagger.annotations._
 
 import scala.concurrent.duration._
@@ -39,7 +39,7 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postCang: Route = post {
@@ -71,7 +71,7 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getCang: Route = get {
@@ -101,7 +101,7 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putCangPoints: Route = put {

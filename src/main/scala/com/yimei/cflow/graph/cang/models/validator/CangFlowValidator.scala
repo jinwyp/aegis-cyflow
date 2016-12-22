@@ -160,7 +160,6 @@ object CangFlowValidator {
         traffickerFinanceAudit.taskId.length as "任务id字段" max(10)
         traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is notNull
         traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        traffickerFinanceAudit.financingAdvice.length as "放款建议字段长度" is between(0, 500)
     }
 
   /** 资金方审核 **/

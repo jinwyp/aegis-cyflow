@@ -1,7 +1,7 @@
 package com.yimei.cflow.graph.ying
 
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.core.{FlowGraph}
 import com.yimei.cflow.graph.ying.YingConfig._
 
@@ -79,6 +79,7 @@ object YingGraph extends FlowGraph {
     Map("D" -> "50", "E" -> "50", "F" -> "50")
   }
 
+  val ArrowFail = Arrow("fail", None)
   def V0(state: State): Seq[Arrow] = Seq(Arrow(J1, Some("E1")))
   def V1(state: State): Seq[Arrow] = Seq(Arrow(J2, Some("E2")))
   def V2(state: State): Seq[Arrow] = Seq(Arrow(J3, Some("E3")))
@@ -114,7 +115,7 @@ object YingGraph extends FlowGraph {
         Seq(Arrow(J3, Some("E6")))
       }
       else
-        Seq(ArrowSuccess)
+        Seq(Arrow("success", None))
       case _ => Seq(ArrowFail)
     }
 

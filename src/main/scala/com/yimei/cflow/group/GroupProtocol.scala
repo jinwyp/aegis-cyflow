@@ -1,7 +1,6 @@
 package com.yimei.cflow.group
 
-import com.yimei.cflow.group.Group.CommandGroupTask
-import com.yimei.cflow.group.Group.State
+import com.yimei.cflow.api.models.group._
 import spray.json.DefaultJsonProtocol
 
 /**

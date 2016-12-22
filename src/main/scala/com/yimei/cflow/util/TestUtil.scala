@@ -4,15 +4,15 @@ import java.util.{Date, UUID}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import com.yimei.cflow.ServiceTest._
+import com.yimei.cflow.api.models.flow.CommandFlowGraph
+import com.yimei.cflow.api.models.group.{CommandClaimTask, CommandQueryGroup, State}
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.core.Flow.{Graph, _}
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.group.Group
-import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit, CommandUserTask}
+import com.yimei.cflow.api.models.user.{CommandQueryUser, CommandTaskSubmit, CommandUserTask, State => UserState}
 
 import scala.concurrent.duration._
 
@@ -78,6 +78,9 @@ class TestClient(proxy: ActorRef) extends Actor
       //      gUserType = pUserType
       //      gId = pGroupId
       //      gType = pGroupType
+
+      log.info("!!!!!!!!!!!{}",values)
+
       values = values + (flowId ->(pUserType, pUserId, pGroupId))
       val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userType, userId, flowId,
         pUserType, pUserId, pGroupType, pGroupId, 1))
@@ -85,23 +88,23 @@ class TestClient(proxy: ActorRef) extends Actor
 
     // tick消息
     case (userType: String, userId: String, flowId: String, pUserType: String, pUserId: String, pGroupType: String, pGroupId: String, 1) =>
-      proxy ! CommandQueryUser(s"${userType}-${userId}") //
-      proxy ! CommandQueryUser(s"${pUserType}-${pUserId}")
-      proxy ! CommandQueryGroup(s"${pGroupType}-${pGroupId}")
+      proxy ! CommandQueryUser(s"${userType}!${userId}") //
+      proxy ! CommandQueryUser(s"${pUserType}!${pUserId}")
+      proxy ! CommandQueryGroup(s"${pGroupType}!${pGroupId}")
       proxy ! CommandFlowGraph(flowId)
 
     // 收到用户状态, 就自动处理用户任务
-    case state: User.State =>
+    case state: UserState =>
       log.info("!!!!state:{}", state)
       state.tasks.foreach { (entry: (String, CommandUserTask)) =>
         processTask(entry._1, entry._2)
       }
 
     // 收到组状态, 对每个组的任务进行claim
-    case state: Group.State =>
+    case state: State =>
       log.info("!!!groupstate:{}", state)
       state.tasks.foreach(t =>
-        proxy ! CommandClaimTask(s"${state.userType}-${state.gid}", t._1, values(t._2.flowId)._2)
+        proxy ! CommandClaimTask(s"${state.userType}!${state.gid}", t._1, values(t._2.flowId)._2)
       )
 
     // 收到流程图
@@ -128,14 +131,14 @@ class TestClient(proxy: ActorRef) extends Actor
     if (task.taskName == "TKPU1") {
       points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "!" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 设置参与方组
     else if (task.taskName == "TKPG1") {
       points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wqGroup", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "!" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 其他为用户任务

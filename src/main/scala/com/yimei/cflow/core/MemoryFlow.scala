@@ -33,7 +33,7 @@ class MemoryFlow(
                   guid: String,
                   initData: Map[String, String]) extends AbstractFlow {
 
-  import Flow._
+  import com.yimei.cflow.api.models.flow._
 
 
   val initPoints = initData.map{ entry =>

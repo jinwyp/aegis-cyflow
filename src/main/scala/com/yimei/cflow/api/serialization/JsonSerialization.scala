@@ -1,4 +1,4 @@
-package com.yimei.cflow.serialization
+package com.yimei.cflow.api.serialization
 
 import akka.serialization.SerializerWithStringManifest
 
@@ -7,7 +7,7 @@ import akka.serialization.SerializerWithStringManifest
   */
 class JsonSerialization extends SerializerWithStringManifest{
 
-  override def identifier: Int = ???
+  override def identifier: Int = 1001
 
   override def manifest(o: AnyRef): String = ???
 

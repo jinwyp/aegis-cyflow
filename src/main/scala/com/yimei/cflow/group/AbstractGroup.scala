@@ -8,7 +8,7 @@ import akka.actor.Actor.Receive
   */
 abstract class AbstractGroup extends Actor with ActorLogging {
 
-  import Group._
+  import com.yimei.cflow.api.models.group._
 
   // 抽象方法
   var state: State

@@ -3,8 +3,8 @@ package com.yimei.cflow.group
 import akka.actor.{ActorRef, Props, Terminated}
 import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow._
-import com.yimei.cflow.group.Group.{Command, CommandCreateGroup, CommandGroupTask, CommandQueryGroup}
+import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.api.models.group.{Command, CommandCreateGroup, CommandGroupTask, CommandQueryGroup}
 import com.yimei.cflow.core.FlowRegistry._
 
 object GroupMaster {

@@ -8,7 +8,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.util.ByteString
 import com.yimei.cflow.config.CoreConfig
 import akka.pattern._
-import com.yimei.cflow.core.Flow.DataPoint
+import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.http.{AdminProtocol, TaskProtocol, UserModelProtocol, UserSubmitEntity}
 
 import scala.concurrent.Future

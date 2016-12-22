@@ -5,13 +5,12 @@ import java.util.{Date, UUID}
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import akka.pattern._
 import akka.util.Timeout
+import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, CommandUserTask}
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.core.Flow
-import com.yimei.cflow.core.Flow.{CreateFlowSuccess, _}
-import com.yimei.cflow.core.Flow.Graph
+import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.api.models.flow.Graph
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandCreateUser, CommandTaskSubmit}
-import com.yimei.cflow.user.User.CommandUserTask
+import com.yimei.cflow.api.models.user.{State => UserState}
 
 import scala.concurrent.duration._
 
@@ -45,7 +44,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
             1 seconds,
             5 seconds,
             daemon,
-            User.CommandQueryUser(guid)
+            CommandQueryUser(guid)
           )
       }
 
@@ -69,7 +68,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
             1 seconds,
             13 seconds,
             daemon,
-            Flow.CommandFlowGraph(flowId)
+            CommandFlowGraph(flowId)
           )
       }
 
@@ -81,7 +80,7 @@ class QueryActor(daemon: ActorRef) extends Actor with ActorLogging {
         log.info("测试结束")
       }
 
-    case state: User.State =>
+    case state: UserState =>
       log.info(s"收到消息 = $state")
       // 处理用户任务
       state.tasks.foreach { entry =>

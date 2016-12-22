@@ -1,8 +1,8 @@
-(function(window, $, cytoscape){
+(function(window, $, cytoscape, ejs){
 
     $.ajaxSettings.async = false; 
 
-    var originalData = {};
+    var originalData;
 
     var FC = function(id){
         this.id = id;
@@ -111,6 +111,12 @@
         var modelData;
         var self = this;
 
+        if(!originalData){
+            $.getJSON('./json/data4.json', function(res){
+                originalData = res;
+            })
+        }
+
         var taskEdge = function(edge, isFinished, isProcessing, name){
             var curEdge = edge;
             var edges = [];
@@ -158,22 +164,21 @@
             }
             return edges;
         }
-
-        $.getJSON('./json/data4.json', function(res){
-            originalData = res;
+            
+        var formatModel = function(){
             var node_keys = [];
             var nodes = [];
             var edges = [];
             var historyEdges = [];
-            historyEdges = res.state.histories;
+            historyEdges = originalData.state.histories;
 
-            for(var i in res.edges){
+            for(var i in originalData.edges){
                 if(['success', 'fail', 'start'].indexOf(i)>=0){
                     continue;
                 }
-                var curEdge = res.edges[i];
+                var curEdge = originalData.edges[i];
                 var isFinished = (historyEdges.indexOf(i)>=0) ? true : false;
-                var isProcessing = (res.state.edges) ? (res.state.edges.hasOwnProperty(i)) : false;
+                var isProcessing = (originalData.state.edges) ? (originalData.state.edges.hasOwnProperty(i)) : false;
     
                 // task edges
                 (function(curEdge, isFinished, isProcessing, i){
@@ -211,8 +216,11 @@
                 })
             })
             
-            modelData = {nodes: nodes, edges: edges};
-        })
+            return {nodes: nodes, edges: edges};
+        }
+
+        modelData = formatModel();
+
         return modelData;
     };
     FC.prototype.generateFc = function(){
@@ -226,6 +234,7 @@
             userZoomingEnabled: true,
             userPanningEnabled: true,
             autoungrabify: false,
+            minZoom: 0.1,
             layout: {
                 name: 'dagre'
             },
@@ -319,7 +328,7 @@
 
         cy.nodes('.node').qtip({
             content: function(){
-                var data = this._private.data;
+                var data = this.data();
                 var id = data.id;
                 var vertices = data.original.vertices;
                 return vertices[id];
@@ -345,18 +354,18 @@
 
     var taskTip = function(){
         var self = this;
-        var taskId = this._private.data.id;
-        var taskType = (this._private.data.taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
-        var originalPoints = this._private.data.original.points;
-        var points = this._private.data.original[taskType][taskId].points;
+        var taskId = this.data().id;
+        var taskType = (this.data().taskType == 'autoTasks') ? 'autoTasks' : 'userTasks';
+        var originalPoints = this.data().original.points;
+        var points = this.data().original[taskType][taskId].points;
         var phtml = ''; 
         (points.length>0) && points.forEach(function(p, pi){
             var status;
             if(!!self._private.classes.isFinished){
-                status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self._private.data.original.state.points[p].value + '</i>';
+                status = '<i class="success">已采集；</i> 采集结果：<i class="result">' + self.data().original.state.points[p].value + '</i>';
             }
             if(!!self._private.classes.isProcessing){
-                status = self._private.data.original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self._private.data.original.state.points[p].value) + '</i>' : '<i class="ing">进行中</i>';
+                status = self.data().original.state.points.hasOwnProperty(p) ? ('<i class="success">已采集；</i>采集结果：<i class="result">' + self.data().original.state.points[p].value) + '</i>' : '<i class="ing">进行中</i>';
             }
             if(!self._private.classes.isProcessing && !self._private.classes.isFinished){
                 status = '<i class="wait">未开始</i>';
@@ -364,7 +373,7 @@
             
             phtml += '<li><span class="point">'+ originalPoints[p] +'：</span><span class="pointState">'+ status +'</span></li>'
         })
-        return '<h5>'+ this._private.data.original[taskType][taskId].description +'</h5><ul class="edgeTip">'+ phtml +'</ul>';
+        return '<h5>'+ this.data().original[taskType][taskId].description +'</h5><ul class="edgeTip">'+ phtml +'</ul>';
     }
     var autotaskTmpl = function(model, type){
         var items = '';
@@ -403,7 +412,7 @@
     }
 
     var edgeTip = function(){
-        var data = this._private.data.original;
+        var data = this.data().original;
         var autotask, usertask, partgtask, partutask;
         autotask = usertask = partgtask = partutask = '';
 
@@ -423,7 +432,98 @@
         return html;
     }
 
-})(window, jQuery, cytoscape)
+    var dateFormat = function(date, format){
+        if(!/^[1-9]\d*$/.test(date)){
+            return  date ;
+        }
+        var date = parseInt(date),
+            currentTime =  new Date().getTime(),
+            diffTime = currentTime - date;
+        var minute = 60*1000,
+            hour = 60*minute,
+            day = 24*hour,
+            format = format || 'YYYY年MM月DD日',
+            alwaysDiff = alwaysDiff || false;
+        var formatArr = ['YYYY','MM','DD','H','M','S'];
+        var date = new Date(date),
+            year = date.getFullYear(),
+            month = date.getMonth()+1,
+            month = (month>9) ? month : '0'+month,
+            day = (date.getDate()>9) ? date.getDate() : '0'+ date.getDate(),
+            hour = (date.getHours()>9) ? date.getHours() : '0'+ date.getHours(),
+            minute = (date.getMinutes()>9) ? date.getMinutes() : '0'+date.getMinutes(),
+            second = (date.getSeconds()>9) ? date.getSeconds() : '0'+date.getSeconds(),
+            dateArr = [year,month,day,hour,':'+minute,':'+ second];
+        for(var i=0; i < formatArr.length; i++){
+            format = format.replace(formatArr[i],dateArr[i]);
+        }
+        return format;
+    };
+
+    var PAGE = function(){
+        return {
+            init: function(){
+                originalData = this.getModel();
+                this.fcRender();
+                this.tmplRender();
+            },
+            getModel: function(){
+                $.getJSON('./json/data4.json', function(res){
+                    originalData = res;
+                })
+                return originalData;
+            },
+            tmplRender: function(){
+                var data_fcDetail = {'fcDetail': {
+                    'id': originalData.state.flowId,
+                    'uid': originalData.state.guid,
+                    'type': originalData.state.flowType,
+                    'utype': '用户类型',
+                    'status': '流程状态'
+                }};
+                var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
+                $('#fcDetail').html(fcDetail);
+
+                var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
+                var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+                $('#ptDetail').html(ptDetail);
+
+                var data_history = {'historyPoints': [
+                    {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'}
+                ]};
+                var history = ejs.compile($('#tmpl_historyContainer').html())(data_history);
+                $('#historyContainer').html(history);
+            },
+            fcRender: function(){
+                var cy = new FC('cy');
+                var count = 0;
+                $('#cy canvas').css('visibility','hidden');
+                cy.cy.onRender(function(){
+                    count ++;
+                    if(count==2){
+                        cy.cy.zoom(0).center();
+                        setTimeout(function(){
+                            $('#cy canvas').css('visibility','visible');
+                        }, 100)
+                        cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
+                    }
+                })
+            }
+        }
+    }
+
+    window.PAGE = PAGE;
+
+    new PAGE().init();
+})(window, jQuery, cytoscape, ejs)
 
 
 

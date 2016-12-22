@@ -37,8 +37,8 @@ class PersistentFlow(
                       initData: Map[String, String]
                     ) extends AbstractFlow with PersistentActor with FlowInstanceTable with FlowProtocol {
 
-  import Flow._
   import driver.api._
+  import com.yimei.cflow.api.models.flow._
 
   override def persistenceId: String = pid
 

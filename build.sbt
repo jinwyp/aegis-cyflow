@@ -19,6 +19,8 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-cluster" % akkaV,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaV,
     "com.typesafe.akka" %% "akka-cluster-sharding" % akkaV,
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
 
     "com.typesafe.akka" %% "akka-persistence" % akkaV,
     "org.iq80.leveldb"            % "leveldb"          % "0.7",
@@ -67,6 +69,12 @@ PB.runProtoc in PB.protobufConfig := {
 }
 version in PB.protobufConfig := "3.0.0-beta-3"
 
+mainClass in assembly := Some("com.yimei.cflow.ServiceTest") //optional
+
+assemblyMergeStrategy in assembly := {
+  case PathList(ps @ _*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>  MergeStrategy.rename
+  case _ => MergeStrategy.deduplicate
+}
 
 scalacOptions ++= Seq(
   "-deprecation",

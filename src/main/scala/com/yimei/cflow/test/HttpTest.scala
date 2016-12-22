@@ -40,12 +40,13 @@ object HttpTest extends App with ApplicationConfig with FlywayConfig {
     InstRoute.route ~
     PartyRoute.route ~
     TaskRoute.route(proxy) ~
-    UserRoute.route(proxy)
+    UserRoute.route(proxy) ~
+    ResourceRoute.route(proxy)
+
 
 
 
   //implicit val mysystem = coreSystem // @todo fixme
-  Http().bindAndHandle(routes, "127.0.0.1", coreConfig.getInt("http.port"))
-
-
+  println(s"i am listening ad ${coreConfig.getInt("http.port")}")
+  Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
 }

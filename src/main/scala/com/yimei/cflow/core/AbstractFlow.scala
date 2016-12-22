@@ -8,7 +8,7 @@ import com.yimei.cflow.core.FlowRegistry._
   */
 abstract class AbstractFlow extends Actor with ActorLogging {
 
-  import Flow._
+  import com.yimei.cflow.api.models.flow._
 
   // 数据点名称 -> 数据点值
   var state: State

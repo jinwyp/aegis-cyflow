@@ -9,15 +9,17 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.core.Flow.DataPoint
-import com.yimei.cflow.core.{Flow, FlowProtocol}
+import com.yimei.cflow.api.models.flow.DataPoint
+import com.yimei.cflow.core.{FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.group.{Group, GroupProtocol}
+import com.yimei.cflow.group.{GroupProtocol}
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.db._
 import com.yimei.cflow.user.{User, UserProtocol}
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}
+import com.yimei.cflow.api.models.group.{State => GroupState}
+import com.yimei.cflow.api.models.user.{State => UserState}
 
 import scala.concurrent.Future
 
@@ -28,7 +30,7 @@ import scala.concurrent.Future
 //case class UserPoint(value:String,memo:Option[String],operator:Option[String])
 case class UserSubmitEntity(flowId:String,taskName:String,points:Map[String,DataPoint])
 
-case class GroupTaskResult(tasks:Seq[Group.State],total:Int)
+case class GroupTaskResult(tasks:Seq[GroupState],total:Int)
 
 
 trait TaskProtocol extends DefaultJsonProtocol with UserProtocol with GroupProtocol{
@@ -73,7 +75,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         }
       }
 
-      val tasks: Future[User.State] = for {
+      val tasks: Future[UserState] = for {
         p <- pi
         u <- getUser(p)
         r <- ServiceProxy.userQuery(proxy,p.party_class+"-"+p.instance_id,u.user_id)
@@ -156,7 +158,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         }
 
         //插入数据库
-        def insertTask(s:User.State): Future[FlowTaskEntity] = {
+        def insertTask(s:UserState): Future[FlowTaskEntity] = {
           dbrun(flowTask returning flowTask.map(_.id) into ((fl,id)=>fl.copy(id=id)) +=
             FlowTaskEntity(None,entity.flowId,task_id,entity.taskName,entity.points.toJson.toString,s.userType,s.userId,Timestamp.from(Instant.now))
           ) recover {
@@ -165,7 +167,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         }
 
         //提交任务，并返回当前用户的任务
-        val result: Future[User.State] = for {
+        val result: Future[UserState] = for {
           p <- pi
           u <- getUser(p)
           fw <- flow
@@ -217,7 +219,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           ).length.result)
         }
 
-        def getTasks(ugs:Seq[UserGroupEntity],p:PartyInstanceEntity): Future[Seq[Group.State]] = {
+        def getTasks(ugs:Seq[UserGroupEntity],p:PartyInstanceEntity): Future[Seq[GroupState]] = {
          Future.sequence(ugs.map(ug => ServiceProxy.groupQuery(proxy,p.party_class+"-"+p.instance_id,ug.gid)))
         }
 
@@ -226,7 +228,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           u <- getUser(p)
           num <- getGropCount(p,u)
           gs: Seq[UserGroupEntity] <- getGroups(p,u)
-          tsk: Seq[Group.State] <- getTasks(gs,p)
+          tsk: Seq[GroupState] <- getTasks(gs,p)
         } yield {
           GroupTaskResult(tsk,num)
         }
