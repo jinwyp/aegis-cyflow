@@ -12,7 +12,7 @@ import akka.util.Timeout
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.User.State
+import com.yimei.cflow.api.models.user.{State => UserState}
 import com.yimei.cflow.user.db.{PartyInstanceEntity, PartyInstanceTable, PartyUserEntity, PartyUserTable}
 import com.yimei.cflow.user.{User, UserProtocol}
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
@@ -26,7 +26,7 @@ import scala.concurrent.duration._
 
 case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String)
 
-case class QueryUserResult(userInfo:PartyUserEntity,status:State)
+case class QueryUserResult(userInfo:PartyUserEntity,status:UserState)
 
 case class UserListEntity(userList:Seq[PartyUserEntity],total:Int)
 
@@ -60,7 +60,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def postUser: Route = post {
@@ -82,7 +82,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
                //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }
-           val result: Future[State] = (for {
+           val result: Future[UserState] = (for {
              p <- pi
              u <- insert(p)
              r <- ServiceProxy.userCreate(proxy, p.party_class+"-"+p.instance_id, u.user_id)
@@ -116,7 +116,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def getUser: Route = get {
@@ -209,7 +209,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[User.State]),
+    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
     new ApiResponse(code = 500, message = "Internal server error")
   ))
   def putUser: Route = put {

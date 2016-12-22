@@ -3,8 +3,10 @@ package com.yimei.cflow.user
 import java.util.UUID
 
 import akka.actor.{ActorLogging, ActorRef}
+import com.yimei.cflow.api.models.flow.CommandPoints
+import com.yimei.cflow.api.models.user._
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.Flow.CommandPoints
+
 
 /**
   * Created by hary on 16/12/13.

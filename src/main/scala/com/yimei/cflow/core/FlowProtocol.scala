@@ -2,8 +2,7 @@ package com.yimei.cflow.core
 
 import java.text.SimpleDateFormat
 import java.util.Date
-
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 /**

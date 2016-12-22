@@ -7,7 +7,9 @@ import akka.persistence.journal.leveldb.{SharedLeveldbJournal, SharedLeveldbStor
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import com.yimei.cflow.core.{FlowClusterSupport, FlowGraph, PersistentFlow}
-import com.yimei.cflow.group.{Group, GroupClusterSupport}
+import com.yimei.cflow.group.GroupClusterSupport
+//import com.yimei.cflow.group.{Group, GroupClusterSupport}
+import com.yimei.cflow.api.models.group._
 import com.yimei.cflow.user.UserClusterSupport
 
 import scala.concurrent.duration._
@@ -39,7 +41,7 @@ object FlowClusterApp extends App {
     // 组管理
     val groupRegion = ClusterSharding(system).start(
       typeName = GroupClusterSupport.shardName,
-      entityProps = Group.props(),
+      entityProps = null,
       settings = ClusterShardingSettings(system),
       extractEntityId = GroupClusterSupport.extractEntityId,
       extractShardId = GroupClusterSupport.extractShardId)
@@ -47,7 +49,7 @@ object FlowClusterApp extends App {
     // 用户
     val userRegion = ClusterSharding(system).start(
       typeName = UserClusterSupport.shardName,
-      entityProps = Group.props(),
+      entityProps = null,
       settings = ClusterShardingSettings(system),
       extractEntityId = UserClusterSupport.extractEntityId,
       extractShardId = UserClusterSupport.extractShardId)

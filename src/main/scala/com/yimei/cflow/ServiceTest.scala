@@ -45,11 +45,13 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
     GroupRoute.route ~
     TaskRoute.route(proxy) ~
     AutoRoute.route(proxy) ~
-    CangRoute.route(proxy) ~
+    ResourceRoute.route(proxy) ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes)
 
   implicit val mysystem = coreSystem // @todo fixme
+
+  println(s"http is listening on ${coreConfig.getInt("http.port")}")
   Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
 
 }

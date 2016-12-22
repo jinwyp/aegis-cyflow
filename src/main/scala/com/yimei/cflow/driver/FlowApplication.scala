@@ -34,7 +34,7 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
     GroupRoute.route ~
     TaskRoute.route(proxy) ~
     AutoRoute.route(proxy) ~
-    CangRoute.route(proxy) ~
+    ResourceRoute.route(proxy) ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes)
 

@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
 import akka.cluster.sharding.ShardRegion
-import com.yimei.cflow.core.Flow.Command
+import com.yimei.cflow.api.models.flow.Command
 
 /**
   * Created by hary on 16/12/16.

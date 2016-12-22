@@ -3,38 +3,44 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
+import com.yimei.cflow.api.models.graph.GraphConfig
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.core.Flow._
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.ying.YingGraphJar
-import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.Future
 import scala.io.Source
+import scala.reflect.runtime._
 
-case class DefaultVertex(description: String, arrows: Seq[Arrow])
 
-case class GraphConfig(
-                        graphJar: String,
-                        persistent: Boolean,
-                        timeout: Int,
-                        initial: String,
-                        points: Map[String, String],
-                        autoTasks: Map[String, TaskInfo],
-                        userTasks: Map[String, TaskInfo],
-                        vertices: Map[String, DefaultVertex],
-                        edges: Map[String, Edge]
-                      )
+case class JudgeFactory(content: String) {
 
-object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
-  implicit val defaultVertexFormat = jsonFormat2(DefaultVertex)
-  implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
+  import reflect.runtime.currentMirror
+  import tools.reflect.ToolBox
+  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
+
+  val tree = toolbox.parse(content)
+  val compiledCode = toolbox.compile(tree)
+  def make() = compiledCode().asInstanceOf[State => Seq[Arrow]]
 }
 
+case class AutoFactory(content: String) {
+
+  import reflect.runtime.currentMirror
+  import tools.reflect.ToolBox
+  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
+
+  val tree = toolbox.parse(content)
+  val compiledCode = toolbox.compile(tree)
+  def make() = compiledCode().asInstanceOf[CommandAutoTask => Future[Map[String, String]]]
+}
 
 /**
   * Created by hary on 16/12/17.
   */
 object GraphLoader extends App {
+
+
 
   def loadall() =
     new File("flows")
@@ -56,7 +62,7 @@ object GraphLoader extends App {
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
-    import GraphConfigProtocol._
+    import com.yimei.cflow.api.models.graph.GraphConfigProtocol._
     import spray.json._
 
     val classLoader = getClassLoader(gFlowType)
@@ -67,10 +73,10 @@ object GraphLoader extends App {
       .convertTo[GraphConfig]
 
     graphConfig = graphConfig.copy(edges = graphConfig.edges ++ Map(
-      "start" -> Edge( name = "start", begin = "God", end = graphConfig.initial),
-      "success" -> Edge( name = "success", end = "success"),
-      "fail" -> Edge( name = "fail", end = "success")
-      )
+      "start" -> Edge(name = "start", begin = "God", end = graphConfig.initial),
+      "success" -> Edge(name = "success", end = "success"),
+      "fail" -> Edge(name = "fail", end = "success")
+    )
     )
 
     println(graphConfig.toJson.prettyPrint)
@@ -83,13 +89,10 @@ object GraphLoader extends App {
     val autoMap = getAutoMap(mclass)
 
     // deciders from graphJar  + default decider
-    var allDeciders: Map[String, State => Seq[Arrow]] =
-      graphConfig.vertices.map { entry =>
-        (entry._1, entry._2.arrows)
-      }.filter(_._2.length == 1) // 暂时只处理长度为1的(非并发执行流)
-        .map { e =>
-        (e._1, { st: State => Seq(e._2(0)) })
-      }
+    var allDeciders: Map[String, (State) => Seq[Arrow]] = graphConfig.vertices.filter(_._2 != None).map{ entry =>
+      (entry._1 -> JudgeFactory(entry._2.program.get).make())
+    }
+
     allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
     // graph intial vertex
@@ -105,8 +108,8 @@ object GraphLoader extends App {
       override val points: Map[String, String] = graphConfig.points
 
       override val vertices: Map[String, String] = {
-        graphConfig.vertices.map{ entry =>
-          ( entry._1, entry._2.description)
+        graphConfig.vertices.map { entry =>
+          (entry._1, entry._2.description)
         }
       }
 

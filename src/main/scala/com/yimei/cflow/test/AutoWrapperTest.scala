@@ -5,7 +5,7 @@ import java.lang.reflect.{Constructor, Method}
 
 import akka.actor.{ActorRef, Props}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.core.Flow.{Arrow, State}
+import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.core.{AutoActor, FlowGraph}
 
 import scala.concurrent.Future

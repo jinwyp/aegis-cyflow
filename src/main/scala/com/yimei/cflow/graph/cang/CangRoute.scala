@@ -17,6 +17,6 @@ object CangRoute {
 
   // todo:
   //  compose all the routes into big one
-  def route(proxy: ActorRef): Route = complete("hello world")
+  // def route(proxy: ActorRef): Route = complete("hello world")
 }
 

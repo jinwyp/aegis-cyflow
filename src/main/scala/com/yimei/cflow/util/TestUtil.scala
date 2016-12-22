@@ -4,15 +4,15 @@ import java.util.{Date, UUID}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import com.yimei.cflow.ServiceTest._
+import com.yimei.cflow.api.models.flow.CommandFlowGraph
+import com.yimei.cflow.api.models.group.{CommandClaimTask, CommandQueryGroup, State}
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.core.Flow.{Graph, _}
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.group.Group
-import com.yimei.cflow.group.Group._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
-import com.yimei.cflow.user.User.{CommandQueryUser, CommandTaskSubmit, CommandUserTask}
+import com.yimei.cflow.api.models.user.{CommandQueryUser, CommandTaskSubmit, CommandUserTask, State => UserState}
 
 import scala.concurrent.duration._
 
@@ -91,14 +91,14 @@ class TestClient(proxy: ActorRef) extends Actor
       proxy ! CommandFlowGraph(flowId)
 
     // 收到用户状态, 就自动处理用户任务
-    case state: User.State =>
+    case state: UserState =>
       log.info("!!!!state:{}", state)
       state.tasks.foreach { (entry: (String, CommandUserTask)) =>
         processTask(entry._1, entry._2)
       }
 
     // 收到组状态, 对每个组的任务进行claim
-    case state: Group.State =>
+    case state: State =>
       log.info("!!!groupstate:{}", state)
       state.tasks.foreach(t =>
         proxy ! CommandClaimTask(s"${state.userType}-${state.gid}", t._1, values(t._2.flowId)._2)
