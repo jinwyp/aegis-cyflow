@@ -1,11 +1,14 @@
 *{
     margin:0; padding:0; 
 }
+ul{
+    list-style:none;
+}
+#cy{
+    width:855px; height:510px; background-color: #d8dee4;
+}
 #cy>canvas{
     visibility: hidden;
-}
-#cy, #cy2{
-    position:absolute; top:20px; left:20px;
 }
 .qtip.qtip-default{
     max-width: 1000px;
@@ -76,3 +79,98 @@
 .qtip h5{
     font-size:15px;
 }
+
+body{
+    background:#3c5b78; font-family: Microsoft YaHei; font-size:14px;
+    padding-bottom:40px;
+}
+header, .fcContainer, #historyContainer{
+    width:1200px; margin:0 auto;
+}
+header{
+    height:100px;
+}
+.fcContainer, #historyContainer{
+    background:#fff;
+}
+.fcContainer{
+    width:1160px; padding:0 20px 40px;
+}
+.fcContainer .pageTitle{
+    font-size:18px; color:#3c5a78; line-height:48px; border-bottom:1px solid #d8dee4;
+}
+#fcDetail{
+    margin:15px 0;
+}
+#fcDetail li{
+    line-height:36px; 
+}
+#fcDetail p{
+    display:inline-block; *display:inline; zoom:1; width:310px; 
+    color:#3c5a78;
+}
+#fcDetail p label{
+    opacity:0.5; filter:alpha(opacity=50); margin-right:10px;
+}
+.cyContainer{
+    overflow:hidden; width:1170px;
+}
+.cyContainer #cy{
+    float:left;
+}
+.cyContainer #ptDetail{
+    float:right; width:305px; height:510px;
+    background:#f9efea;
+}
+.cyContainer #ptDetail li.title{
+    height:40px; background:#e8f1f9; color:#909fac;
+}
+.cyContainer #ptDetail li label, .cyContainer #ptDetail li span{
+    display:inline-block; *display:inline; zoom:1; vertical-align:middle;
+    width:50%;
+}
+.cyContainer #ptDetail li.title label, .cyContainer #ptDetail li.title span{
+    text-align:center; height:40px; line-height:40px; 
+}
+
+#historyContainer{
+    margin-top:10px; padding-bottom:20px;
+}
+#historyContainer ul li{
+    overflow: hidden;
+    color:#3c5a78; margin:0 20px; border-bottom:1px solid #d8dee4; padding:20px 0;
+}
+#historyContainer ul li.title{
+    background:#e8f1f9; color:#909fac; height:40px; line-height:40px; margin:0; padding:0;
+}
+#historyContainer ul li.title span{
+    text-align:center; 
+}
+#historyContainer ul li.title span:first-child{
+    text-align:left; text-indent:20px; width:100px; padding:0;
+}
+#historyContainer ul li span:first-child{
+    padding:0;
+}
+#historyContainer ul li span{
+    float:left; padding:0 15px;
+}
+#historyContainer ul li>span:first-child{
+    width:80px; 
+}
+#historyContainer ul li>span:nth-child(2){
+    width:300px;
+}
+#historyContainer ul li>span:nth-child(3){
+    width:140px; text-align:center;
+}
+#historyContainer ul li>span:nth-child(4){
+    width:120px; text-align:center;
+}
+#historyContainer ul li>span:nth-child(5){
+    width:300px;
+}
+#historyContainer ul li>span:nth-child(6){
+    width:70px;
+}
+

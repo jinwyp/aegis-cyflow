@@ -5,40 +5,69 @@
         <link rel="stylesheet" href="css/fc.css">
 	</head>
 	<body>
-	<div id="cy"
-     style="width:600px; height:600px; background-color: #DAE4E4;"></div>
-     <!--<div id="cy2"
-     style="width:600px; height:600px; background-color: transparent"></div>-->
+    <header>
+        <img src="./img/logo.png" alt="logo" />
+    </header>
+    <div class="fcContainer">
+        <h5 class='pageTitle'>详情页面</h5>
+        <ul id='fcDetail'>
+            <script id='tmpl_fcDetail' type='text/template'>
+                <li>
+                    <p><label for="">流程 I D：</label><span><%= fcDetail.id %></span></p>
+                    <p><label for="">用户 I D：</label><span><%= fcDetail.uid %></span></p>
+                </li>
+                <li>
+                    <p><label for="">流程类型：</label><span><%= fcDetail.type %></span></p>
+                    <p><label for="">用户类型：</label><span><%= fcDetail.utype %></span></p>
+                    <p><label for="">状态：</label><span><%= fcDetail.status %></span></p>
+                </li>
+            </script>
+        </ul>
+        <div class="cyContainer">
+            <div id="cy"></div>
+            <div id="ptDetail">
+                <script id='tmpl_ptDetail' type='text/template'>
+                    <ul>
+                        <li class='title'><label>属性key</label><span>值key</span></li>
+                        <% points.forEach(function(p){ %>
+                        <li><label><%= p %></label><span><%= state.points[p].value %></span></li>
+                        <% }) %>
+                    </ul>
+                    <% if(task.type == 'autuTasks'){ %>
+                        <p class='refresh'>重新执行</p>                        
+                    <% } %>
+                </script>
+            </div>
+        </div>
+    </div>
+    <div id="historyContainer">
+        <script id='tmpl_historyContainer' type='text/template'>
+            <ul>
+                <li class='title'>
+                    <span>属性</span><span>值</span><span>采集人</span><span>采集时间</span><span>描述</span><span>备注</span>
+                </li>
+                <% historyPoints.forEach(function(p, i){ %>
+                <li>
+                    <span><%= p.name %></span>
+                    <span><%= p.value %></span>
+                    <span><%= p.user %></span>
+                    <span><%= p.timestamp %></span>
+                    <span><%= p.description %></span>
+                    <span><%= p.comment %></span>
+                </li>
+                <% }) %>
+            </ul>
+        </script>
+    </div>
+	
 
      <script src='lib/jquery.js'></script>
+     <script src='lib/ejs.min.js'></script>
      <script src="lib/jquery.qtip.js"></script>
      <script src='lib/cytoscape.js'></script>
      <script src="lib/cytoscape-qtip.js"></script>
      <script src="lib/dagre.js"></script>
      <script src="lib/cytoscape-dagre.js"></script>
      <script src='js/fc.js'></script>
-     <script>
-        var cy = new FC('cy');
-
-        var count = 0;
-        $('#cy canvas').css('visibility','hidden');
-        cy.cy.onRender(function(){
-            count ++;
-            if(count==2){
-                cy.cy.zoom(0).center();
-                setTimeout(function(){
-                    $('#cy canvas').css('visibility','visible');
-                }, 100)
-                cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
-            }
-        })
-        // var cy2 = new FC('cy2');
-
-        // cy2.cy.ready(function(){
-        //     setTimeout(function(){
-        //         cy2.drawProcessing();
-        //     }, 0)
-        // })
-     </script>
 	</body>
 </html>
