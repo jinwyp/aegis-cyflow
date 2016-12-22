@@ -34,7 +34,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   Thread.sleep(2000)
 
   // 3> http
-  val routes: Route = FlowRoute.route(proxy) ~
+  val routes: Route = AdminRoute.route(proxy) ~
     UserRoute.route(proxy) ~
     GroupRoute.route ~
     TaskRoute.route(proxy) ~

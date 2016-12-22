@@ -20,6 +20,7 @@ import slick.model.Column
 import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.flow.{State => FlowState}
 import scala.concurrent.Future
+import com.yimei.cflow.core.FlowRegistry
 
 case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean)
 
@@ -243,7 +244,14 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
-  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser
+  def getGraph = get {
+    pathPrefix("graph"/ Segment / Segment) { (graphType,taskName )=>
+      complete(FlowRegistry.registries(graphType).userTasks(taskName))
+    }
+  }
+
+
+  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
 }
 
 
