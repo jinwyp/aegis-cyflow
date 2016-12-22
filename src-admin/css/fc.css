@@ -128,7 +128,7 @@ header{
 }
 .cyContainer #ptDetail ul.hascontent li{
     border-bottom:1px solid #e1eaf2; line-height:18px; padding:15px 0;
-    color:#3c5a78;
+    color:#3c5a78; overflow:hidden;
 }
 .cyContainer #ptDetail ul.hascontent li:hover{
     background:#3a5c79; color:#fff;
@@ -151,8 +151,10 @@ header{
     height:40px; background:#e8f1f9; color:#909fac;
 }
 .cyContainer #ptDetail li label, .cyContainer #ptDetail li span, .cyContainer #ptDetail .title label, .cyContainer #ptDetail .title span{
-    display:inline-block; *display:inline; zoom:1; vertical-align:middle;
-    width:50%;
+    float:left; width:50%;
+}
+.cyContainer #ptDetail li span a{
+    color:orange;
 }
 .cyContainer #ptDetail .title label, .cyContainer #ptDetail .title span{
     text-align:center; height:40px; line-height:40px; 
@@ -190,13 +192,16 @@ header{
     width:140px; text-align:center;
 }
 #historyContainer ul li>span:nth-child(4){
-    width:120px; text-align:center;
+    width:180px; text-align:center;
 }
 #historyContainer ul li>span:nth-child(5){
-    width:300px;
+    width:240px; text-align:center;
 }
 #historyContainer ul li>span:nth-child(6){
     width:70px;
+}
+#historyContainer ul li span a{
+    color:orange;
 }
 
 .qtip.tip-pointtext{

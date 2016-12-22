@@ -4,3 +4,23 @@ body{
 header, .container{
     width:1200px; margin:0 auto;
 }
+.container{
+    background-color: white;
+}
+.panel-main{
+    width:1200px;
+    margin:0 auto;
+    text-align: center;
+}
+.panel-heading .search-border{
+    width:100%;
+    height:1px;
+    margin-top:10px;
+    border-bottom: 1px solid #3c5b78;
+}
+.panel-heading,.panel-body{
+    text-align: left;
+}
+#panel-pagination{
+    display: inline-block;
+}
