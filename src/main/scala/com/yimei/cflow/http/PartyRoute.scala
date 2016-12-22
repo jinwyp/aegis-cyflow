@@ -58,5 +58,5 @@ class PartyRoute extends PartyClassTable with UserProtocol with SprayJsonSupport
 
 object PartyRoute {
   def apply() = new PartyRoute
-  def route: Route = PartyRoute.route
+  def route: Route = PartyRoute().route
 }

@@ -33,7 +33,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val arrowFormat =jsonFormat2(Arrow)
 
-  implicit val stateFormat = jsonFormat6(State)
+  implicit val stateFormat = jsonFormat7(State)
 
   implicit val taskInfoFormat = jsonFormat2(TaskInfo)
 

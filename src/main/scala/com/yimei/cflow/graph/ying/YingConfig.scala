@@ -33,7 +33,7 @@ object YingConfig {
     */
   val auto_A = "A"
   val auto_B = "B"
-  val auto = "C"
+  val auto_C = "C"
   val auto_DEF = "DEF"
 
   /**
@@ -46,7 +46,7 @@ object YingConfig {
     
     auto_A -> TaskInfo("描述", Seq(point_A)),
     auto_B -> TaskInfo("描述", Seq(point_B)),
-    auto -> TaskInfo("描述", Seq(point_C)),
+    auto_C -> TaskInfo("描述", Seq(point_C)),
     auto_DEF -> TaskInfo("描述", Seq(point_D, point_E, point_F))
     
   )

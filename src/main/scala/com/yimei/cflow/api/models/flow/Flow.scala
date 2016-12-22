@@ -68,7 +68,8 @@ case class State(
                   points: Map[String, DataPoint],
                   edges: Map[String, Boolean],     // edges to be eliminated
                   histories: Seq[String],          // edges already eliminated
-                  flowType: String
+                  flowType: String,
+                  ending:Option[String] = None
                 )
 
 

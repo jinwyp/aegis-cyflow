@@ -78,6 +78,9 @@ class TestClient(proxy: ActorRef) extends Actor
       //      gUserType = pUserType
       //      gId = pGroupId
       //      gType = pGroupType
+
+      log.info("!!!!!!!!!!!{}",values)
+
       values = values + (flowId ->(pUserType, pUserId, pGroupId))
       val q: Cancellable = context.system.scheduler.schedule(1 seconds, 5 seconds, self, (userType, userId, flowId,
         pUserType, pUserId, pGroupType, pGroupId, 1))
@@ -85,9 +88,9 @@ class TestClient(proxy: ActorRef) extends Actor
 
     // tick消息
     case (userType: String, userId: String, flowId: String, pUserType: String, pUserId: String, pGroupType: String, pGroupId: String, 1) =>
-      proxy ! CommandQueryUser(s"${userType}-${userId}") //
-      proxy ! CommandQueryUser(s"${pUserType}-${pUserId}")
-      proxy ! CommandQueryGroup(s"${pGroupType}-${pGroupId}")
+      proxy ! CommandQueryUser(s"${userType}!${userId}") //
+      proxy ! CommandQueryUser(s"${pUserType}!${pUserId}")
+      proxy ! CommandQueryGroup(s"${pGroupType}!${pGroupId}")
       proxy ! CommandFlowGraph(flowId)
 
     // 收到用户状态, 就自动处理用户任务
@@ -101,7 +104,7 @@ class TestClient(proxy: ActorRef) extends Actor
     case state: State =>
       log.info("!!!groupstate:{}", state)
       state.tasks.foreach(t =>
-        proxy ! CommandClaimTask(s"${state.userType}-${state.gid}", t._1, values(t._2.flowId)._2)
+        proxy ! CommandClaimTask(s"${state.userType}!${state.gid}", t._1, values(t._2.flowId)._2)
       )
 
     // 收到流程图
@@ -128,14 +131,14 @@ class TestClient(proxy: ActorRef) extends Actor
     if (task.taskName == "TKPU1") {
       points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wangqiId", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "!" + values(task.flowId)._2, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 设置参与方组
     else if (task.taskName == "TKPG1") {
       points = taskPointMap(task.taskName).points.map { pname =>
         //(pname -> DataPoint("fund-wqGroup", Some("userdata"), Some(task.guid), uuid, new Date().getTime))
-        (pname -> DataPoint(values(task.flowId)._1 + "-" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
+        (pname -> DataPoint(values(task.flowId)._1 + "!" + values(task.flowId)._3, Some("userdata"), Some(task.guid), uuid, new Date().getTime))
       }.toMap
     }
     // 其他为用户任务

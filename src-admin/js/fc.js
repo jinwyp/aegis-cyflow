@@ -59,6 +59,14 @@
             },
 
             {
+                selector: 'node.task:selected',
+                style: {
+                    'border-width': 3,
+                    'border-color': '#e86e81'
+                }
+            },
+
+            {
                 selector: 'edge',
                 style: {
                     'width': 4,
@@ -311,11 +319,18 @@
     var geneCallback= function(cy){
         cy.nodes('.task').qtip({
             content: function(){
-                return taskTip.apply(this);
+                var data = this.data();
+                return data.original.points[data.id];
             },
+            // show: {
+            //     event: 'mouseover'
+            // },
+            // hide: {
+            //     event: 'mouseout'
+            // },
             position: {
-                my: 'top center',
-                at: 'bottom center'
+                my: 'bottom center',
+                at: 'top center'
             },
             style: {
                 classes: 'qtip-bootstrap',
@@ -326,6 +341,53 @@
             }
         })
 
+        cy.nodes('.task').on('click', function(e){
+            var data = this.data();
+            var points = [];
+            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+                var val;
+                if(data.original.state.points.hasOwnProperty(p)){
+                    if(data.original.state.points[p].memo){
+                        var memo = data.original.state.points[p].memo;
+                        (memo.indexOf('img:')==0) && (val={'url': memo.substr(4), 'text': '查看图片'});
+                        (memo.indexOf('pdf:')==0) && (val={'url': memo.substr(4), 'text': '查看PDF文件'});
+                    }
+
+                    !val && (val = data.original.state.points[p].value);
+                }else{
+                    val = '未采集';
+                }
+                points.push({'key':p, 'value':val});
+            })
+            
+            var data_ptDetail = {'points': points, 'task': {'type': data.taskType}};
+            var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+            $('#ptDetail>div').html(ptDetail);
+
+            $('.hastip').qtip({
+                content: function(){
+                    return '<span class="pointer"></span><div class="tip-pointtext-contentbg"></div><div class="tip-pointtextcontent"><div class="content">' + $(this).attr('data') + '</div></div>';
+                },
+                position: {
+                    my: 'bottom right',
+                    at: 'top right'
+                },
+                show: {
+                    event: 'click'
+                },
+                hide: {
+                    event: 'unfocus'
+                },
+                style: {
+                    classes: 'qtip-bootstrap tip-pointtext',
+                    tip: {
+                        width: 16,
+                        height: 8
+                    }
+                }
+            })
+        })
+
         cy.nodes('.node').qtip({
             content: function(){
                 var data = this.data();
@@ -333,6 +395,12 @@
                 var vertices = data.original.vertices;
                 return vertices[id];
             },
+            // show: {
+            //     event: 'mouseover'
+            // },
+            // hide: {
+            //     event: 'mouseout'
+            // },
             position: {
                 my: 'top center',
                 at: 'bottom center'
@@ -478,27 +546,46 @@
                     'id': originalData.state.flowId,
                     'uid': originalData.state.guid,
                     'type': originalData.state.flowType,
-                    'utype': '用户类型',
-                    'status': '流程状态'
+                    'utype': originalData.state.guid.substr(originalData.state.guid.split('-')[0].length+1),
+                    'status': originalData.state.ending || ''
                 }};
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
 
-                var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
-                var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
-                $('#ptDetail').html(ptDetail);
+                // var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
+                // var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+                // $('#ptDetail').html(ptDetail);
 
-                var data_history = {'historyPoints': [
-                    {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                    {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'}
-                ]};
+                var historyPoints = [];
+                for( var i in originalData.state.points){
+                    var p = originalData.state.points[i];
+                    var memo;
+                    if(p.memo){
+                        (p.memo.indexOf('img:')==0) && (memo = {url: p.memo.substr(4), text: '查看图片'});
+                        (p.memo.indexOf('pdf:')==0) && (memo = {url: p.memo.substr(4), text: '查看PDF文件'});
+                        !memo && (memo=p.memo);
+                    } 
+                    historyPoints.push({
+                        'name': i,
+                        'value': p.value || '未采集',
+                        'user': p.operator || '无',
+                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD H:M:S') || '无',
+                        'description': originalData.points[i] || '无', 
+                        'comment': memo || '无'
+                    })
+                }
+                var data_history = {'historyPoints': historyPoints}
+                // var data_history = {'historyPoints': [
+                //     {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
+                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'}
+                // ]};
                 var history = ejs.compile($('#tmpl_historyContainer').html())(data_history);
                 $('#historyContainer').html(history);
             },
@@ -506,6 +593,7 @@
                 var cy = new FC('cy');
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
+                window.cy = cy.cy;
                 cy.cy.onRender(function(){
                     count ++;
                     if(count==2){

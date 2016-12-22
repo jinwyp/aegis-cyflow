@@ -21,16 +21,16 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   //
   def updateState(ev: Event) = {
     ev match {
-//      case Hijacked(updatePoints) => updateDecision match {
-//        case Some(v) =>
-//          state = state.copy(points = state.points ++ updatePoints)
-//        case None =>
-//          state = state.copy(points = state.points ++ updatePoints)
-//      }
+      //      case Hijacked(updatePoints) => updateDecision match {
+      //        case Some(v) =>
+      //          state = state.copy(points = state.points ++ updatePoints)
+      //        case None =>
+      //          state = state.copy(points = state.points ++ updatePoints)
+      //      }
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
 
-        // 边完成
+      // 边完成
       case EdgeCompleted(name) =>
         log.info(s"edge[$name] completed")
         state = state.copy(
@@ -40,22 +40,32 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
       case DecisionUpdated(name, arrows) =>
 
+
         // 将当前点的入边所负责的数据点设置为已使用
         var newPoints = state.points
         graph.inEdges(name)
           .map(graph.edges(_))
           .map(_.getAllDataPointsName(state))
-          .foldLeft(Seq[String]())((acc, elem) =>  acc ++ elem)
+          .foldLeft(Seq[String]())((acc, elem) => acc ++ elem)
           .foreach { ap =>
             newPoints = newPoints + (ap -> newPoints(ap).copy(used = true))
           }
 
-        log.info(s"!!!!!($name, $arrows) ---> ${arrows.filter( _.edge.nonEmpty).map( e => (e.edge.get -> true)).toMap}")
+        log.info(s"!!!!!($name, $arrows) ---> ${arrows.filter(_.edge.nonEmpty).map(e => (e.edge.get -> true)).toMap}")
 
-        state = state.copy(
-          edges = state.edges ++ arrows.filter( _.edge.nonEmpty).map( e => (e.edge.get -> true)).toMap,
-          points = newPoints
-        )
+        if (arrows.size == 1 && arrows(0).edge == None) {
+          state = state.copy(
+            edges = state.edges ++ arrows.filter(_.edge.nonEmpty).map(e => (e.edge.get -> true)).toMap,
+            points = newPoints,
+            ending = Some(arrows(0).end)
+          )
+        } else {
+          state = state.copy(
+            edges = state.edges ++ arrows.filter(_.edge.nonEmpty).map(e => (e.edge.get -> true)).toMap,
+            points = newPoints
+          )
+        }
+
 
         log.debug("new status: {}", state)
     }
