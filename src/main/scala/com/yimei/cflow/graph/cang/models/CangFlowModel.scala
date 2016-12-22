@@ -112,11 +112,10 @@ object CangFlowModel extends DefaultJsonProtocol {
                              fundProviderInterestRate: BigDecimal)
   implicit val traffickerAuditFormat = jsonFormat3(TraffickerAudit)
 
-  /** 贸易商财务给出放款建议, 放款金额 **/
+  /** 贸易商财务给出 放款金额 **/
   case class TraffickerFinanceAudit(taskId: String,
-                                    confirmFinancingAmount: BigDecimal,
-                                    financingAdvice: String)
-  implicit val traffickerFinanceAuditFormat = jsonFormat3(TraffickerFinanceAudit)
+                                    confirmFinancingAmount: BigDecimal)
+  implicit val traffickerFinanceAuditFormat = jsonFormat2(TraffickerFinanceAudit)
 
   /** 资金方审核 **/
   case class FundProviderAudit(taskId: String, statusId: Int)
