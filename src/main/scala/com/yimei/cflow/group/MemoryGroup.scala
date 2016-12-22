@@ -18,7 +18,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
   import Group._
 
   // 用户id与用户类型
-  val regex = "(\\w+)-(.*)".r
+  val regex = "([^!]+)!(.*)".r
   val (userType, gid) = ggid match {
     case regex(uid, gid) => (uid, gid)
   }
@@ -45,7 +45,7 @@ class MemoryGroup(ggid:String,modules:Map[String,ActorRef]) extends AbstractGrou
       log.info(s"claim的请求: $command")
       val task = state.tasks(taskId)
       updateState(TaskDequeue(taskId))
-      modules(module_user) ! CommandUserTask(task.flowId,s"${userType}-${userId}",task.taskName,task.flowType)
+      modules(module_user) ! CommandUserTask(task.flowId,s"${userType}!${userId}",task.taskName,task.flowType)
       sender() ! state
   }
 

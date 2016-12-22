@@ -1,10 +1,11 @@
 package com.yimei.cflow.test
 
+import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.FlowRegistry
+import com.yimei.cflow.config.{ApplicationConfig, FlywayConfig}
+import com.yimei.cflow.core.{FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http._
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
@@ -12,11 +13,16 @@ import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 /**
   * Created by wangqi on 16/12/21.
   */
-object HttpTest extends App with ApplicationConfig{
+object HttpTest extends App with ApplicationConfig with FlywayConfig {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
+  implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
+  migrate
 
-  FlowRegistry.register(YingGraph.flowType, YingGraph)
+  //FlowRegistry.register(YingGraph.flowType, YingGraph)
+  GraphLoader.loadall()
+
+  FlowRegistry.registries("ying").inEdges.foreach(t=>log.info("{}:{}",t._1,t._2.foreach(t=>print(t))))
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
@@ -29,7 +35,7 @@ object HttpTest extends App with ApplicationConfig{
   val routes = AdminRoute.route(proxy) ~
     PartyRoute.route ~
     AutoRoute.route(proxy) ~
-    FlowRoute.route(proxy) ~
+    //FlowRoute.route(proxy) ~
     GroupRoute.route ~
     InstRoute.route ~
     PartyRoute.route ~
@@ -39,7 +45,7 @@ object HttpTest extends App with ApplicationConfig{
 
 
   //implicit val mysystem = coreSystem // @todo fixme
-  Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
+  Http().bindAndHandle(routes, "127.0.0.1", coreConfig.getInt("http.port"))
 
 
 }

@@ -22,7 +22,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
 
   // 用户id与用户类型
-  val regex = "(\\w+)-(.*)".r
+  val regex = "([^!]+)!(.*)".r
   val (userType, gid) = ggid match {
     case regex(uid, gid) => (uid, gid)
   }
@@ -74,7 +74,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
             updateState(event)
             modules(module_user) ! CommandUserTask(task.flowId, s"${
               userType
-            }-${
+            }!${
               userId
             }", task.taskName, task.flowType)
             sender() ! state

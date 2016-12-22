@@ -30,7 +30,7 @@ object YingGraph extends FlowGraph {
     "V5" -> "V5"
   )
 
-  val E1 = Edge(name = "E1", begin = "V0", end = "V1", autoTasks = List(auto_A, auto_B, auto))
+  val E1 = Edge(name = "E1", begin = "V0", end = "V1", autoTasks = List(auto_A, auto_B, auto_C))
   val E2 = Edge(name = "E2", begin = "V1", end = "V2", userTasks = List(task_K_PU1, task_K_PG1))
   val E3 = Edge(name = "E3", begin = "V2", end = "V3", partUTasks = List(PartUTask(point_KPU_1, List(task_PU))), partGTasks = List(PartGTask(point_KPG_1, List(task_PG))))
   val E4 = Edge(name = "E4", begin = "V3", end = "V4", userTasks = List(task_A))
@@ -54,10 +54,10 @@ object YingGraph extends FlowGraph {
   override val inEdges: Map[String, Array[String]] = Map(
     J0 -> Array("start"),
     J1 -> Array("E1"),
-    J2 -> Array("E1"),
-    J3 -> Array("E1", "E6"),
-    J4 -> Array("E1"),
-    J5 -> Array("E1")
+    J2 -> Array("E2"),
+    J3 -> Array("E3", "E6"),
+    J4 -> Array("E4"),
+    J5 -> Array("E5")
   )
 
 

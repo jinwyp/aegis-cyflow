@@ -38,7 +38,7 @@ object ServiceProxy extends CoreConfig {
   // 2> 查询流程
   // 3> 管理员更新数据点
   def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String,init:Map[String,String] = Map()) =
-    (proxy ? CommandCreateFlow(flowType, s"${userType}-${userId}",init)).mapTo[Flow.State]
+    (proxy ? CommandCreateFlow(flowType, s"${userType}!${userId}",init)).mapTo[Flow.State]
 
   def flowGraph(proxy: ActorRef, flowId: String) =
     (proxy ? CommandFlowGraph(flowId)).mapTo[Flow.Graph]
@@ -55,13 +55,13 @@ object ServiceProxy extends CoreConfig {
   // 2> 查询用户
   // 3> 用户提交任务
   def userCreate(proxy: ActorRef, userType: String, userId: String): Future[User.State] =
-    (proxy ? CommandCreateUser(s"${userType}-${userId}")).mapTo[User.State]
+    (proxy ? CommandCreateUser(s"${userType}!${userId}")).mapTo[User.State]
 
   def userQuery(proxy: ActorRef, userType: String, userId: String) =
-    (proxy ? CommandQueryUser(s"${userType}-${userId}")).mapTo[User.State]
+    (proxy ? CommandQueryUser(s"${userType}!${userId}")).mapTo[User.State]
 
   def userSubmit(proxy: ActorRef, userType: String, userId: String, taskId: String, points: Map[String, DataPoint]) =
-    (proxy ? CommandTaskSubmit(s"${userType}-${userId}", taskId, points)).mapTo[User.State]
+    (proxy ? CommandTaskSubmit(s"${userType}!${userId}", taskId, points)).mapTo[User.State]
 
   // Id模块
   // 1> get id
@@ -76,16 +76,16 @@ object ServiceProxy extends CoreConfig {
   // 3> claim task
   // 4> 发送group task 测试用
   def groupCreate(proxy: ActorRef, userType: String, gid: String): Future[Group.State] =
-    (proxy ? CommandCreateGroup(s"${userType}-${gid}")).mapTo[Group.State]
+    (proxy ? CommandCreateGroup(s"${userType}!${gid}")).mapTo[Group.State]
 
   def groupQuery(proxy: ActorRef, userType: String, gid: String) =
-    (proxy ? CommandQueryGroup(s"${userType}-${gid}")).mapTo[Group.State]
+    (proxy ? CommandQueryGroup(s"${userType}!${gid}")).mapTo[Group.State]
 
   def groupClaim(proxy: ActorRef, userType: String, gid: String, userId: String, taskId: String): Future[Group.State] =
-    (proxy ? CommandClaimTask(s"${userType}-${gid}", taskId, userId)).mapTo[Group.State]
+    (proxy ? CommandClaimTask(s"${userType}!${gid}", taskId, userId)).mapTo[Group.State]
 
   def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String, flowType: String): Unit =
-    proxy ! CommandGroupTask(flowType, flowId, s"${userType}-${gid}", taskName)
+    proxy ! CommandGroupTask(flowType, flowId, s"${userType}!${gid}", taskName)
 
   def autoTask(proxy:ActorRef, state:Flow.State, flowType:String, actorName:String) =
     proxy ! CommandAutoTask(state,flowType,actorName)

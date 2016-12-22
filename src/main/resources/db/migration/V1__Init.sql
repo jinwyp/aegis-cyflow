@@ -11,6 +11,7 @@ create table flow_instance(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- flow_id 唯一索引
+CREATE UNIQUE INDEX flowId_index ON flow_instance(flow_id);
 
 -- 流程任务
 create table flow_task(
@@ -25,7 +26,7 @@ create table flow_task(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- flow_id和task_id唯一索引
-
+CREATE UNIQUE INDEX flowId_taskid_index ON flow_task(flow_id,task_id);
 
 -- 参与方类别
 create table party_class (
@@ -35,6 +36,7 @@ create table party_class (
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- class_name 唯一索引
+CREATE UNIQUE INDEX class_name_index ON party_class(class_name);
 
 -- 参与方实体:
 -- 如:
@@ -50,6 +52,7 @@ create table  party_instance (
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_class+instance_id 唯一索引
+CREATE UNIQUE INDEX party_class_instance_id_index ON party_instance(party_class,instance_id);
 
 -- 用户表
 create table party_user(
@@ -65,6 +68,8 @@ create table party_user(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_id+user_id 唯一索引
+CREATE UNIQUE INDEX party_id_user_id_index ON party_user(party_id,user_id);
+
 
 -- 用户群组表
 create table user_group(
@@ -76,6 +81,9 @@ create table user_group(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_id,gid,user_id
+CREATE UNIQUE INDEX user_group_unq_index ON user_group(party_id,gid,user_id);
+
+
 
 -- 每一类运营方的组是预先定义好的 字典表
 --

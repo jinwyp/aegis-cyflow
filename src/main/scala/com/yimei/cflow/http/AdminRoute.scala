@@ -56,40 +56,42 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
     * @return
     */
   def createFlow = post {
-    pathPrefix("flow/user" / Segment / Segment / Segment) { (party,instance_id,user_id) =>{
-      parameter("flowType") { flowType =>
-        entity(as[Map[String,String]]) { init =>
-          val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
-            p.party_class === party         &&
-              p.instance_id === instance_id
-          ).result.head) recover {
-            case _ => throw new DatabaseException("不存在该公司")
-          }
-
-          def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
-            dbrun(partyUser.filter(u=>
-              u.user_id=== user_id          &&
-                u.party_id===p.id
+    pathPrefix("flow"){
+      pathPrefix("user" / Segment / Segment / Segment) { (party,instance_id,user_id) =>{
+        parameter("flowType") { flowType =>
+          entity(as[Map[String,String]]) { init =>
+            val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
+              p.party_class === party         &&
+                p.instance_id === instance_id
             ).result.head) recover {
-              case _ => throw new DatabaseException("不存在该用户")
+              case _ => throw new DatabaseException("不存在该公司")
             }
-          }
 
-          def insertFlow(p:PartyInstanceEntity, u:PartyUserEntity, s:Flow.State): Future[FlowInstanceEntity] = {
-            dbrun(flowInstance returning flowInstance.map(_.id) into ((ft,id)=>ft.copy(id=id)) +=
-              FlowInstanceEntity(None,s.flowId,flowType,p.party_class + "-" + p.instance_id,u.user_id,s.toJson.toString,0,Timestamp.from(Instant.now))) recover {
-              case _ => throw new DatabaseException("添加流程错误")
+            def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
+              dbrun(partyUser.filter(u=>
+                u.user_id=== user_id          &&
+                  u.party_id===p.id
+              ).result.head) recover {
+                case _ => throw new DatabaseException("不存在该用户")
+              }
             }
-          }
 
-          complete(for {
-            p <- pi
-            u <- getUser(p)
-            s <- ServiceProxy.flowCreate(proxy,p.party_class + "-" + p.instance_id,u.user_id,flowType,init)
-            f <- insertFlow(p,u,s)
-          } yield {
-            f
-          })
+            def insertFlow(p:PartyInstanceEntity, u:PartyUserEntity, s:Flow.State): Future[FlowInstanceEntity] = {
+              dbrun(flowInstance returning flowInstance.map(_.id) into ((ft,id)=>ft.copy(id=id)) +=
+                FlowInstanceEntity(None,s.flowId,flowType,p.party_class + "-" + p.instance_id,u.user_id,s.toJson.toString,0,Timestamp.from(Instant.now))) recover {
+                case _ => throw new DatabaseException("添加流程错误")
+              }
+            }
+
+            complete(for {
+              p <- pi
+              u <- getUser(p)
+              s <- ServiceProxy.flowCreate(proxy,p.party_class + "-" + p.instance_id,u.user_id,flowType,init)
+              f <- insertFlow(p,u,s)
+            } yield {
+              f
+            })
+          }
         }
       }
     }
