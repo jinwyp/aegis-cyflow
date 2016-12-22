@@ -158,9 +158,9 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         }
 
         //插入数据库
-        def insertTask(p:PartyInstanceEntity, u:PartyUserEntity,f:FlowInstanceEntity): Future[FlowTaskEntity] = {
+        def insertTask(s:UserState): Future[FlowTaskEntity] = {
           dbrun(flowTask returning flowTask.map(_.id) into ((fl,id)=>fl.copy(id=id)) +=
-            FlowTaskEntity(None,f.flow_id,task_id,entity.taskName,entity.points.toJson.toString,p.party_class+"-"+p.instance_id,u.user_id,Timestamp.from(Instant.now))
+            FlowTaskEntity(None,entity.flowId,task_id,entity.taskName,entity.points.toJson.toString,s.userType,s.userId,Timestamp.from(Instant.now))
           ) recover {
             case a:SQLIntegrityConstraintViolationException => throw new DatabaseException("当前任务已被提交")
           }
@@ -171,8 +171,8 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           p <- pi
           u <- getUser(p)
           fw <- flow
-          f <- insertTask(p,u,fw)
-          s <- ServiceProxy.userSubmit(proxy,f.user_type,f.user_id,f.task_id,entity.points)
+          s <- ServiceProxy.userSubmit(proxy,p.party_class+"-"+p.instance_id,u.user_id,task_id,entity.points)
+          f <- insertTask(s)
         } yield {
           s
         }
@@ -309,7 +309,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
 
 
-  def route: Route = getUTask ~ getUTaskHistory ~ putTask ~ getGTask ~ claimTask ~ autoTask
+  def route: Route = getUTaskHistory ~ getUTask  ~ putTask ~ getGTask ~ claimTask ~ autoTask
 }
 
 /**

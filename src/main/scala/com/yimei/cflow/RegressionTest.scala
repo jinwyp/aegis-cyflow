@@ -1,22 +1,28 @@
 package com.yimei.cflow
 
 import akka.actor.Props
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.server._
+import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.GraphLoader
+import com.yimei.cflow.core.FlowRegistry
+import com.yimei.cflow.graph.cang.CangRoute
+import com.yimei.cflow.graph.ying.YingGraph
+import com.yimei.cflow.http._
 import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
-import com.yimei.cflow.swagger.CorsSupport
+import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.{TestClient, TestUtil}
 
 /**
   * Created by hary on 16/12/3.
   */
-object ServiceTestJar extends App with ApplicationConfig with CorsSupport {
+object RegressionTest extends App with ApplicationConfig with CorsSupport {
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  GraphLoader.loadall()
+  FlowRegistry.register(YingGraph.flowType, YingGraph)
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
@@ -26,13 +32,8 @@ object ServiceTestJar extends App with ApplicationConfig with CorsSupport {
 
   Thread.sleep(2000)
 
-  //  TestUtil.test(proxy, client, "00", "hary","fund","wangqiId","fund","wqGroup")
-
   for (i <- 1 to 1) {
     TestUtil.test("ying", proxy, client, s"00$i", s"hary$i", s"fund$i", s"wangqiId$i", s"fund$i", s"wqGroup$i")
   }
 
 }
-
-
-

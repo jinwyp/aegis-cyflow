@@ -21,7 +21,7 @@ class PersistentUser(guid: String,
   import com.yimei.cflow.user.User._
 
   // 用户id与用户类型
-  val regex = "(\\w+)-(.*)".r
+  val regex = "([^!]+)!(.*)".r
   val (userType, userId) = guid match {
     case regex(utype, uid) => (utype, uid)
   }

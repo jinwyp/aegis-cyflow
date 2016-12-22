@@ -5,6 +5,10 @@ import java.util.{Date, UUID}
 import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.core.FlowRegistry._
+import com.yimei.cflow.user.db.FlowInstanceTable
+import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.util.DBUtils.dbrun
+import spray.json._
 
 import scala.concurrent.duration._
 
@@ -31,8 +35,9 @@ class PersistentFlow(
                       pid: String,
                       guid: String,
                       initData: Map[String, String]
-                    ) extends AbstractFlow with PersistentActor {
+                    ) extends AbstractFlow with PersistentActor with FlowInstanceTable with FlowProtocol {
 
+  import driver.api._
   import com.yimei.cflow.api.models.flow._
 
   override def persistenceId: String = pid
@@ -181,6 +186,23 @@ class PersistentFlow(
 
           case Arrow(name, None) =>
             logState(s"$name 结束")
+            saveSnapshot(state)
+            // 更新数据库 todo王琦
+            val pu = flowInstance.filter(f=>
+              f.flow_id === state.flowId
+            ).map(f=>(f.state,f.finished)).update(
+              state.toJson.toString,1
+            )
+
+            dbrun(pu) map { i =>
+              i match {
+                case 1 => "success"
+                case _ => "fail"
+              }
+            } recover {
+              case _ => "fail"
+            }
+
 
           case a@Arrow(j, Some(nextEdge)) =>
             val ne = graph.edges(nextEdge)

@@ -44,13 +44,13 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
 
       if (true) {
         val pid = nextId
-        val flowId = s"${flowType}-${guid}-${pid}" // 创建flowId
+        val flowId = s"${flowType}!${guid}!${pid}" // 创建flowId
         val child = create(flowId, initData)
         child forward CommandRunFlow(flowId)
 
       } else {
         // use UUID to generate persistenceId
-        val flowId = s"${flowType}-${guid}-${UUID.randomUUID().toString}" // 创建flowId
+        val flowId = s"${flowType}!${guid}!${UUID.randomUUID().toString}" // 创建flowId
         val child = create(flowId, initData)
         child forward CommandRunFlow(flowId)
       }
@@ -72,7 +72,7 @@ class FlowMaster(dependOn: Array[String], persist: Boolean = true)
     * @return
     */
   def create(flowId: String, initData: Map[String, String] = Map()): ActorRef = {
-    val regex = "(\\w+)-(\\w+-\\w+)-(.*)".r
+    val regex = "([^!]+)!([^!]+![^!]+)!(.*)".r
     val p = flowId match {
       case regex(flowType, guid, persistenceId) =>
 

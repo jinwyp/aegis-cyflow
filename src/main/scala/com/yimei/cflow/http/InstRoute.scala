@@ -53,5 +53,5 @@ class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSuppo
 
 object InstRoute {
   def apply() = new InstRoute
-  def route: Route = InstRoute.route
+  def route: Route = InstRoute().route
 }
