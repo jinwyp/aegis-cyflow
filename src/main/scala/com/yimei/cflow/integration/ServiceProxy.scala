@@ -10,12 +10,6 @@ import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, Com
 import com.yimei.cflow.api.models.group.{State => GroupState, Command => GroupCommand}
 import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, State => IdGeneratorState, Command => IdGeneratorCommand}
 import com.yimei.cflow.api.models.group._
-//import com.yimei.cflow.core.Flow._
-//import com.yimei.cflow.core.IdGenerator.{CommandGetId, CommandQueryId, Id}
-//import com.yimei.cflow.core.{Flow, IdGenerator}
-//import com.yimei.cflow.group.Group
-//import com.yimei.cflow.group.Group._
-import com.yimei.cflow.user.User
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, State => UserState, Command => UserCommand}
 
 import scala.concurrent.Future
