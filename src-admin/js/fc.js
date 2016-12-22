@@ -59,6 +59,14 @@
             },
 
             {
+                selector: 'node.task:selected',
+                style: {
+                    'border-width': 3,
+                    'border-color': '#e86e81'
+                }
+            },
+
+            {
                 selector: 'edge',
                 style: {
                     'width': 4,
@@ -309,21 +317,57 @@
     }    
 
     var geneCallback= function(cy){
-        cy.nodes('.task').qtip({
-            content: function(){
-                return taskTip.apply(this);
-            },
-            position: {
-                my: 'top center',
-                at: 'bottom center'
-            },
-            style: {
-                classes: 'qtip-bootstrap',
-                tip: {
-                    width: 16,
-                    height: 8
+        // cy.nodes('.task').qtip({
+        //     content: function(){
+        //         return taskTip.apply(this);
+        //     },
+        //     position: {
+        //         my: 'top center',
+        //         at: 'bottom center'
+        //     },
+        //     style: {
+        //         classes: 'qtip-bootstrap',
+        //         tip: {
+        //             width: 16,
+        //             height: 8
+        //         }
+        //     }
+        // })
+
+        cy.nodes('.task').on('click', function(e){
+            var data = this.data();
+            var points = [];
+            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+                var val = data.original.state.points.hasOwnProperty(p) ? data.original.state.points[p].value : '暂无结果';
+                points.push({'key':p, 'value':val});
+            })
+            
+            var data_ptDetail = {'points': points, 'task': {'type': data.taskType}};
+            var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+            $('#ptDetail>div').html(ptDetail);
+
+            $('.hastip').qtip({
+                content: function(){
+                    return '<span class="pointer"></span><div class="tip-pointtext-contentbg"></div><div class="tip-pointtextcontent"><div class="content">' + $(this).attr('data') + '</div></div>';
+                },
+                position: {
+                    my: 'bottom right',
+                    at: 'top right'
+                },
+                show: {
+                    event: 'click'
+                },
+                hide: {
+                    event: 'unfocus'
+                },
+                style: {
+                    classes: 'qtip-bootstrap tip-pointtext',
+                    tip: {
+                        width: 16,
+                        height: 8
+                    }
                 }
-            }
+            })
         })
 
         cy.nodes('.node').qtip({
@@ -484,9 +528,9 @@
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
 
-                var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
-                var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
-                $('#ptDetail').html(ptDetail);
+                // var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
+                // var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+                // $('#ptDetail').html(ptDetail);
 
                 var data_history = {'historyPoints': [
                     {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
@@ -506,6 +550,7 @@
                 var cy = new FC('cy');
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
+                window.cy = cy.cy;
                 cy.cy.onRender(function(){
                     count ++;
                     if(count==2){
