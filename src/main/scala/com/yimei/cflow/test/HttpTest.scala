@@ -3,12 +3,13 @@ package com.yimei.cflow.test
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, FlywayConfig}
 import com.yimei.cflow.core.{FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
+import com.yimei.cflow.integration.DaemonMaster
 
 /**
   * Created by wangqi on 16/12/21.

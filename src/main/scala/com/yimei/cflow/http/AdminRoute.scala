@@ -10,11 +10,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow.{DataPoint, State => FlowState}
 import com.yimei.cflow.api.models.user.UserProtocol
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.core.FlowRegistry
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}

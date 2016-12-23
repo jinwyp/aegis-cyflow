@@ -1,10 +1,11 @@
 package com.yimei.cflow
 
 import akka.actor.Props
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.GraphLoader
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
+import com.yimei.cflow.integration.DaemonMaster
 import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
 

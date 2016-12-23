@@ -2,10 +2,10 @@ package com.yimei.cflow.test
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.util.Timeout
-import com.yimei.cflow.api.services.IdBufferable
+import com.yimei.cflow.api.services.{IdBufferable, ServiceProxy}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
+import com.yimei.cflow.integration.DaemonMaster
 
 /**
   * Created by hary on 16/12/16.

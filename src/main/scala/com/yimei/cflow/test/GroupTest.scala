@@ -1,9 +1,10 @@
 package com.yimei.cflow.test
 
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
+import com.yimei.cflow.integration.DaemonMaster
 
 /**
   * Created by hary on 16/12/16.
