@@ -8,7 +8,8 @@
         cy.nodes('.task').qtip({
             content: function(){
                 var data = this.data();
-                return data.original.points[data.id] || "暂无描述";
+                var task = data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id];
+                return (task && task.description) || "暂无描述";
             },
             // show: {
             //     event: 'mouseover'
@@ -33,7 +34,8 @@
             var classes = this._private.classes;
             var data = this.data();
             var points = [];
-            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+            var task = data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id];
+            task && task.points.forEach(function(p, pi){
                 var val;
                 if(data.original.state.points.hasOwnProperty(p)){
                     if(data.original.state.points[p].memo){
@@ -179,8 +181,6 @@
     
     }    
 
-
-
     var taskTip = function(){
         var self = this;
         var taskId = this.data().id;
@@ -297,8 +297,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                // var url = '../json/data4.json'
+                // var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -338,7 +338,7 @@
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var chart = new flowChart('cy', originalData, chartEventCallback);
+                var chart = new flowChart('cy', originalData, chartEventCallback, {minZoom: 0.1});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
 

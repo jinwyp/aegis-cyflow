@@ -118,11 +118,7 @@
             }
         }
     ];
-
-
-
-
-
+    
     var flowChart = function (domId, data, actionCB, config){
         this.config = config || {};
         this.domId = domId || '';
@@ -271,7 +267,7 @@
             maxZoom: 1,
 
             textureOnViewport : false,
-            pixelRatio : 1.0
+            // pixelRatio : 1.0
 
 
         }, self.config);
