@@ -8,8 +8,8 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
 import com.yimei.cflow.api.models.flow.FlowProtocol
-import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.api.models.user.State
+import com.yimei.cflow.api.services.ServiceProxy
 import io.swagger.annotations._
 
 import scala.concurrent.duration._

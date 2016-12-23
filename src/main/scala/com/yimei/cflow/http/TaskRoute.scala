@@ -14,13 +14,13 @@ import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.db._
 import com.yimei.cflow.user.User
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
+import com.yimei.cflow.api.services.ServiceProxy
 
 import scala.concurrent.Future
 
