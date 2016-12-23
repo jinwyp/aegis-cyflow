@@ -7,14 +7,14 @@
     var chartEventCallback= function(cy){
         cy.nodes('.task').qtip({
             content: function(){
-                return this.data().description;
+                return this.data().description || '暂无描述';
             },
-            // show: {
-            //     event: 'mouseover'
-            // },
-            // hide: {
-            //     event: 'mouseout'
-            // },
+            show: {
+                event: 'mouseover'
+            },
+            hide: {
+                event: 'mouseout'
+            },
             position: {
                 my: 'bottom center',
                 at: 'top center'
@@ -99,12 +99,12 @@
             content: function(){
                 return this.data().description;
             },
-            // show: {
-            //     event: 'mouseover'
-            // },
-            // hide: {
-            //     event: 'click'
-            // },
+            show: {
+                event: 'mouseover'
+            },
+            hide: {
+                event: 'mouseout'
+            },
             position: {
                 my: 'bottom center',
                 at: 'top center'
