@@ -81,8 +81,8 @@
                 "timestamp": 10,
                 "id": "b0f244de-0450-47e0-aa22-16210e858167",
                 "operator": "B",
-                "value": "50",
-                "memo": "img:https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+                "value": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+                "memo": "img"
             },
             "PG2": {
                 "used": false,
@@ -97,8 +97,8 @@
                 "timestamp": 10,
                 "id": "df9781db-d01c-46df-9978-b0875ba46f90",
                 "operator": "C",
-                "value": "",
-                "memo": "pdf:http://www.pdf995.com/samples/pdf.pdf"
+                "value": "http://www.pdf995.com/samples/pdf.pdf",
+                "memo": "pdf"
             },
             "UA1": {
                 "used": false,
