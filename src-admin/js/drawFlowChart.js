@@ -3,6 +3,7 @@
  */
 
 
+(function(window, $, cytoscape){
 
 var styleArr = [
     {
@@ -261,3 +262,6 @@ flowChart.prototype.generateFc = function(domId, data, eventCB){
 
 
 window.flowChart = flowChart;
+
+
+})(window, jQuery, cytoscape)
