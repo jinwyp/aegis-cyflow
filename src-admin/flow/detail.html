@@ -7,15 +7,16 @@
         *{margin:0;padding: 0;list-style: none;}
         body{background: #f6f6f6;}
         .warp{width: 1000px;height:500px;margin: 0 auto;font-size: 16px;background: #ffffff;padding:50px 20px;}
-        .inputDiv{ display: inline-block;}
-        form label{display: inline-block;line-height: 40px;width: 95px;text-align: right;}
-        .type select{width: 170px;height: 30px;font-size: 14px;background: #ffffff;border: 1px solid #e4e4e4;}
+        /*.inputDiv{ display: inline-block;}*/
+        /*form label{display: inline-block;line-height: 40px;width: 95px;text-align: right;}*/
+        /*.type select{width: 170px;height: 30px;font-size: 14px;background: #ffffff;border: 1px solid #e4e4e4;}*/
         input[type="text"]{width: 170px;height: 30px;line-height: 30px;padding-left: 10px;font-size: 14px;border: 1px solid #e4e4e4;}
         table{width: 95%;margin-top: 50px; border-collapse:collapse;}
         table td{text-align: center;border: 1px solid #e4e4e4;padding:10px 0;}
+        table td span{display: inline-block;width: 170px;height: 30px;line-height: 30px;padding-left: 10px;font-size: 14px;border: 1px solid #e4e4e4;text-align: left;}
         .btn{text-align: center;margin-top: 50px;}
-        .search,.submit{width: 90px;height: 35px;line-height: 35px;background: #23b7e5;border: 0;color: #ffffff;font-size: 14px;border-radius: 2px;outline: none;cursor: pointer;}
-        .marginB60{margin-bottom: 60px;}
+        .submit{width: 90px;height: 35px;line-height: 35px;background: #23b7e5;border: 0;color: #ffffff;font-size: 14px;border-radius: 2px;outline: none;cursor: pointer;}
+        /*.marginB60{margin-bottom: 60px;}*/
         .description span{color: #333333;font-weight: normal;}
         .description{color:#23b7e5;font-weight: bold;font-family: Arial;line-height: 28px;}
     </style>
@@ -23,39 +24,12 @@
 <body>
 <div class="warp">
     <form>
-        <div class="marginB60">
-            <div class="type inputDiv">
-                <label for="type">用户类型：</label>
-                <input type="text" id="type">
-            </div>
-            <div class="companyId inputDiv">
-                <label for="companyId">公司ID：</label>
-                <input type="text" id="companyId">
-            </div>
-            <div class="userId inputDiv">
-                <label for="userId">用户ID：</label>
-                <input type="text" id="userId">
-            </div>
-            <div class="taskName inputDiv">
-                <label for="taskName">taskName：</label>
-                <input type="text" id="taskName">
-            </div>
-            <div class="flowId inputDiv">
-                <label for="flowId">flowId：</label>
-                <input type="text" id="flowId">
-            </div>
-            <div class="ying inputDiv">
-                <label for="ying">ying：</label>
-                <input type="text" id="ying" value="ying">
-            </div>
-            <div class="btn"><input type="button" class="search" value="查询"></div>
-        </div>
         <div class="description">
             description:&nbsp;&nbsp;<span class="desC">暂无</span>
         </div>
         <table class="table">
             <tr>
-                <td><input type="text" placeholder="key" /></td>
+                <td><span>key</span></td>
                 <td><input type="text" placeholder="value" /></td>
             </tr>
         </table>
@@ -67,80 +41,71 @@
 <script type="text/javascript">
     $(document).ready(function(){
 
-        //查询
-        $(".search").on('click',function () {
-            var userType = $("#type").val();
-            var companyId = $("#companyId").val();
-            var userId = $("#userId").val();
-            var taskName = $("#taskName").val();
-            var flowId = $("#flowId").val();
-            var ying = $("#ying").val();
-            $.ajax({
-                method: "GET",
-                url:"/utask/"+userType+"/"+companyId+"/"+userId,
-                dataType:'json'
-            }).done(function(data){
-                console.log(data);
+        //从URL中获取参数
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            var context = "";
+            if (r != null)
+                context = r[2];
+            reg = null;
+            r = null;
+            return context == null || context == "" || context == "undefined" ? "" : context;
+        }
 
-                $.ajax({
-                    method: "GET",
-                    url:"/graph/"+ying+"/"+taskName,
-                    dataType:'json'
-                }).done(function(data){
-                    $(".desC").html(data.description);
+        var userType = GetQueryString("userType");
+        var companyId = GetQueryString("companyId");
+        var userId = GetQueryString("userId");
+        var taskName = GetQueryString("taskName");
+        var flowId = GetQueryString("flowId");
+        var ying = GetQueryString("ying");
 
-                    var table = $(".table");
-                    var temp = "<table class=\"table\">";
-                    for (var key in data.tasks)
-                    {
-                        temp = temp + "<tr><td>"+data.tasks[key].flowId+"</td>" +
-                                "<td><input type=\"text\" placeholder=\"value\"/></td></tr>";
-                    }
-                    temp = temp + "</table>";
-                    table.innerHTML = temp
+        var points = [];
+        var inputs = [];
+        var newArr = [];
 
-                }).fail(function(){
-                    // console.log(error);
-                })
+        $.ajax({
+            method: "GET",
+            url:"?userType="+userType+"&companyId="+companyId+"&userId"+userId+"&taskName="+taskName+ying,
+            dataType:'json'
+        }).done(function(data){
+            $(".desC").html(data.description);
 
-            }).fail(function(){
-                // console.log(error);
-            })
+            points =data.points;
+
+            var table = $(".table");
+            var temp = "<table class=\"table\">";
+            for (var key in data.points)         //这要改
+            {
+                temp = temp + "<tr><td><span>"+data.points[key]+"</span></td>" +
+                        "<td><input type=\"text\" placeholder=\"value\"/></td></tr>";
+            }
+            temp = temp + "</table>";
+            table.innerHTML = temp
+        }).fail(function(){
+            // console.log(error);
         });
 
 
-        var table = $('.table');
-        var submitArr = [];
-        var lastArr = [];
-        var index = null,
-            subIndex = null;
-        var keyName = ['key2'];
-
-        $(document).on('input','input',function(){
-            var txt = $(".table input");
-            var curIndex = txt.index(this);
-            var val = $.trim($(this).val());
-            index = parseInt(curIndex/2);
-            subIndex = curIndex%2;
-            submitArr[index][keyName[subIndex]] = val;
-            submitArr.push({
-                key2:''
-            });
-            console.log(submitArr);
-        });
+        function arrAdd(){
+            var txt = $( "input" );
+            for(var i = 0; i < txt.length; i++){
+                inputs.push(txt.eq(i).val());
+            }
+            for(var i = 0; i < points.length; i++){
+                newArr[points[i]] = inputs[i];
+            }
+        }
 
 
         $(".submit").click(function(){
-            $.each(submitArr,function(index,item){
-                lastArr[index] = {};
-                lastArr[index][item.key1] = item.key2;
-            });
-            console.log(lastArr);
+            arrAdd();
+            console.log(newArr);
 
             $.ajax({
                 method: "POST",
                 url:"",
-                data:{ type: $("#type").val(),userId:$("#userId").val(),lastArr:lastArr}
+                data:{ newArr:newArr}
             }).done(function(){
                 alert("提交成功！");
             }).fail(function(){
