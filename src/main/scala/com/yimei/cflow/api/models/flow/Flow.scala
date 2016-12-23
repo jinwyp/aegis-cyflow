@@ -1,11 +1,15 @@
 package com.yimei.cflow.api.models.flow
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import akka.actor.ActorRef
 import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.group.GroupMaster.gfetch
 import com.yimei.cflow.user.UserMaster.ufetch
+import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
 case class DataPoint(value: String, memo: Option[String], operator: Option[String], id: String, timestamp: Long, used: Boolean = false)
@@ -205,3 +209,35 @@ case class Graph(
 //case class Arrow(end: String, edge: Option[Edge])
 case class Arrow(end: String, edge: Option[String])
 
+trait FlowProtocol extends DefaultJsonProtocol {
+
+  // 日期
+  implicit object DateJsonFormat extends RootJsonFormat[Date] {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")   // todo change format
+
+    override def write(obj: Date) = JsString(formatter.format(obj))
+
+    override def read(json: JsValue): Date = json match {
+      case JsString(s) => formatter.parse(s)
+      case _ => throw new DeserializationException("Error info you want here ...")
+    }
+  }
+  implicit val dataPointFormat = jsonFormat6(DataPoint)
+
+  implicit val commandHijackFormat = jsonFormat4(CommandHijack)
+
+  implicit val partUTaskFormat = jsonFormat2(PartUTask)
+
+  implicit val partGTaskFormat = jsonFormat2(PartGTask)
+
+  implicit val edgeFormat = jsonFormat7(Edge)
+
+  implicit val arrowFormat =jsonFormat2(Arrow)
+
+  implicit val stateFormat = jsonFormat7(State)
+
+  implicit val taskInfoFormat = jsonFormat2(TaskInfo)
+
+  implicit val graphFormat = jsonFormat6(Graph)
+
+}

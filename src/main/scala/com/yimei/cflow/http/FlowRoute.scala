@@ -7,8 +7,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
-import com.yimei.cflow.core.{ FlowProtocol}
-import com.yimei.cflow.api.models.flow.State
+import com.yimei.cflow.api.models.flow.{FlowProtocol, State}
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.User
 import io.swagger.annotations._

@@ -2,6 +2,7 @@ package com.yimei.cflow.api.models.id
 
 import akka.actor.{Actor, ActorLogging, Props}
 import com.yimei.cflow.core.{MemoryIdGenerator, PersistentIdGenerator}
+import spray.json.DefaultJsonProtocol
 
 // Command
 trait Command
@@ -20,7 +21,7 @@ case class EventIncrease(key: String, buffer: Int) extends Event
 case class State(keys: Map[String, Long])
 
 // create IdGenerator Props
-  object IdGenerator {
+object IdGenerator {
   def props(name: String, persist: Boolean = true) = persist match {
 
 //  import akka.actor.{Actor, ActorLogging}
@@ -59,5 +60,12 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
     case CommandQueryId => sender() ! state
   }
 
+}
+
+trait IdGeneratorProtocol extends DefaultJsonProtocol {
+  implicit val commandGetIdFormat = jsonFormat2(CommandGetId)
+  implicit val idFormat = jsonFormat1(Id)
+  implicit val eventIncreaseFormat = jsonFormat2(EventIncrease)
+  implicit val idGeneratorStateFormat = jsonFormat1(State)
 }
 
