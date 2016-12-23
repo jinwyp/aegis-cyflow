@@ -1,4 +1,4 @@
-package com.yimei.cflow.user
+package com.yimei.cflow.cluster
 
 import akka.cluster.sharding.ShardRegion
 import com.yimei.cflow.api.models.user.Command

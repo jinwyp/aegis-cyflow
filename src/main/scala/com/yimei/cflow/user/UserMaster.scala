@@ -4,8 +4,8 @@ import akka.actor.{ActorRef, Props, Terminated}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.api.models.flow.{State => FlowState}
-import com.yimei.cflow.integration.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandUserTask, Command => UserCommand}
+import com.yimei.cflow.api.services.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.core.FlowRegistry._
 
 object UserMaster extends CoreConfig {

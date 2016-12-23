@@ -10,7 +10,9 @@
             selector: 'node',
             style: {
                 'shape': 'ellipse',
-                'width': 100,
+                'width': function(ele){
+                    return Math.max(100, ele.data().id.length*16);
+                },
                 'height': 100,
                 'content': 'data(id)',
                 'text-valign': 'center',
@@ -39,7 +41,9 @@
             selector: 'node.task',
             style: {
                 'shape': 'roundrectangle',
-                'width': 150,
+                'width': function(ele){
+                    return Math.max(150, ele.data().id.length*16);
+                },
                 'height': 80
             }
         },
@@ -48,7 +52,14 @@
             selector: 'node.task.autoTasks',
             style: {
                 'shape': 'star',
-                'width': 110
+                'width': function(ele){
+                    return Math.max(110, ele.data().id.length*20);
+                },
+                'height': function(ele){
+                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    return h
+                }
+
             }
         },
 
@@ -112,9 +123,10 @@
 
 
 
-    var flowChart = function (domId, data, actionCB){
-        this.domId = domId;
-        this.data = data;
+    var flowChart = function (domId, data, actionCB, config){
+        this.config = config || {};
+        this.domId = domId || '';
+        this.data = data || [];
         this.cy = this.generateFc(domId, data, actionCB);
         return this;
     };
@@ -237,22 +249,35 @@
 
 
     flowChart.prototype.generateFc = function(domId, data, eventCB){
-        var self = this;
 
-        var cy = cytoscape({
+        var self = this;
+        var cfg = Object.assign({
             container: document.getElementById(domId),
+
+            layout: {
+                name: 'dagre'
+            },
+            style: self.getStyle(),
+            elements: self.getModel(data),
+
+
             boxSelectionEnabled: false,
             autounselectify: false,
             userZoomingEnabled: true,
             userPanningEnabled: true,
             autoungrabify: false,
-            minZoom: 0.1,
-            layout: {
-                name: 'dagre'
-            },
-            style: self.getStyle(),
-            elements: self.getModel(data)
-        });
+
+            minZoom: 0.3, //http://js.cytoscape.org/#core
+            maxZoom: 1,
+
+            textureOnViewport : false,
+            pixelRatio : 1.0
+
+
+        }, self.config);
+
+
+        var cy = cytoscape(cfg);
 
         eventCB(cy);
 

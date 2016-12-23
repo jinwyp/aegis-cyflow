@@ -9,9 +9,10 @@ import com.yimei.cflow.api.models.group.{CommandClaimTask, CommandQueryGroup, St
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
+import com.yimei.cflow.api.services.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
 import com.yimei.cflow.api.models.user.{CommandQueryUser, CommandTaskSubmit, CommandUserTask, State => UserState}
+import com.yimei.cflow.api.services.ServiceProxy
 
 import scala.concurrent.duration._
 

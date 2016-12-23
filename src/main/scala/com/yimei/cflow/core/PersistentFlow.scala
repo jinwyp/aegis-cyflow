@@ -166,13 +166,13 @@ class PersistentFlow(
         val temp: Boolean =  state.points.filter(t=>(!t._2.used)).contains("wang")
 
         lazy val edgesNotHasInEdge = !graph.inEdges(e.end).exists(state.edges.contains(_))
-        lazy val historyHasInedge = graph.inEdges(e.end).foldLeft(true)((b,s)=>b&&state.histories.contains(s))
+        lazy val historyHasInEdge = graph.inEdges(e.end).foldLeft(true)((b,s)=>b&&state.histories.contains(s))
         lazy val allPointDataCollected = graph.inEdges(e.end)
           .map(graph.edges(_))
           .map(_.getAllDataPointsName(state))
           .foldLeft(true)((b,s) => b && s.foldLeft(true)((b1,s1)=>state.points.filter(t=>(!t._2.used)).contains(s1)))
 
-        if(edgesNotHasInEdge && historyHasInedge && allPointDataCollected){
+        if(edgesNotHasInEdge && historyHasInEdge && allPointDataCollected){
           make(e)
         }
       }

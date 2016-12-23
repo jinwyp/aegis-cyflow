@@ -4,13 +4,13 @@ import akka.actor.Props
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{FlowRegistry, GraphLoader}
+import com.yimei.cflow.core.{DaemonMaster, FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.cang.CangRoute
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.{TestClient, TestUtil}
 
@@ -32,7 +32,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
   val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
 
-  Thread.sleep(2000)
+  Thread.sleep(2000);
 
   // 3> http
   val routes: Route = pathPrefix("api") {

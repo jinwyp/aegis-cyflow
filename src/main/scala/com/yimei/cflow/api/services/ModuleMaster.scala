@@ -1,7 +1,7 @@
-package com.yimei.cflow.integration
+package com.yimei.cflow.api.services
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout, SupervisorStrategy, Terminated}
-import com.yimei.cflow.integration.DaemonMaster.{GiveMeModule, RegisterModule, UnderIdentify}
+import com.yimei.cflow.core.DaemonMaster.{GiveMeModule, RegisterModule, UnderIdentify}
 
 import scala.concurrent.duration._
 
@@ -28,7 +28,7 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
 
   // 请求父亲告知其他模块
   dependOn.foreach { name =>
-    log.info(s"${moduleName} 请求获取 ${name}")
+    log.debug(s"${moduleName} 请求获取 ${name}")
     who ! GiveMeModule(name)
   }
 
