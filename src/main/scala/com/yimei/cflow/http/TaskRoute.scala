@@ -9,17 +9,15 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.api.models.flow.DataPoint
-import com.yimei.cflow.core.{FlowProtocol}
+import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.group.{GroupProtocol}
 import com.yimei.cflow.integration.ServiceProxy
 import com.yimei.cflow.user.db._
-import com.yimei.cflow.user.{User, UserProtocol}
+import com.yimei.cflow.user.User
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}
-import com.yimei.cflow.api.models.group.{State => GroupState}
-import com.yimei.cflow.api.models.user.{State => UserState}
+import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
+import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 
 import scala.concurrent.Future
 
