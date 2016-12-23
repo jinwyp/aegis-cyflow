@@ -8,7 +8,7 @@
         cy.nodes('.task').qtip({
             content: function(){
                 var data = this.data();
-                return data.original.points[data.id];
+                return data.original.points[data.id] || "暂无描述";
             },
             // show: {
             //     event: 'mouseover'
@@ -96,7 +96,7 @@
                 var data = this.data();
                 var id = data.id;
                 var vertices = data.original.vertices;
-                return vertices[id];
+                return vertices[id] || "暂无描述";
             },
             // show: {
             //     event: 'mouseover'
@@ -305,7 +305,7 @@
                     'uid': originalData.state.guid,
                     'type': originalData.state.flowType,
                     'utype': originalData.state.guid.substr(originalData.state.guid.split('-')[0].length+1),
-                    'status': originalData.state.ending || ''
+                    'status': originalData.state.ending || '进行中'
                 }};
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
