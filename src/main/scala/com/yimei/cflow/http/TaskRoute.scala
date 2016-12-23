@@ -20,6 +20,7 @@ import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.api.http.models.TaskModel._
 
 import scala.concurrent.Future
 
@@ -28,21 +29,7 @@ import scala.concurrent.Future
   */
 //用户提交任务数据
 //case class UserPoint(value:String,memo:Option[String],operator:Option[String])
-case class UserSubmitEntity(flowId:String,taskName:String,points:Map[String,DataPoint])
 
-case class GroupTaskResult(tasks:Seq[GroupState],total:Int)
-
-case class UserSubmitMap(memo:Option[String],value: String)
-
-
-trait TaskProtocol extends DefaultJsonProtocol with UserProtocol with GroupProtocol{
-
-  //implicit val userTaskEntityFormat = jsonFormat3(DataPoint)
-  implicit val userSubmintEntity = jsonFormat3(UserSubmitEntity)
-  implicit val groupTaskFromat = jsonFormat2(GroupTaskResult)
-  implicit val userSubmitMapFormat = jsonFormat2(UserSubmitMap)
-
-}
 
 class TaskRoute(proxy: ActorRef) extends UserProtocol
   with FlowProtocol

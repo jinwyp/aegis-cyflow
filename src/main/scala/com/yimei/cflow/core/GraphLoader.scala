@@ -3,7 +3,7 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
-import com.yimei.cflow.api.models.graph.GraphConfig
+import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.money.MoneyGraphJar
@@ -39,7 +39,7 @@ case class AutoFactory(content: String) {
 /**
   * Created by hary on 16/12/17.
   */
-object GraphLoader extends App {
+object GraphLoader extends GraphConfigProtocol {
 
 
 
@@ -75,7 +75,6 @@ object GraphLoader extends App {
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
-    import com.yimei.cflow.api.models.graph.GraphConfigProtocol._
     import spray.json._
 
     val jsonFile = gFlowType match {
