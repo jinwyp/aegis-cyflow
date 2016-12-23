@@ -127,7 +127,7 @@
         },
         drawChart : function(){
 
-            var chart = new flowChart('cy', originalData, chartEventCallback);
+            var chart = new flowChart('chart', originalData, chartEventCallback);
             console.log(chart.cy.width())
         }
     };
