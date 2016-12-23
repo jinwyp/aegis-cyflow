@@ -10,7 +10,9 @@
             selector: 'node',
             style: {
                 'shape': 'ellipse',
-                'width': 100,
+                'width': function(ele){
+                    return Math.max(100, ele.data().id.length*16);
+                },
                 'height': 100,
                 'content': 'data(id)',
                 'text-valign': 'center',
@@ -39,7 +41,9 @@
             selector: 'node.task',
             style: {
                 'shape': 'roundrectangle',
-                'width': 150,
+                'width': function(ele){
+                    return Math.max(150, ele.data().id.length*16);
+                },
                 'height': 80
             }
         },
@@ -48,7 +52,14 @@
             selector: 'node.task.autoTasks',
             style: {
                 'shape': 'star',
-                'width': 110
+                'width': function(ele){
+                    return Math.max(110, ele.data().id.length*20);
+                },
+                'height': function(ele){
+                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    return h
+                }
+
             }
         },
 
@@ -107,11 +118,7 @@
             }
         }
     ];
-
-
-
-
-
+    
     var flowChart = function (domId, data, actionCB, config){
         this.config = config || {};
         this.domId = domId || '';
@@ -286,6 +293,8 @@
             maxZoom: 1,
 
             textureOnViewport : false
+            // pixelRatio : 1.0
+
 
 
         }, self.config);

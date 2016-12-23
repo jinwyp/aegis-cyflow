@@ -32,7 +32,8 @@
             var classes = this._private.classes;
             var data = this.data();
             var points = [];
-            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+            var task = data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id];
+            task && task.points.forEach(function(p, pi){
                 var val;
                 if(data.original.state.points.hasOwnProperty(p)){
                     if(data.original.state.points[p].memo){
@@ -174,8 +175,6 @@
         drawfn();
     
     }    
-
-
 
     var taskTip = function(){
         var self = this;
@@ -330,12 +329,11 @@
                         'comment': memo || '无'
                     })
                 }
-                console.log(historyPoints)
                 var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var chart = new flowChart('cy', originalData, chartEventCallback);
+                var chart = new flowChart('cy', originalData, chartEventCallback, {minZoom: 0.1});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
 

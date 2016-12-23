@@ -1,4 +1,6 @@
 import com.trueaccord.scalapb.{ScalaPbPlugin => PB}
+import spray.revolver.RevolverPlugin._
+
 
 enablePlugins(JavaServerAppPackaging)
 
@@ -70,6 +72,10 @@ PB.runProtoc in PB.protobufConfig := {
 version in PB.protobufConfig := "3.0.0-beta-3"
 
 mainClass in assembly := Some("com.yimei.cflow.ServiceTest") //optional
+
+import Resolvers._
+
+mainClass in reStart := Some("com.yimei.cflow.ServiceTest")
 
 assemblyMergeStrategy in assembly := {
   case PathList(ps @ _*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>  MergeStrategy.rename

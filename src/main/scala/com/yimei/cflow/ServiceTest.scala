@@ -32,7 +32,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   val proxy = coreSystem.actorOf(ServiceProxy.props(daemon, names), "ServiceProxy")
   val client = coreSystem.actorOf(Props(new TestClient(proxy)), "TestClient")
 
-  Thread.sleep(2000)
+  Thread.sleep(2000);
 
   // 3> http
   val routes: Route = pathPrefix("api") {
