@@ -13,12 +13,13 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.UserProtocol
 import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
 import com.yimei.cflow.util.DBUtils.dbrun
 import slick.model.Column
 import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.flow.{State => FlowState}
+import com.yimei.cflow.api.models.user.UserProtocol
+
 import scala.concurrent.Future
 import com.yimei.cflow.core.FlowRegistry
 
@@ -244,6 +245,10 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
+  /**
+    * 得到任务中的数据节点
+    * @return
+    */
   def getGraph = get {
     pathPrefix("graph"/ Segment / Segment) { (graphType,taskName )=>
       complete(FlowRegistry.registries(graphType).userTasks(taskName))

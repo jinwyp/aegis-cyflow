@@ -4,6 +4,7 @@ import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
+import com.yimei.cflow.api.models.flow.FlowProtocol
 import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.user.db.FlowInstanceTable
 import com.yimei.cflow.config.DatabaseConfig._

@@ -1,5 +1,7 @@
 package com.yimei.cflow.api.models.group
 
+import spray.json.DefaultJsonProtocol
+
 // Command
 trait Command {
   def ggid: String
@@ -25,3 +27,9 @@ case class TaskDequeue(taskId: String) extends Event
 // State:  group -> taskId -> groupTask
 case class State(userType: String, gid: String, tasks: Map[String, CommandGroupTask])
 
+trait GroupProtocol extends DefaultJsonProtocol {
+
+  implicit val groupCommandGroupTaskFormat = jsonFormat4(CommandGroupTask)
+
+  implicit val groupStateFormat = jsonFormat3(State)
+}

@@ -9,9 +9,10 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
+import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
 import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.{User, UserProtocol}
+import com.yimei.cflow.user.User
 import com.yimei.cflow.util.DBUtils._
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 
