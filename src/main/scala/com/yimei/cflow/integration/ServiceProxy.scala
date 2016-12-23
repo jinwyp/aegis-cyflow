@@ -6,11 +6,12 @@ import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, CommandFlowState, CommandHijack, CommandUpdatePoints, DataPoint, Graph, State => FlowState, Command => FlowCommand}
-import com.yimei.cflow.api.models.group.{State => GroupState, Command => GroupCommand}
-import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, State => IdGeneratorState, Command => IdGeneratorCommand}
+import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, CommandFlowState, CommandHijack, CommandUpdatePoints, DataPoint, Graph, Command => FlowCommand, State => FlowState}
+import com.yimei.cflow.api.models.group.{Command => GroupCommand, State => GroupState}
+import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, Command => IdGeneratorCommand, State => IdGeneratorState}
 import com.yimei.cflow.api.models.group._
-import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, State => UserState, Command => UserCommand}
+import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, Command => UserCommand, State => UserState}
+import com.yimei.cflow.api.services.{ModuleMaster, ServicableBehavior}
 
 import scala.concurrent.Future
 
