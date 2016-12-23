@@ -299,7 +299,7 @@ SOFTWARE.
         updatePosition(ele, qtip);
 
         ele.on( opts.show.event, function(e){
-          // updatePosition(ele, qtip, e);
+          updatePosition(ele, qtip, e);
           qtipApi.show();
         } );
 

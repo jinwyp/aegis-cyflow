@@ -396,12 +396,12 @@
                 var vertices = data.original.vertices;
                 return vertices[id];
             },
-            show: {
-                event: 'mouseover'
-            },
-            hide: {
-                event: 'click'
-            },
+            // show: {
+            //     event: 'mouseover'
+            // },
+            // hide: {
+            //     event: 'click'
+            // },
             position: {
                 my: 'top center',
                 at: 'bottom center'
