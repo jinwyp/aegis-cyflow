@@ -7,8 +7,7 @@
     var chartEventCallback= function(cy){
         cy.nodes('.task').qtip({
             content: function(){
-                var data = this.data();
-                return data.original.points[data.id] || "暂无描述";
+                return this.data().description;
             },
             // show: {
             //     event: 'mouseover'
@@ -33,7 +32,8 @@
             var classes = this._private.classes;
             var data = this.data();
             var points = [];
-            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+            var task = data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id];
+            task && task.points.forEach(function(p, pi){
                 var val;
                 if(data.original.state.points.hasOwnProperty(p)){
                     if(data.original.state.points[p].memo){
@@ -97,10 +97,7 @@
 
         cy.nodes('.node').qtip({
             content: function(){
-                var data = this.data();
-                var id = data.id;
-                var vertices = data.original.vertices;
-                return vertices[id] || "暂无描述";
+                return this.data().description;
             },
             // show: {
             //     event: 'mouseover'
@@ -178,8 +175,6 @@
         drawfn();
     
     }    
-
-
 
     var taskTip = function(){
         var self = this;
@@ -298,7 +293,7 @@
             },
             getModel: function(){
                 var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                // var url = '../json/data4.json'
+                //  var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -329,7 +324,7 @@
                         'name': i,
                         'value': val || '未采集',
                         'user': p.operator || '无',
-                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD H:M:S') || '无',
+                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD HMS') || '无',
                         'description': originalData.points[i] || '无', 
                         'comment': memo || '无'
                     })
@@ -338,7 +333,7 @@
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var chart = new flowChart('cy', originalData, chartEventCallback);
+                var chart = new flowChart('cy', originalData, chartEventCallback, {minZoom: 0.1});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
 
