@@ -32,4 +32,14 @@ trait GroupProtocol extends DefaultJsonProtocol {
   implicit val groupCommandGroupTaskFormat = jsonFormat4(CommandGroupTask)
 
   implicit val groupStateFormat = jsonFormat3(State)
+
+  implicit val CommandCreateGroupFormat = jsonFormat1(CommandCreateGroup)
+
+  implicit val CommandClaimTaskFormat = jsonFormat3(CommandClaimTask)
+
+  implicit val CommandQueryGroupFormat = jsonFormat1(CommandQueryGroup)
+
+  implicit val GroupTaskEnqueueFormat = jsonFormat2(TaskEnqueue)
+
+  implicit val GTaskDequeueFormat = jsonFormat1(TaskDequeue)
 }

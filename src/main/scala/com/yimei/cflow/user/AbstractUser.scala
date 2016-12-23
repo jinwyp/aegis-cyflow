@@ -32,11 +32,11 @@ abstract class AbstractUser extends Actor with ActorLogging {
       log.info(s"收到用户查询: $command")
       sender() ! state
 
-    // 手机登录成功
-    case command: CommandMobileCome =>
-
-    // 电脑登录成功
-    case command: CommandDesktopCome =>
+//    // 手机登录成功
+//    case command: CommandMobileCome =>
+//
+//    // 电脑登录成功
+//    case command: CommandDesktopCome =>
   }
 
 }

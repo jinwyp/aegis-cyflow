@@ -292,8 +292,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                //var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                 var url = '../json/data4.json'
+                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                //  var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -324,7 +324,7 @@
                         'name': i,
                         'value': val || '未采集',
                         'user': p.operator || '无',
-                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD H:M:S') || '无',
+                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD HMS') || '无',
                         'description': originalData.points[i] || '无', 
                         'comment': memo || '无'
                     })
