@@ -28,7 +28,7 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
 
   // 请求父亲告知其他模块
   dependOn.foreach { name =>
-    log.info(s"${moduleName} 请求获取 ${name}")
+    log.debug(s"${moduleName} 请求获取 ${name}")
     who ! GiveMeModule(name)
   }
 
