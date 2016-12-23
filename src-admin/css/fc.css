@@ -147,6 +147,9 @@ header{
     display:block; width:140px; height:40px; line-height:40px; margin:10px auto; 
     background:#5ac5d5; color:#fff; text-align:center; cursor:pointer;
 }
+.cyContainer #ptDetail .refresh span.disabled{
+    background:gray;
+}
 .cyContainer #ptDetail .title{
     height:40px; background:#e8f1f9; color:#909fac;
 }
@@ -224,4 +227,8 @@ header{
 }
 .qtip.tip-pointtext .qtip-content .tip-pointtextcontent{
     position:absolute; top:10px; left:10px; width:230px; height:160px; color:#fff; overflow-y:auto;
+}
+.successTip{
+    display:none;
+    width: 305px; position: absolute; bottom: 56px; height: 40px; line-height: 40px; text-align: center; background: pink; color: #3c5a78;
 }

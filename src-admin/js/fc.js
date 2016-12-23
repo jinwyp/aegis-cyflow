@@ -49,7 +49,7 @@
                 points.push({'key':p, 'value':val});
             })
             
-            var data_ptDetail = {'points': points, 'task': {'type': data.taskType, 'classes': classes}};
+            var data_ptDetail = {'points': points, 'task': {'type': data.taskType, 'id': data.id, 'classes': classes}};
             var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
             $('#ptDetail>div').html(ptDetail);
 
@@ -75,6 +75,20 @@
                     }
                 }
             })
+            $('#refreshBtn').on('click', function(){
+                var self = this;
+                if($(this).hasClass('disabled')){
+                    return;
+                }
+                $(this).addClass('disabled');
+                $(this).parent().parent().append('<p class="successTip">已开始重新执行任务，请稍后刷新页面</p>');
+                $('.successTip').delay(1000).fadeIn().delay(1500).fadeOut();
+                setTimeout(function(){
+                    $(self).removeClass('disabled');
+                }, 5000)
+                var url = '/auto/'+ originalData.state.flowType+'/'+ originalData.state.flowId +'/' + $(this).attr('data');
+                $.post(url);
+            })
         })
 
         cy.nodes('.node').qtip({
@@ -91,8 +105,8 @@
             //     event: 'click'
             // },
             position: {
-                my: 'top center',
-                at: 'bottom center'
+                my: 'bottom center',
+                at: 'top center'
             },
             style: {
                 classes: 'qtip-bootstrap',
@@ -102,7 +116,6 @@
                 }
             }
         })
-
     };
 
     var drawProcessing = function(cy){
@@ -280,7 +293,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                $.getJSON('./json/data4.json', function(res){
+                var url = '/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                $.getJSON(url, function(res){
                     originalData = res;
                 })
                 return originalData;
