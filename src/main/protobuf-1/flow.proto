@@ -49,7 +49,7 @@ message PointUpdated {
 }
 
 message PointsUpdated {
-    option (scalapb.message).extends = "com.yimei.cflow.core.Flow.Event";
+    option (scalapb.message).extends = "com.yimei.cflow.api.models.flow.Event";
     required string name = 1;
     map<string, DataPoint> points = 2;
 }

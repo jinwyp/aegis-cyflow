@@ -41,7 +41,7 @@
 
     <script id='tmpl_ptDetail' type='text/template'>
     
-        <ul class='<%= (points.length>0)?"hascontent":"" %> <%= task.type %>'> 
+        <ul class='<%= (points.length>0)?"hascontent":"" %> <%= (task.classes["isProcessing"])?task.type:"" %>'> 
             <% points.forEach(function(p, i){ %>
             <li>
                 <label><%= p.key %></label>
@@ -58,7 +58,7 @@
             </li>
             <% }) %>
         </ul>
-        <% if(task.type == 'autoTasks'){ %>
+        <% if((task.type == 'autoTasks')&&(task.classes['isProcessing'])){ %>
             <p class='refresh'><span>重新执行</span></p>                    
         <% } %>
     </script>
@@ -93,6 +93,7 @@
      <script src="lib/cytoscape/cytoscape-qtip.js"></script>
      <script src="lib/cytoscape/dagre.js"></script>
      <script src="lib/cytoscape/cytoscape-dagre.js"></script>
+     <script src='js/drawFlowChart.js'></script>
      <script src='js/fc.js'></script>
 	</body>
 </html>
