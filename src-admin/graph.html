@@ -58,7 +58,7 @@
             </li>
             <% }) %>
         </ul>
-        <% if((task.type == 'autoTasks')&&(!task.classes['isProcessing'])){ %>
+        <% if((task.type == 'autoTasks')&&(task.classes['isProcessing'])){ %>
             <p class='refresh'><span data='<%= task.id %>' id="refreshBtn">重新执行</span></p>                    
         <% } %>
     </script>

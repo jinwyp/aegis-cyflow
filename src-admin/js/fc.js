@@ -8,7 +8,7 @@
         cy.nodes('.task').qtip({
             content: function(){
                 var data = this.data();
-                return data.original.points[data.id];
+                return data.original.points[data.id] || "暂无描述";
             },
             // show: {
             //     event: 'mouseover'
@@ -38,8 +38,8 @@
                 if(data.original.state.points.hasOwnProperty(p)){
                     if(data.original.state.points[p].memo){
                         var memo = data.original.state.points[p].memo;
-                        (memo.indexOf('img:')==0) && (val={'url': memo.substr(4), 'text': '查看图片'});
-                        (memo.indexOf('pdf:')==0) && (val={'url': memo.substr(4), 'text': '查看PDF文件'});
+                        (memo == 'img') && (val={'url': data.original.state.points[p].value, 'text': '查看图片'});
+                        (memo == 'pdf') && (val={'url': data.original.state.points[p].value, 'text': '查看PDF文件'});
                     }
 
                     !val && (val = data.original.state.points[p].value);
@@ -86,8 +86,12 @@
                 setTimeout(function(){
                     $(self).removeClass('disabled');
                 }, 5000)
-                var url = '/auto/'+ originalData.state.flowType+'/'+ originalData.state.flowId +'/' + $(this).attr('data');
-                $.post(url);
+
+                $.ajax({
+                    url: '/auto/'+ originalData.state.flowType+'/'+ originalData.state.flowId +'/' + $(this).attr('data'),
+                    method: 'POST',
+                    async: true
+                })
             })
         })
 
@@ -96,7 +100,7 @@
                 var data = this.data();
                 var id = data.id;
                 var vertices = data.original.vertices;
-                return vertices[id];
+                return vertices[id] || "暂无描述";
             },
             // show: {
             //     event: 'mouseover'
@@ -293,7 +297,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                var url = '/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                // var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -305,7 +310,7 @@
                     'uid': originalData.state.guid,
                     'type': originalData.state.flowType,
                     'utype': originalData.state.guid.substr(originalData.state.guid.split('-')[0].length+1),
-                    'status': originalData.state.ending || ''
+                    'status': originalData.state.ending || '进行中'
                 }};
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
@@ -315,8 +320,8 @@
                     var p = originalData.state.points[i];
                     var memo;
                     if(p.memo){
-                        (p.memo.indexOf('img:')==0) && (memo = {url: p.memo.substr(4), text: '查看图片'});
-                        (p.memo.indexOf('pdf:')==0) && (memo = {url: p.memo.substr(4), text: '查看PDF文件'});
+                        (p.memo == 'img') && (memo = {url: p.value, text: '查看图片'});
+                        (p.memo == 'pdf') && (memo = {url: p.value, text: '查看PDF文件'});
                         !memo && (memo=p.memo);
                     } 
                     historyPoints.push({
