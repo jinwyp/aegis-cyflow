@@ -70,17 +70,17 @@
             <% historyPoints.forEach(function(p, i){ %>
             <li>
                 <span><%= p.name %></span>
+                <% if(p.value.url){ %>
+                <span>
+                    <a href='<%= p.value.url %>' target='_blank'><%= p.value.text %></a>
+                </span>
+                <% }else{ %>
                 <span><%= p.value %></span>
+                <% } %>
                 <span><%= p.user %></span>
                 <span><%= p.timestamp %></span>
                 <span><%= p.description %></span>
-                <% if(p.comment.url){ %>
-                <span>
-                    <a href='<%= p.comment.url %>' target='_blank'><%= p.comment.text %></a>
-                </span>
-                <% }else{ %>
                 <span><%= p.comment %></span>
-                <% } %>
             </li>
             <% }) %>
         </ul>

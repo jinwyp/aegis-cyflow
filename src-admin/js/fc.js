@@ -318,21 +318,23 @@
                 var historyPoints = [];
                 for( var i in originalData.state.points){
                     var p = originalData.state.points[i];
-                    var memo;
+                    var memo = p.memo;
+                    var val = false;
                     if(p.memo){
-                        (p.memo == 'img') && (memo = {url: p.value, text: '查看图片'});
-                        (p.memo == 'pdf') && (memo = {url: p.value, text: '查看PDF文件'});
-                        !memo && (memo=p.memo);
+                        (p.memo == 'img') && (val = {url: p.value, text: '查看图片'}) && (memo = false);
+                        (p.memo == 'pdf') && (val = {url: p.value, text: '查看PDF文件'}) && (memo = false);
                     } 
+                    !val && (val = p.value);
                     historyPoints.push({
                         'name': i,
-                        'value': p.value || '未采集',
+                        'value': val || '未采集',
                         'user': p.operator || '无',
                         'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD H:M:S') || '无',
                         'description': originalData.points[i] || '无', 
                         'comment': memo || '无'
                     })
                 }
+                console.log(historyPoints)
                 var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
