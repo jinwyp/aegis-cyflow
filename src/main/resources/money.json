@@ -22,9 +22,9 @@
     "divination" :{"description": "占卜",   "points": ["SuccessRate"]}
   },
   "userTasks": {
-    "FillInApplyMessage"    :{"description": "填写申请信息", "points": ["UA1", "UA2"]},
-    "TKPU1" :{"description": "描述", "points": [ "KPU1" ]},
-    "TKPG1" :{"description": "描述", "points": [ "KPG1" ]},
+    "FillInApplyMessage"    :{"description": "填写申请信息", "points": ["Reason", "Amount"]},
+    "UploadReceipt" :{"description": "上传裸条", "points": [ "LoanReceipt" ]},
+    "AssignFriend" :{"description": "指定一个Friend", "points": [ "Friend" ]},
     "PU"    :{"description": "描述", "points": [ "PU1", "PU2"]},
     "PG"    :{"description": "描述", "points": [ "PG1", "PG2"]}
   },

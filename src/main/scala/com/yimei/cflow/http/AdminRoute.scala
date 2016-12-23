@@ -115,7 +115,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
       }
       complete(for {
         f <- flow
-        r <- ServiceProxy.flowState(proxy, f.flow_id)
+        r <- ServiceProxy.flowGraph(proxy, f.flow_id)
       } yield {
         r
       })
