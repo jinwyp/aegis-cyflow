@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.services
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout, SupervisorStrategy, Terminated}
-import com.yimei.cflow.integration.DaemonMaster.{GiveMeModule, RegisterModule, UnderIdentify}
+import com.yimei.cflow.core.DaemonMaster.{GiveMeModule, RegisterModule, UnderIdentify}
 
 import scala.concurrent.duration._
 

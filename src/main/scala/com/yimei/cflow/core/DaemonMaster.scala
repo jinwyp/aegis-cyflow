@@ -1,14 +1,13 @@
-package com.yimei.cflow.integration
+package com.yimei.cflow.core
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
 import com.yimei.cflow.api.models.flow.{Command, CommandCreateFlow}
 import com.yimei.cflow.api.models.id.IdGenerator
+import com.yimei.cflow.api.models.user.{Command => UserCommand}
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{FlowMaster}
 import com.yimei.cflow.group.GroupMaster
-import com.yimei.cflow.user.{User, UserMaster}
-import com.yimei.cflow.api.models.user.{Command => UserCommand}
+import com.yimei.cflow.user.UserMaster
 
 // 模块注册于协商
 object DaemonMaster {
