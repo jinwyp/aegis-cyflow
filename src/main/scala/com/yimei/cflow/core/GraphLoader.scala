@@ -97,7 +97,7 @@ object GraphLoader extends GraphConfigProtocol {
     )
     )
 
-    println(graphConfig.toJson.prettyPrint)
+    // println(graphConfig.toJson.prettyPrint)
 
     // graphJar class and graphJar object
     val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
