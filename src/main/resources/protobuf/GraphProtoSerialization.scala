@@ -1,4 +1,4 @@
-package com.yimei.cflow.api.serialization
+package com.yimei.cflow.api.serialization.protobuf
 
 import akka.serialization.SerializerWithStringManifest
 import com.yimei.cflow.api.models.graph._

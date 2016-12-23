@@ -5,7 +5,7 @@ import akka.serialization.SerializerWithStringManifest
 /**
   * Created by hary on 16/12/23.
   */
-class FlowSerialization extends SerializerWithStringManifest{
+class FlowJsonSerialization extends SerializerWithStringManifest{
 
   override def identifier: Int = ???
 
