@@ -6,37 +6,57 @@
     <style type="text/css">
         *{margin:0;padding: 0;list-style: none;}
         body{background: #f6f6f6;}
-        .warp{width: 1000px;height:500px;margin: 0 auto;font-size: 16px;background: #ffffff;padding:100px 20px;}
-        form{position: relative;}
-        form .type,form .userId{ margin-bottom: 30px;}
-        form label{width: 300px;text-align: right;display: inline-block;line-height: 40px;}
-        .type select{width: 230px;height: 30px;font-size: 14px;background: #ffffff;border: 1px solid #e4e4e4;}
-        input[type="text"]{width: 230px;height: 30px;line-height: 30px;padding-left: 10px;font-size: 14px;border: 1px solid #e4e4e4;}
+        .warp{width: 1000px;height:500px;margin: 0 auto;font-size: 16px;background: #ffffff;padding:50px 20px;}
+        .inputDiv{ display: inline-block;}
+        form label{display: inline-block;line-height: 40px;width: 95px;text-align: right;}
+        .type select{width: 170px;height: 30px;font-size: 14px;background: #ffffff;border: 1px solid #e4e4e4;}
+        input[type="text"]{width: 170px;height: 30px;line-height: 30px;padding-left: 10px;font-size: 14px;border: 1px solid #e4e4e4;}
         table{width: 95%;margin-top: 50px; border-collapse:collapse;}
         table td{text-align: center;border: 1px solid #e4e4e4;padding:10px 0;}
-        .plus{position: absolute;right: 0;top: 170px;font-size: 38px;cursor: pointer;font-weight: bold;color: #23b7e5;}
         .btn{text-align: center;margin-top: 50px;}
-        .submit{width: 90px;height: 35px;line-height: 35px;background: #23b7e5;border: 0;color: #ffffff;font-size: 14px;border-radius: 2px;outline: none;cursor: pointer;}
+        .search,.submit{width: 90px;height: 35px;line-height: 35px;background: #23b7e5;border: 0;color: #ffffff;font-size: 14px;border-radius: 2px;outline: none;cursor: pointer;}
+        .marginB60{margin-bottom: 60px;}
+        .description span{color: #333333;font-weight: normal;}
+        .description{color:#23b7e5;font-weight: bold;font-family: Arial;line-height: 28px;}
     </style>
 </head>
 <body>
 <div class="warp">
     <form>
-        <div class="type">
-            <label for="type">用户类型：</label>
-            <select name="type" id="type">
-                <option value="0">全部</option>
-            </select>
+        <div class="marginB60">
+            <div class="type inputDiv">
+                <label for="type">用户类型：</label>
+                <input type="text" id="type">
+            </div>
+            <div class="companyId inputDiv">
+                <label for="companyId">公司ID：</label>
+                <input type="text" id="companyId">
+            </div>
+            <div class="userId inputDiv">
+                <label for="userId">用户ID：</label>
+                <input type="text" id="userId">
+            </div>
+            <div class="taskName inputDiv">
+                <label for="taskName">taskName：</label>
+                <input type="text" id="taskName">
+            </div>
+            <div class="flowId inputDiv">
+                <label for="flowId">flowId：</label>
+                <input type="text" id="flowId">
+            </div>
+            <div class="ying inputDiv">
+                <label for="ying">ying：</label>
+                <input type="text" id="ying" value="ying">
+            </div>
+            <div class="btn"><input type="button" class="search" value="查询"></div>
         </div>
-        <div class="userId">
-            <label for="userId">用户ID：</label>
-            <input type="text" id="userId">
+        <div class="description">
+            description:&nbsp;&nbsp;<span class="desC">暂无</span>
         </div>
-        <div class="plus" id="plus">+</div>
         <table class="table">
             <tr>
-                <td><input type="text" placeholder="key" class="key"></td>
-                <td><input type="text" placeholder="value" class="value"></td>
+                <td><input type="text" placeholder="key" /></td>
+                <td><input type="text" placeholder="value" /></td>
             </tr>
         </table>
         <!-- <div id="dataView"></div> -->
@@ -47,27 +67,54 @@
 <script type="text/javascript">
     $(document).ready(function(){
 
-        var temp = [
-            '<tr>',
-            '<td><input type="text" placeholder="key" class="key"></td>',
-            '<td><input type="text" placeholder="value" class="value"></td>',
-            '</tr>'
-        ];
+        //查询
+        $(".search").on('click',function () {
+            var userType = $("#type").val();
+            var companyId = $("#companyId").val();
+            var userId = $("#userId").val();
+            var taskName = $("#taskName").val();
+            var flowId = $("#flowId").val();
+            var ying = $("#ying").val();
+            $.ajax({
+                method: "GET",
+                url:"/utask/"+userType+"/"+companyId+"/"+userId,
+                dataType:'json'
+            }).done(function(data){
+                console.log(data);
 
-        var addBtn = $('#plus');
+                $.ajax({
+                    method: "GET",
+                    url:"/graph/"+ying+"/"+taskName,
+                    dataType:'json'
+                }).done(function(data){
+                    $(".desC").html(data.description);
+
+                    var table = $(".table");
+                    var temp = "<table class=\"table\">";
+                    for (var key in data.tasks)
+                    {
+                        temp = temp + "<tr><td>"+data.tasks[key].flowId+"</td>" +
+                                "<td><input type=\"text\" placeholder=\"value\"/></td></tr>";
+                    }
+                    temp = temp + "</table>";
+                    table.innerHTML = temp
+
+                }).fail(function(){
+                    // console.log(error);
+                })
+
+            }).fail(function(){
+                // console.log(error);
+            })
+        });
+
+
         var table = $('.table');
-        var submitArr = [{
-            key1:'',
-            key2:''
-        }];
+        var submitArr = [];
         var lastArr = [];
         var index = null,
-                subIndex = null;
-        var keyName = ['key1','key2'];
-
-        addBtn.on('click',function(){
-            addCb();
-        });
+            subIndex = null;
+        var keyName = ['key2'];
 
         $(document).on('input','input',function(){
             var txt = $(".table input");
@@ -76,19 +123,12 @@
             index = parseInt(curIndex/2);
             subIndex = curIndex%2;
             submitArr[index][keyName[subIndex]] = val;
-            // $('#dataView').html(JSON.stringify(submitArr));
-        });
-
-
-        function addCb(){
             submitArr.push({
-                key1:'',
                 key2:''
             });
-            table.append(temp.slice().join(''));
-            // $('#dataView').html(JSON.stringify(submitArr));
+            console.log(submitArr);
+        });
 
-        }
 
         $(".submit").click(function(){
             $.each(submitArr,function(index,item){

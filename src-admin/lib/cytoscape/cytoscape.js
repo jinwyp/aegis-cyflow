@@ -12578,7 +12578,7 @@ BRp.getAllInBox = function( x1, y1, x2, y2 ){
 
     if( rs.startX != null && rs.startY != null && !math.inBoundingBox( boxBb, rs.startX, rs.startY ) ){ continue; }
     if( rs.endX != null && rs.endY != null && !math.inBoundingBox( boxBb, rs.endX, rs.endY ) ){ continue; }
-    
+
     if( rs.edgeType === 'bezier' || rs.edgeType === 'multibezier' || rs.edgeType === 'self' || rs.edgeType === 'compound' || rs.edgeType === 'segments' || rs.edgeType === 'haystack' ){
 
       var pts = _p.rstyle.bezierPts || _p.rstyle.linePts || _p.rstyle.haystackPts;
@@ -16711,7 +16711,7 @@ var CRp = {};
 CRp.drawEdge = function( context, edge, shiftToOriginWithBb, drawLabel, drawOverlayInstead ){
   var rs = edge._private.rscratch;
   var usePaths = this.usePaths();
-    
+
   // if bezier ctrl pts can not be calculated, then die
   if( rs.badLine || isNaN(rs.allpts[0]) ){ // isNaN in case edge is impossible and browser bugs (e.g. safari)
     return;
@@ -16838,9 +16838,6 @@ CRp.drawEdgePath = function( edge, context, pts, type, width ){
       case 'multibezier':
         for( var i = 2; i + 3 < pts.length; i += 4 ){
           context.quadraticCurveTo( pts[ i ], pts[ i + 1], pts[ i + 2], pts[ i + 3] );
-          if(edge._private.classes['isProcessing']){
-            edge.animatePath = {'type': rs.edgeType, 'path':pts};
-          }
         }
         break;
 
@@ -16849,9 +16846,6 @@ CRp.drawEdgePath = function( edge, context, pts, type, width ){
       case 'haystack':
         for( var i = 2; i + 1 < pts.length; i += 2 ){
           context.lineTo( pts[ i ], pts[ i + 1] );
-          if(edge._private.classes['isProcessing']){
-            edge.animatePath = {'type': rs.edgeType, 'path':pts};
-          }
         }
         break;
     }
@@ -23424,16 +23418,6 @@ styfn.apply = function( eles ){
 
   for( var ie = 0; ie < eles.length; ie++ ){
     var ele = eles[ ie ];
-    var rs = ele._private.rscratch;
-    if(ele._private.group == 'edges'){
-      var eTos = rs.endX - rs.startX;
-      if(eTos > 20){
-        ele._private.classes.toRight = true;
-      }
-      if(eTos < -20){
-        ele._private.classes.toLeft = true;
-      }
-    }
 
     var cxtMeta = self.getContextMeta( ele );
     var cxtStyle = self.getContextStyle( cxtMeta );

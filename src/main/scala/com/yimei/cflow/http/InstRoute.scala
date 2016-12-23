@@ -9,13 +9,14 @@ import java.time.Instant
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.user.UserProtocol
 import com.yimei.cflow.util.DBUtils._
 import com.yimei.cflow.user.db._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 import scala.concurrent.Future
 import javax.ws.rs.Path
+
+import com.yimei.cflow.api.models.user.UserProtocol
 
 class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSupport{
   import driver.api._
