@@ -30,6 +30,7 @@
         })
 
         cy.nodes('.task').on('click', function(e){
+            var classes = this._private.classes;
             var data = this.data();
             var points = [];
             data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
@@ -47,8 +48,8 @@
                 }
                 points.push({'key':p, 'value':val});
             })
-
-            var data_ptDetail = {'points': points, 'task': {'type': data.taskType}};
+            
+            var data_ptDetail = {'points': points, 'task': {'type': data.taskType, 'classes': classes}};
             var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
             $('#ptDetail>div').html(ptDetail);
 
@@ -87,7 +88,7 @@
             //     event: 'mouseover'
             // },
             // hide: {
-            //     event: 'mouseout'
+            //     event: 'click'
             // },
             position: {
                 my: 'top center',
@@ -295,10 +296,6 @@
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
 
-                // var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
-                // var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
-                // $('#ptDetail').html(ptDetail);
-
                 var historyPoints = [];
                 for( var i in originalData.state.points){
                     var p = originalData.state.points[i];
@@ -317,19 +314,7 @@
                         'comment': memo || '无'
                     })
                 }
-                var data_history = {'historyPoints': historyPoints}
-                // var data_history = {'historyPoints': [
-                //     {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'}
-                // ]};
-                var history = ejs.compile($('#tmpl_historyContainer').html())(data_history);
+                var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
