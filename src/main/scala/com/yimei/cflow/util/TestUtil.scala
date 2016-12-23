@@ -8,7 +8,6 @@ import com.yimei.cflow.api.models.flow.CommandFlowGraph
 import com.yimei.cflow.api.models.group.{CommandClaimTask, CommandQueryGroup, State}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.api.models.flow._
-import com.yimei.cflow.core.FlowProtocol
 import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.integration.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
 import com.yimei.cflow.user.User
