@@ -4,6 +4,106 @@
 
     var originalData;
 
+    var chartEventCallback= function(cy){
+        cy.nodes('.task').qtip({
+            content: function(){
+                var data = this.data();
+                return data.original.points[data.id];
+            },
+            // show: {
+            //     event: 'mouseover'
+            // },
+            // hide: {
+            //     event: 'mouseout'
+            // },
+            position: {
+                my: 'bottom center',
+                at: 'top center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        })
+
+        cy.nodes('.task').on('click', function(e){
+            var classes = this._private.classes;
+            var data = this.data();
+            var points = [];
+            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+                var val;
+                if(data.original.state.points.hasOwnProperty(p)){
+                    if(data.original.state.points[p].memo){
+                        var memo = data.original.state.points[p].memo;
+                        (memo.indexOf('img:')==0) && (val={'url': memo.substr(4), 'text': '查看图片'});
+                        (memo.indexOf('pdf:')==0) && (val={'url': memo.substr(4), 'text': '查看PDF文件'});
+                    }
+
+                    !val && (val = data.original.state.points[p].value);
+                }else{
+                    val = '未采集';
+                }
+                points.push({'key':p, 'value':val});
+            })
+            
+            var data_ptDetail = {'points': points, 'task': {'type': data.taskType, 'classes': classes}};
+            var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
+            $('#ptDetail>div').html(ptDetail);
+
+            $('.hastip').qtip({
+                content: function(){
+                    return '<span class="pointer"></span><div class="tip-pointtext-contentbg"></div><div class="tip-pointtextcontent"><div class="content">' + $(this).attr('data') + '</div></div>';
+                },
+                position: {
+                    my: 'bottom right',
+                    at: 'top right'
+                },
+                show: {
+                    event: 'click'
+                },
+                hide: {
+                    event: 'unfocus'
+                },
+                style: {
+                    classes: 'qtip-bootstrap tip-pointtext',
+                    tip: {
+                        width: 16,
+                        height: 8
+                    }
+                }
+            })
+        })
+
+        cy.nodes('.node').qtip({
+            content: function(){
+                var data = this.data();
+                var id = data.id;
+                var vertices = data.original.vertices;
+                return vertices[id];
+            },
+            // show: {
+            //     event: 'mouseover'
+            // },
+            // hide: {
+            //     event: 'click'
+            // },
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        })
+
+    };
 
     var drawProcessing = function(cy){
         var canvas = $(cy._private.container).find('canvas')[2],
@@ -196,10 +296,6 @@
                 var fcDetail = ejs.compile($('#tmpl_fcDetail').html())(data_fcDetail);
                 $('#fcDetail').html(fcDetail);
 
-                // var data_ptDetail = {'points': [], 'task': {'type': 'autoTasks'}};
-                // var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
-                // $('#ptDetail').html(ptDetail);
-
                 var historyPoints = [];
                 for( var i in originalData.state.points){
                     var p = originalData.state.points[i];
@@ -218,35 +314,22 @@
                         'comment': memo || '无'
                     })
                 }
-                var data_history = {'historyPoints': historyPoints}
-                // var data_history = {'historyPoints': [
-                //     {'name': '属性', 'value': '文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描述文字描', 'user': '采集人', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '文字描述文字描述文字描述文字描文字描述文字描述文字描述文字描', 'comment': '备注备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'},
-                //     {'name': '属性', 'value': 'value', 'user': 'user', 'timestamp': dateFormat('1482624000000', 'YYYY-MM-DD'), 'description': '描述', 'comment': '备注'}
-                // ]};
-                var history = ejs.compile($('#tmpl_historyContainer').html())(data_history);
+                var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var cy = new flowChart('cy', originalData);
+                var chart = new flowChart('cy', originalData, chartEventCallback);
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
-                window.cy = cy.cy;
 
-                cy.cy.onRender(function(){
+                chart.cy.onRender(function(){
                     count ++;
                     if(count==2){
-                        cy.cy.zoom(0).center();
+                        chart.cy.zoom(0).center();
                         setTimeout(function(){
                             $('#cy canvas').css('visibility','visible');
                         }, 100)
-                        cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
+                        chart.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
                     }
                 })
             }
