@@ -25,32 +25,39 @@
     var PAGE = function(){
         return {
             init :       function () {
+                console.log('------init------');
                 this.tmplRender(1);
-                console.log("init");
+
+                container.pagination({
+                    dataSource : sources,
+                    pageNumber: currentPage,
+                    pageSize : 10,
+                    callback :   function (data, pagination) {
+                        currentPage = pagination.pageNumber;
+                        console.log('------callback------'+currentPage);
+                        var history = ejs.compile($('#tmpl_table').html())(dataList[currentPage - 1]);
+                        console.log(history);
+                        $('#table-list').html(history);
+
+                        // console.log(pagination);
+                        // console.log(pagination.pageRange);
+                        // console.log(pagination.pageRange-1);
+                        // console.log(pagination.pageRange-1);
+                        // if()
+                        // PAGE().tmplRender(pagination.pageRange-1);
+                    }
+                });
             },
             tmplRender : function (page) {
-                console.log(page);
-                console.log(dataList[page - 1]);
-                var history = ejs.compile($('#tmpl_table').html())(dataList[page - 1]);
-                $('#table-list').html(history);
+                console.log('------tmplRender------');
+                // console.log(page);
+                // console.log(dataList[page - 1]);
+                // var history = ejs.compile($('#tmpl_table').html())(dataList[page - 1]);
+                // $('#table-list').html(history);
             }
         }
 
     };
-
-    container.pagination({
-        dataSource : sources,
-        pageNumber: currentPage,
-        pageSize : 10,
-        callback :   function (data, pagination) {
-            console.log(pagination);
-            console.log(pagination.pageRange);
-            console.log(pagination.pageRange-1);
-            // console.log(pagination.pageRange-1);
-            // if()
-            PAGE().tmplRender(pagination.pageRange-1);
-        }
-    })
 
     window.PAGE = PAGE;
 
@@ -78,6 +85,66 @@
         //         flowType: flowType,
         //     }
         // });
+    });
+
+    $("#input-user-type").focus(function () {
+        if($(".user-type-ul").hasClass('hidden')){
+            $(".user-type-ul").removeClass('hidden');
+        }else{
+            $(".user-type-ul").addClass('hidden');
+        }
+    });
+
+    $("#input-user-type").blur(function () {
+        if($(".user-type-ul").hasClass('hidden')){
+            $(".user-type-ul").removeClass('hidden');
+        }else{
+            $(".user-type-ul").addClass('hidden');
+        }
+    });
+
+    $(".user-type-ul li").mousedown(function () {
+        $("#input-user-type").val($(this).text());
+    });
+
+    $("#input-flow-type").focus(function () {
+        if($(".flow-type-ul").hasClass('hidden')){
+            $(".flow-type-ul").removeClass('hidden');
+        }else{
+            $(".flow-type-ul").addClass('hidden');
+        }
+    });
+
+    $("#input-flow-type").blur(function () {
+        if($(".flow-type-ul").hasClass('hidden')){
+            $(".flow-type-ul").removeClass('hidden');
+        }else{
+            $(".flow-type-ul").addClass('hidden');
+        }
+    });
+
+    $(".flow-type-ul li").mousedown(function () {
+        $("#input-flow-type").val($(this).text());
+    });
+
+    $("#input-status").focus(function () {
+        if($(".status-ul").hasClass('hidden')){
+            $(".status-ul").removeClass('hidden');
+        }else{
+            $(".status-ul").addClass('hidden');
+        }
+    });
+
+    $("#input-status").blur(function () {
+        if($(".status-ul").hasClass('hidden')){
+            $(".status-ul").removeClass('hidden');
+        }else{
+            $(".status-ul").addClass('hidden');
+        }
+    });
+
+    $(".status-ul li").mousedown(function () {
+        $("#input-status").val($(this).text());
     });
 
 })(window, jQuery, ejs)
