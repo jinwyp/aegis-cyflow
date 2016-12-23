@@ -293,7 +293,7 @@
                 this.tmplRender();
             },
             getModel: function(){
-                var url = '/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
