@@ -8,6 +8,9 @@
     $.ajaxSettings.async = false;
 
     var originalData;
+    var allVertex = [];
+    var vm = null;
+    var scope = null;
 
     var chartEventCallback= function(cy){
 
@@ -51,26 +54,24 @@
             }
         })
 
-        cy.nodes('.task').on('click', function(e){
-            console.log(1111)
-            var data = this.data();
-            var points = [];
-            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
-                var val;
-                points.push({'key':p, 'value':val});
-            })
+        cy.nodes('.node').on('click', function(e){
+            console.log('node:', this.data())
+            vm.currentVertex.id = this.data().id;
+            vm.currentVertex.description = this.data().description;
+            scope.$apply();
+
         })
 
         cy.nodes('.task').on('click', function(e){
-            console.log(1111)
-            var data = this.data();
-            var points = [];
-            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
-                var val;
-                points.push({'key':p, 'value':val});
-            })
+            console.log('task:', this.data())
+            vm.currentTask.id = this.data().id;
+            vm.currentTask.description = this.data().description;
+            scope.$apply();
+            //data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+            //    var val;
+            //    points.push({'key':p, 'value':val});
+            //})
         })
-
 
     };
 
@@ -85,6 +86,8 @@
                 originalData = res;
             })
             this.drawChart();
+            allVertex = formatVertex(originalData.vertices);
+            runAngular()
             return originalData;
         },
         drawChart : function(){
@@ -99,52 +102,74 @@
     app.init();
 
 
+    
+    
+    function formatVertex(vobj) {
+        var result = [];
 
+        for ( var property in vobj){
+            result.push({
+                id : property,
+                description : vobj[property]
+            })
+        }
 
-
-
-    angular.module('chartApp', []);
-
-    angular.module('chartApp').controller('formController', formController);
-
-
-    function formController (){
-        var vm = this;
-
-        vm.currentVertex = {
-            id : '未选择',
-            description : ''
-        };
-
-        vm.globalConfig = {
-            initial : 'start',  // 代表初始节点
-            timeout: 100, // 超时时间配置(图的属性)
-            flowType: '',  //流程类型
-            persistent: false // 代表初始节点
-        };
-
-        vm.points = [];
-        vm.userTasks = [];
-        vm.autoTasks = [];
-        vm.partGTasks = [];
-        vm.groups = [];
-        vm.v2g = [];
-        vm.g2v = [];
-        vm.vertices = [];
-
-        vm.phones = [
-            {
-                name: 'Nexus S',
-                snippet: 'Fast just got faster with Nexus S.'
-            }, {
-                name: 'Motorola XOOM™ with Wi-Fi',
-                snippet: 'The Next, Next Generation tablet.'
-            }, {
-                name: 'MOTOROLA XOOM™',
-                snippet: 'The Next, Next Generation tablet.'
-            }
-        ];
+        return result;
     }
+
+
+
+    function runAngular(){
+
+        angular.module('chartApp', []);
+
+        angular.module('chartApp').controller('formController', formController);
+
+
+        function formController ($scope){
+            scope = $scope;
+            vm = this;
+
+            vm.currentVertex = {
+                id : '未选择',
+                description : ''
+            };
+            vm.currentTask = {
+                id : '未选择',
+                description : ''
+            };
+
+            vm.newVertex = {
+                id : '未选择',
+                description : ''
+            };
+
+            vm.globalConfig = {
+                initial : 'start',  // 代表初始节点
+                timeout: 100, // 超时时间配置(图的属性)
+                flowType: '',  //流程类型
+                persistent: false // 代表初始节点
+            };
+
+            vm.points = [];
+            vm.userTasks = [];
+            vm.autoTasks = [];
+            vm.partGTasks = [];
+            vm.groups = [];
+            vm.v2g = [];
+            vm.g2v = [];
+            vm.vertices = allVertex;
+
+
+            vm.addNewLine = function (){
+                console.log(vm.newVertex)
+            }
+
+
+        }
+
+    }
+
 
 })(window, jQuery, cytoscape, angular);
 
