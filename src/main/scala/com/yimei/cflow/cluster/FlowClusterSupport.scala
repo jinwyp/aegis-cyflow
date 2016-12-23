@@ -1,22 +1,22 @@
-package com.yimei.cflow.group
+package com.yimei.cflow.cluster
 
 import akka.cluster.sharding.ShardRegion
-import com.yimei.cflow.api.models.group.Command
+import com.yimei.cflow.api.models.flow.Command
 
 /**
   * Created by hary on 16/12/16.
   */
-object GroupClusterSupport {
+object FlowClusterSupport {
   // for cluster
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case cmd: Command => (cmd.ggid, cmd)
+    case cmd: Command => (cmd.flowId, cmd)
   }
 
   val numberOfShards = 100
 
   val extractShardId: ShardRegion.ExtractShardId = {
-    case cmd: Command => (cmd.ggid.hashCode % numberOfShards).toString
+    case cmd: Command => (cmd.flowId.hashCode % numberOfShards).toString
   }
 
-  val shardName = "group"
+  val shardName = "flow"
 }

@@ -184,6 +184,8 @@ header{
 }
 #historyContainer ul li span{
     float:left; padding:0 15px;
+    word-wrap: break-word;
+    word-break: break-all; 
 }
 #historyContainer ul li>span:first-child{
     width:80px; 

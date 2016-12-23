@@ -12,7 +12,7 @@ import scala.concurrent.duration._
   * Created by hary on 16/12/22.
   */
 class ResourceRoute(proxy: ActorRef) extends ApplicationConfig {
-  def route: Route = pathPrefix("management") {
+  def route: Route = pathPrefix("mng") {
     getFromDirectory(coreConfig.getString("management.dir"))
   }
 }
