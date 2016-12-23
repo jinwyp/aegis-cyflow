@@ -334,7 +334,6 @@
                         'comment': memo || '无'
                     })
                 }
-                console.log(historyPoints)
                 var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
