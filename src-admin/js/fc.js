@@ -329,7 +329,7 @@
                         'name': i,
                         'value': val || '未采集',
                         'user': p.operator || '无',
-                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD H:M:S') || '无',
+                        'timestamp': dateFormat(p.timestamp, 'YYYY-MM-DD HMS') || '无',
                         'description': originalData.points[i] || '无', 
                         'comment': memo || '无'
                     })
