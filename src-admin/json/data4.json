@@ -37,6 +37,7 @@
     "state": {
         "guid": "001-hary1",
         "flowType": "ying",
+        "ending": "success",
         "points": {
             "E": {
                 "used": false,
@@ -80,7 +81,8 @@
                 "timestamp": 10,
                 "id": "b0f244de-0450-47e0-aa22-16210e858167",
                 "operator": "B",
-                "value": "50"
+                "value": "50",
+                "memo": "img:https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
             },
             "PG2": {
                 "used": false,
@@ -95,7 +97,8 @@
                 "timestamp": 10,
                 "id": "df9781db-d01c-46df-9978-b0875ba46f90",
                 "operator": "C",
-                "value": "50"
+                "value": "",
+                "memo": "pdf:http://www.pdf995.com/samples/pdf.pdf"
             },
             "UA1": {
                 "used": false,
@@ -126,7 +129,7 @@
                 "timestamp": 10,
                 "id": "c193812a-87bf-427d-8cd2-dc573bf8db6a",
                 "operator": "DEF",
-                "value": "50"
+                "value": "采集结果采集结果，采集结果，采集结果采集结果采集结果采集结果采集结果采集结果采集结果，，采集结果"
             }
         },
         "flowId": "ying-001-hary1-1",
@@ -141,7 +144,7 @@
         "A": {
             "description": "描述TKPG1",
             "points": [
-                "A"
+                "A", "B", "C", "D", "E", "F", "PU1", "PU2", "PG1", "PG2"
             ]
         },
         "B": {

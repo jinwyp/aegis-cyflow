@@ -194,14 +194,15 @@ class PersistentFlow(
               state.toJson.toString,1
             )
 
-            dbrun(pu) map { i =>
-              i match {
-                case 1 => "success"
-                case _ => "fail"
-              }
-            } recover {
-              case _ => "fail"
-            }
+            dbrun(pu)
+//            map { i =>
+//              i match {
+//                case 1 => "success"
+//                case _ => "fail"
+//              }
+//            } recover {
+//              case _ => "fail"
+//            }
 
 
           case a@Arrow(j, Some(nextEdge)) =>

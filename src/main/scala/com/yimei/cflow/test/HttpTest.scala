@@ -22,7 +22,7 @@ object HttpTest extends App with ApplicationConfig with FlywayConfig {
   //FlowRegistry.register(YingGraph.flowType, YingGraph)
   GraphLoader.loadall()
 
-  FlowRegistry.registries("ying").inEdges.foreach(t=>log.info("{}:{}",t._1,t._2.foreach(t=>print(t))))
+  //FlowRegistry.registries("ying").inEdges.foreach(t=>log.info("{}:{}",t._1,t._2.foreach(t=>print(t))))
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
