@@ -333,19 +333,18 @@
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var cy = new flowChart('cy', originalData, chartEventCallback);
+                var chart = new flowChart('cy', originalData, chartEventCallback);
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
-                window.cy = cy.cy;
 
-                cy.cy.onRender(function(){
+                chart.cy.onRender(function(){
                     count ++;
                     if(count==2){
-                        cy.cy.zoom(0).center();
+                        chart.cy.zoom(0).center();
                         setTimeout(function(){
                             $('#cy canvas').css('visibility','visible');
                         }, 100)
-                        cy.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
+                        chart.cy.delay(100).animate({fit: {padding:20}}, {duration: 300});
                     }
                 })
             }
