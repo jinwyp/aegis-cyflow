@@ -1,5 +1,6 @@
 package com.yimei.cflow.core
 
+import com.yimei.cflow.api.models.flow.FlowProtocol
 import spray.json.{JsValue, JsonFormat}
 
 /**

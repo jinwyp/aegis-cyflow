@@ -6,6 +6,7 @@ import java.lang.reflect.Method
 import com.yimei.cflow.api.models.graph.GraphConfig
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.graph.money.MoneyGraphJar
 import com.yimei.cflow.graph.ying.YingGraphJar
 
 import scala.concurrent.Future
@@ -50,24 +51,42 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-    if (flowType != "ying") {
-      val jars: Array[String] = (new File("flows/" + flowType))
+
+    flowType match {
+      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "money" => MoneyGraphJar.getClass.getClassLoader
+      case _       => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
-      new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-    } else {
-      YingGraphJar.getClass.getClassLoader
+        new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
     }
+
+
+//    if (flowType != "ying" ) {
+//      val jars: Array[String] = (new File("flows/" + flowType))
+//        .listFiles()
+//        .filter(_.isFile())
+//        .map(_.getPath)
+//      new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
+//    } else if(flowType == "ying") {
+//      YingGraphJar.getClass.getClassLoader
+//    }
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
     import com.yimei.cflow.api.models.graph.GraphConfigProtocol._
     import spray.json._
 
+    val jsonFile = gFlowType match {
+      case "ying" => "ying.json"
+      case "money" => "money.json"
+      case _ => "flow.json"
+    }
+
     val classLoader = getClassLoader(gFlowType)
 
-    var graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(if (gFlowType == "ying") "ying.json" else "flow.json"))
+    var graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(jsonFile))
       .mkString
       .parseJson
       .convertTo[GraphConfig]

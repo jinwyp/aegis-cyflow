@@ -4,6 +4,7 @@ import java.util.{Date, UUID}
 
 import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
+import com.yimei.cflow.api.models.flow.FlowProtocol
 import com.yimei.cflow.core.FlowRegistry._
 import com.yimei.cflow.user.db.FlowInstanceTable
 import com.yimei.cflow.config.DatabaseConfig._
@@ -194,14 +195,15 @@ class PersistentFlow(
               state.toJson.toString,1
             )
 
-            dbrun(pu) map { i =>
-              i match {
-                case 1 => "success"
-                case _ => "fail"
-              }
-            } recover {
-              case _ => "fail"
-            }
+            dbrun(pu)
+//            map { i =>
+//              i match {
+//                case 1 => "success"
+//                case _ => "fail"
+//              }
+//            } recover {
+//              case _ => "fail"
+//            }
 
 
           case a@Arrow(j, Some(nextEdge)) =>

@@ -21,38 +21,45 @@
 </head>
 <body>
 <div class="warp">
-    <div class="type">
-        <label for="type">用户类型：</label>
-        <select name="type" id="type">
-            <option value="全部">全部</option>
-        </select>
-    </div>
+    <!--<div class="type">-->
+        <!--<label for="type">用户类型：</label>-->
+        <!--<select name="type" id="type">-->
+            <!--<option value="全部">全部</option>-->
+        <!--</select>-->
+    <!--</div>-->
     <div class="userId">
+        <label for="userId">类别：</label>
+        <input type="text" id="className">
+        <label for="userId">：公司ID</label>
+        <input type="text" id="companyId">
         <label for="userId">用户ID：</label>
         <input type="text" id="userId">
     </div>
     <input type="button" value="查询" class="submit">
-    <table>
+    <table id="tb1" >
         <tr>
             <th>flowId</th>
             <th>guid</th>
             <th>taskman</th>
-            <th>flue</th>
             <th>操作</th>
         </tr>
-        <tr>
-            <td>11</td>
-            <td>11</td>
-            <td>11</td>
-            <td>11</td>
-            <td><a href="">查看</a></td>
-        </tr>
+        <!--<tr>-->
+            <!--<td>11</td>-->
+            <!--<td>11</td>-->
+            <!--<td>11</td>-->
+            <!--<td><a href="">查看</a></td>-->
+        <!--</tr>-->
     </table>
 </div>
 
 <script type="text/javascript" src="../lib/jquery.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
+
+        var className = $("#className").val();
+        var companyId = $("#companyId").val();
+        var userId = $("#userId").val();
+
         //页面打开获取列表
         $.ajax({
             method: "GET",
@@ -66,24 +73,32 @@
             }
         }).fail(function(){
             // console.log(error);
-        })
+        });
 
         //输入搜索条件后的列表
         var guid = '';
         $(".submit").on('click',function(){
-            guid = $("#type").val()+'!'+$.trim($("#userId").val());
-            console.log(guid);
+
+            var className = $("#className").val();
+            var companyId = $("#companyId").val();
+            var userId = $("#userId").val();
 
             $.ajax({
-                method: "POST",
-                url:"",
-                data:{guid:guid}
+                method: "get",
+                url:"/utask/"+className+"/"+companyId+"/"+userId,
+                dataType:'json'
             }).done(function(data){
-                if (data.success){
-                    console.log(data);
-                }else{
-                    console.log(error)
+
+                var table = document.getElementById("tb1");
+                var temp = "<table id=\"tb1\"> <tr> <th>flowId</th> <th>guid<\/th> <th>taskname</th> <th>操作</th> </tr>";
+                for (var key in data.tasks)
+                {
+                    temp = temp + "<tr><td>"+data.tasks[key].flowId+"</td>" +
+                    "<td>"+ data.tasks[key].guid +"</td>"+"<td>"+data.tasks[key].taskName+"</td>"+"<td><a href=\"\">查看</a></td></tr>";
                 }
+                temp = temp + "</table>";
+                table.innerHTML = temp
+
             }).fail(function(){
                 // console.log(error);
             })

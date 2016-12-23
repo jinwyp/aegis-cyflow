@@ -3,12 +3,12 @@ package com.yimei.cflow.test
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, FlywayConfig}
-import com.yimei.cflow.core.{FlowRegistry, GraphLoader}
+import com.yimei.cflow.core.{DaemonMaster, FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 
 /**
   * Created by wangqi on 16/12/21.
@@ -22,7 +22,7 @@ object HttpTest extends App with ApplicationConfig with FlywayConfig {
   //FlowRegistry.register(YingGraph.flowType, YingGraph)
   GraphLoader.loadall()
 
-  FlowRegistry.registries("ying").inEdges.foreach(t=>log.info("{}:{}",t._1,t._2.foreach(t=>print(t))))
+  //FlowRegistry.registries("ying").inEdges.foreach(t=>log.info("{}:{}",t._1,t._2.foreach(t=>print(t))))
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)

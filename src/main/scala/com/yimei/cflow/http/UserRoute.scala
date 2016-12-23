@@ -11,10 +11,10 @@ import akka.http.scaladsl.server.Route
 import akka.util.Timeout
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.api.models.user.{State => UserState}
+import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.user.db.{PartyInstanceEntity, PartyInstanceTable, PartyUserEntity, PartyUserTable}
-import com.yimei.cflow.user.{User, UserProtocol}
+import com.yimei.cflow.user.User
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.util.DBUtils._

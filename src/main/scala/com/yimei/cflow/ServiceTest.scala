@@ -4,13 +4,13 @@ import akka.actor.Props
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.FlowRegistry
+import com.yimei.cflow.core.{DaemonMaster, FlowRegistry, GraphLoader}
 import com.yimei.cflow.graph.cang.CangRoute
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http._
-import com.yimei.cflow.integration.{DaemonMaster, ServiceProxy}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.{TestClient, TestUtil}
 
@@ -23,7 +23,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testEc = coreExecutor
 
 
-  FlowRegistry.register(YingGraph.flowType, YingGraph)
+  //FlowRegistry.register(YingGraph.flowType, YingGraph)
+  GraphLoader.loadall()
 
   // daemon master and
   val names = Array(module_auto, module_user, module_flow, module_id, module_group)
@@ -34,14 +35,18 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   Thread.sleep(2000)
 
   // 3> http
-  val routes: Route = FlowRoute.route(proxy) ~
-    UserRoute.route(proxy) ~
-    GroupRoute.route ~
-    TaskRoute.route(proxy) ~
-    AutoRoute.route(proxy) ~
-    ResourceRoute.route(proxy) ~
-    new SwaggerService().route ~
-    corsHandler(new SwaggerDocService(coreSystem).routes)
+  val routes: Route = pathPrefix("api") {
+    AdminRoute.route(proxy) ~
+      UserRoute.route(proxy) ~
+      GroupRoute.route ~
+      TaskRoute.route(proxy) ~
+      AutoRoute.route(proxy) ~
+      new SwaggerService().route ~
+      corsHandler(new SwaggerDocService(coreSystem).routes)
+  } ~
+    ResourceRoute.route(proxy)
+
+
 
   implicit val mysystem = coreSystem // @todo fixme
 

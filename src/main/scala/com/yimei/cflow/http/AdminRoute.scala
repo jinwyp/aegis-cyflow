@@ -8,17 +8,17 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.models.flow.{DataPoint, State => FlowState}
+import com.yimei.cflow.api.models.user.UserProtocol
+import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.api.models.flow.DataPoint
+import com.yimei.cflow.core.FlowRegistry
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.integration.ServiceProxy
-import com.yimei.cflow.user.UserProtocol
 import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
 import com.yimei.cflow.util.DBUtils.dbrun
-import slick.model.Column
 import spray.json.{DefaultJsonProtocol, _}
-import com.yimei.cflow.api.models.flow.{State => FlowState}
+
 import scala.concurrent.Future
 
 case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean)
@@ -113,7 +113,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
       }
       complete(for {
         f <- flow
-        r <- ServiceProxy.flowState(proxy, f.flow_id)
+        r <- ServiceProxy.flowGraph(proxy, f.flow_id)
       } yield {
         r
       })
@@ -243,7 +243,18 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
-  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser
+  /**
+    * 得到任务中的数据节点
+    * @return
+    */
+  def getGraph = get {
+    pathPrefix("graph"/ Segment / Segment) { (graphType,taskName )=>
+      complete(FlowRegistry.registries(graphType).userTasks(taskName))
+    }
+  }
+
+
+  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
 }
 
 
