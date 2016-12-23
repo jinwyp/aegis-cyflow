@@ -22,10 +22,10 @@ case class CommandTaskSubmit(guid: String, taskId: String, points: Map[String, D
 case class CommandShutDown(guid: String) extends Command
 
 // 3. 手机登录成功
-case class CommandMobileCome(guid: String, mobile: ActorRef) extends Command
+//case class CommandMobileCome(guid: String, mobile: ActorRef) extends Command
 
 // 4. 电脑登录
-case class CommandDesktopCome(guid: String, desktop: ActorRef) extends Command
+//case class CommandDesktopCome(guid: String, desktop: ActorRef) extends Command
 
 // 5. 查询用户信息
 case class CommandQueryUser(guid: String) extends Command
@@ -79,5 +79,22 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
   implicit val partyInstanceFormat = jsonFormat5(PartyInstanceEntity)
 
   implicit val flowInstanceEntityFormat = jsonFormat8(FlowInstanceEntity)
+
+  implicit val CommandCreateUserFormat = jsonFormat1(CommandCreateUser)
+
+  implicit val CommandTaskSubmitFormat = jsonFormat3(CommandTaskSubmit)
+
+  implicit val CommandShutDownFormat = jsonFormat1(CommandShutDown)
+
+//  implicit val CommandMobileComeFormat = jsonFormat2(CommandMobileCome)
+
+//  implicit val CommandDesktopComeFormat = jsonFormat2(CommandDesktopCome)
+
+  implicit val CommandQueryUserFormat = jsonFormat1(CommandQueryUser)
+
+  implicit val TaskEnqueueFormat = jsonFormat2(TaskEnqueue)
+
+  implicit val TaskDequeueFormat = jsonFormat1(TaskDequeue)
+
 
 }
