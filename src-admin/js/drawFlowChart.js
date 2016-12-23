@@ -205,36 +205,62 @@
                 })(curEdge, isFinished, isProcessing, i)
             };
 
-            edges.forEach(function(e, ei){
-                var nArr = [e.data.source, e.data.target];
+            edges.forEach(function(edgeItem, ei){
+                //console.log('edge:', edgeItem)
+                var nArr = [edgeItem.data.source, edgeItem.data.target];
 
                 nArr.forEach(function(n, ni){
-                    var c = '';
-                    if(e.classes.indexOf('isFinished')>=0){
-                        c = 'isFinished';
-                    }else if(e.classes.indexOf('isProcessing')>=0){
-                        c = 'isProcessing';
-                        (ni==0)&&(e.data.sourceType=='node')&&(c='isFinished');
+                    var className = '';
+                    if(edgeItem.classes.indexOf('isFinished')>=0){
+                        className = 'isFinished';
+                    }else if(edgeItem.classes.indexOf('isProcessing')>=0){
+                        className = 'isProcessing';
+                        (ni==0)&&(edgeItem.data.sourceType=='node')&&(className='isFinished');
                     }
 
-                    (ni==0)&&(c+=' '+e.data.sourceType);
-                    (ni==1)&&(c+=' '+e.data.endType);
-                    c += ' ' + e.data.taskType;
+                    (ni==0)&&(className+=' '+edgeItem.data.sourceType);
+                    (ni==1)&&(className+=' '+edgeItem.data.endType);
+                    className += ' ' + edgeItem.data.taskType;
 
                     if(node_keys.indexOf(n)<0){
                         node_keys.push(n);
-                        nodes.push({data: {id: n, taskType:e.data.taskType, original: originalData}, classes: c})
+                        var tempNode = {
+                            data: {
+                                id : n,
+                                taskType : edgeItem.data.taskType,
+                                description : '',
+                                program : '',
+                                points : '',
+                                original : originalData
+                            },
+                            classes: className
+                        };
+
+                        if (n.indexOf('V') > -1){
+                            tempNode.data.description = originalData.vertices[n]
+                        }else {
+                            if (originalData.userTasks[n]) {
+                                tempNode.data.description = originalData.userTasks[n].description
+                                tempNode.data.points = originalData.userTasks[n].points
+                            }
+                            if (originalData.autoTasks[n]) {
+                                tempNode.data.description = originalData.autoTasks[n].description
+                                tempNode.data.points = originalData.autoTasks[n].points
+                            }
+                        }
+                        nodes.push(tempNode)
                     }else{
                         var classes = nodes[node_keys.indexOf(n)].classes;
                         if(classes.indexOf('isProcessing')<0){
-                            (c.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
-                            (c.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
+                            (className.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
+                            (className.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
                             nodes[node_keys.indexOf(n)].classes = classes;
                         }
                     }
                 })
             })
 
+            console.log({nodes: nodes, edges: edges})
             return {nodes: nodes, edges: edges};
         }
 
@@ -266,8 +292,9 @@
             minZoom: 0.3, //http://js.cytoscape.org/#core
             maxZoom: 1,
 
-            textureOnViewport : false,
+            textureOnViewport : false
             // pixelRatio : 1.0
+
 
 
         }, self.config);

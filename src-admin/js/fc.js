@@ -7,9 +7,7 @@
     var chartEventCallback= function(cy){
         cy.nodes('.task').qtip({
             content: function(){
-                var data = this.data();
-                var task = data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id];
-                return (task && task.description) || "暂无描述";
+                return this.data().description;
             },
             // show: {
             //     event: 'mouseover'
@@ -99,10 +97,7 @@
 
         cy.nodes('.node').qtip({
             content: function(){
-                var data = this.data();
-                var id = data.id;
-                var vertices = data.original.vertices;
-                return vertices[id] || "暂无描述";
+                return this.data().description;
             },
             // show: {
             //     event: 'mouseover'
@@ -297,8 +292,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                // var url = '../json/data4.json'
+                //var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                 var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })

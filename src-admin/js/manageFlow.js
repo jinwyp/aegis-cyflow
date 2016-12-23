@@ -11,17 +11,33 @@
 
     var chartEventCallback= function(cy){
 
+        cy.nodes('.node').qtip({
+            content: function(){
+                return this.data().description;
+            },
+            show: {
+                event: 'click'
+            },
+            hide: {
+                event: 'unfocus'
+            },
+            position: {
+                my: 'bottom center',
+                at: 'top center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        })
+
         cy.nodes('.task').qtip({
             content: function(){
-                var data = this.data();
-                return data.original.points[data.id];
+                return this.data().description;
             },
-            // show: {
-            //     event: 'mouseover'
-            // },
-            // hide: {
-            //     event: 'mouseout'
-            // },
             position: {
                 my: 'bottom center',
                 at: 'top center'
@@ -36,78 +52,25 @@
         })
 
         cy.nodes('.task').on('click', function(e){
-
+            console.log(1111)
             var data = this.data();
             var points = [];
             data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
                 var val;
-                if(data.original.state.points.hasOwnProperty(p)){
-                    if(data.original.state.points[p].memo){
-                        var memo = data.original.state.points[p].memo;
-                        (memo.indexOf('img:')==0) && (val={'url': memo.substr(4), 'text': '查看图片'});
-                        (memo.indexOf('pdf:')==0) && (val={'url': memo.substr(4), 'text': '查看PDF文件'});
-                    }
-
-                    !val && (val = data.original.state.points[p].value);
-                }else{
-                    val = '未采集';
-                }
                 points.push({'key':p, 'value':val});
             })
+        })
 
-            var data_ptDetail = {'points': points, 'task': {'type': data.taskType}};
-            var ptDetail = ejs.compile($('#tmpl_ptDetail').html())(data_ptDetail);
-            $('#ptDetail>div').html(ptDetail);
-
-            $('.hastip').qtip({
-                content: function(){
-                    return '<span class="pointer"></span><div class="tip-pointtext-contentbg"></div><div class="tip-pointtextcontent"><div class="content">' + $(this).attr('data') + '</div></div>';
-                },
-                position: {
-                    my: 'bottom right',
-                    at: 'top right'
-                },
-                show: {
-                    event: 'click'
-                },
-                hide: {
-                    event: 'unfocus'
-                },
-                style: {
-                    classes: 'qtip-bootstrap tip-pointtext',
-                    tip: {
-                        width: 16,
-                        height: 8
-                    }
-                }
+        cy.nodes('.task').on('click', function(e){
+            console.log(1111)
+            var data = this.data();
+            var points = [];
+            data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
+                var val;
+                points.push({'key':p, 'value':val});
             })
         })
 
-        cy.nodes('.node').qtip({
-            content: function(){
-                var data = this.data();
-                var id = data.id;
-                var vertices = data.original.vertices;
-                return vertices[id];
-            },
-            // show: {
-            //     event: 'mouseover'
-            // },
-            // hide: {
-            //     event: 'mouseout'
-            // },
-            position: {
-                my: 'top center',
-                at: 'bottom center'
-            },
-            style: {
-                classes: 'qtip-bootstrap',
-                tip: {
-                    width: 16,
-                    height: 8
-                }
-            }
-        })
 
     };
 
@@ -147,6 +110,12 @@
 
     function formController (){
         var vm = this;
+
+        vm.currentVertex = {
+            id : '未选择',
+            description : ''
+        };
+
         vm.globalConfig = {
             initial : 'start',  // 代表初始节点
             timeout: 100, // 超时时间配置(图的属性)
