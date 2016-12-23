@@ -1,13 +1,13 @@
-package com.yimei.cflow.api.serialization
+package com.yimei.cflow.api.serialization.json
 
 import akka.serialization.SerializerWithStringManifest
 
 /**
-  * Created by hary on 16/12/19.
+  * Created by hary on 16/12/23.
   */
-class ProtoSerialization extends SerializerWithStringManifest {
+class FlowSerialization extends SerializerWithStringManifest{
 
-  override def identifier: Int = 2001
+  override def identifier: Int = ???
 
   override def fromBinary(bytes: Array[Byte], manifest: String): AnyRef = ???
 

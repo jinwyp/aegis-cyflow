@@ -8,9 +8,12 @@ import spray.json.DefaultJsonProtocol
 trait Command
 
 case class CommandGetId(key: String, buffer: Int = 1) extends Command
+
 case object CommandQueryId extends Command
 
-case class Id(id: Long)  // 返回的id
+case class Id(id: Long)
+
+// 返回的id
 
 // Event
 trait Event
@@ -24,7 +27,7 @@ case class State(keys: Map[String, Long])
 object IdGenerator {
   def props(name: String, persist: Boolean = true) = persist match {
 
-//  import akka.actor.{Actor, ActorLogging}
+    //  import akka.actor.{Actor, ActorLogging}
 
     case true => Props(new PersistentIdGenerator(name))
     case false => Props(new MemoryIdGenerator(name))
@@ -42,7 +45,7 @@ trait AbstractIdGenerator extends Actor with ActorLogging {
   def updateState(event: Event): Long = {
     event match {
       case EventIncrease(key, buffer) =>
-        val nextId = if( state.keys.contains(key)) {
+        val nextId = if (state.keys.contains(key)) {
           state.keys(key) + buffer
         } else {
           0L
