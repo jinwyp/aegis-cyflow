@@ -1,8 +1,17 @@
+body{
+    background:#3c5b78;
+}
+.manage-flow{
+    min-width:1200px;
+}
+
 #chart{
-    width:900px; height:1200px;
+    float: left;
+    width:900px; height:1000px;
 }
 
 #panel-settings {
+    float: right;
     width : 300px;
     height: 1000px;
 

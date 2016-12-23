@@ -297,8 +297,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                // var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                var url = '../json/data4.json'
+                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                // var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -334,7 +334,6 @@
                         'comment': memo || '无'
                     })
                 }
-                console.log(historyPoints)
                 var history = ejs.compile($('#tmpl_historyContainer').html())({'historyPoints': historyPoints});
                 $('#historyContainer').html(history);
             },
