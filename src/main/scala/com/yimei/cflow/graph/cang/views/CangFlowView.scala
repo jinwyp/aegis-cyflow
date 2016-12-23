@@ -39,6 +39,7 @@ object CangFlowView extends DefaultJsonProtocol {
                                  goodsReceiveCompanyName: String,         //货权接收方 - 公司名称
                                  transactionRemarks: String,              //交易内容
                                  createTime: Timestamp)                   //这批货交易时间
+  implicit val customerGoodsDetailFormat = jsonFormat6(CustomerGoodsDetail)
 
   /** 监管员上传合同页面 **/
   case class SupervisorUploadContractPage(businessCode: String,        //业务编号
