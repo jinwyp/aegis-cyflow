@@ -22,7 +22,9 @@ module.exports = {
         publicPath: "/static/admin/js/",
         compress: true,
         port: 8080,  //默认8080
-        proxy: {}
+        proxy: {
+            "/api": "http://192.168.1.118:9000",
+        }
     }
 };
 

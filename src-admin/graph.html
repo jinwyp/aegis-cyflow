@@ -58,8 +58,8 @@
             </li>
             <% }) %>
         </ul>
-        <% if((task.type == 'autoTasks')&&(task.classes['isProcessing'])){ %>
-            <p class='refresh'><span>重新执行</span></p>                    
+        <% if((task.type == 'autoTasks')&&(!task.classes['isProcessing'])){ %>
+            <p class='refresh'><span data='<%= task.id %>' id="refreshBtn">重新执行</span></p>                    
         <% } %>
     </script>
     <script id='tmpl_historyContainer' type='text/template'>
