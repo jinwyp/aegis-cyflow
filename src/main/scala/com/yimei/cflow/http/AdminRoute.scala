@@ -245,6 +245,10 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
+  /**
+    * 得到任务中的数据节点
+    * @return
+    */
   def getGraph = get {
     pathPrefix("graph"/ Segment / Segment) { (graphType,taskName )=>
       complete(FlowRegistry.registries(graphType).userTasks(taskName))

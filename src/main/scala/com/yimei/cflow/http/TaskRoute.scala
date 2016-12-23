@@ -2,6 +2,7 @@ package com.yimei.cflow.http
 
 import java.sql.{SQLIntegrityConstraintViolationException, Timestamp}
 import java.time.Instant
+import java.util.UUID
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -9,6 +10,8 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.api.models.flow.DataPoint
+import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.integration.ServiceProxy
@@ -181,6 +184,64 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
   }
 
 
+  /**
+    * 用户提交任务
+    * @return
+    */
+  def putMapTask = put {
+    pathPrefix("utaskmap" / Segment / Segment / Segment / Segment /Segment /Segment ) { (party,instance_id,user_id,task_id,flowId,taskName) =>
+      entity(as[Map[String,String]]) { data =>
+
+        val entity: UserSubmitEntity = UserSubmitEntity(flowId,taskName,data.map(
+           m=>(m._1-> DataPoint(m._2, None, None, UUID.randomUUID().toString, 0L, false))
+        ))
+        //查询用户所在公司信息
+        val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
+          p.party_class === party         &&
+            p.instance_id === instance_id
+        ).result.head) recover {
+          case _ => throw new DatabaseException("不存在该公司")
+        }
+        //查询用户信息
+        def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
+          dbrun(partyUser.filter(u=>
+            u.user_id=== user_id          &&
+              u.party_id===p.id
+          ).result.head) recover {
+            case _ => throw new DatabaseException("不存在该用户")
+          }
+        }
+
+        val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id===entity.flowId).result.head) recover {
+          case _ => throw new DatabaseException("该流程不存在")
+        }
+
+        //插入数据库
+        def insertTask(s:UserState): Future[FlowTaskEntity] = {
+          dbrun(flowTask returning flowTask.map(_.id) into ((fl,id)=>fl.copy(id=id)) +=
+            FlowTaskEntity(None,entity.flowId,task_id,entity.taskName,entity.points.toJson.toString,s.userType,s.userId,Timestamp.from(Instant.now))
+          ) recover {
+            case a:SQLIntegrityConstraintViolationException => throw new DatabaseException("当前任务已被提交")
+          }
+        }
+
+        //提交任务，并返回当前用户的任务
+        val result: Future[UserState] = for {
+          p <- pi
+          u <- getUser(p)
+          fw <- flow
+          s <- ServiceProxy.userSubmit(proxy,p.party_class+"-"+p.instance_id,u.user_id,task_id,entity.points)
+          f <- insertTask(s)
+        } yield {
+          s
+        }
+        complete(result)
+      }
+
+    }
+  }
+
+
   def getGTask = get {
     pathPrefix("gtask" / Segment / Segment / Segment ) { (party, instance_id, user_id) =>
       (parameter('limit.as[Int])&parameter('offset.as[Int])) { (limit,offset) =>
@@ -307,7 +368,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
 
 
-  def route: Route = getUTaskHistory ~ getUTask  ~ putTask ~ getGTask ~ claimTask ~ autoTask
+  def route: Route = getUTaskHistory ~ getUTask  ~ putTask ~ getGTask ~ claimTask ~ autoTask ~ putMapTask
 }
 
 /**
