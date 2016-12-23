@@ -1,47 +1,11 @@
 package com.yimei.cflow.core
 
 import java.lang.reflect.Method
-import java.util.UUID
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 
 import scala.concurrent.Future
-
-
-
-object FlowGraph {
-
-  case class TaskBuilder(_name: String = "", _acc: Map[String, Array[String]] = Map()) {
-    def task(taskName: String) = this.copy(_name = taskName)
-
-    def points(pointNames: String*) = {
-      val curName = this._name
-      this.copy(_name = "", _acc = this._acc + (curName -> pointNames.toArray))
-
-    }
-
-    def done = this._acc
-  }
-
-  case class DeciderBuilder(_name: String = "", _acc: Map[String, State => Arrow] = Map()) {
-    def decision(name: String) = this.copy(_name = name)
-
-    def is(decider: State => Arrow): DeciderBuilder = {
-      this.copy(_acc = this._acc + (this._name -> decider))
-    }
-
-    def done = this._acc
-  }
-
-  def taskBuilder = TaskBuilder()
-
-  def deciderBuilder = DeciderBuilder()
-
-}
-
 
 /**
   *
@@ -123,7 +87,7 @@ trait FlowGraph {
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(this, state).asInstanceOf[Seq[Arrow]]
       (am.getName -> behavior)
-    }.toMap  ++ Map( "success" -> null, "fail" -> null)
+    }.toMap ++ Map("success" -> null, "fail" -> null)
   }
 
   val moduleJar: AnyRef = this
