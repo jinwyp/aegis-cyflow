@@ -22,6 +22,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
+  migrate
 
   //FlowRegistry.register(YingGraph.flowType, YingGraph)
   GraphLoader.loadall()
