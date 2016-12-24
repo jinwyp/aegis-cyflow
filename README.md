@@ -101,18 +101,18 @@ create group 应该返回ggid
 ##
 
 1.创建class(class_name：pname，description：hahahaha)
-curl -XPOST http://localhost:9000/api/party/pname/hahahaha
+curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/party/pname/hahahaha
 
 2.创建公司（inst）
-curl -XPOST http://localhost:9000/api/inst/pname/1/yimei -d '{"id": 3,"ts_c":"2016-12-24 22:06:03","party_name":"yimei","party_class":"pname","instance_id":"1"}'
+curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst/pname/1/yimei -d '{"id": 3,"ts_c":"2016-12-24 22:06:03","party_name":"yimei","party_class":"pname","instance_id":"1"}'
 
 3.创建3个用户，Id分别为husbandId，wifeId，friendId，
-curl -X POST http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
-curl -X POST http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
-curl -X POST http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
 
 4.创建流程(以husband的身份创建的流程)
-curl -X POST http://localhost:9000/api/flow/user/pname/1/husbandId?flowType=money "{"Wife":"pname-1!wifeId"}"
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/flow/user/pname/1/husbandId?flowType=money "{"Wife":"pname-1!wifeId"}"
 注意:这里初始值为妻子的Id，第一个任务为自动任务，有可能失败（算概率的）,失败以后就自动结束。
 
 
@@ -127,6 +127,4 @@ http://localhost:9000/mng/graph.html?id=money!rz-1!husbandId!4
 1.AssignFriend 要填写friendId --- 在上述步骤下为：pname-1!friendId
 2.UploadReceipt 这里value为任意pdf资源地址 ，memo为pdf
 3.WifeApprove 这里只有wife填写为yes时流程才能顺利结束，否则就是循环最后两个节点。
-
-
 
