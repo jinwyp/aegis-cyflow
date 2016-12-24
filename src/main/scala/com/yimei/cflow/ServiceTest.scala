@@ -41,6 +41,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
       GroupRoute.route ~
       TaskRoute.route(proxy) ~
       AutoRoute.route(proxy) ~
+      PartyRoute.route ~
+      InstRoute.route ~
       new SwaggerService().route ~
       corsHandler(new SwaggerDocService(coreSystem).routes)
   } ~

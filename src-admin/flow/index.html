@@ -103,7 +103,7 @@
                         "&taskId="+key+"&flowId="+data.tasks[key].flowId+"&flowType="+data.tasks[key].flowType;
                     temp = temp + "<tr><td>"+data.tasks[key].flowId+"</td>" +
                     "<td>"+ data.tasks[key].guid +"</td>"+"<td>"+data.tasks[key].taskName+"</td>"+
-                        "<td><a href=\""+url+"\" >查看</a></td></tr>";
+                        "<td><a href=\""+url+"\" target=\"_blank\" >查看</a></td></tr>";
                 }
                 temp = temp + "</table>";
                 table.innerHTML = temp
