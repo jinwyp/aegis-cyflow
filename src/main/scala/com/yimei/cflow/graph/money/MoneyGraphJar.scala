@@ -1,13 +1,11 @@
 package com.yimei.cflow.graph.money
 
 import akka.actor.ActorRef
-import akka.http.scaladsl.server.Route
-import com.yimei.cflow.api.models.flow._
-import com.yimei.cflow.api.models.flow.Arrow
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import akka.http.scaladsl.server.Directives._
-import com.yimei.cflow.api.models.id.Id
+import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.models.flow.{Arrow, _}
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 
 import scala.concurrent.Future
 
@@ -40,12 +38,12 @@ object MoneyGraphJar {
 
   def Divination(cmd: CommandAutoTask): Future[Map[String, String]] = Future {
 
-    val rate: Double = ((new util.Random).nextInt(10))/10.0
+    val rate: Double = ((new util.Random).nextInt(10)) / 10.0
 
     Map("SuccessRate" -> rate.toString)
   }
 
-  def mroute(proxy: ActorRef): Route =  get {
+  def mroute(proxy: ActorRef): Route = get {
     path("kernel") {
       val k = ServiceProxy.idGet(proxy, "hello").map(_.id.toString)
       complete(k)
