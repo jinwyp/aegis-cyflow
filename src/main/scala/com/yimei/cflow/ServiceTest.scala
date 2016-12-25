@@ -51,7 +51,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
 
   val flowRoute = FlowRegistry.registries.map { entry =>
    pathPrefix(entry._1) {
-     entry._2.routes.foldLeft(empty)(|+|)
+     entry._2.routes.map(_(proxy)).foldLeft(empty)(|+|)
    }
   }.foldLeft(empty)(|+|)
 

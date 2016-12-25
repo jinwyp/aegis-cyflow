@@ -3,6 +3,7 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
+import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
@@ -231,13 +232,15 @@ object GraphLoader extends GraphConfigProtocol {
     }.toMap
   }
 
-  def getRoutes(m: Class[_], module: AnyRef): Seq[Route] = {
+  def getRoutes(m: Class[_], module: AnyRef): Seq[ActorRef => Route] = {
     m.getMethods.filter { method =>
       val ptypes = method.getParameterTypes
-      ptypes.length == 0 &&
+        ptypes.length == 1 &&
+        ptypes(0) == classOf[ActorRef] &&
         method.getReturnType == classOf[Route]
     }.map { am =>
-        am.invoke(module).asInstanceOf[Route]
+      (proxy: ActorRef) =>
+        am.invoke(module, proxy).asInstanceOf[Route]
     }.toSeq
   }
 }

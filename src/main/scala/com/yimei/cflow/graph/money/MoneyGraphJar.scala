@@ -1,10 +1,13 @@
 package com.yimei.cflow.graph.money
 
+import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.flow.Arrow
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import akka.http.scaladsl.server.Directives._
+import com.yimei.cflow.api.models.id.Id
+import com.yimei.cflow.api.services.ServiceProxy
 
 import scala.concurrent.Future
 
@@ -42,9 +45,11 @@ object MoneyGraphJar {
     Map("SuccessRate" -> rate.toString)
   }
 
-  def mroute(): Route =  get {
+  def mroute(proxy: ActorRef): Route =  get {
     path("kernel") {
-      complete("kernel is called")
+      val k = ServiceProxy.idGet(proxy, "hello").map(_.id.toString)
+      complete(k)
     }
   }
+
 }

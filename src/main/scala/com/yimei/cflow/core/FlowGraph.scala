@@ -1,5 +1,6 @@
 package com.yimei.cflow.core
 
+import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
@@ -22,7 +23,7 @@ trait FlowGraph {
   val autoTasks: Map[String, TaskInfo]
   val pointEdges: Map[String, String]
 
-  val routes: Seq[Route] = Seq()
+  val routes: Seq[ActorRef => Route] = Seq()
 
   val blueprint: Graph = Graph(edges, vertices, None, points, userTasks, autoTasks)
 
