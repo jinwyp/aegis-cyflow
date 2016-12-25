@@ -47,13 +47,16 @@ case class ProgramCompiler(graphConfig: GraphConfig) {
 
   val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
 
+  val autoPrefix = "import com.yimei.cflow.auto.AutoMaster.CommandAutoTask; import scala.concurrent.Future; import scala.concurrent.ExecutionContext.Implicits.global;"
+  val deciPrefix = "import com.yimei.cflow.api.models.flow._;"
+
   def make() = {
     val d = graphConfig.vertices.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse(entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
+      (entry._1 -> toolbox.compile(toolbox.parse( deciPrefix + entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
     };
 
-    val a  = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse(entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
+    val a = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
+      (entry._1 -> toolbox.compile(toolbox.parse( autoPrefix + entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
     }
     (d, a)
   }
@@ -104,14 +107,13 @@ object GraphLoader extends GraphConfigProtocol {
       .parseJson
       .convertTo[GraphConfig]
 
-    graphConfig = graphConfig.copy(edges = graphConfig.edges ++ Map(
-      "start" -> Edge(name = "start", begin = "God", end = graphConfig.initial),
-      "success" -> Edge(name = "success", end = "success"),
-      "fail" -> Edge(name = "fail", end = "success")
+    // todo need add start success and fail ?
+    graphConfig = graphConfig.copy(edges = graphConfig.edges ++
+      Map("start" -> Edge(name = "start", begin = "God", end = graphConfig.initial),
+        "success" -> Edge(name = "success", end = "success"),
+        "fail" -> Edge(name = "fail", end = "success")
+      )
     )
-    )
-
-    // println(graphConfig.toJson.prettyPrint)
 
     // graphJar class and graphJar object
     val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
@@ -119,19 +121,18 @@ object GraphLoader extends GraphConfigProtocol {
 
     // auto auto actor behavior from graphJar
     // deciders from graphJar  + default decider
-//    val autoMap = getAutoMap(mclass, graphJar)
-//    var allDeciders: Map[String, (State) => Seq[Arrow]] =
-//      graphConfig.vertices
-//        .filter(_._2 != None)
-//        .map { entry =>
-//          (entry._1 -> JudgeFactory(entry._2.program.get).make())
-//        }
-//    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
-
+    //    val autoMap = getAutoMap(mclass, graphJar)
+    //    var allDeciders: Map[String, (State) => Seq[Arrow]] =
+    //      graphConfig.vertices
+    //        .filter(_._2 != None)
+    //        .map { entry =>
+    //          (entry._1 -> JudgeFactory(entry._2.program.get).make())
+    //        }
+    //    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
     // compile our configured program and add code in jar
-    var (allDeciders,  allAutos) = ProgramCompiler(graphConfig).make()
-    allDeciders = allDeciders ++  getDeciders(mclass, graphJar)
+    var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
+    allDeciders = allDeciders ++ getDeciders(mclass, graphJar)
     allAutos = allAutos ++ getAutoMap(mclass, graphJar)
 
     // graph intial vertex
