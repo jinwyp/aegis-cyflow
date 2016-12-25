@@ -3,7 +3,7 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
-import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
+import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.money.MoneyGraphJar
@@ -18,10 +18,12 @@ case class JudgeFactory(content: String) {
 
   import reflect.runtime.currentMirror
   import tools.reflect.ToolBox
+
   val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
 
   val tree = toolbox.parse(content)
   val compiledCode = toolbox.compile(tree)
+
   def make() = compiledCode().asInstanceOf[State => Seq[Arrow]]
 }
 
@@ -29,18 +31,38 @@ case class AutoFactory(content: String) {
 
   import reflect.runtime.currentMirror
   import tools.reflect.ToolBox
+
   val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
 
   val tree = toolbox.parse(content)
   val compiledCode = toolbox.compile(tree)
+
   def make() = compiledCode().asInstanceOf[CommandAutoTask => Future[Map[String, String]]]
+}
+
+case class ProgramCompiler(graphConfig: GraphConfig) {
+
+  import reflect.runtime.currentMirror
+  import tools.reflect.ToolBox
+
+  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
+
+  def make() = {
+    val d = graphConfig.vertices.filter(_._2.program != None).map { entry =>
+      (entry._1 -> toolbox.compile(toolbox.parse(entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
+    };
+
+    val a  = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
+      (entry._1 -> toolbox.compile(toolbox.parse(entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
+    }
+    (d, a)
+  }
 }
 
 /**
   * Created by hary on 16/12/17.
   */
 object GraphLoader extends GraphConfigProtocol {
-
 
 
   def loadall() =
@@ -51,27 +73,19 @@ object GraphLoader extends GraphConfigProtocol {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-
     flowType match {
-      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "ying" => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case _       => val jars: Array[String] = (new File("flows/" + flowType))
+      case _ => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
         new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
     }
+  }
 
+  def loadGraphConfigFromJar() = {
 
-//    if (flowType != "ying" ) {
-//      val jars: Array[String] = (new File("flows/" + flowType))
-//        .listFiles()
-//        .filter(_.isFile())
-//        .map(_.getPath)
-//      new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-//    } else if(flowType == "ying") {
-//      YingGraphJar.getClass.getClassLoader
-//    }
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
@@ -104,14 +118,21 @@ object GraphLoader extends GraphConfigProtocol {
     val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
-    val autoMap = getAutoMap(mclass, graphJar)
-
     // deciders from graphJar  + default decider
-    var allDeciders: Map[String, (State) => Seq[Arrow]] = graphConfig.vertices.filter(_._2 != None).map{ entry =>
-      (entry._1 -> JudgeFactory(entry._2.program.get).make())
-    }
+//    val autoMap = getAutoMap(mclass, graphJar)
+//    var allDeciders: Map[String, (State) => Seq[Arrow]] =
+//      graphConfig.vertices
+//        .filter(_._2 != None)
+//        .map { entry =>
+//          (entry._1 -> JudgeFactory(entry._2.program.get).make())
+//        }
+//    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
-    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
+
+    // compile our configured program and add code in jar
+    var (allDeciders,  allAutos) = ProgramCompiler(graphConfig).make()
+    allDeciders = allDeciders ++  getDeciders(mclass, graphJar)
+    allAutos = allAutos ++ getAutoMap(mclass, graphJar)
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -168,7 +189,7 @@ object GraphLoader extends GraphConfigProtocol {
 
       override val pointEdges = pointEdgesImpl
 
-      override val autoMethods: Map[String, CommandAutoTask => Future[Map[String, String]]] = autoMap
+      override val autoMethods: Map[String, CommandAutoTask => Future[Map[String, String]]] = allAutos
 
       override val deciders: Map[String, State => Seq[Arrow]] = allDeciders
 
