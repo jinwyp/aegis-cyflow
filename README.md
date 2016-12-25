@@ -108,11 +108,11 @@ curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst/
 
 3.创建3个用户，Id分别为husbandId，wifeId，friendId，
 curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
-curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
-curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/husbandId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/wifeId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/pname/1/friendId -d '{"password":"123456","phone":"1310000001","email":"wangqi@123.com","name":"wang"}'
 
 4.创建流程(以husband的身份创建的流程)
-curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/flow/user/pname/1/husbandId?flowType=money "{"Wife":"pname-1!wifeId"}"
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/flow/user/pname/1/husbandId?flowType=money -d '{"Wife":"pname-1!wifeId"}'
 注意:这里初始值为妻子的Id，第一个任务为自动任务，有可能失败（算概率的）,失败以后就自动结束。
 
 
