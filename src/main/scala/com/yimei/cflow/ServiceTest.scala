@@ -36,7 +36,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   Thread.sleep(2000);
 
   // 3> http
-  val routes: Route = pathPrefix("api") {
+  val base: Route = pathPrefix("api") {
     AdminRoute.route(proxy) ~
       UserRoute.route(proxy) ~
       GroupRoute.route ~
@@ -49,12 +49,18 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
   } ~
     ResourceRoute.route(proxy)
 
-
+  var all: Route = base;
+  for {
+    rs <- FlowRegistry.registries.values.map(_.routes)
+    r <- rs
+  } {
+    all = all ~ r
+  }
 
   implicit val mysystem = coreSystem // @todo fixme
 
   println(s"http is listening on ${coreConfig.getInt("http.port")}")
-  Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
+  Http().bindAndHandle(all, "0.0.0.0", coreConfig.getInt("http.port"))
 
 }
 

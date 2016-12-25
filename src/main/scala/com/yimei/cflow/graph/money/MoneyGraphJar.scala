@@ -1,8 +1,10 @@
 package com.yimei.cflow.graph.money
 
+import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.flow.Arrow
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import akka.http.scaladsl.server.Directives._
 
 import scala.concurrent.Future
 
@@ -40,4 +42,9 @@ object MoneyGraphJar {
     Map("SuccessRate" -> rate.toString)
   }
 
+  def mroute(): Route =  get {
+    path("kernel") {
+      complete("kernel is called")
+    }
+  }
 }

@@ -3,6 +3,7 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
+import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
@@ -138,6 +139,8 @@ object GraphLoader extends GraphConfigProtocol {
     // graph intial vertex
     val initial = graphConfig.initial
 
+    val jarRoutes = getRoutes(mclass, graphJar)
+
     // 返回流程
     val g = new FlowGraph {
 
@@ -195,6 +198,8 @@ object GraphLoader extends GraphConfigProtocol {
       override val deciders: Map[String, State => Seq[Arrow]] = allDeciders
 
       override val moduleJar: AnyRef = graphJar
+
+      override val routes = jarRoutes
     }
 
     g
@@ -226,4 +231,13 @@ object GraphLoader extends GraphConfigProtocol {
     }.toMap
   }
 
+  def getRoutes(m: Class[_], module: AnyRef): Seq[Route] = {
+    m.getMethods.filter { method =>
+      val ptypes = method.getParameterTypes
+      ptypes.length == 0 &&
+        method.getReturnType == classOf[Route]
+    }.map { am =>
+        am.invoke(module).asInstanceOf[Route]
+    }.toSeq
+  }
 }
