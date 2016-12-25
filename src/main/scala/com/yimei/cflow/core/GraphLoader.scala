@@ -104,7 +104,7 @@ object GraphLoader extends GraphConfigProtocol {
     val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
-    val autoMap = getAutoMap(mclass)
+    val autoMap = getAutoMap(mclass, graphJar)
 
     // deciders from graphJar  + default decider
     var allDeciders: Map[String, (State) => Seq[Arrow]] = graphConfig.vertices.filter(_._2 != None).map{ entry =>
@@ -168,7 +168,7 @@ object GraphLoader extends GraphConfigProtocol {
 
       override val pointEdges = pointEdgesImpl
 
-      override val autoMethods: Map[String, Method] = autoMap
+      override val autoMethods: Map[String, CommandAutoTask => Future[Map[String, String]]] = autoMap
 
       override val deciders: Map[String, State => Seq[Arrow]] = allDeciders
 
@@ -178,14 +178,16 @@ object GraphLoader extends GraphConfigProtocol {
     g
   }
 
-  def getAutoMap(m: Class[_]) = {
+  def getAutoMap(m: Class[_], module: AnyRef) = {
     m.getMethods.filter { method =>
       val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
         method.getReturnType == classOf[Future[Map[String, String]]]
     }.map { am =>
-      (am.getName -> am)
+      val behavior: CommandAutoTask => Future[Map[String, String]] =
+        task => am.invoke(module, task).asInstanceOf[Future[Map[String, String]]]
+      (am.getName -> behavior)
     }.toMap
   }
 

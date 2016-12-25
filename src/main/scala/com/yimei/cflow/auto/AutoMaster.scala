@@ -65,16 +65,14 @@ class AutoMaster(dependOn: Array[String]) extends ModuleMaster(module_auto, depe
       val graph = e._2
       val jar = graph.moduleJar
 
-      for (( name: String, method: Method) <- graph.autoMethods) {
-        val behavior : CommandAutoTask => Future[Map[String, String]]  =
-          task => method.invoke(jar,task).asInstanceOf[Future[Map[String,String]]]
+      for ( be <- graph.autoMethods) {
 
-        val actor = context.actorOf(Props(new AutoActor(name, modules, behavior)), s"${flowType}.${name}")
+        val actor = context.actorOf(Props(new AutoActor(be._1, modules, be._2)), s"${flowType}.${be._1}")
         if (actors.contains(flowType)) {
-          val entry = actors(flowType) + (name -> actor)
+          val entry = actors(flowType) + ( be._1 -> actor)
           actors = actors + (flowType -> entry)
         } else {
-          actors = actors + (flowType -> Map(name -> actor))
+          actors = actors + (flowType -> Map(be._1 -> actor))
         }
        }
     }
