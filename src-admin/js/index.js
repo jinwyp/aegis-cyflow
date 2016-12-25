@@ -64,7 +64,7 @@
     // new PAGE().init();
 
     $(".btn-submit").click(function(){
-        alert(111);
+        //alert(111);
         var company_type = $("#input-company-type").val();
         var company_id = $("#input-company-id").val();
         var userId = $("#input-user-id").val();
@@ -82,20 +82,67 @@
        //     "userId".?, "status".as[Int].?, "limit".as[Int].?, "offset".as[Int].?)).as(FlowQuery) { fq =>
 
         var temp = "";
-        if(!company_type.isEmpty()){
-            temp = temp +""
+        if(!(flowId==null || flowId=="")){
+            temp = temp +"flowId="+flowId+"&"
+        }
+        if(!(flowType==null || flowType=="")){
+            temp = temp +"flowType="+flowType+"&"
+        }
+        if(!(company_type==null || company_type==""||company_id==null || company_id=="")){
+            temp = temp +"userType="+company_type+"!"+company_id+"&"
+        }
+        if(!(userId==null || userId=="")){
+            temp = temp +"userId="+userId+"&"
+        }
+        if(!(flowState==null || flowState=="")){
+            temp = temp +"status="+flowState+"&"
+        }
+
+        var url = "";
+
+        if(temp != ""){
+            url = "/api/flow?"+temp.substring(0,temp.length-1)
+        } else {
+            url = "/api/flow"
         }
 
 
+
             $.ajax({
-            url: '/test',
-            data: {
-                userId: userId,
-                userType: userType,
-                flowId: flowId,
-                flowType: flowType,
-            }
-        });
+                method: "get",
+                url: url
+
+            // data: {
+            //     userId: userId,
+            //     userType: userType,
+            //     flowId: flowId,
+            //     flowType: flowType,
+            // }
+        }).done(function (data) {
+                console.dir(data);
+                var table = document.getElementById("mytab");
+                // <!--<tr>-->
+                // <!--<td><%= item.userId || '&#45;&#45;'%></td>-->
+                // <!--<td><%= item.userId || '&#45;&#45;'%></td>-->
+                // <!--<td><%= item.userType | '&#45;&#45;' %></td>-->
+                // <!--<td><%= item.flowId || '&#45;&#45;'%></td>-->
+                // <!--<td><%= item.flowType || '&#45;&#45;'%></td>-->
+                // <!--<td><%= item.status || '&#45;&#45;'%></td>-->
+                //     <!--</tr>-->
+                var temp = "<tr>";
+                for (var key in data.flows)         //这要改
+                {   temp += "<td>" +data.flows[key].user_type.split("-")[0] + "</td>";
+                    temp += "<td>" +data.flows[key].user_type.split("-")[1] + "</td>";
+                    temp += "<td>" +data.flows[key].user_id + "</td>";
+                    temp += "<td>" +data.flows[key].flow_id + "</td>";
+                    temp += "<td>" +data.flows[key].flow_type + "</td>";
+                    temp += "<td>" +data.flows[key].finished + "</td>";
+                    temp += "<td><a  target=\"_blank\" href='/mng/graph.html?id=" +data.flows[key].flow_id + "'>查看</a></td></tr>";
+                }
+
+                table.innerHTML += temp
+
+            });
     });
 
     $("#input-user-type").focus(function () {

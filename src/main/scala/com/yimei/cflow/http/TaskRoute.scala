@@ -182,7 +182,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
       entity(as[Map[String,UserSubmitMap]]) { data =>
 
         val entity: UserSubmitEntity = UserSubmitEntity(flowId,taskName,data.map(
-           m=>(m._1-> DataPoint(m._2.value, m._2.memo, None, UUID.randomUUID().toString, 0L, false))
+           m=>(m._1-> DataPoint(m._2.value, m._2.memo, None, UUID.randomUUID().toString, Timestamp.from(Instant.now()).getTime(), false))
         ))
         //查询用户所在公司信息
         val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
