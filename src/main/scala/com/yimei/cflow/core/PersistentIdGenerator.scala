@@ -39,7 +39,7 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
 
   def serving: Receive = {
     case CommandGetId(key, buffer) =>
-      persistAsync(EventIncrease(key, buffer)) { event =>
+      persist(EventIncrease(key, buffer)) { event =>
 
         val old = updateState(event)
         log.info(s"event $event persisted")
