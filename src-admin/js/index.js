@@ -37,7 +37,7 @@
                         console.log('------callback------' + currentPage);
                         getData();
                         var history = ejs.compile($('#tmpl_table').html())(dataList);
-                        console.log(history);
+                        // console.log(history);
                         $('#table-list').html(history);
                     }
                 });
@@ -169,5 +169,9 @@
     $(".status-ul li").mousedown(function () {
         $("#input-status").val($(this).text());
     });
+
+    ejs.locals.split = function (name, tag) {
+        return name.split(tag)
+    }
 
 })(window, jQuery, ejs)
