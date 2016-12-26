@@ -13,4 +13,6 @@ object Config {
 
   val rzf = "rzf"
   val flowType = "cang"
+  val zjfUserId = "zjf-88888888!77777"
+  val zjfFinanceId = "zjf-88888888!88888"
 }
