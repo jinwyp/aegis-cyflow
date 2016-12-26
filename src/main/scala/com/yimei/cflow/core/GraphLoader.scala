@@ -8,6 +8,7 @@ import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.graph.cang.CangGraphJar
 import com.yimei.cflow.graph.money.MoneyGraphJar
 import com.yimei.cflow.graph.ying.YingGraphJar
 
@@ -79,8 +80,9 @@ object GraphLoader extends GraphConfigProtocol {
 
   def getClassLoader(flowType: String) = {
     flowType match {
-      case "ying" => YingGraphJar.getClass.getClassLoader
+      case "ying"  => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
+      case "cang"  => CangGraphJar.getClass.getClassLoader
       case _ => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
@@ -97,9 +99,10 @@ object GraphLoader extends GraphConfigProtocol {
     import spray.json._
 
     val jsonFile = gFlowType match {
-      case "ying" => "ying.json"
+      case "ying"  => "ying.json"
       case "money" => "money.json"
-      case _ => "flow.json"
+      case "cang"  => "cang.json"
+      case _       => "flow.json"
     }
 
     val classLoader = getClassLoader(gFlowType)
