@@ -89,7 +89,7 @@
             temp = temp +"flowType="+flowType+"&"
         }
         if(!(company_type==null || company_type==""||company_id==null || company_id=="")){
-            temp = temp +"userType="+company_type+"!"+company_id+"&"
+            temp = temp +"userType="+company_type+"-"+company_id+"&"
         }
         if(!(userId==null || userId=="")){
             temp = temp +"userId="+userId+"&"
