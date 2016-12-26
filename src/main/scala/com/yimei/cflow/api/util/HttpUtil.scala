@@ -2,21 +2,18 @@ package com.yimei.cflow.api.util
 
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpHeader, HttpMethods, HttpRequest}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, _}
 import akka.util.ByteString
-import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.graph.cang.config.Config.url
+import com.yimei.cflow.config.{ApplicationConfig, CoreConfig}
 import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import HttpMethods._
-import akka.http.scaladsl.model._
 
 /**
   * Created by wangqi on 16/12/26.
   */
-object HttpUtil extends CoreConfig{
+object HttpUtil extends CoreConfig with ApplicationConfig{
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
   //发送报文,并取得回复
@@ -40,9 +37,7 @@ object HttpUtil extends CoreConfig{
     }
 
     log.info("request url: {},entity: {}",fullUrl,bodyEntity.getOrElse("Empty"))
-    import HttpProtocols._
     import MediaTypes._
-    import HttpCharsets._
 
 
   //  val contentType = headers.`Content-Type`.apply(ContentType(`application/json`))
