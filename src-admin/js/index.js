@@ -38,7 +38,7 @@
                         currentPage = pagination.pageNumber;
                         console.log('------callback------' + currentPage);
                         getData();
-                        var history = ejs.compile($('#tmpl_table').html())(dataList);
+                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
 
                         // formatData(dataTest[0]);
                         // var history = ejs.compile($('#tmpl_table').html())(dataTest[0]);
