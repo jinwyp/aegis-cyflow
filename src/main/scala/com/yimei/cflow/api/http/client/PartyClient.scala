@@ -2,6 +2,7 @@ package com.yimei.cflow.api.http.client
 
 import scala.concurrent.Future
 import com.yimei.cflow.api.util.HttpUtil._
+import akka.event.{Logging, LoggingAdapter}
 
 /**
   * Created by hary on 16/12/23.

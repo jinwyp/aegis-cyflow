@@ -16,7 +16,7 @@ import com.yimei.cflow.graph.cang.services.LoginService._
   */
 class CangUserRoute {
   def financeSideEnterRoute: Route = get {
-    pathPrefix("cang/user" / Segment / Segment / Segment) { (pc, ii, pn) =>
+    pathPrefix("user" / Segment / Segment / Segment) { (pc, ii, pn) =>
       complete(financeSideEnter(pc, ii, pn))
     }
   }
@@ -25,6 +25,6 @@ class CangUserRoute {
 }
 
 object CangUserRoute {
-  def apply() = new CangFlowRoute
-  def route(): Route = CangFlowRoute().route
+  def apply() = new CangUserRoute
+  def route(): Route = CangUserRoute().route
 }

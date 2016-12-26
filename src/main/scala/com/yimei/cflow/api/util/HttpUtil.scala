@@ -4,8 +4,7 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.util.ByteString
-import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.graph.cang.config.Config.url
+import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
@@ -14,7 +13,7 @@ import scala.concurrent.duration._
 /**
   * Created by wangqi on 16/12/26.
   */
-object HttpUtil extends CoreConfig{
+object HttpUtil extends Config {
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
   //发送报文,并取得回复
