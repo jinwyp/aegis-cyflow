@@ -35,7 +35,7 @@ class UserMaster(dependOn: Array[String])
   override def serving: Receive = {
 
     case cmd@CommandCreateUser(guid) =>
-      log.info(s"UserMaster 收到消息${cmd}")
+      log.debug(s"UserMaster 收到消息${cmd}")
       val child = context.child(guid).fold(create(guid))(identity)
       child forward CommandQueryUser(guid)
 
@@ -61,11 +61,11 @@ class UserMaster(dependOn: Array[String])
 
     val prop = context.system.settings.config.getBoolean("flow.user.persistent") match {
       case true  =>  {
-        log.info(s"创建persistent user")
+        log.debug(s"创建persistent user")
         Props(new PersistentUser(guid, modules, 20))
       }
       case false => {
-        log.info(s"创建non-persistent user")
+        log.debug(s"创建non-persistent user")
         Props(new MemoryUser(guid, modules))
       }
     }

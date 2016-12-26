@@ -20,16 +20,16 @@
     "PG2" : "partition group1 采集数据点2"
   },
   "vertices": {
-    "V0": { "description":"判断0","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"},
-    "V1": { "description":"判断0","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V2\", Some(\"E2\")))"},
-    "V2": { "description":"判断0","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V3\", Some(\"E3\")))"}
+    "V0": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"},
+    "V1": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V2\", Some(\"E2\")))"},
+    "V2": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V3\", Some(\"E3\")))"}
   },
   "autoTasks": {
     "A" :{"description": "描述",   "points": ["A"]},
     "B" :{"description": "描述",   "points": ["B"]},
     "C" :{"description": "描述",   "points": ["C"]},
     "DEF" :{"description": "描述", "points": ["D", "E", "F"]},
-    "K" :{"description": "描述",   "points": ["A"], "program": "import com.yimei.cflow.auto.AutoMaster.CommandAutoTask; import scala.concurrent.Future; import scala.concurrent.ExecutionContext.Implicits.global; (cmd: CommandAutoTask) => Future { Map(\"K\" -> \"50\") }"}
+    "K" :{"description": "描述",   "points": ["A"], "program": "(cmd: CommandAutoTask) => Future { Map(\"K\" -> \"50\") }"}
   },
   "userTasks": {
     "UA": {"description": "描述", "points": ["UA1", "UA2"]},

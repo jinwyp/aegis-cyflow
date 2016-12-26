@@ -195,7 +195,7 @@ case class Edge(
                  begin: String = "God"
                ) extends EdgeBehavior
 
-case class TaskInfo(description: String, points: Seq[String])
+case class TaskInfo(description: String, points: Seq[String], program: Option[String] = None)
 
 case class Graph(
                   edges: Map[String, Edge],
@@ -236,8 +236,36 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val stateFormat = jsonFormat7(State)
 
-  implicit val taskInfoFormat = jsonFormat2(TaskInfo)
+  implicit val taskInfoFormat = jsonFormat3(TaskInfo)
 
   implicit val graphFormat = jsonFormat6(Graph)
+
+  implicit val commandCreateFlowFormat = jsonFormat3(CommandCreateFlow)
+
+  implicit val createFlowSuccessFormat = jsonFormat1(CreateFlowSuccess)
+
+  implicit val commandRunFlowFormat = jsonFormat1(CommandRunFlow)
+
+  implicit val commandShutdownFormat = jsonFormat1(CommandShutdown)
+
+  implicit val commandPointFormat = jsonFormat3(CommandPoint)
+
+  implicit val commandPointsFormat = jsonFormat2(CommandPoints)
+
+  implicit val commandFlowGraphFormat = jsonFormat1(CommandFlowGraph)
+
+  implicit val commandFlowStateFormat = jsonFormat1(CommandFlowState)
+
+  implicit val commandUpdatePointsFormat = jsonFormat3(CommandUpdatePoints)
+
+  implicit val pointUpdatedFormat = jsonFormat2(PointUpdated)
+
+  implicit val pointsUpdatedFormat = jsonFormat1(PointsUpdated)
+
+  implicit val EdgeCompletedFormat = jsonFormat1(EdgeCompleted)
+
+  implicit val DecisionUpdatedFormat = jsonFormat2(DecisionUpdated)
+
+  implicit val HijackedFormat = jsonFormat2(Hijacked)
 
 }

@@ -12,12 +12,6 @@ import com.yimei.cflow.user.UserMaster
 // 模块注册于协商
 object DaemonMaster {
 
-  case class RegisterModule(name: String, actor: ActorRef)
-
-  case class GiveMeModule(name: String)
-
-  case class UnderIdentify()
-
   /**
     * 采用持久化流程还是非持久化流程
     *
@@ -45,6 +39,7 @@ object DaemonMaster {
 class DaemonMaster(names: Array[String]) extends Actor with ActorLogging {
 
   import DaemonMaster._
+  import com.yimei.cflow.api.services.ModuleMaster._
 
   val idPersistent = context.system.settings.config.getBoolean("flow.id.persistent")
 

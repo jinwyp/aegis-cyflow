@@ -8,6 +8,7 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.http.models.AdminModel._
 import com.yimei.cflow.api.models.flow.{DataPoint, State => FlowState}
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.services.ServiceProxy
@@ -21,23 +22,6 @@ import spray.json.{DefaultJsonProtocol, _}
 
 import scala.concurrent.Future
 
-case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean)
-
-case class AllTasks(finishedTask: Seq[FlowInstanceEntity], processTask: Seq[FlowInstanceEntity], total: Int)
-
-case class FlowQuery(flowId: Option[String], flowType: Option[String], userType: Option[String], userId: Option[String], status: Option[Int], limit: Option[Int], offset: Option[Int])
-
-case class FlowQueryResponse(flows: Seq[FlowInstanceEntity], total: Int)
-
-case class FlowQueryByUserEntity(flowType: Option[String], status: Option[Int], limit: Option[Int], offset: Option[Int])
-
-trait AdminProtocol extends DefaultJsonProtocol with UserProtocol {
-  implicit val hijackEntityFormat = jsonFormat3(HijackEntity)
-  implicit val allTaskFormat = jsonFormat3(AllTasks)
-  implicit val flowQuery = jsonFormat7(FlowQuery)
-  implicit val flowQueryResponseFormat = jsonFormat2(FlowQueryResponse)
-  implicit val flowQueryByUserEntityFormat = jsonFormat4(FlowQueryByUserEntity)
-}
 
 /**
   * Created by wangqi on 16/12/20.

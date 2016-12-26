@@ -8,19 +8,19 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
+import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
+import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
+import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.api.models.flow.DataPoint
-import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.user.db._
-import com.yimei.cflow.user.User
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.api.http.models.TaskModel._
 
 import scala.concurrent.Future
 
@@ -29,18 +29,7 @@ import scala.concurrent.Future
   */
 //用户提交任务数据
 //case class UserPoint(value:String,memo:Option[String],operator:Option[String])
-case class UserSubmitEntity(flowId:String,taskName:String,points:Map[String,DataPoint])
 
-case class GroupTaskResult(tasks:Seq[GroupState],total:Int)
-
-
-trait TaskProtocol extends DefaultJsonProtocol with UserProtocol with GroupProtocol{
-
-  //implicit val userTaskEntityFormat = jsonFormat3(DataPoint)
-  implicit val userSubmintEntity = jsonFormat3(UserSubmitEntity)
-  implicit val groupTaskFromat = jsonFormat2(GroupTaskResult)
-
-}
 
 class TaskRoute(proxy: ActorRef) extends UserProtocol
   with FlowProtocol
@@ -190,10 +179,10 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
     */
   def putMapTask = put {
     pathPrefix("utaskmap" / Segment / Segment / Segment / Segment /Segment /Segment ) { (party,instance_id,user_id,task_id,flowId,taskName) =>
-      entity(as[Map[String,String]]) { data =>
+      entity(as[Map[String,UserSubmitMap]]) { data =>
 
         val entity: UserSubmitEntity = UserSubmitEntity(flowId,taskName,data.map(
-           m=>(m._1-> DataPoint(m._2, None, None, UUID.randomUUID().toString, 0L, false))
+           m=>(m._1-> DataPoint(m._2.value, m._2.memo, None, UUID.randomUUID().toString, Timestamp.from(Instant.now()).getTime(), false))
         ))
         //查询用户所在公司信息
         val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
