@@ -170,8 +170,8 @@
         $("#input-status").val($(this).text());
     });
 
-    ejs.locals.split = function (name, tag) {
-        return name.split(tag)
+    ejs.locals.split = function (name, tag, index) {
+        return name.split(tag)[index];
     }
 
 })(window, jQuery, ejs)
