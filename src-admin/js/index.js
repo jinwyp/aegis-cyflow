@@ -9,6 +9,8 @@
     var currentPage=1;
     var container = $("#panel-pagination");
 
+    var newDataList = {'flows' : []};
+
     var dataTest;
     $.getJSON('./json/dataList.json', function(res){
         dataTest = res.dataList;
@@ -36,8 +38,10 @@
                         currentPage = pagination.pageNumber;
                         console.log('------callback------' + currentPage);
                         getData();
-                        var history = ejs.compile($('#tmpl_table').html())(dataList);
-                        // console.log(history);
+                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
+
+                        // formatData(dataTest[0]);
+                        // var history = ejs.compile($('#tmpl_table').html())(dataTest[0]);
                         $('#table-list').html(history);
                     }
                 });
@@ -46,6 +50,15 @@
                 console.log('------tmplRender------');
             }
         }
+    }
+
+    function formatData (data) {
+        newDataList.flows = newDataList.flows.splice(0, newDataList.length);
+        data.flows.forEach(function (item, i) {
+            item.company_type = item.user_type.split('-')[0];
+            item.company_id = item.user_type.split('-')[1];
+            newDataList.flows.push(item);
+        });
     }
 
     window.PAGE = PAGE;
@@ -88,21 +101,8 @@
             method: "get",
             url: url
         }).done(function (data) {
-            console.dir(data);
-            dataList = data;
-            // var table = document.getElementById("mytab");
-            // var temp = "<tr>";
-            // for (var key in data.flows) {
-            //     temp += "<td>" +data.flows[key].user_type.split("-")[0] + "</td>";
-            //     temp += "<td>" +data.flows[key].user_type.split("-")[1] + "</td>";
-            //     temp += "<td>" +data.flows[key].user_id + "</td>";
-            //     temp += "<td>" +data.flows[key].flow_id + "</td>";
-            //     temp += "<td>" +data.flows[key].flow_type + "</td>";
-            //     temp += "<td>" +data.flows[key].finished + "</td>";
-            //     temp += "<td><a  target=\"_blank\" href='/mng/graph.html?id=" +data.flows[key].flow_id + "'>查看</a></td></tr>";
-            // }
-            //
-            // table.innerHTML += temp
+            formatData(data);
+            // console.dir(data);
         });
     }
 
@@ -169,9 +169,5 @@
     $(".status-ul li").mousedown(function () {
         $("#input-status").val($(this).text());
     });
-
-    ejs.locals.split = function (name, tag, index) {
-        return name.split(tag)[index];
-    }
 
 })(window, jQuery, ejs)
