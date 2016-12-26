@@ -85,16 +85,25 @@
 
             $.ajax({
                 method: "get",
-                url:"/utask/"+className+"/"+companyId+"/"+userId,
+                url:"/api/utask/"+className+"/"+companyId+"/"+userId,
                 dataType:'json'
             }).done(function(data){
+
+
+//                var className = $("#className").val();
+//                var companyId = $("#companyId").val();
+//                var userId = $("#userId").val();
 
                 var table = document.getElementById("tb1");
                 var temp = "<table id=\"tb1\"> <tr> <th>flowId</th> <th>guid<\/th> <th>taskname</th> <th>操作</th> </tr>";
                 for (var key in data.tasks)
                 {
+                    var url = "/mng/flow/detail.html?className="+className+"&companyId="+
+                        companyId+"&userId="+userId+"&taskName="+data.tasks[key].taskName +
+                        "&taskId="+key+"&flowId="+data.tasks[key].flowId+"&flowType="+data.tasks[key].flowType;
                     temp = temp + "<tr><td>"+data.tasks[key].flowId+"</td>" +
-                    "<td>"+ data.tasks[key].guid +"</td>"+"<td>"+data.tasks[key].taskName+"</td>"+"<td><a href=\"\">查看</a></td></tr>";
+                    "<td>"+ data.tasks[key].guid +"</td>"+"<td>"+data.tasks[key].taskName+"</td>"+
+                        "<td><a href=\""+url+"\" target=\"_blank\" >查看</a></td></tr>";
                 }
                 temp = temp + "</table>";
                 table.innerHTML = temp

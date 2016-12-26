@@ -27,7 +27,7 @@
         <div class="description">
             description:&nbsp;&nbsp;<span class="desC">暂无</span>
         </div>
-        <table class="table">
+        <table class="table" id="tb1">
             <tr>
                 <td><span>key</span></td>
                 <td><input type="text" placeholder="value" /></td>
@@ -52,50 +52,88 @@
             r = null;
             return context == null || context == "" || context == "undefined" ? "" : context;
         }
+       // className=rz&
+        // companyId=1&
+        // userId=husbandId&
+        // taskName=FillInApplyMessage&
+        // taskId=e51bb4d8-060b-47dd-9069-82c92aa8b296&
+        // flowId=money!rz-1!husbandId!4
+        //flowType=money
 
-        var userType = GetQueryString("userType");
+        var className = GetQueryString("className");
         var companyId = GetQueryString("companyId");
         var userId = GetQueryString("userId");
         var taskName = GetQueryString("taskName");
+        var taskId = GetQueryString("taskId");
         var flowId = GetQueryString("flowId");
-        var ying = GetQueryString("ying");
+        var flowType = GetQueryString("flowType");
+
+
+
 
         var points = [];
         var inputs = [];
-        var newArr = [];
+        var newArr = {};
+        //var temp = [];
+        var index = 0;
+
+        ///api/graph/money/FillInApplyMessage
 
         $.ajax({
             method: "GET",
-            url:"?userType="+userType+"&companyId="+companyId+"&userId"+userId+"&taskName="+taskName+ying,
+            url:"/api/graph/"+flowType+"/"+taskName,
             dataType:'json'
         }).done(function(data){
             $(".desC").html(data.description);
 
             points =data.points;
 
-            var table = $(".table");
-            var temp = "<table class=\"table\">";
+//            {
+//                "RepaymentTime": {
+//                "value": "2017/01/01"
+//            },
+//                "UnequalTreaty":{
+//                "value":"han...!!!!."
+//            }
+//            }
+
+            var table = document.getElementById("tb1");
+            var temp = "<tr><td><span>数据点</span></td>" +
+                "<td><span>数据</span></td>" +
+                "<td><span>memo</span></td></tr>";
             for (var key in data.points)         //这要改
-            {
-                temp = temp + "<tr><td><span>"+data.points[key]+"</span></td>" +
-                        "<td><input type=\"text\" placeholder=\"value\"/></td></tr>";
+            {   inputs[index] = data.points[key];
+                index = index + 1;
+                temp = temp + "<tr><td><span id='s"+data.points[key]+"' >"+data.points[key]+"</span></td>" +
+                        "<td><input id='val"+data.points[key]+"' type=\"text\" name='value' placeholder=\"value\"/></td>" +
+                        "<td><input id='mval"+data.points[key]+"' type=\"text\" name='memo' placeholder=\"value\"/></td></tr>";
             }
-            temp = temp + "</table>";
-            table.innerHTML = temp
+            table.innerHTML = temp;
         }).fail(function(){
             // console.log(error);
         });
 
 
         function arrAdd(){
-            var txt = $( "input" );
-            for(var i = 0; i < txt.length; i++){
-                inputs.push(txt.eq(i).val());
+            for(var key in inputs){
+                var t = {};
+                t.value = $("#val"+inputs[key]).val();
+                t.memo = $("#mval"+inputs[key]).val();
+                newArr[inputs[key]] = t;
             }
-            for(var i = 0; i < points.length; i++){
-                newArr[points[i]] = inputs[i];
-            }
+//            var txt = $( "tr" );
+//            for(var i = 0; i < txt.length; i++){
+//                inputs.push(txt.eq(i).val());
+//            }
+//            for(var i = 0; i < points.length; i++){
+//                newArr[points[i]] = inputs[i];
+//            }
         }
+
+//        pathPrefix("utaskmap" / Segment / Segment / Segment / Segment /Segment /Segment ) {
+//            (party,instance_id,user_id,task_id,flowId,taskName) =
+//        }>
+//            entity(as[Map[String,UserSubmitMap]]) { data =>
 
 
         $(".submit").click(function(){
@@ -103,9 +141,10 @@
             console.log(newArr);
 
             $.ajax({
-                method: "POST",
-                url:"",
-                data:{ newArr:newArr}
+                method: "Put",
+                url:"/api/utaskmap/"+className+"/"+companyId+"/"+userId+"/"+taskId+"/"+flowId+"/"+taskName,
+                data:JSON.stringify(newArr),
+                contentType: "application/json; charset=utf-8"
             }).done(function(){
                 alert("提交成功！");
             }).fail(function(){

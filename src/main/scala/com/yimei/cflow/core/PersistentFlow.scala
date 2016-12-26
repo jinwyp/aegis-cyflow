@@ -83,6 +83,7 @@ class PersistentFlow(
   val serving: Receive = {
     case cmd@CommandRunFlow(flowId) =>
       log.info(s"received ${cmd}")
+      saveSnapshot(state)
       sender() ! state
       makeDecision(state.edges.keys.head) // 用当前的edges开始决策!!!!
 
@@ -163,16 +164,20 @@ class PersistentFlow(
       persist(EdgeCompleted(name)) { event =>
         updateState(event)
 
-        val temp: Boolean =  state.points.filter(t=>(!t._2.used)).contains("wang")
+        //val temp: Boolean =  state.points.filter(t=>(!t._2.used)).contains("wang")
 
         lazy val edgesNotHasInEdge = !graph.inEdges(e.end).exists(state.edges.contains(_))
-        lazy val historyHasInEdge = graph.inEdges(e.end).foldLeft(true)((b,s)=>b&&state.histories.contains(s))
-        lazy val allPointDataCollected = graph.inEdges(e.end)
-          .map(graph.edges(_))
-          .map(_.getAllDataPointsName(state))
-          .foldLeft(true)((b,s) => b && s.foldLeft(true)((b1,s1)=>state.points.filter(t=>(!t._2.used)).contains(s1)))
+//        lazy val historyHasInEdge = graph.inEdges(e.end).foldLeft(true)((b,s)=>b&&state.histories.contains(s))
+//        lazy val allPointDataCollected = graph.inEdges(e.end)
+//          .map(graph.edges(_))
+//          .map(_.getAllDataPointsName(state))
+//          .foldLeft(true)((b,s) => b && s.foldLeft(true)((b1,s1)=> b1&&state.points.filter(t=>(!t._2.used)).contains(s1)))
 
-        if(edgesNotHasInEdge && historyHasInEdge && allPointDataCollected){
+        lazy val allPointDataCollected = graph.inEdges(e.end)
+          .map(graph.edges(_)).foldLeft(true)((b,s) => b && s.check(state))
+
+
+        if(edgesNotHasInEdge && allPointDataCollected){
           make(e)
         }
       }

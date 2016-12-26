@@ -8,6 +8,9 @@ import akka.actor.{Actor, ActorLogging}
 import akka.util.ByteString
 import com.yimei.cflow.config.CoreConfig
 import akka.pattern._
+import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
+import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
+import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
 import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.http._
 

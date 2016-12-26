@@ -5,86 +5,116 @@
 
     $.ajaxSettings.async = false;
 
-    var dataList;
     var currentPage=1;
-
+    var pageSize=10;
     var container = $("#panel-pagination");
 
-    $.getJSON('./json/dataList.json', function(res){
-        dataList = res.dataList;
-    });
+    var newDataList = {'flows' : []};
 
-    var sources = function () {
-        var result = [];
-        for (var i = 1; i < 110; i++) {
-            result.push(i);
-        }
-        return result;
-    }();
+    // var dataTest;
+    // $.getJSON('./json/dataList.json', function(res){
+    //     dataTest = res.dataList;
+    // });
+    //
+    // var sources = function () {
+    //     var result = [];
+    //     for (var i = 1; i < 110; i++) {
+    //         result.push(i);
+    //     }
+    //     return result;
+    // }();
 
-    var PAGE = function(){
+    var PAGE = function() {
         return {
             init :       function () {
                 console.log('------init------');
-                this.tmplRender(1);
+                getData();
 
                 container.pagination({
-                    dataSource : sources,
-                    pageNumber: currentPage,
-                    pageSize : 10,
+                    dataSource : function () {
+                        var result = [];
+                        for (var i = 1; i < newDataList.length; i++) {
+                            result.push(i);
+                        }
+                        return result;
+                    },
+                    pageNumber : currentPage,
+                    pageSize :   pageSize,
                     callback :   function (data, pagination) {
                         currentPage = pagination.pageNumber;
-                        console.log('------callback------'+currentPage);
-                        var history = ejs.compile($('#tmpl_table').html())(dataList[currentPage - 1]);
-                        console.log(history);
-                        $('#table-list').html(history);
+                        pageSize = pagination.pageSize;
+                        console.log('------callback------' + currentPage);
 
-                        // console.log(pagination);
-                        // console.log(pagination.pageRange);
-                        // console.log(pagination.pageRange-1);
-                        // console.log(pagination.pageRange-1);
-                        // if()
-                        // PAGE().tmplRender(pagination.pageRange-1);
+                        // formatData(dataTest[0]);
+                        // var history = ejs.compile($('#tmpl_table').html())(dataTest[0]);
+
+                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
+                        $('#table-list').html(history);
                     }
                 });
-            },
-            tmplRender : function (page) {
-                console.log('------tmplRender------');
-                // console.log(page);
-                // console.log(dataList[page - 1]);
-                // var history = ejs.compile($('#tmpl_table').html())(dataList[page - 1]);
-                // $('#table-list').html(history);
             }
         }
-
     };
+
+    function formatData (data) {
+        newDataList.flows = newDataList.flows.splice(0, newDataList.length);
+        data.flows.forEach(function (item) {
+            item.company_type = item.user_type.split('-')[0];
+            item.company_id = item.user_type.split('-')[1];
+            newDataList.flows.push(item);
+        });
+    }
 
     window.PAGE = PAGE;
 
     new PAGE().init();
 
+    function getData (){
+        var company_type = $("#input-company-type").val();
+        var company_id = $("#input-company-id").val();
+        var userId = $("#input-user-id").val();
+        var flowId = $("#input-flow-id").val();
+        var flowType = $("#input-flow-type").val();
+        var flowState = $("#input-flow-state").val();
+
+        var temp = "";
+        if(!(flowId==null || flowId=="")){
+            temp = temp +"flowId="+flowId+"&"
+        }
+        if(!(flowType==null || flowType=="")){
+            temp = temp +"flowType="+flowType+"&"
+        }
+        if(!(company_type==null || company_type==""||company_id==null || company_id=="")){
+            temp = temp +"userType="+company_type+"-"+company_id+"&"
+        }
+        if(!(userId==null || userId=="")){
+            temp = temp +"userId="+userId+"&"
+        }
+        if(!(flowState==null || flowState=="")) {
+            temp = temp + "status=" + flowState + "&"
+        }
+        var url = "";
+
+        if(temp != ""){
+            url = "/api/flow?"+temp.substring(0,temp.length-1)+"&page="+currentPage+"&pageSize="+pageSize;
+        } else {
+            url = "/api/flow?page="+currentPage+"&pageSize="+pageSize;
+        }
+
+        $.ajax({
+            method: "get",
+            url: url
+        }).done(function (data) {
+            formatData(data);
+            // console.dir(data);
+        });
+    }
+
     $(".btn-submit").click(function(){
-        alert(111);
-        // var userId = $("#input-user-id").val();
-        // var userType = $("#input-user-type").val();
-        // var flowId = $("#input-flow-id").val();
-        // var flowType = $("#input-flow-type").val();
-        // console.log(userId);
-        // console.log(userType);
-        // console.log(flowId);
-        // console.log(flowType);
-
-
-
-        // $.ajax({
-        //     url: '/test',
-        //     data: {
-        //         userId: userId,
-        //         userType: userType,
-        //         flowId: flowId,
-        //         flowType: flowType,
-        //     }
-        // });
+        currentPage = 1;
+        getData();
+        var history = ejs.compile($('#tmpl_table').html())(newDataList);
+        $('#table-list').html(history);
     });
 
     $("#input-user-type").focus(function () {

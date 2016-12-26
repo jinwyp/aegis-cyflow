@@ -9,6 +9,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
+import com.yimei.cflow.api.http.models.UserModel._
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
@@ -21,22 +22,6 @@ import com.yimei.cflow.util.DBUtils._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-
-
-
-case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String)
-
-case class QueryUserResult(userInfo:PartyUserEntity,status:UserState)
-
-case class UserListEntity(userList:Seq[PartyUserEntity],total:Int)
-
-trait UserModelProtocol extends DefaultJsonProtocol with UserProtocol {
-
-  implicit val addUserModelFormat = jsonFormat4(UserInfo)
-  implicit val queryUserResult = jsonFormat2(QueryUserResult)
-  implicit val userlistFormat = jsonFormat2(UserListEntity)
-}
-
 
 
 @Path("/user/:userId")

@@ -26,7 +26,7 @@
   },
   "userTasks": {
     "FillInApplyMessage"    :{"description": "填写申请信息", "points": ["Reason", "Amount"]},
-    "UploadReceipt" :{"description": "上传裸条", "points": [ "LoanReceipt" ]},
+    "UploadReceipt" :{"description": "上传", "points": [ "LoanReceipt" ]},
     "AssignFriend" :{"description": "指定一个小伙伴作证", "points": [ "Friend" ]},
     "WriteFriendEvidence"    :{"description": "小伙伴填写证词", "points": [ "FriendEvidence"]},
     "Swear"    :{"description": "确认还钱时间，并且签订不平等条约", "points": [ "RepaymentTime", "UnequalTreaty"]},

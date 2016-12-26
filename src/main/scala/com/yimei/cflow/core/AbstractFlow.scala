@@ -1,7 +1,6 @@
 package com.yimei.cflow.core
 
 import akka.actor.{Actor, ActorLogging}
-import com.yimei.cflow.core.FlowRegistry._
 
 /**
   * some common facilities
@@ -72,7 +71,7 @@ abstract class AbstractFlow extends Actor with ActorLogging {
   }
 
   def logState(mark: String = ""): Unit = {
-    log.info(s"<$mark>current state: { ${state.edges} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.guid}}")
+    log.info(s"<$mark>current state: { ${state.edges.keys.mkString(",")} [${state.histories.mkString(",")}]} + {${state.points.map(_._1).mkString(",")}} + {${state.guid}}")
   }
 
   def commonBehavior: Receive = {

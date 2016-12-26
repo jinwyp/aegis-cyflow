@@ -31,7 +31,7 @@ CREATE UNIQUE INDEX flowId_taskid_index ON flow_task(flow_id,task_id);
 -- 参与方类别
 create table party_class (
   id BIGINT not null auto_increment,
-  class_name varchar(8),       -- 参与方类别名称
+  class_name varchar(8),       -- 参与方类别名称     todo: 应该改为三位编码
   description varchar(64) ,    -- 参与方类别描述
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -45,8 +45,8 @@ CREATE UNIQUE INDEX class_name_index ON party_class(class_name);
 -- ...
 create table  party_instance (
   id BIGINT not null auto_increment,
-  party_class varchar(8) not null,    -- 参与方类别 -  zjf  rzf  myf,
-  instance_id varchar(32),                    -- 比如融资方-1, 融资方-2
+  party_class varchar(8) not null,    -- 参与方类别 -  zjf  rzf  myf,      三位编码
+  instance_id varchar(32),            -- 比如融资方-1, 融资方-2     todo: 应该改为8位编码
   party_name varchar(256),            -- 参与方名称
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
@@ -58,18 +58,18 @@ CREATE UNIQUE INDEX party_class_instance_id_index ON party_instance(party_class,
 create table party_user(
   id BIGINT not null auto_increment,
   party_id BIGINT not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
-  user_id varchar(10) not null,     --
+  user_id varchar(10) not null,       -- 应该改为  todo 5位编码
 
   password varchar(128) not null,
   phone varchar(32),
   email varchar(128),
-  name varchar(128) not null,
+  name varchar(128) not null,   -- todo 王琦:   这里是登录名?  需要让这个字段作唯一索引
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_id+user_id 唯一索引
 CREATE UNIQUE INDEX party_id_user_id_index ON party_user(party_id,user_id);
-
+CREATE UNIQUE INDEX part_user_name_index ON party_user(name);
 
 -- 用户群组表
 create table user_group(
