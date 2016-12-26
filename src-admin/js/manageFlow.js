@@ -8,21 +8,6 @@
     $.ajaxSettings.async = false;
 
 
-
-    function formatVertex(vobj) {
-        var result = [];
-
-        for ( var property in vobj){
-            result.push({
-                id : property,
-                description : vobj[property]
-            })
-        }
-
-        return result;
-    }
-
-
     var testData1 = {
         "initial": "V0",
         "graphJar": "com.yimei.cflow.graph.money.MoneyGraphJar",
@@ -48,9 +33,6 @@
 
 
 
-
-
-
     angular.module('chartApp', []);
 
     angular.module('chartApp').controller('formController', formController);
@@ -59,9 +41,16 @@
     function formController ($scope){
         vm = this;
 
+        vm.selectType = 'node';
+        vm.isNewNode = true;
         vm.currentVertex = {
             id : '未选择',
             description : ''
+        };
+        vm.currentEdge = {
+            id : '未选择',
+            begin : '',
+            end : ''
         };
         vm.currentTask = {
             id : '未选择',
@@ -69,7 +58,11 @@
         };
 
         vm.newVertex = {
-            id : '未选择',
+            id : '',
+            description : ''
+        };
+        vm.newEdge = {
+            id : '',
             description : ''
         };
 
@@ -103,11 +96,12 @@
 
 
         var formattedData;
+        var sourceData;
         var chartEventCallback= function(cy){
 
             cy.nodes('.node').qtip({
                 content: function(){
-                    return this.data().description;
+                    return this.data().sourceData.description;
                 },
                 show: {
                     event: 'click'
@@ -128,9 +122,15 @@
                 }
             })
 
-            cy.nodes('.task').qtip({
+            cy.edges('.edge').qtip({
                 content: function(){
-                    return this.data().description;
+                    return this.data().id;
+                },
+                show: {
+                    event: 'click'
+                },
+                hide: {
+                    event: 'unfocus'
                 },
                 position: {
                     my: 'bottom center',
@@ -145,19 +145,23 @@
                 }
             })
 
+
             cy.nodes('.node').on('click', function(e){
                 console.log('node:', this.data())
                 vm.currentVertex.id = this.data().id;
-                vm.currentVertex.description = this.data().description;
-                scope.$apply();
+                vm.currentVertex.description = this.data().sourceData.description;
+                $scope.$apply();
+            })
 
+            cy.edges('.edge').on('click', function(e){
+                console.log('edge:', this.data())
+                vm.currentEdge.id = this.data().id;
+                vm.currentEdge.description = this.data().sourceData.description;
+                $scope.$apply();
             })
 
             cy.nodes('.task').on('click', function(e){
                 console.log('task:', this.data())
-                vm.currentTask.id = this.data().id;
-                vm.currentTask.description = this.data().description;
-                scope.$apply();
                 //data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
                 //    var val;
                 //    points.push({'key':p, 'value':val});
@@ -172,11 +176,8 @@
             init : function(){
                 $.getJSON('./json/data99.json', function(resultData){
                     formattedData = resultData;
+                    
                 })
-
-                vm.edges = formattedData.edges;
-                vm.vertices = formattedData.nodes;
-
                 this.drawChart();
             },
             drawChart : function(){
@@ -186,7 +187,13 @@
                     eventCB : chartEventCallback
                 };
 
-                var cytoscapeChart = new flowChart2(formattedData, configChart);
+                var cytoscapeChart = new flowChart2(testData1, configChart);
+                sourceData = cytoscapeChart.formatterObjectToArray(testData1)
+
+                vm.edges = sourceData.edges;
+                vm.vertices = sourceData.nodes;
+
+
                 console.log(cytoscapeChart.width())
             }
         };

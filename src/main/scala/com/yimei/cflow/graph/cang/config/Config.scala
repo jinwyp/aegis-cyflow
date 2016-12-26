@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by wangqi on 16/12/26.
   */
-trait Config {
+object Config {
   implicit val coreSystem = ActorSystem("ClientSystem")
   implicit val coreExecutor = coreSystem.dispatcher
   implicit val coreMaterializer = ActorMaterializer()
@@ -18,5 +18,8 @@ trait Config {
 
   val rzf = "rzf"
   val flowType = "cang"
+
+  val zjfUserId = "zjf-88888888!77777"
+  val zjfFinanceId = "zjf-88888888!88888"
 
 }

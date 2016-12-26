@@ -187,6 +187,7 @@
             ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'].forEach(function(type, ti){
                 var tasks = edge[type];
                 if((tasks.length>0) && (type=='autoTasks' || type == 'userTasks')){
+
                     tasks.forEach(function(t, ti){
                         var classes = '';
                         if(isFinished){

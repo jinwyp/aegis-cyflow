@@ -24,6 +24,14 @@
         },
 
         {
+            selector: 'node.isFirstNode',
+            style: {
+                'border-width': 3,
+                'border-color': 'red'
+            }
+        },
+
+        {
             selector: 'node.isProcessing',
             style: {
                 'background-color': 'orange'
@@ -128,9 +136,23 @@
             edges : [],
             formattedSource : {
                 edges : [],
-                vertices : []
+                vertices : [],
+                task : [],
+                userTasks : [],
+                autoTasks : [],
+                partUTasks : [],
+                partGTasks : [],
+
+                groupEdges : [],
+                groupVertices : []
             }
         };
+
+        function addStyleForNode (node){
+            if (node.data.id === source.initial) {
+                node.classes = node.classes + " isFirstNode "
+            }
+        }
 
         for (var property in source.edges){
 
@@ -138,28 +160,30 @@
             var tempEdge = {};
             var tempNode = {};
 
-            console.log(currentEdge)
-            tempEdge = {
-                classes : '',
+            //console.log(currentEdge)
 
+            // 整理边
+            tempEdge = {
+                classes : 'edge',
                 data : {
                     id : property,
                     source : currentEdge.begin,
-                    target : currentEdge.end
-                },
-
-                sourceData : {
-                    id : currentEdge.name,
-                    source : currentEdge.begin,
                     target : currentEdge.end,
-                    userTasks : currentEdge.userTasks,
-                    autoTasks : currentEdge.autoTasks,
-                    partGTasks : currentEdge.partGTasks,
-                    partUTasks : currentEdge.partUTasks
+                    sourceData : {
+                        id : currentEdge.name,
+                        source : currentEdge.begin,
+                        target : currentEdge.end,
+                        userTasks : currentEdge.userTasks,
+                        autoTasks : currentEdge.autoTasks,
+                        partGTasks : currentEdge.partGTasks,
+                        partUTasks : currentEdge.partUTasks
+                    }
                 }
             };
 
 
+
+            // 整理节点
             if (tempNodesId.indexOf(currentEdge.begin) === -1) {
 
                 var tempNodeBegin = {
@@ -167,28 +191,26 @@
                     program : ''
                 };
                 if (typeof source.vertices[currentEdge.begin] !== 'undefined' ){
-                    var tempNodeBegin = source.vertices[currentEdge.begin];
+                    tempNodeBegin = source.vertices[currentEdge.begin];
                 }
 
                 tempNode = {
-                    classes : '',
-
+                    classes : 'node',
                     data : {
-                        id : currentEdge.begin
-                    },
-
-                    sourceData : {
                         id : currentEdge.begin,
-                        description : tempNodeBegin.description,
-                        program : tempNodeBegin.program
+                        sourceData : {
+                            id : currentEdge.begin,
+                            description : tempNodeBegin.description,
+                            program : tempNodeBegin.program
+                        }
                     }
                 };
 
-                tempNodesId.push(currentEdge.begin)
+                addStyleForNode(tempNode)
 
+                tempNodesId.push(currentEdge.begin)
                 result.nodes.push(tempNode)
                 result.formattedSource.vertices.push(tempNode)
-
             }
 
 
@@ -205,18 +227,19 @@
                 }
 
                 tempNode = {
-                    classes : '',
-
+                    classes : 'node',
                     data : {
-                        id : currentEdge.end
-                    },
-
-                    sourceData : {
                         id : currentEdge.end,
-                        description : tempNodeTarget.description,
-                        program : tempNodeTarget.program
+                        sourceData : {
+                            id : currentEdge.end,
+                            description : tempNodeTarget.description,
+                            program : tempNodeTarget.program
+                        }
                     }
                 };
+
+                addStyleForNode(tempNode)
+
                 tempNodesId.push(currentEdge.end)
                 result.nodes.push(tempNode)
                 result.formattedSource.vertices.push(tempNode)
@@ -225,6 +248,79 @@
 
             result.edges.push(tempEdge)
             result.formattedSource.edges.push(tempEdge)
+
+
+
+
+
+            // 整理任务
+            var taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
+            taskTypeList.forEach(function(taskType, taskTypeIndex){
+
+                if (currentEdge[taskType] && currentEdge[taskType].length > 0){
+
+                    currentEdge[taskType].forEach(function(task, taskIndex){
+                        var tempTask = {};
+                        if (taskType === 'userTasks' ||  taskType === 'autoTasks') {
+                            tempTask = {
+                                classes : 'node task ' + taskType,
+                                data : {
+                                    id : task,
+                                    sourceData : {
+                                        id : task,
+                                        type : taskType,
+                                        description : source[taskType][task].description,
+                                        points : source[taskType][task].points,
+
+                                        belongToEdge : currentEdge
+                                    }
+                                }
+                            };
+
+                            result.formattedSource.task.push(tempTask);
+                            if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
+                            if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
+                        }
+
+
+                        if (taskType === 'partUTasks' || taskType === 'partGTasks') {
+
+                            if (task.tasks && task.tasks.length > 0){
+                                task.tasks.forEach(function(subTask, subTaskIndex){
+
+                                    tempTask = {
+                                        classes : 'node task ' + taskType,
+                                        data : {
+                                            id : subTask,
+                                            sourceData : {
+                                                id : subTask,
+                                                type : taskType,
+                                                guidKey : '',
+                                                ggidKey : '',
+                                                description : source['userTasks'][subTask].description,
+                                                points : source['userTasks'][subTask].points
+                                            }
+                                        }
+                                    };
+
+                                    if (taskType === 'partUTasks') {
+                                        tempTask.data.sourceData.guidKey = task.guidKey
+                                        result.formattedSource.task.push(tempTask);
+                                        result.formattedSource.partUTasks.push(tempTask);
+                                    }
+
+                                    if (taskType === 'partGTasks') {
+                                        tempTask.data.sourceData.ggidKey = task.ggidKey
+                                        result.formattedSource.task.push(tempTask);
+                                        result.formattedSource.partGTasks.push(tempTask);
+                                    }
+                                })
+                            }
+
+                        }
+                    })
+                }
+            })
 
 
         }
@@ -271,6 +367,8 @@
         var cy = cytoscape(cfg);
 
         cfg.eventCB(cy);
+
+        cy.formatterObjectToArray = formatterObjectToArray;
 
         return cy;
     };
