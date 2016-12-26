@@ -1,18 +1,24 @@
 body{
     background:#3c5b78;
 }
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+
 .manage-flow{
     min-width:1200px;
 }
 
 #chart{
     float: left;
-    width:900px; height:1000px;
+    width:600px; height:1000px;
 }
 
 #panel-settings {
     float: right;
-    width : 300px;
+    width : 400px;
     height: 1000px;
 
 }

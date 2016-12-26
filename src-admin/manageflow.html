@@ -25,25 +25,71 @@
                     <div class="panel-body">
                         <div id="chart"></div>
 
-                        <div id="panel-settings" ng-controller="formController as vm">
-                            <div class="panel panel-default panel-main">
-                                <div class="panel-heading">当前选择节点: {{vm.currentVertex.id}}</div>
+                        <div id="panel-settings" ng-cloak ng-controller="formController as vm">
+                            <div class="panel panel-default panel-main" ng-show="vm.selectType === 'node'">
+                                <div class="panel-heading">已选中节点: {{vm.currentVertex.id}} </div>
 
                                 <div class="panel-body">
                                     <form class="form-horizontal">
                                         <div class="form-group">
                                             <div class="col-lg-10">
-                                                <input type="text" placeholder="指向新节点" class="form-control">
+                                                <div class="radio">
+                                                    <label>
+                                                        <input type="radio" name="isNewNode" ng-value="true" ng-model="vm.isNewNode" > 添加新节点
+                                                    </label>
+
+                                                    <label>
+                                                        <input type="radio" name="isNewNode" ng-value="false" ng-model="vm.isNewNode" > 选择已有节点
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-if="vm.isNewNode">
+                                            <div class="col-lg-10">
+                                                <input type="text" placeholder="新节点ID" class="form-control" ng-model="vm.newVertex.id">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-if="vm.isNewNode">
+                                            <div class="col-lg-10">
+                                                <input type="text" placeholder="新节点简介" class="form-control" ng-model="vm.newVertex.description">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-if="!vm.isNewNode">
+                                            <div class="col-lg-10">
+                                                <select class="form-control m-b"
+                                                        ng-options="item.data.id as item.data.id for item in vm.vertices track by item.id" ng-model="vm.newVertex.id"></select>
                                             </div>
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="col-lg-5 control-label">选择已有节点:</label>
-                                            <div class="col-lg-7">
-                                                <select class="form-control m-b"
-                                                        ng-options="item as item.id for item in vm.vertices track by item.id" ng-model="vm.newVertex"></select>
+                                            <div class="col-lg-10">
+                                                <input type="text" placeholder="节点连线ID" class="form-control" ng-model="vm.newEdge.id">
                                             </div>
                                         </div>
+
+
+                                        <div class="form-group">
+                                            <div class="col-lg-10">
+                                                <button type="submit" class="btn btn-sm btn-default" ng-click="vm.addNewLine()">保存</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+
+                                </div>
+
+                            </div>
+
+                            <div class="panel panel-default panel-main" ng-show="vm.selectType === 'edge'">
+                                <div class="panel-heading">已选中线: {{vm.currentEdge.id}}</div>
+
+                                <div class="panel-body">
+                                    <form class="form-horizontal">
+
+
 
                                         <div class="form-group">
                                             <div class="col-lg-10">
