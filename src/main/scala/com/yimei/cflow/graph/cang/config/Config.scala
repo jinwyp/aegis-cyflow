@@ -10,4 +10,7 @@ object Config {
 
   val url = config.getString("server.url")
 
+
+  val rzf = "rzf"
+  val flowType = "cang"
 }
