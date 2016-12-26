@@ -12,7 +12,6 @@ import akka.util.Timeout
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
-import com.yimei.cflow.user.User
 import com.yimei.cflow.util.DBUtils._
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 
