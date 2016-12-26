@@ -112,12 +112,12 @@
             </tr>
             <% flows.forEach(function(item, i){ %>
             <tr>
-                <td><%= item.userId || '--'%></td>
-                <td><%= item.userId || '--'%></td>
-                <td><%= item.userType | '--' %></td>
-                <td><%= item.flowId || '--'%></td>
-                <td><%= item.flowType || '--'%></td>
-                <td><a href="/graph?id=1111"><%= item.status || '--'%></a></td>
+                <td><%= item.user_id || '--'%></td>
+                <td><%= item.user_id || '--'%></td>
+                <td><%= item.user_id | '--' %></td>
+                <td><%= item.user_id || '--'%></td>
+                <td><%= item.user_id || '--'%></td>
+                <td><a href="/graph?id=1111"><%= item.user_id || '--'%></a></td>
             </tr>
             <% }) %>
         </table>
