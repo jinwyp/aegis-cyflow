@@ -10,6 +10,7 @@
             selector: 'node',
             style: {
                 'shape': 'ellipse',
+                // 'shape': 'diamond',
                 'width': function(ele){
                     return Math.max(100, ele.data().id.length*16);
                 },
@@ -40,7 +41,8 @@
         {
             selector: 'node.task',
             style: {
-                'shape': 'roundrectangle',
+                // 'shape': 'roundrectangle',
+                'shape': 'rhomboid',
                 'width': function(ele){
                     return Math.max(150, ele.data().id.length*16);
                 },
@@ -64,12 +66,56 @@
         },
 
         {
+            selector: 'node.task.userTasks',
+            style: {
+                'shape': 'hexagon',
+                'width': function(ele){
+                    return Math.max(110, ele.data().id.length*20);
+                },
+                'height': function(ele){
+                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    return h
+                }
+
+            }
+        },
+
+        {
+            selector: 'node.task.partUTasks',
+            style: {
+                // 'shape': 'pentagon',
+                'shape': 'polygon',
+                'width': function(ele){
+                    return Math.max(110, ele.data().id.length*20);
+                },
+                'height': function(ele){
+                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    return h
+                }
+
+            }
+        },
+
+        {
             selector: 'node.task:selected',
             style: {
                 'border-width': 3,
                 'border-color': '#e86e81'
             }
         },
+        {
+            selector: '$node > node',
+            style: {
+                'padding-top': '10px',
+                'padding-left': '10px',
+                'padding-bottom': '10px',
+                'padding-right': '10px',
+                'text-valign': 'top',
+                'text-halign': 'center',
+                'color': '#333',
+                'background-color': '#bbb'
+            }
+        }, 
 
         {
             selector: 'edge',
@@ -189,6 +235,7 @@
             var nodes = [];
             var edges = [];
             var historyEdges = [];
+            var nodeGParents = [];
             historyEdges = originalData.state.histories;
 
             for(var i in originalData.edges){
@@ -236,17 +283,13 @@
                             classes: className
                         };
 
-                        if (n.indexOf('V') > -1){
+                        if (((ni==0) && (edgeItem.data.sourceType == 'node')) || ((ni==1) && (edgeItem.data.endType == 'node'))){
                             tempNode.data.description = originalData.vertices[n]
                         }else {
-                            if (originalData.userTasks[n]) {
-                                tempNode.data.description = originalData.userTasks[n].description
-                                tempNode.data.points = originalData.userTasks[n].points
-                            }
-                            if (originalData.autoTasks[n]) {
-                                tempNode.data.description = originalData.autoTasks[n].description
-                                tempNode.data.points = originalData.autoTasks[n].points
-                            }
+                            var thisTask = originalData.userTasks[n] || originalData.autoTasks[n] || {};
+                            thisTask.parent && (tempNode.data.parent = thisTask.parent) && ((nodeGParents.indexOf(thisTask.parent)<0) && nodeGParents.push(thisTask.parent));
+                            tempNode.data.description = thisTask.description;
+                            tempNode.data.points = thisTask.points;
                         }
                         nodes.push(tempNode)
                     }else{
@@ -259,7 +302,14 @@
                     }
                 })
             })
-
+            nodeGParents.forEach(function(gp, gpi){
+                nodes.push({data: { id : gp,
+                                    taskType : 'gparent',
+                                    description : 'gp',
+                                    program : '',
+                                    points : '',
+                                    original : originalData}});
+            })
             console.log({nodes: nodes, edges: edges})
             return {nodes: nodes, edges: edges};
         }
