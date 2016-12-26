@@ -9,6 +9,11 @@
     var currentPage=1;
     var container = $("#panel-pagination");
 
+    var dataTest;
+    $.getJSON('./json/dataList.json', function(res){
+        dataTest = res.dataList;
+    });
+
     var sources = function () {
         var result = [];
         for (var i = 1; i < 110; i++) {
@@ -31,7 +36,8 @@
                         currentPage = pagination.pageNumber;
                         console.log('------callback------' + currentPage);
                         getData();
-                        var history = ejs.compile($('#tmpl_table').html(dataList))();
+                        var history = ejs.compile($('#tmpl_table').html())(dataList);
+                        console.log(history);
                         $('#table-list').html(history);
                     }
                 });
