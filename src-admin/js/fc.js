@@ -292,8 +292,8 @@
                 this.tmplRender();
             },
             getModel: function(){
-                var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
-                //  var url = '../json/data4.json'
+                // var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                 var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;
                 })
@@ -333,10 +333,15 @@
                 $('#historyContainer').html(history);
             },
             fcRender: function(){
-                var chart = new flowChart('cy', originalData, chartEventCallback, {minZoom: 0.1});
+                var chart = new flowChart('cy', originalData, chartEventCallback, {minZoom: 0.1, layout:{
+                    name: 'dagre',
+                    // name: 'cose-bilkent',
+                    fit: true,
+                    // rankDir: "LR"
+                }});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
-
+                window.cy = chart.cy;
                 chart.cy.onRender(function(){
                     count ++;
                     if(count==2){
@@ -350,7 +355,7 @@
             }
         }
     };
-
+    
     window.PAGE = PAGE;
 
     new PAGE().init();

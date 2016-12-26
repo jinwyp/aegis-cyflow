@@ -5,56 +5,60 @@
 
     $.ajaxSettings.async = false;
 
-    var dataList;
     var currentPage=1;
+    var pageSize=10;
     var container = $("#panel-pagination");
 
     var newDataList = {'flows' : []};
 
-    var dataTest;
-    $.getJSON('./json/dataList.json', function(res){
-        dataTest = res.dataList;
-    });
-
-    var sources = function () {
-        var result = [];
-        for (var i = 1; i < 110; i++) {
-            result.push(i);
-        }
-        return result;
-    }();
+    // var dataTest;
+    // $.getJSON('./json/dataList.json', function(res){
+    //     dataTest = res.dataList;
+    // });
+    //
+    // var sources = function () {
+    //     var result = [];
+    //     for (var i = 1; i < 110; i++) {
+    //         result.push(i);
+    //     }
+    //     return result;
+    // }();
 
     var PAGE = function() {
         return {
             init :       function () {
                 console.log('------init------');
-                this.tmplRender(1);
+                getData();
 
                 container.pagination({
-                    dataSource : sources,
+                    dataSource : function () {
+                        var result = [];
+                        for (var i = 1; i < newDataList.length; i++) {
+                            result.push(i);
+                        }
+                        return result;
+                    },
                     pageNumber : currentPage,
-                    pageSize :   10,
+                    pageSize :   pageSize,
                     callback :   function (data, pagination) {
                         currentPage = pagination.pageNumber;
+                        pageSize = pagination.pageSize;
                         console.log('------callback------' + currentPage);
-                        getData();
-                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
 
                         // formatData(dataTest[0]);
                         // var history = ejs.compile($('#tmpl_table').html())(dataTest[0]);
+
+                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
                         $('#table-list').html(history);
                     }
                 });
-            },
-            tmplRender : function (page) {
-                console.log('------tmplRender------');
             }
         }
-    }
+    };
 
     function formatData (data) {
-        newDataList.flows.splice(0, newDataList.length);
-        data.flows.forEach(function (item, i) {
+        newDataList.flows = newDataList.flows.splice(0, newDataList.length);
+        data.flows.forEach(function (item) {
             item.company_type = item.user_type.split('-')[0];
             item.company_id = item.user_type.split('-')[1];
             newDataList.flows.push(item);
@@ -92,9 +96,9 @@
         var url = "";
 
         if(temp != ""){
-            url = "/api/flow?"+temp.substring(0,temp.length-1)
+            url = "/api/flow?"+temp.substring(0,temp.length-1)+"&page="+currentPage+"&pageSize="+pageSize;
         } else {
-            url = "/api/flow"
+            url = "/api/flow?page="+currentPage+"&pageSize="+pageSize;
         }
 
         $.ajax({
@@ -107,7 +111,10 @@
     }
 
     $(".btn-submit").click(function(){
-
+        currentPage = 1;
+        getData();
+        var history = ejs.compile($('#tmpl_table').html())(newDataList);
+        $('#table-list').html(history);
     });
 
     $("#input-user-type").focus(function () {
