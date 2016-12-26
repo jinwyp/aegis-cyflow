@@ -2,10 +2,9 @@ package com.yimei.cflow.api.util
 
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, _}
 import akka.util.ByteString
-import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.graph.cang.config.Config.url
+import com.yimei.cflow.config.{ApplicationConfig, CoreConfig}
 import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
@@ -14,7 +13,7 @@ import scala.concurrent.duration._
 /**
   * Created by wangqi on 16/12/26.
   */
-object HttpUtil extends CoreConfig{
+object HttpUtil extends CoreConfig with ApplicationConfig{
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
   //发送报文,并取得回复
@@ -38,11 +37,16 @@ object HttpUtil extends CoreConfig{
     }
 
     log.info("request url: {},entity: {}",fullUrl,bodyEntity.getOrElse("Empty"))
+    import MediaTypes._
+
+
+  //  val contentType = headers.`Content-Type`.apply(ContentType(`application/json`))
 
     val httpRequest = bodyEntity match {
-      case Some(a) => HttpRequest(uri =fullUrl , entity = ByteString(a,"UTF-8"),method = httpMethod)
+      case Some(a) => HttpRequest(uri =fullUrl , entity = HttpEntity(`application/json`,ByteString(a,"UTF-8")),method = httpMethod)
       case _       => HttpRequest(uri =fullUrl ,method = httpMethod)
     }
+
 
     //发送请求,并得到结果
     Http().singleRequest(
