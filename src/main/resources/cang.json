@@ -1,0 +1,29 @@
+{
+  "initial": "V0",
+  "graphJar": "com.yimei.cflow.graph.cang.CangGraphJar",
+  "timeout": 100,
+  "persistent": true,
+  "points": {
+    "startPoint":"进入仓押系统时,带入的数",
+    "trafficker" : "贸易方账户",
+    "traffickerFinance" : "贸易方资金方账户"
+  },
+  "vertices": {
+    "V0": { "description":"发起申请","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"}
+  },
+  "autoTasks": {
+  },
+  "userTasks": {
+  },
+  "edges": {
+    "E1": {
+      "name": "E1",
+      "begin": "V0",
+      "end": "V1",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": []
+    }
+  }
+}
