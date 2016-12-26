@@ -44,7 +44,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
       new SwaggerService().route ~
       corsHandler(new SwaggerDocService(coreSystem).routes)
   } ~
-    ResourceRoute.route(proxy)
+    ResourceRoute.route(proxy) ~
+  XieJieTestRoute().route
 
 
 
