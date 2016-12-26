@@ -296,7 +296,6 @@
             // pixelRatio : 1.0
 
 
-
         }, self.config);
 
 
