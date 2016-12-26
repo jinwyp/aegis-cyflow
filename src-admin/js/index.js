@@ -53,7 +53,7 @@
     }
 
     function formatData (data) {
-        newDataList.flows.splice(0, newDataList.length);
+        newDataList = newDataList.flows.splice(0, newDataList.length);
         data.flows.forEach(function (item, i) {
             item.company_type = item.user_type.split('-')[0];
             item.company_id = item.user_type.split('-')[1];
