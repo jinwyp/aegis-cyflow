@@ -2,7 +2,6 @@ package com.yimei.cflow.core
 
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
-import akka.remote.transport.ThrottlerTransportAdapter.Direction.Receive
 import com.yimei.cflow.api.models.id._
 
 object PersistentIdGenerator {
@@ -13,8 +12,6 @@ object PersistentIdGenerator {
   * Created by hary on 16/12/9.
   */
 class PersistentIdGenerator(name: String) extends AbstractIdGenerator with PersistentActor with ActorLogging {
-
-  import IdGenerator._
 
   override def persistenceId: String = name
 
@@ -35,15 +32,15 @@ class PersistentIdGenerator(name: String) extends AbstractIdGenerator with Persi
 
   override def receiveCommand = commonBehavior orElse serving
 
-//  var cnt = 0
+  //  var cnt = 0
 
   def serving: Receive = {
     case CommandGetId(key, buffer) =>
-      persistAsync(EventIncrease(key, buffer)) { event =>
+      persist(EventIncrease(key, buffer)) { event =>
 
         val old = updateState(event)
         log.info(s"event $event persisted")
-        sender()! Id(old + 1)
+        sender() ! Id(old + 1)
 
       }
   }

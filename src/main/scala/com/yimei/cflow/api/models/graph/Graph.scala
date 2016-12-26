@@ -18,7 +18,7 @@ case class GraphConfig(
                         edges: Map[String, Edge]
                       )
 
-object GraphConfigProtocol extends DefaultJsonProtocol with FlowProtocol {
+trait GraphConfigProtocol extends FlowProtocol with DefaultJsonProtocol {
   implicit val defaultVertexFormat = jsonFormat2(Vertex)
   implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
 }

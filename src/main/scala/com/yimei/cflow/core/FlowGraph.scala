@@ -1,7 +1,7 @@
 package com.yimei.cflow.core
 
-import java.lang.reflect.Method
-
+import akka.actor.ActorRef
+import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 
@@ -22,6 +22,8 @@ trait FlowGraph {
   val userTasks: Map[String, TaskInfo]
   val autoTasks: Map[String, TaskInfo]
   val pointEdges: Map[String, String]
+
+  val routes: Seq[ActorRef => Route] = Seq()
 
   val blueprint: Graph = Graph(edges, vertices, None, points, userTasks, autoTasks)
 
@@ -66,14 +68,17 @@ trait FlowGraph {
     ret
   }
 
-  val autoMethods: Map[String, Method] = {
+  val autoMethods: Map[String, CommandAutoTask => Future[Map[String, String]]] = {
     this.getClass.getMethods.filter { m =>
       val ptypes = m.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
         m.getReturnType == classOf[Future[Map[String, String]]]
     }.map { am =>
-      (am.getName -> am)
+
+      val behavior: CommandAutoTask => Future[Map[String, String]] = task =>
+        am.invoke(this, task).asInstanceOf[Future[Map[String, String]]]
+      (am.getName -> behavior)
     }.toMap
   }
 

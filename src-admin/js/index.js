@@ -7,12 +7,7 @@
 
     var dataList;
     var currentPage=1;
-
     var container = $("#panel-pagination");
-
-    $.getJSON('./json/dataList.json', function(res){
-        dataList = res.dataList;
-    });
 
     var sources = function () {
         var result = [];
@@ -22,7 +17,7 @@
         return result;
     }();
 
-    var PAGE = function(){
+    var PAGE = function() {
         return {
             init :       function () {
                 console.log('------init------');
@@ -30,60 +25,83 @@
 
                 container.pagination({
                     dataSource : sources,
-                    pageNumber: currentPage,
-                    pageSize : 10,
+                    pageNumber : currentPage,
+                    pageSize :   10,
                     callback :   function (data, pagination) {
                         currentPage = pagination.pageNumber;
-                        console.log('------callback------'+currentPage);
-                        var history = ejs.compile($('#tmpl_table').html())(dataList[currentPage - 1]);
+                        console.log('------callback------' + currentPage);
+                        getData();
+                        var history = ejs.compile($('#tmpl_table').html(dataList))();
                         $('#table-list').html(history);
-
-                        // var dataHtml = '<ul>';
-                        // $.each(data, function (index, item) {
-                        //     dataHtml += '<li>' + item + '</li>';
-                        // });
-                        // dataHtml += '</ul>';
-                        // $('#table-list').html(dataHtml);
                     }
                 });
             },
             tmplRender : function (page) {
                 console.log('------tmplRender------');
-                // console.log(page);
-                // console.log(dataList[page - 1]);
-                // var history = ejs.compile($('#tmpl_table').html())(dataList[page - 1]);
-                // $('#table-list').html(history);
             }
         }
-
-    };
+    }
 
     window.PAGE = PAGE;
 
     new PAGE().init();
 
+    function getData (){
+        var company_type = $("#input-company-type").val();
+        var company_id = $("#input-company-id").val();
+        var userId = $("#input-user-id").val();
+        var flowId = $("#input-flow-id").val();
+        var flowType = $("#input-flow-type").val();
+        var flowState = $("#input-flow-state").val();
+
+        var temp = "";
+        if(!(flowId==null || flowId=="")){
+            temp = temp +"flowId="+flowId+"&"
+        }
+        if(!(flowType==null || flowType=="")){
+            temp = temp +"flowType="+flowType+"&"
+        }
+        if(!(company_type==null || company_type==""||company_id==null || company_id=="")){
+            temp = temp +"userType="+company_type+"-"+company_id+"&"
+        }
+        if(!(userId==null || userId=="")){
+            temp = temp +"userId="+userId+"&"
+        }
+        if(!(flowState==null || flowState=="")) {
+            temp = temp + "status=" + flowState + "&"
+        }
+        var url = "";
+
+        if(temp != ""){
+            url = "/api/flow?"+temp.substring(0,temp.length-1)
+        } else {
+            url = "/api/flow"
+        }
+
+        $.ajax({
+            method: "get",
+            url: url
+        }).done(function (data) {
+            console.dir(data);
+            dataList = data;
+            // var table = document.getElementById("mytab");
+            // var temp = "<tr>";
+            // for (var key in data.flows) {
+            //     temp += "<td>" +data.flows[key].user_type.split("-")[0] + "</td>";
+            //     temp += "<td>" +data.flows[key].user_type.split("-")[1] + "</td>";
+            //     temp += "<td>" +data.flows[key].user_id + "</td>";
+            //     temp += "<td>" +data.flows[key].flow_id + "</td>";
+            //     temp += "<td>" +data.flows[key].flow_type + "</td>";
+            //     temp += "<td>" +data.flows[key].finished + "</td>";
+            //     temp += "<td><a  target=\"_blank\" href='/mng/graph.html?id=" +data.flows[key].flow_id + "'>查看</a></td></tr>";
+            // }
+            //
+            // table.innerHTML += temp
+        });
+    }
+
     $(".btn-submit").click(function(){
-        alert(111);
-        // var userId = $("#input-user-id").val();
-        // var userType = $("#input-user-type").val();
-        // var flowId = $("#input-flow-id").val();
-        // var flowType = $("#input-flow-type").val();
-        // console.log(userId);
-        // console.log(userType);
-        // console.log(flowId);
-        // console.log(flowType);
 
-
-
-        // $.ajax({
-        //     url: '/test',
-        //     data: {
-        //         userId: userId,
-        //         userType: userType,
-        //         flowId: flowId,
-        //         flowType: flowType,
-        //     }
-        // });
     });
 
     $("#input-user-type").focus(function () {

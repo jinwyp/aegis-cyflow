@@ -3,7 +3,9 @@ package com.yimei.cflow.core
 import java.io.File
 import java.lang.reflect.Method
 
-import com.yimei.cflow.api.models.graph.GraphConfig
+import akka.actor.ActorRef
+import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.money.MoneyGraphJar
@@ -18,10 +20,12 @@ case class JudgeFactory(content: String) {
 
   import reflect.runtime.currentMirror
   import tools.reflect.ToolBox
+
   val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
 
   val tree = toolbox.parse(content)
   val compiledCode = toolbox.compile(tree)
+
   def make() = compiledCode().asInstanceOf[State => Seq[Arrow]]
 }
 
@@ -29,18 +33,41 @@ case class AutoFactory(content: String) {
 
   import reflect.runtime.currentMirror
   import tools.reflect.ToolBox
+
   val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
 
   val tree = toolbox.parse(content)
   val compiledCode = toolbox.compile(tree)
+
   def make() = compiledCode().asInstanceOf[CommandAutoTask => Future[Map[String, String]]]
+}
+
+case class ProgramCompiler(graphConfig: GraphConfig) {
+
+  import reflect.runtime.currentMirror
+  import tools.reflect.ToolBox
+
+  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
+
+  val autoPrefix = "import com.yimei.cflow.auto.AutoMaster.CommandAutoTask; import scala.concurrent.Future; import scala.concurrent.ExecutionContext.Implicits.global;"
+  val deciPrefix = "import com.yimei.cflow.api.models.flow._;"
+
+  def make() = {
+    val d = graphConfig.vertices.filter(_._2.program != None).map { entry =>
+      (entry._1 -> toolbox.compile(toolbox.parse( deciPrefix + entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
+    };
+
+    val a = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
+      (entry._1 -> toolbox.compile(toolbox.parse( autoPrefix + entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
+    }
+    (d, a)
+  }
 }
 
 /**
   * Created by hary on 16/12/17.
   */
-object GraphLoader extends App {
-
+object GraphLoader extends GraphConfigProtocol {
 
 
   def loadall() =
@@ -51,31 +78,22 @@ object GraphLoader extends App {
       .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
 
   def getClassLoader(flowType: String) = {
-
     flowType match {
-      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "ying" => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case _       => val jars: Array[String] = (new File("flows/" + flowType))
+      case _ => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
         new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
     }
+  }
 
+  def loadGraphConfigFromJar() = {
 
-//    if (flowType != "ying" ) {
-//      val jars: Array[String] = (new File("flows/" + flowType))
-//        .listFiles()
-//        .filter(_.isFile())
-//        .map(_.getPath)
-//      new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-//    } else if(flowType == "ying") {
-//      YingGraphJar.getClass.getClassLoader
-//    }
   }
 
   def loadGraph(gFlowType: String): FlowGraph = {
-    import com.yimei.cflow.api.models.graph.GraphConfigProtocol._
     import spray.json._
 
     val jsonFile = gFlowType match {
@@ -91,31 +109,38 @@ object GraphLoader extends App {
       .parseJson
       .convertTo[GraphConfig]
 
-    graphConfig = graphConfig.copy(edges = graphConfig.edges ++ Map(
-      "start" -> Edge(name = "start", begin = "God", end = graphConfig.initial),
-      "success" -> Edge(name = "success", end = "success"),
-      "fail" -> Edge(name = "fail", end = "success")
+    // todo need add start success and fail ?
+    graphConfig = graphConfig.copy(edges = graphConfig.edges ++
+      Map("start" -> Edge(name = "start", begin = "God", end = graphConfig.initial),
+        "success" -> Edge(name = "success", end = "success"),
+        "fail" -> Edge(name = "fail", end = "success")
+      )
     )
-    )
-
-    println(graphConfig.toJson.prettyPrint)
 
     // graphJar class and graphJar object
     val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
     val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
-    val autoMap = getAutoMap(mclass)
-
     // deciders from graphJar  + default decider
-    var allDeciders: Map[String, (State) => Seq[Arrow]] = graphConfig.vertices.filter(_._2 != None).map{ entry =>
-      (entry._1 -> JudgeFactory(entry._2.program.get).make())
-    }
+    //    val autoMap = getAutoMap(mclass, graphJar)
+    //    var allDeciders: Map[String, (State) => Seq[Arrow]] =
+    //      graphConfig.vertices
+    //        .filter(_._2 != None)
+    //        .map { entry =>
+    //          (entry._1 -> JudgeFactory(entry._2.program.get).make())
+    //        }
+    //    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
-    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
+    // compile our configured program and add code in jar
+    var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
+    allDeciders = allDeciders ++ getDeciders(mclass, graphJar)
+    allAutos = allAutos ++ getAutoMap(mclass, graphJar)
 
     // graph intial vertex
     val initial = graphConfig.initial
+
+    val jarRoutes = getRoutes(mclass, graphJar)
 
     // 返回流程
     val g = new FlowGraph {
@@ -169,24 +194,28 @@ object GraphLoader extends App {
 
       override val pointEdges = pointEdgesImpl
 
-      override val autoMethods: Map[String, Method] = autoMap
+      override val autoMethods: Map[String, CommandAutoTask => Future[Map[String, String]]] = allAutos
 
       override val deciders: Map[String, State => Seq[Arrow]] = allDeciders
 
       override val moduleJar: AnyRef = graphJar
+
+      override val routes = jarRoutes
     }
 
     g
   }
 
-  def getAutoMap(m: Class[_]) = {
+  def getAutoMap(m: Class[_], module: AnyRef) = {
     m.getMethods.filter { method =>
       val ptypes = method.getParameterTypes
       ptypes.length == 1 &&
         ptypes(0) == classOf[CommandAutoTask] &&
         method.getReturnType == classOf[Future[Map[String, String]]]
     }.map { am =>
-      (am.getName -> am)
+      val behavior: CommandAutoTask => Future[Map[String, String]] =
+        task => am.invoke(module, task).asInstanceOf[Future[Map[String, String]]]
+      (am.getName -> behavior)
     }.toMap
   }
 
@@ -203,4 +232,15 @@ object GraphLoader extends App {
     }.toMap
   }
 
+  def getRoutes(m: Class[_], module: AnyRef): Seq[ActorRef => Route] = {
+    m.getMethods.filter { method =>
+      val ptypes = method.getParameterTypes
+        ptypes.length == 1 &&
+        ptypes(0) == classOf[ActorRef] &&
+        method.getReturnType == classOf[Route]
+    }.map { am =>
+      (proxy: ActorRef) =>
+        am.invoke(module, proxy).asInstanceOf[Route]
+    }.toSeq
+  }
 }

@@ -1,9 +1,16 @@
 package com.yimei.cflow.api.services
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ReceiveTimeout, SupervisorStrategy, Terminated}
-import com.yimei.cflow.core.DaemonMaster.{GiveMeModule, RegisterModule, UnderIdentify}
 
 import scala.concurrent.duration._
+
+object ModuleMaster {
+  case class RegisterModule(name: String, actor: ActorRef)
+
+  case class GiveMeModule(name: String)
+
+  case class UnderIdentify()
+}
 
 /**
   * Created by hary on 16/12/3.
@@ -19,6 +26,8 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
     with ServicableBehavior
     with ActorLogging {
 
+  import ModuleMaster._
+
   override def supervisorStrategy: SupervisorStrategy = super.supervisorStrategy
 
   // 相关联的模块
@@ -28,7 +37,7 @@ abstract class ModuleMaster(moduleName: String, dependOn: Array[String], askWho:
 
   // 请求父亲告知其他模块
   dependOn.foreach { name =>
-    log.info(s"${moduleName} 请求获取 ${name}")
+    log.debug(s"${moduleName} 请求获取 ${name}")
     who ! GiveMeModule(name)
   }
 

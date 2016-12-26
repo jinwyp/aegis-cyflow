@@ -247,7 +247,9 @@ SOFTWARE.
       if( !pos || pos.x == null || isNaN(pos.x) ){ return; }
 
       var bb = isNode ? ele.renderedBoundingBox({
-        includeLabels: false
+        includeLabels: false,
+        // beatacao
+        includeNodes: true
       }) : {
         x1: pos.x - 1,
         x2: pos.x + 1,

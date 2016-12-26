@@ -8,8 +8,11 @@ import akka.actor.{Actor, ActorLogging}
 import akka.util.ByteString
 import com.yimei.cflow.config.CoreConfig
 import akka.pattern._
+import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
+import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
+import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
 import com.yimei.cflow.api.models.flow.DataPoint
-import com.yimei.cflow.http.{AdminProtocol, TaskProtocol, UserModelProtocol, UserSubmitEntity}
+import com.yimei.cflow.http._
 
 import scala.concurrent.Future
 
@@ -43,6 +46,9 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
   //注意：此处调用方应该使用wrap
   //println(UserSubmitEntity("ying!rz-1!haryId1!1","TKPU1",Map("KPU1"->DataPoint("zj-1!wangqiId1",None,Some("wang"),UUID.randomUUID().toString, 0L, false))).toJson.prettyPrint)
 
-  println(UserSubmitEntity("ying!rz-1!haryId1!1","PU",Map(("PU1"->DataPoint("50",None,Some("wang"),UUID.randomUUID().toString, 0L, false)),
-                                                            ("PU2"->DataPoint("50",None,Some("wang"),UUID.randomUUID().toString, 0L, false)))).toJson.prettyPrint)
+ // println(UserSubmitEntity("ying!rz-1!haryId1!1","PU",Map(("PU1"->DataPoint("50",None,Some("wang"),UUID.randomUUID().toString, 0L, false)),
+                                                           // ("PU2"->DataPoint("50",None,Some("wang"),UUID.randomUUID().toString, 0L, false)))).toJson.prettyPrint)
+
+  println(Map("LoanReceipt"->UserSubmitMap(Some("pdf"),"http://www.pdf995.com/samples/pdf.pdf")).toJson.prettyPrint)
+
 }
