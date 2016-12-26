@@ -44,7 +44,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport {
       new SwaggerService().route ~
       corsHandler(new SwaggerDocService(coreSystem).routes)
   } ~
-    ResourceRoute.route(proxy)
+    ResourceRoute.route(proxy) ~
+  XieJieTestRoute().route
 
   def |+|(left: Route, right: Route) = left ~ right
   val empty: Route = get { path("impossible") {complete("impossible")}}
