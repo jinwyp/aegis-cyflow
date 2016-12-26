@@ -1,20 +1,9 @@
 package com.yimei.cflow.test
 
-import java.util.UUID
-
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.actor.{Actor, ActorLogging}
-import akka.util.ByteString
-import com.yimei.cflow.config.CoreConfig
-import akka.pattern._
 import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
 import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
-import com.yimei.cflow.api.models.flow.DataPoint
-import com.yimei.cflow.http._
-
-import scala.concurrent.Future
+import com.yimei.cflow.graph.cang.models._
 
 /**
   * Created by wangqi on 16/12/21.
@@ -50,5 +39,8 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
                                                            // ("PU2"->DataPoint("50",None,Some("wang"),UUID.randomUUID().toString, 0L, false)))).toJson.prettyPrint)
 
   println(Map("LoanReceipt"->UserSubmitMap(Some("pdf"),"http://www.pdf995.com/samples/pdf.pdf")).toJson.prettyPrint)
+
+
+
 
 }
