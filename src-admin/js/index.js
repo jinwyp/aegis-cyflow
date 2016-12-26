@@ -36,15 +36,14 @@
                         currentPage = pagination.pageNumber;
                         console.log('------callback------'+currentPage);
                         var history = ejs.compile($('#tmpl_table').html())(dataList[currentPage - 1]);
-                        console.log(history);
                         $('#table-list').html(history);
 
-                        // console.log(pagination);
-                        // console.log(pagination.pageRange);
-                        // console.log(pagination.pageRange-1);
-                        // console.log(pagination.pageRange-1);
-                        // if()
-                        // PAGE().tmplRender(pagination.pageRange-1);
+                        // var dataHtml = '<ul>';
+                        // $.each(data, function (index, item) {
+                        //     dataHtml += '<li>' + item + '</li>';
+                        // });
+                        // dataHtml += '</ul>';
+                        // $('#table-list').html(dataHtml);
                     }
                 });
             },
