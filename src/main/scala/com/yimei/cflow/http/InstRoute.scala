@@ -27,7 +27,7 @@ class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSuppo
       val entity: Future[PartyInstanceEntity] = dbrun(
         (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, pc, ii, pn, Timestamp.from(Instant.now))
       )
-      complete(entity map { e => e })
+      complete(entity)
     }
   }
 
