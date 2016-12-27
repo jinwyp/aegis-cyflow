@@ -1,16 +1,15 @@
 package com.yimei.cflow.graph.cang
-import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
-import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute}
 import com.yimei.cflow.graph.cang.config.Config._
+import com.yimei.cflow.graph.cang.config.ExceptionHandle
+import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute}
 
 /**
   * Created by wangqi on 16/12/26.
   */
-object Main extends App {
+object Main extends App with ExceptionHandle{
 
   var root: Route = pathPrefix("cang") {
     CangFlowRoute.route() ~ CangUserRoute.route()

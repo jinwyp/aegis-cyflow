@@ -137,10 +137,6 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
       pathEnd {
         parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "page".as[Int].?, "pageSize".as[Int].?)).as(FlowQuery) { fq =>
           log.info("{}", fq)
-          (fq.page, fq.pageSize) match {
-            case (Some(p), Some(ps)) if(p <= 0 || ps <= 0) => throw new ParameterException("分页参数有误")
-          }
-
           val q = flowInstance.filter { fi =>
             List(
               fq.flowId.map(fi.flow_id === _),
@@ -152,7 +148,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
           }
 
           val flows: Future[Seq[FlowInstanceEntity]] = (fq.page, fq.pageSize) match {
-            case (Some(p), Some(ps)) => dbrun(q.drop((p - 1) * ps).take(ps).result)
+            case (Some(p), Some(ps)) if(p > 0 && ps > 0) => dbrun(q.drop((p - 1) * ps).take(ps).result)
             case _ => dbrun(q.result)
           }
           val total: Future[Int] = dbrun(q.length.result)
