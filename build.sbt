@@ -61,7 +61,10 @@ libraryDependencies ++= {
     // scala-pb
     "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
-    "org.scalaz" %% "scalaz-core" % "7.2.8"
+    "org.scalaz" %% "scalaz-core" % "7.2.8",
+
+    //session
+    "com.softwaremill.akka-http-session" %% "core" % "0.3.0"
   )
 }
 
