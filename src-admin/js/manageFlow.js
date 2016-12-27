@@ -41,10 +41,14 @@
     function formController ($scope){
         vm = this;
 
+        var cytoscapeChart;
+        var formattedData;
+        var sourceData;
+
         vm.selectType = 'node';
         vm.isNewNode = true;
         vm.currentVertex = {
-            id : '未选择',
+            id : '',
             description : ''
         };
         vm.currentEdge = {
@@ -88,15 +92,53 @@
 
 
         vm.addNewLine = function (){
-            console.log(vm.newVertex)
+
+
+            if (vm.currentVertex.id && vm.newVertex.id && vm.newVertex.description && vm.newEdge.id){
+                console.log(vm.newVertex)
+                console.log(vm.newEdge)
+
+                var newTempNode = {
+                    group: "nodes",
+                    classes : 'node',
+                    data : {
+                        id : vm.newVertex.id,
+                        description : vm.newVertex.description,
+                        sourceData : {
+                            id : vm.newVertex.id,
+                            description : vm.newVertex.description,
+                            program : ''
+                        }
+                    }
+                };
+
+                var newTempEdge = {
+                    group: "edges",
+                    classes : 'edge',
+                    data : {
+                        id : vm.newEdge.id,
+                        source : vm.currentVertex.id,
+                        target : vm.newVertex.id,
+                        sourceData : {
+                            id : vm.newEdge.id,
+                            source : vm.currentVertex.id,
+                            target : vm.newVertex.id
+                        }
+                    }
+                };
+
+                vm.vertices.push(newTempNode)
+
+                cytoscapeChart.add(newTempNode);
+                cytoscapeChart.add(newTempEdge);
+            }
         }
 
 
 
 
 
-        var formattedData;
-        var sourceData;
+
         var chartEventCallback= function(cy){
 
             cy.nodes('.node').qtip({
@@ -187,7 +229,7 @@
                     eventCB : chartEventCallback
                 };
 
-                var cytoscapeChart = new flowChart2(testData1, configChart);
+                cytoscapeChart = new flowChart2(testData1, configChart);
                 sourceData = cytoscapeChart.formatterObjectToArray(testData1)
 
                 vm.edges = sourceData.edges;
