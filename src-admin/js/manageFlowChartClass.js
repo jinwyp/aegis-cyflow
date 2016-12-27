@@ -12,9 +12,9 @@
             style: {
                 'shape': 'ellipse',
                 'width': function(ele){
-                    return Math.max(80, ele.data().id.length*16);
+                    return Math.max(60, ele.data().id.length*16);
                 },
-                'height': 80,
+                'height': 60,
                 'background-color': 'gray',
                 'color': '#fff',
                 'content': 'data(id)',
@@ -115,7 +115,7 @@
                         ++total
                     })
 
-                    var text = ele.data().id + '共' + total + '个任务\n'
+                    var text = ele.data().id + ' 共' + total + '个任务\n'
 
                     for (var property in number){
 
@@ -128,7 +128,7 @@
                 },
 
                 'text-wrap': 'wrap',
-                'font-size': '12px',
+                'font-size': '14px',
                 'text-valign': 'center',
                 'text-halign': 'center',
                 'width': 20,
@@ -193,7 +193,7 @@
             formattedSource : {
                 edges : [],
                 vertices : [],
-                task : [],
+                allTask : [],
                 userTasks : [],
                 autoTasks : [],
                 partUTasks : [],
@@ -249,7 +249,13 @@
                     program : ''
                 };
                 if (typeof source.vertices[currentEdge.begin] !== 'undefined' ){
-                    tempNodeBegin = source.vertices[currentEdge.begin];
+
+                    if (typeof source.vertices[currentEdge.begin] === 'string'){
+                        tempNodeBegin.description = source.vertices[currentEdge.begin];
+                    }else {
+                        tempNodeBegin = source.vertices[currentEdge.begin]
+                    }
+
                 }
 
                 tempNode = {
@@ -279,7 +285,13 @@
                 };
 
                 if (typeof source.vertices[currentEdge.end] !== 'undefined' ){
-                    tempNodeTarget = source.vertices[currentEdge.end];
+
+                    if (typeof source.vertices[currentEdge.end] === 'string'){
+                        tempNodeTarget.description = source.vertices[currentEdge.end];
+                    }else {
+                        tempNodeTarget = source.vertices[currentEdge.end]
+                    }
+
                 }
 
                 tempNode = {
@@ -318,7 +330,6 @@
                         var tempTask = {};
                         if (taskType === 'userTasks' ||  taskType === 'autoTasks') {
 
-                            console.log(task, source[taskType][task])
                             tempTask = {
                                 classes : 'node task ' + taskType,
                                 data : {
@@ -329,7 +340,15 @@
                                         description : source[taskType][task].description,
                                         points : [],
 
-                                        belongToEdge : currentEdge
+                                        belongToEdge : {
+                                            id : currentEdge.name,
+                                            source : currentEdge.begin,
+                                            target : currentEdge.end,
+                                            userTasks : currentEdge.userTasks,
+                                            autoTasks : currentEdge.autoTasks,
+                                            partGTasks : currentEdge.partGTasks,
+                                            partUTasks : currentEdge.partUTasks
+                                        }
                                     }
                                 }
                             };
@@ -341,11 +360,12 @@
                                 })
                             })
 
-                            result.formattedSource.task.push(tempTask);
+
                             if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
                             if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
 
                             tempEdge.data.sourceData.allTask.push(tempTask)
+                            result.formattedSource.allTask.push(tempTask);
                         }
 
 
@@ -366,7 +386,15 @@
                                                 description : source['userTasks'][subTask].description,
                                                 points : [],
 
-                                                belongToEdge : currentEdge
+                                                belongToEdge : {
+                                                    id : currentEdge.name,
+                                                    source : currentEdge.begin,
+                                                    target : currentEdge.end,
+                                                    userTasks : currentEdge.userTasks,
+                                                    autoTasks : currentEdge.autoTasks,
+                                                    partGTasks : currentEdge.partGTasks,
+                                                    partUTasks : currentEdge.partUTasks
+                                                }
                                             }
                                         }
                                     };
@@ -380,17 +408,16 @@
 
                                     if (taskType === 'partUTasks') {
                                         tempTask.data.sourceData.guidKey = task.guidKey
-                                        result.formattedSource.task.push(tempTask);
                                         result.formattedSource.partUTasks.push(tempTask);
                                     }
 
                                     if (taskType === 'partGTasks') {
                                         tempTask.data.sourceData.ggidKey = task.ggidKey
-                                        result.formattedSource.task.push(tempTask);
                                         result.formattedSource.partGTasks.push(tempTask);
                                     }
 
                                     tempEdge.data.sourceData.allTask.push(tempTask)
+                                    result.formattedSource.allTask.push(tempTask);
                                 })
                             }
 

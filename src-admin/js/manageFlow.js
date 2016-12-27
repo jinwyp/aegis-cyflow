@@ -47,9 +47,11 @@
 
         var vertexIdList = [];
         var edgeIdList = [];
+        var taskIdList = [];
 
         vm.selectType = 'node';
         vm.isNewNode = true;
+        vm.taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
 
         vm.errorAddNewVertex = {
             notSelected : false,
@@ -57,18 +59,25 @@
             edgeExist : false,
             ajax : false
         };
+        vm.errorAddNewTask = {
+            taskExist : false,
+            ajax : false
+        };
+
         vm.currentVertex = {
             id : '',
             description : ''
         };
         vm.currentEdge = {
-            id : '未选择',
-            begin : '',
-            end : ''
+            id : '',
+            source : '',
+            target : '',
+            sourceData : {}
         };
         vm.currentTask = {
-            id : '未选择',
-            description : ''
+            id : '',
+            description : '',
+            type : ''
         };
 
         vm.newVertex = {
@@ -76,8 +85,12 @@
             description : ''
         };
         vm.newEdge = {
+            id : ''
+        };
+        vm.newTask = {
             id : '',
-            description : ''
+            description : '',
+            type : ''
         };
 
         vm.globalConfig = {
@@ -105,7 +118,7 @@
 
             if (form.$valid){
 
-                if (vm.currentVertex.id && vm.currentVertex.description){
+                if (vm.currentVertex.id){
                     vm.errorAddNewVertex.notSelected = false;
                 }else{
                     vm.errorAddNewVertex.notSelected = true;
@@ -177,6 +190,43 @@
         }
 
 
+        vm.addNewTask = function(form){
+            if (form.$valid){
+
+                if (taskIdList.indexOf(vm.newTask.id) > -1 ){
+                    vm.errorAddNewTask.taskExist = true;
+                    return;
+                }else{
+                    vm.errorAddNewTask.taskExist = false;
+                }
+
+
+                var newTempTask = {
+                    classes : 'node task ' + vm.newTask.type,
+                    data : {
+                        id : vm.newTask.id,
+                        sourceData : {
+                            id : vm.newTask.id,
+                            type : vm.newTask.type,
+                            description : vm.newTask.description,
+                            points : [],
+                            belongToEdge : {}
+                        }
+                    }
+                };
+
+                vm.taskTypeList.forEach(function(type, typeIndex){
+                    if (vm.newTask.type === type){
+                        vm.currentEdge.sourceData[type].push(newTempTask);
+                    }
+                })
+
+                vm.currentEdge.sourceData.allTask.push(newTempTask);
+                newTempTask.data.sourceData.belongToEdge = vm.currentEdge.sourceData;
+
+                cytoscapeChart.getElementById( vm.currentEdge.id ).data(sourceData, vm.currentEdge.sourceData);
+            }
+        }
 
 
 
@@ -234,13 +284,17 @@
                 console.log('node:', this.data())
                 vm.currentVertex.id = this.data().id;
                 vm.currentVertex.description = this.data().sourceData.description;
+                vm.selectType = 'node';
                 $scope.$apply();
             })
 
             cy.edges('.edge').on('click', function(e){
                 console.log('edge:', this.data())
                 vm.currentEdge.id = this.data().id;
-                vm.currentEdge.description = this.data().sourceData.description;
+                vm.currentEdge.source = this.data().source;
+                vm.currentEdge.target = this.data().target;
+                vm.currentEdge.sourceData = this.data().sourceData;
+                vm.selectType = 'edge';
                 $scope.$apply();
             })
 
@@ -258,7 +312,7 @@
 
         var app = {
             init : function(){
-                $.getJSON('./json/data4.json', function(resultData){
+                $.getJSON('./json/data99.json', function(resultData){
                     formattedData = resultData;
                     
                 })
@@ -282,6 +336,9 @@
                 })
                 edgeIdList = sourceData.edges.map(function(edge, edgeIndex){
                     return edge.data.id
+                })
+                taskIdList = sourceData.formattedSource.allTask.map(function(task, taskIndex){
+                    return task.data.id
                 })
 
                 console.log(cytoscapeChart.width())
