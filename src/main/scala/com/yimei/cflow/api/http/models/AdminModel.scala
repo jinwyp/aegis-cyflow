@@ -2,7 +2,7 @@ package com.yimei.cflow.api.http.models
 
 import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.api.models.user.UserProtocol
-import com.yimei.cflow.user.db.FlowInstanceEntity
+import CangDBModel.FlowInstanceEntity
 import spray.json.DefaultJsonProtocol
 
 /**

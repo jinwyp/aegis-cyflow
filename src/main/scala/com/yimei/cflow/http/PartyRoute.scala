@@ -3,6 +3,7 @@ package com.yimei.cflow.http
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.http.models.CangDBModel.PartyClassEntity
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.user.db._

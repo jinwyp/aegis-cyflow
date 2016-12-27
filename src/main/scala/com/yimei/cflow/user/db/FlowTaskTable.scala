@@ -3,11 +3,11 @@ package com.yimei.cflow.user.db
 import java.sql.Timestamp
 
 import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.api.http.models.CangDBModel.FlowTaskEntity
 
 /**
   * Created by hary on 16/12/16.
   */
-case class FlowTaskEntity(id:Option[Long], flow_id:String, task_id:String, task_name:String,task_submit:String, user_type:String, user_id:String, ts_c:Timestamp)
 
 trait FlowTaskTable {
   import driver.api._

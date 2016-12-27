@@ -6,13 +6,17 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, _}
 import akka.util.ByteString
 import com.yimei.cflow.config.{ApplicationConfig, CoreConfig}
 import com.yimei.cflow.graph.cang.exception.BusinessException
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import HttpMethods._
+import akka.http.scaladsl.model._
+import com.yimei.cflow.config.CoreConfig
+
 
 /**
   * Created by wangqi on 16/12/26.
   */
+
 object HttpUtil extends CoreConfig with ApplicationConfig{
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
