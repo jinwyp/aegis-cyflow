@@ -7,13 +7,23 @@ body{
 }
 
 
+
+.form-group .help-block {
+    display: none;
+}
+
+.form-group.has-error .help-block {
+    display: block;
+}
+
+
 .manage-flow{
     min-width:1200px;
 }
 
 #chart{
     float: left;
-    width:600px; height:1000px;
+    width:700px; height:2000px;
 }
 
 #panel-settings {

@@ -27,10 +27,10 @@
 
                         <div id="panel-settings" ng-cloak ng-controller="formController as vm">
                             <div class="panel panel-default panel-main" ng-show="vm.selectType === 'node'">
-                                <div class="panel-heading">已选中节点: {{vm.currentVertex.id || '未选择'}} </div>
+                                <div class="panel-heading"> <h4>已选中节点: {{vm.currentVertex.id || '未选择'}}</h4> </div>
 
                                 <div class="panel-body">
-                                    <form class="form-horizontal">
+                                    <form class="form-horizontal" name="formNode">
                                         <div class="form-group">
                                             <div class="col-lg-10">
                                                 <div class="radio">
@@ -45,15 +45,23 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-if="vm.isNewNode">
-                                            <div class="col-lg-10">
-                                                <input type="text" placeholder="新节点ID" class="form-control" ng-model="vm.newVertex.id">
+                                        <div class="form-group" ng-if="vm.isNewNode" ng-class="{'has-error' : formNode.vid.$invalid && formNode.vid.$dirty}">
+                                            <div class="col-lg-6">
+                                                <input type="text" name="vid" placeholder="新节点ID" class="form-control" ng-model="vm.newVertex.id" required minlength="2" maxlength="10">
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="help-block" ng-if="formNode.vid.$error.required">必填!</span>
+                                                <span class="help-block" ng-if="formNode.vid.$error.minlength">长度2-10!</span>
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-if="vm.isNewNode">
-                                            <div class="col-lg-10">
-                                                <input type="text" placeholder="新节点简介" class="form-control" ng-model="vm.newVertex.description">
+                                        <div class="form-group" ng-if="vm.isNewNode" ng-class="{'has-error' : formNode.vdesc.$invalid && formNode.vdesc.$dirty}">
+                                            <div class="col-lg-6">
+                                                <input type="text" name="vdesc" placeholder="新节点简介" class="form-control" ng-model="vm.newVertex.description" required minlength="2" >
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="help-block" ng-if="formNode.vdesc.$error.required">必填!</span>
+                                                <span class="help-block" ng-if="formNode.vdesc.$error.minlength">长度要大于2!</span>
                                             </div>
                                         </div>
 
@@ -64,16 +72,25 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
-                                            <div class="col-lg-10">
-                                                <input type="text" placeholder="节点连线ID" class="form-control" ng-model="vm.newEdge.id">
+                                        <div class="form-group" ng-class="{'has-error' : formNode.edgeId.$invalid && formNode.edgeId.$dirty}">
+                                            <div class="col-lg-6">
+                                                <input type="text" name="edgeId" placeholder="节点连线ID" class="form-control" ng-model="vm.newEdge.id" required minlength="2" maxlength="10">
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="help-block" ng-if="formNode.vid.$error.required">必填!</span>
+                                                <span class="help-block" ng-if="formNode.vid.$error.minlength">长度2-10!</span>
                                             </div>
                                         </div>
 
 
-                                        <div class="form-group">
-                                            <div class="col-lg-10">
-                                                <button type="submit" class="btn btn-sm btn-default" ng-click="vm.addNewLine()">保存</button>
+                                        <div class="form-group has-error">
+                                            <div class="col-lg-12">
+                                                <button type="submit" class="btn btn-sm btn-default" ng-disabled="formNode.$invalid" ng-click="vm.addNewLine(formNode)">保存</button>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <span class="help-block" ng-if="vm.errorAddNewVertex.notSelected">请选择一个节点!</span>
+                                                <span class="help-block" ng-if="vm.errorAddNewVertex.vertexExist">节点ID已存在!</span>
+                                                <span class="help-block" ng-if="vm.errorAddNewVertex.edgeExist">连线ID已存在!</span>
                                             </div>
                                         </div>
                                     </form>

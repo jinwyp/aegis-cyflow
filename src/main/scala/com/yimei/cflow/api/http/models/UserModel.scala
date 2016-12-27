@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.http.models
 
 import com.yimei.cflow.api.models.user.{State, UserProtocol}
-import CangDBModel.PartyUserEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import spray.json.DefaultJsonProtocol
 
 /**

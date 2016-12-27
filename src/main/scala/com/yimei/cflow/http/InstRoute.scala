@@ -14,9 +14,7 @@ import com.yimei.cflow.user.db._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 import scala.concurrent.Future
-import javax.ws.rs.Path
-
-import com.yimei.cflow.api.http.models.CangDBModel.PartyInstanceEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.UserProtocol
 
 class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSupport{

@@ -3,7 +3,7 @@ package com.yimei.cflow.user.db
 import java.sql.Timestamp
 
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.api.http.models.CangDBModel.PartyGroupEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 
 /**
   * Created by hary on 16/12/16.

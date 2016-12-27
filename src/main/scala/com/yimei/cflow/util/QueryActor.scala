@@ -9,7 +9,6 @@ import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, Com
 import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.flow.Graph
-import com.yimei.cflow.user.User
 import com.yimei.cflow.api.models.user.{State => UserState}
 
 import scala.concurrent.duration._

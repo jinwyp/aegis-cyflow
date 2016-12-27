@@ -18,8 +18,6 @@ class PersistentUser(guid: String,
 
   println(s"create persistenter user with guid = $guid")
 
-  import com.yimei.cflow.user.User._
-
   // 用户id与用户类型
   val regex = "([^!]+)!(.*)".r
   val (userType, userId) = guid match {
