@@ -47,7 +47,7 @@
             selector: 'node.task',
             style: {
                 // 'shape': 'roundrectangle',
-                'shape': 'rhomboid',
+                'shape': 'triangle',
                 'width': function(ele){
                     return 150;
                     // return Math.max(150, ele.data().id.length*16);
@@ -252,17 +252,18 @@
                             })
                             !complete ? (classes = 'isProcessing') : (classes = 'isFinished');
                         }
+                        
                         children.push({'data': { id : t,
                                                 taskType : type,
-                                                description : t.description,
+                                                description : originalData[type][t].description,
                                                 program : '',
                                                 points : '',
                                                 parent: name,
                                                 original : originalData},
                                         'classes': classes+' task '+type})
                         classes && cls.push(classes);
-                        resultEdges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: 'taskedge'  },
-                            { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: 'taskedge'  });
+                        resultEdges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: classes + ' taskedge'  },
+                            { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: classes + ' taskedge'  });
 
                     })
                 }
@@ -283,7 +284,7 @@
                             }
                             children.push({'data': { id : subt,
                                                 taskType : type,
-                                                description : subt.description,
+                                                description : originalData['userTasks'][subt].description,
                                                 program : '',
                                                 points : '',
                                                 parent: name,
@@ -378,12 +379,16 @@
                             if(classes.indexOf('isProcessing')<0){
                                 (className.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
                                 (className.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
+                                // (className.indexOf('isFinished')<0) && (className.indexOf('isProcessing')<0) && (classes = classes.replace(/(isProcessing|isFinished)/g, ''));
                                 nodes[node_keys.indexOf(n)].classes = classes;
                             }
                         }
                     })
 
                     edgeItem.data.children && edgeItem.data.children.forEach(function(e, ei){
+                        if(e.data.id == 'PU'){
+                            console.log(1)
+                        }
                         nodes.push(e);
                     });
                 }
