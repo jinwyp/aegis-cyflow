@@ -14,8 +14,9 @@ import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.core.FlowRegistry
-import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
+import com.yimei.cflow.exception.{DatabaseException, ParameterException}
+import com.yimei.cflow.api.http.models.CangDBModel._
+import com.yimei.cflow.user.db._
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json._
 
@@ -133,8 +134,12 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   def getFLows = get {
     pathPrefix("flow") {
       pathEnd {
-        parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "limit".as[Int].?, "offset".as[Int].?)).as(FlowQuery) { fq =>
+        parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "page".as[Int].?, "pageSize".as[Int].?)).as(FlowQuery) { fq =>
           log.info("{}", fq)
+          (fq.page, fq.pageSize) match {
+            case (Some(p), Some(ps)) if(p <= 0 || ps <= 0) => throw new ParameterException("分页参数有误")
+          }
+
           val q = flowInstance.filter { fi =>
             List(
               fq.flowId.map(fi.flow_id === _),
@@ -145,8 +150,8 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
             ).collect({ case Some(a) => a }).reduceLeftOption(_ && _).getOrElse(true: Rep[Boolean])
           }
 
-          val flows: Future[Seq[FlowInstanceEntity]] = (fq.limit, fq.offset) match {
-            case (Some(l), Some(o)) => dbrun(q.drop(o).take(l).result)
+          val flows: Future[Seq[FlowInstanceEntity]] = (fq.page, fq.pageSize) match {
+            case (Some(p), Some(ps)) => dbrun(q.drop((p - 1) * ps).take(ps).result)
             case _ => dbrun(q.result)
           }
           val total: Future[Int] = dbrun(q.length.result)

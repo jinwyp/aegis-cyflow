@@ -14,10 +14,12 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.user.db.{PartyInstanceEntity, PartyInstanceTable, PartyUserEntity, PartyUserTable}
+import com.yimei.cflow.user.db.{PartyInstanceTable, PartyUserTable}
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.util.DBUtils._
+import com.yimei.cflow
+import com.yimei.cflow.api.http.models.CangDBModel._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

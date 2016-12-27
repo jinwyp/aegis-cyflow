@@ -9,6 +9,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
+import com.yimei.cflow.api.http.models.CangDBModel.PartyGroupEntity
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
@@ -40,7 +41,7 @@ class GroupRoute extends UserProtocol with PartyGroupTable with SprayJsonSupport
       val entity: Future[PartyGroupEntity] = dbrun(
         (partyGroup returning partyGroup.map(_.id)) into ((pg, id) => pg.copy(id = id)) += PartyGroupEntity(None, pc, gid, desc, Timestamp.from(Instant.now))
       )
-      complete(entity map { e => e})
+      complete(entity)
     }
   }
 
