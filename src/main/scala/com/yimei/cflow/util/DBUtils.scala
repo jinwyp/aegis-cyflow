@@ -19,10 +19,10 @@ object DBUtils extends CoreConfig {
   //封装数据库操作
   def dbrun[R](a: DBIOAction[R, NoStream, Nothing]): Future[R] ={
     val result = db.run(a)
-    result onFailure {
-      case a:SQLIntegrityConstraintViolationException => log.warning("该记录已存在")
-      case a => {log.info("database err: {}",a); throw new DatabaseException(a.getMessage)}
-    }
+//    result onFailure {
+//      case a:SQLIntegrityConstraintViolationException => log.warning("该记录已存在")
+//      case a => {log.info("database err: {}",a); throw new DatabaseException(a.getMessage)}
+//    }
     result
   }
 
