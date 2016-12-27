@@ -28,11 +28,6 @@ trait ExceptionHandle extends ResultProtocol with SprayJsonSupport {
         complete(HttpResponse(StatusCodes.BadRequest,entity = Result(data = "",success = false,error = Error(409,e.message,"")).toJson.toString ))
       }
 
-//    case e:DatabaseException =>
-//      extractUri { uri =>
-//        println(s"Request to $uri could not be handled normally!!!!!!!!! DatabaseException11111111 {}",e.message)
-//        complete(HttpResponse(StatusCodes.BadRequest,entity = e.message ))
-//      }
     case e =>
       extractUri { uri =>
         log.error(s"Request to $uri could not be handled normally!!!!!!!!!")

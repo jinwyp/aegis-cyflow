@@ -8,8 +8,8 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.yimei.cflow.graph.cang.config
 import com.yimei.cflow.graph.cang.config.Config._
 import spray.json._
-
 import com.yimei.cflow.api.http.models.ResultModel._
+import com.yimei.cflow.api.models.database.FlowDBModel.FlowInstanceEntity
 
 import scala.concurrent.Future
 
@@ -24,18 +24,15 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
       entity(as[StartFlow]) { startFlow =>
         //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
 
-        val create: Future[String] = createFlow(rzf,startFlow.basicInfo.applyCompanyId.toString,startFlow.basicInfo.applyUserId.toString,flowType,
+        val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf,startFlow.basicInfo.applyCompanyId.toString,startFlow.basicInfo.applyUserId.toString,flowType,
           Map("initData"->startFlow.toJson.toString,
             "trafficker"->zjfUserId,
-            "traffickerFinance"->zjfFinanceId).toJson.toString
-        )
-
-        val re: Future[Result[String]] = create map { c=>
+            "traffickerFinance"->zjfFinanceId)
+        ) map { c=>
           Result(c)
         }
 
-
-        complete(re)
+        complete(create)
       }
     }
   }
