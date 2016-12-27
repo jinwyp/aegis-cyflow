@@ -3,11 +3,12 @@ package com.yimei.cflow.user.db
 import java.sql.Timestamp
 
 import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 
 /**
   * Created by hary on 16/12/16.
   */
-case class PartyUserEntity(id:Option[Long], party_id:Long, user_id:String, password:String, phone:Option[String], email:Option[String], name:String, ts_c:Timestamp)
+
 
 trait PartyUserTable {
   import driver.api._

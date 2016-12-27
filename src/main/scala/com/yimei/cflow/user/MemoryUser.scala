@@ -13,11 +13,9 @@ import com.yimei.cflow.config.GlobalConfig._
   */
 class MemoryUser(guid: String, modules: Map[String, ActorRef]) extends AbstractUser with ActorLogging {
 
-  import User._
-
   // 用户id与用户类型
   val regex = "([^!]+)!(.*)".r
-  val (userType,userId) = guid match {
+  val (userType, userId) = guid match {
     case regex(uid, gid) => (uid, gid)
   }
 
@@ -35,7 +33,7 @@ class MemoryUser(guid: String, modules: Map[String, ActorRef]) extends AbstractU
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
       updateState(TaskEnqueue(taskId, command))
-      //sender() ! state
+    //sender() ! state
     // todo 如果用mobile在线, 给mobile推送采集任务!!!!!!!!!!!!!!!!!!!!
 
     // 收到用户提交的采集数据

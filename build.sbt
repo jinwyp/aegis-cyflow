@@ -10,6 +10,8 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
+resolvers += Resolver.jcenterRepo
+
 libraryDependencies ++= {
   val akkaV = "2.4.11"
   val scalaTestV = "3.0.0"
@@ -25,6 +27,8 @@ libraryDependencies ++= {
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
 
     "com.typesafe.akka" %% "akka-persistence" % akkaV,
+    "com.hootsuite" %% "akka-persistence-redis" % "0.6.0",
+
     "org.iq80.leveldb"            % "leveldb"          % "0.7",
     "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8",
 
@@ -61,7 +65,10 @@ libraryDependencies ++= {
     // scala-pb
     "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
-    "org.scalaz" %% "scalaz-core" % "7.2.8"
+    "org.scalaz" %% "scalaz-core" % "7.2.8",
+
+    //session
+    "com.softwaremill.akka-http-session" %% "core" % "0.3.0"
   )
 }
 

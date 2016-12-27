@@ -1,12 +1,12 @@
 package com.yimei.cflow.user.db
 import com.yimei.cflow.config.DatabaseConfig._
-
 import java.sql.Timestamp
+
+import com.yimei.cflow.api.models.database.FlowDBModel._
 
 /**
   * Created by hary on 16/12/16.
   */
-case class FlowInstanceEntity(id:Option[Long], flow_id:String, flow_type:String, user_type:String, user_id:String, state:String, finished:Int, ts_c:Timestamp)
 
 trait FlowInstanceTable {
   import driver.api._

@@ -14,8 +14,7 @@ import com.yimei.cflow.user.db._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 import scala.concurrent.Future
-import javax.ws.rs.Path
-
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.UserProtocol
 
 class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSupport{
@@ -27,14 +26,14 @@ class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSuppo
       val entity: Future[PartyInstanceEntity] = dbrun(
         (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, pc, ii, pn, Timestamp.from(Instant.now))
       )
-      complete(entity map { e => e })
+      complete(entity)
     }
   }
 
   //GET  /inst/:party/:instance_id           查询参与方实例
   def queryPartyInstance: Route = get {
     pathPrefix("inst" / Segment / Segment) { (pc, ii) =>
-      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result))
+      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result.head))
     }
   }
 
