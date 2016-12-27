@@ -9,7 +9,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
-import com.yimei.cflow.api.http.models.CangDBModel.PartyGroupEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}

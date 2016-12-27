@@ -2,7 +2,7 @@ package com.yimei.cflow.user.db
 import com.yimei.cflow.config.DatabaseConfig._
 import java.sql.Timestamp
 
-import com.yimei.cflow.api.http.models.CangDBModel.FlowInstanceEntity
+import com.yimei.cflow.api.models.database.FlowDBModel._
 
 /**
   * Created by hary on 16/12/16.

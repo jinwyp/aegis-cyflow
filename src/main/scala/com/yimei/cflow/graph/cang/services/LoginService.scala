@@ -23,8 +23,12 @@ object LoginService extends PartyClient{
     log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${compayName}")
     val qpi = queryPartyInstance(PARTY_CLASS, companyId)
 
-    Await.result(qpi, Duration.Inf)
-    qpi.value.get.get
+//    qpi match {
+//      cd
+//    }
+
+//    Await.result(qpi, Duration.Inf)
+//    qpi.value.get.get
 
 //    println("result :" + qpi.value.get.get)
 //    val pi = for {
@@ -39,6 +43,7 @@ object LoginService extends PartyClient{
 //      cpi
 //      "success"
 //    }
+    "success"
 
   }
 
