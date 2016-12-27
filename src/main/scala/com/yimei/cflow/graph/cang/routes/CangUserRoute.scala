@@ -5,7 +5,6 @@ import java.time.Instant
 
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import com.yimei.cflow.user.db.PartyInstanceEntity
 import com.yimei.cflow.util.DBUtils._
 
 import scala.concurrent.Future
@@ -15,6 +14,8 @@ import com.yimei.cflow.graph.cang.services.LoginService._
   * Created by xl on 16/12/26.
   */
 class CangUserRoute {
+
+  // http://127.0.0.1:9001/cang/user/:user_id/:company_Id/:company_Name
   def financeSideEnterRoute: Route = get {
     pathPrefix("user" / Segment / Segment / Segment) { (pc, ii, pn) =>
       complete(financeSideEnter(pc, ii, pn))

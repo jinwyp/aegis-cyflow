@@ -9,10 +9,10 @@ import akka.event.{Logging, LoggingAdapter}
   */
 trait PartyClient {
   def createPartyInstance(party_class: String, instance_id: String, party_name: String): Future[String] = {
-    sendRequest(path = "inst", pathVariables = Array(party_class, instance_id, party_name), method = "post")
+    sendRequest(path = "api/inst", pathVariables = Array(party_class, instance_id, party_name), method = "post")
   }
 
   def queryPartyInstance(party_class: String, instance_id: String): Future[String] = {
-    sendRequest(path = "", pathVariables = Array(party_class, instance_id), method = "get")
+    sendRequest(path = "api/inst", pathVariables = Array(party_class, instance_id), method = "get")
   }
 }
