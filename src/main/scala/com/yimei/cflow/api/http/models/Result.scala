@@ -18,7 +18,7 @@ object ResultModel {
     implicit object MetaFormat extends RootJsonFormat[Meta] {
       override def write(obj: Meta): JsValue = {
         if (obj==null){
-          JsString("null")
+          JsString("")
         } else {
           JsArray(JsNumber(obj.total),JsNumber(obj.count),JsNumber(obj.offset),JsNumber(obj.page))
         }
@@ -34,7 +34,7 @@ object ResultModel {
     implicit object errFormat extends RootJsonFormat[Error] {
       override def write(obj: Error): JsValue = {
         if(obj==null){
-          JsString("null")
+          JsString("")
         } else {
           JsArray(JsNumber(obj.code),JsString(obj.message),JsString(obj.field))
         }

@@ -40,7 +40,7 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
       case false => url + pathWithPathVariables + paras.substring(0,paras.length-1)
     }
 
-    log.info("request url: {},entity: {}",fullUrl,bodyEntity.getOrElse("Empty"))
+    log.info("request url: {}, request body: {}",fullUrl,bodyEntity.getOrElse("Empty"))
     import MediaTypes._
 
 
@@ -56,14 +56,28 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
     Http().singleRequest(
       httpRequest
     ) flatMap { r =>
+
+
       val strictEntity = r.entity.toStrict(10.seconds)
       val byteString: Future[ByteString] = strictEntity flatMap { e =>
         e.dataBytes
           .runFold(ByteString.empty) { case (acc, b) => acc ++ b }
       }
-      byteString map(_.decodeString("UTF-8"))
+      val result = byteString map(_.decodeString("UTF-8"))
+
+      r.status match {
+        case StatusCodes.OK =>
+          result
+        case _            =>
+          result map( r => throw new BusinessException(r))
+      }
     } recover {
-      case _ => throw new BusinessException("网络异常")
+      case BusinessException(r) =>
+        log.info(r)
+        throw new BusinessException(r)
+      case _ =>
+        log.error("!!!!!!!!!!!!!")
+        throw new BusinessException("网络异常")
     }
   }
 

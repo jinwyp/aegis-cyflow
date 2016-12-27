@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.{DaemonMaster, FlowRegistry, GraphLoader}
 import com.yimei.cflow.http._
@@ -15,7 +15,7 @@ import com.yimei.cflow.util.TestClient
 /**
   * Created by hary on 16/12/3.
   */
-object ServiceTest extends App with ApplicationConfig with CorsSupport {
+object ServiceTest extends App with ApplicationConfig with CorsSupport with MyExceptionHandler {
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor

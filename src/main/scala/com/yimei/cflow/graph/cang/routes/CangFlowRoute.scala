@@ -30,10 +30,12 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
             "traffickerFinance"->zjfFinanceId).toJson.toString
         )
 
+        val re: Future[Result[String]] = create map { c=>
+          Result(c)
+        }
 
-        val result =  Result("ok")
 
-        complete(result)
+        complete(re)
       }
     }
   }
