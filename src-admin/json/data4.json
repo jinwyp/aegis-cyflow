@@ -2,21 +2,18 @@
     "userTasks": {
         "TKPG1": {
             "description": "描述TKPG1",
-            "parent": "userP1",
             "points": [
                 "KPG1"
             ]
         },
         "TKPU1": {
             "description": "描述TKPU1",
-            "parent": "userP1",
             "points": [
                 "KPU1" 
             ]
         },
         "PU": {
             "description": "描述PU",
-            "parent": "userP2",
             "points": [
                 "PU1",
                 "PU2"
@@ -24,7 +21,6 @@
         },
         "PG": {
             "description": "描述PU",
-            "parent": "userP2",
             "points": [
                 "PG1",
                 "PG2"
@@ -147,14 +143,12 @@
     "autoTasks": {
         "ATESTAT": {
             "description": "描述TKPG1",
-            "parent": "autoP1",
             "points": [
                 "ATESTAT", "B", "C", "D", "E", "F", "PU1", "PU2", "PG1", "PG2"
             ]
         },
         "B": {
             "description": "描述TKPG1",
-            "parent": "autoP1",
             "points": [
                 "B"
             ]
