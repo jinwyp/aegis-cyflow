@@ -12,7 +12,8 @@
                 'shape': 'ellipse',
                 // 'shape': 'diamond',
                 'width': function(ele){
-                    return Math.max(100, ele.data().id.length*16);
+                    return 100;
+                    // return Math.max(100, ele.data().id.length*16);
                 },
                 'height': 100,
                 'content': 'data(id)',
@@ -21,22 +22,24 @@
                 'background-color': 'gray',
                 'color': '#fff',
                 'font-size': '24px',
-                // 'text-outline-width': 2,
-                // 'text-outline-color': 'gray'
+                'text-outline-width': 8,
+                'text-outline-color': 'gray'
             }
         },
 
         {
             selector: 'node.isProcessing',
             style: {
-                'background-color': 'orange'
+                'background-color': 'orange',
+                'text-outline-color': 'orange'
             }
         },
 
         {
             selector: 'node.isFinished',
             style: {
-                'background-color': 'green'
+                'background-color': 'green',
+                'text-outline-color': 'green'
             }
         },
 
@@ -46,7 +49,8 @@
                 // 'shape': 'roundrectangle',
                 'shape': 'rhomboid',
                 'width': function(ele){
-                    return Math.max(150, ele.data().id.length*16);
+                    return 150;
+                    // return Math.max(150, ele.data().id.length*16);
                 },
                 'height': 80
             }
@@ -57,11 +61,13 @@
             style: {
                 'shape': 'star',
                 'width': function(ele){
-                    return Math.max(110, ele.data().id.length*20);
+                    return 110;
+                    // return Math.max(110, ele.data().id.length*20);
                 },
                 'height': function(ele){
-                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    return h
+                    return 94;
+                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    // return h
                 }
 
             }
@@ -72,11 +78,13 @@
             style: {
                 'shape': 'hexagon',
                 'width': function(ele){
-                    return Math.max(110, ele.data().id.length*20);
+                    return 110;
+                    // return Math.max(110, ele.data().id.length*20);
                 },
                 'height': function(ele){
-                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    return h
+                    return 94;
+                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    // return h
                 }
 
             }
@@ -88,11 +96,13 @@
                 // 'shape': 'pentagon',
                 'shape': 'polygon',
                 'width': function(ele){
-                    return Math.max(110, ele.data().id.length*20);
+                    return 110;
+                    // return Math.max(110, ele.data().id.length*20);
                 },
                 'height': function(ele){
-                    var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    return h
+                    return 94;
+                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                    // return h
                 }
 
             }
@@ -115,9 +125,18 @@
                 'text-valign': 'top',
                 'text-halign': 'center',
                 'color': '#333',
-                'background-color': '#bbb'
+                'background-color': '#bbb',
+                'text-outline-width': 0
             }
         }, 
+
+        {
+            selector: 'node.singleChild',
+            style: {
+                'background-color': '#d8dee4',
+                'border-width': 0 
+            }
+        },
 
         {
             selector: 'edge',
@@ -167,11 +186,28 @@
         },
 
         {
+            // 任务edge不显示，显示为parent edge
             selector: 'edge.taskedge',
             style: {
-                'display': 'none'
+                'visibility': 'hidden'
             }
-        }
+        },
+        
+        {
+            // 只有一个子任务的edge parent
+            selector: 'edge.singleChildEdge',
+            style: {
+                'visibility': 'hidden'
+            }
+        },
+
+        {
+            // 只有一个子任务
+            selector: 'edge.taskedge.singleTaskEdge',
+            style: {
+                'visibility': 'visible'
+            }
+        },
     ];
     
     var flowChart = function (domId, data, actionCB, config){
@@ -200,6 +236,7 @@
             var children = [];
             var cls = [];
             
+
             ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'].forEach(function(type, ti){
                 var tasks = edge[type];
                 if((tasks.length>0) && (type=='autoTasks' || type == 'userTasks')){
@@ -222,7 +259,7 @@
                                                 points : '',
                                                 parent: name,
                                                 original : originalData},
-                                        'classes': classes})
+                                        'classes': classes+' task '+type})
                         classes && cls.push(classes);
                         resultEdges.push({ data: {'source': curEdge.begin, 'target': t, name:name, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: 'taskedge'  },
                             { data: {'source': t, 'target': curEdge.end, name:name, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: 'taskedge'  });
@@ -251,7 +288,7 @@
                                                 points : '',
                                                 parent: name,
                                                 original : originalData},
-                                        'classes': classes})
+                                        'classes': classes +' task '+ type })
                             classes && cls.push(classes);
                             resultEdges.push({ data: {'source': curEdge.begin, 'target': subt, name:name, gidKey:id, sourceType:'node', endType:'task', taskType:type, original: originalData}, classes: 'taskedge' },
                                 { data: {'source': subt, 'target': curEdge.end, name:name, gidKey:id, sourceType:'task', endType:'node', taskType:type, original: originalData}, classes: 'taskedge' });
@@ -259,9 +296,16 @@
                     })
                 }
             });
-            var ecls = (cls.indexOf('isProcessing')>=0) ? 'isProcessing' : ((cls.length==children.length) ? 'ifFinished' : '');
+
+            (children.length==1) && resultEdges.forEach(function(e, ei){
+                e.classes += ' singleTaskEdge';
+            })
+
+            var ecls = (cls.length>0) ? ((cls.indexOf('isProcessing')>=0) ? 'isProcessing' : ((cls.length==children.length) ? 'isFinished' : '')) : '';
+            (children.length==1) && (ecls+=' singleChildEdge');
             resultEdges.push({ data: {'source': curEdge.begin, 'target': name, 'name':name + '-source', 'sourceType':'node', 'endType':'edgeGroup', 'children': children, 'original': originalData}, 'classes': ecls},
-                { data: {'source': name, 'target': curEdge.end, 'name':name+'-target', 'sourceType':'edgeGroup', 'endType':'node', 'original': originalData}, 'classes': ecls})
+                { data: {'source': name, 'target': curEdge.end, 'name':name+'-target', 'sourceType':'edgeGroup', 'endType':'node', 'children': children, 'original': originalData}, 'classes': ecls})
+        
             return resultEdges;
         };
 
@@ -289,7 +333,7 @@
             };
 
             edges.forEach(function(edgeItem, ei){
-                if(edgeItem.classes !== 'taskedge'){
+                if(edgeItem.classes.indexOf('taskedge')<0){
                     var nArr = [edgeItem.data.source, edgeItem.data.target];
 
                     nArr.forEach(function(n, ni){
@@ -303,6 +347,8 @@
 
                         (ni==0)&&(className+=' '+edgeItem.data.sourceType);
                         (ni==1)&&(className+=' '+edgeItem.data.endType);
+                        (ni==1)&&(edgeItem.data.children)&&(edgeItem.data.children.length==1)&&(className+=' singleChild');
+
                         className += ' ' + edgeItem.data.taskType;
 
                         if(node_keys.indexOf(n)<0){
