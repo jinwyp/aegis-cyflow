@@ -15,7 +15,8 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.core.FlowRegistry
 import com.yimei.cflow.exception.{DatabaseException, ParameterException}
-import com.yimei.cflow.api.http.models.CangDBModel._
+import com.yimei.cflow.api.models.database.FlowDBModel._
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.user.db._
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json._
