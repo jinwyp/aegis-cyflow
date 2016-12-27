@@ -5,20 +5,21 @@
 
 (function(window, $, cytoscape){
 
+
     var styleList = [
         {
             selector: 'node',
             style: {
                 'shape': 'ellipse',
                 'width': function(ele){
-                    return Math.max(100, ele.data().id.length*16);
+                    return Math.max(80, ele.data().id.length*16);
                 },
-                'height': 100,
+                'height': 80,
+                'background-color': 'gray',
+                'color': '#fff',
                 'content': 'data(id)',
                 'text-valign': 'center',
                 'text-halign': 'center',
-                'background-color': 'gray',
-                'color': '#fff',
                 'font-size': '24px'
             }
         },
@@ -82,11 +83,66 @@
         {
             selector: 'edge',
             style: {
-                'width': 4,
-                'target-arrow-shape': 'triangle',
-                'line-color': 'gray',
-                'target-arrow-color': 'gray',
+                'label': function(ele){
+                    var total = 0;
+                    var number = {
+                        'autoTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'userTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'partUTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'partGTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        }
+                    }
+                    ele.data().sourceData.allTask.forEach(function(task, taskIndex){
+
+                        for (var property in number){
+
+                            if(task.data.sourceData.type === property){
+                                number[property].count  += 1
+                                number[property].taskNameList.push(task.id)
+                            }
+                        }
+                        ++total
+                    })
+
+                    var text = ele.data().id + '共' + total + '个任务\n'
+
+                    for (var property in number){
+
+                        if (number[property].count > 0){
+                            text += property + number[property].count + '个\n'
+                        }
+                    }
+
+                    return text;
+                },
+
+                'text-wrap': 'wrap',
+                'font-size': '12px',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': 20,
                 'curve-style': 'bezier',
+                'line-color': '#9dbaea',
+                'target-arrow-shape': 'triangle',
+                'target-arrow-color': '#9dbaea',
+                'mid-source-arrow-shape': 'square',
+                'mid-source-arrow-color': 'gray',
+                'mid-source-arrow-fill': 'hollow',
+                'mid-target-arrow-shape': 'square',
+                'mid-target-arrow-color': 'gray',
+                'mid-target-arrow-fill': 'hollow'
+
                 // 'control-point-distances': '-30% 30%',
                 // 'control-point-weights': '0 1'
             }
@@ -176,10 +232,12 @@
                         userTasks : currentEdge.userTasks,
                         autoTasks : currentEdge.autoTasks,
                         partGTasks : currentEdge.partGTasks,
-                        partUTasks : currentEdge.partUTasks
+                        partUTasks : currentEdge.partUTasks,
+                        allTask : []
                     }
                 }
             };
+
 
 
 
@@ -213,8 +271,6 @@
                 result.formattedSource.vertices.push(tempNode)
             }
 
-
-
             if (tempNodesId.indexOf(currentEdge.end) === -1) {
 
                 var tempNodeTarget = {
@@ -246,8 +302,7 @@
             }
 
 
-            result.edges.push(tempEdge)
-            result.formattedSource.edges.push(tempEdge)
+
 
 
 
@@ -262,6 +317,8 @@
                     currentEdge[taskType].forEach(function(task, taskIndex){
                         var tempTask = {};
                         if (taskType === 'userTasks' ||  taskType === 'autoTasks') {
+
+                            console.log(task, source[taskType][task])
                             tempTask = {
                                 classes : 'node task ' + taskType,
                                 data : {
@@ -270,16 +327,25 @@
                                         id : task,
                                         type : taskType,
                                         description : source[taskType][task].description,
-                                        points : source[taskType][task].points,
+                                        points : [],
 
                                         belongToEdge : currentEdge
                                     }
                                 }
                             };
 
+                            source[taskType][task].points.forEach(function(point, pointIndex){
+                                tempTask.data.sourceData.points.push({
+                                    id : point,
+                                    description : source.points[point]
+                                })
+                            })
+
                             result.formattedSource.task.push(tempTask);
                             if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
                             if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
+
+                            tempEdge.data.sourceData.allTask.push(tempTask)
                         }
 
 
@@ -298,10 +364,19 @@
                                                 guidKey : '',
                                                 ggidKey : '',
                                                 description : source['userTasks'][subTask].description,
-                                                points : source['userTasks'][subTask].points
+                                                points : [],
+
+                                                belongToEdge : currentEdge
                                             }
                                         }
                                     };
+
+                                    source['userTasks'][subTask].points.forEach(function(point, pointIndex){
+                                        tempTask.data.sourceData.points.push({
+                                            id : point,
+                                            description : source.points[point]
+                                        })
+                                    })
 
                                     if (taskType === 'partUTasks') {
                                         tempTask.data.sourceData.guidKey = task.guidKey
@@ -314,6 +389,8 @@
                                         result.formattedSource.task.push(tempTask);
                                         result.formattedSource.partGTasks.push(tempTask);
                                     }
+
+                                    tempEdge.data.sourceData.allTask.push(tempTask)
                                 })
                             }
 
@@ -322,6 +399,10 @@
                 }
             })
 
+
+            // 整理边
+            result.edges.push(tempEdge)
+            result.formattedSource.edges.push(tempEdge)
 
         }
 
@@ -343,7 +424,15 @@
             container: document.getElementById(config.domId),
 
             layout: {
-                name: 'dagre'
+                name: 'dagre',
+                fit: false,
+                minLen : function( edge ){
+                    return 4; // number of ranks to keep between the source and target of the edge
+                },
+                edgeWeight : function( edge ){
+                    return 1;  // higher weight edges are generally made shorter and straighter than lower weight edges
+                },
+                nodeSep: 500
             },
             style: styleList,
             elements: formatterObjectToArray(sourceData),
@@ -354,8 +443,9 @@
             userPanningEnabled: true,
             autoungrabify: false,
 
-            minZoom: 0.3, //http://js.cytoscape.org/#core
+            minZoom: 1, //http://js.cytoscape.org/#core
             maxZoom: 1,
+            zoom : 1,
 
             textureOnViewport : false
             // pixelRatio : 1.0

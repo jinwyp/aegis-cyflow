@@ -45,8 +45,18 @@
         var formattedData;
         var sourceData;
 
+        var vertexIdList = [];
+        var edgeIdList = [];
+
         vm.selectType = 'node';
         vm.isNewNode = true;
+
+        vm.errorAddNewVertex = {
+            notSelected : false,
+            vertexExist : false,
+            edgeExist : false,
+            ajax : false
+        };
         vm.currentVertex = {
             id : '',
             description : ''
@@ -91,12 +101,35 @@
         vm.partGTasks = [];
 
 
-        vm.addNewLine = function (){
+        vm.addNewLine = function (form){
 
+            if (form.$valid){
 
-            if (vm.currentVertex.id && vm.newVertex.id && vm.newVertex.description && vm.newEdge.id){
-                console.log(vm.newVertex)
-                console.log(vm.newEdge)
+                if (vm.currentVertex.id && vm.currentVertex.description){
+                    vm.errorAddNewVertex.notSelected = false;
+                }else{
+                    vm.errorAddNewVertex.notSelected = true;
+                    return;
+                }
+
+                if (edgeIdList.indexOf(vm.newEdge.id) > -1 ){
+                    vm.errorAddNewVertex.edgeExist = true;
+                    return;
+                }else{
+                    vm.errorAddNewVertex.edgeExist = false;
+                }
+
+                if (vm.isNewNode){
+
+                    if (vertexIdList.indexOf(vm.newVertex.id) > -1 ){
+                        vm.errorAddNewVertex.vertexExist = true;
+                        return;
+                    }else{
+                        vm.errorAddNewVertex.vertexExist = false;
+                    }
+                }else{
+
+                }
 
                 var newTempNode = {
                     group: "nodes",
@@ -122,16 +155,25 @@
                         sourceData : {
                             id : vm.newEdge.id,
                             source : vm.currentVertex.id,
-                            target : vm.newVertex.id
+                            target : vm.newVertex.id,
+                            allTask : [],
+                            userTasks : [],
+                            autoTasks : [],
+                            partUTasks : [],
+                            partGTasks : []
                         }
                     }
                 };
 
+
+
                 vm.vertices.push(newTempNode)
+                vm.edges.push(newTempEdge)
 
                 cytoscapeChart.add(newTempNode);
                 cytoscapeChart.add(newTempEdge);
             }
+
         }
 
 
@@ -216,7 +258,7 @@
 
         var app = {
             init : function(){
-                $.getJSON('./json/data99.json', function(resultData){
+                $.getJSON('./json/data4.json', function(resultData){
                     formattedData = resultData;
                     
                 })
@@ -229,12 +271,18 @@
                     eventCB : chartEventCallback
                 };
 
-                cytoscapeChart = new flowChart2(testData1, configChart);
-                sourceData = cytoscapeChart.formatterObjectToArray(testData1)
+                cytoscapeChart = new flowChart2(formattedData, configChart);
+                sourceData = cytoscapeChart.formatterObjectToArray(formattedData)
 
                 vm.edges = sourceData.edges;
                 vm.vertices = sourceData.nodes;
 
+                vertexIdList = sourceData.nodes.map(function(vertex, vertexIndex){
+                    return vertex.data.id
+                })
+                edgeIdList = sourceData.edges.map(function(edge, edgeIndex){
+                    return edge.data.id
+                })
 
                 console.log(cytoscapeChart.width())
             }
