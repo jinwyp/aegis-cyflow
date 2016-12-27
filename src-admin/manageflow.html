@@ -27,7 +27,7 @@
 
                         <div id="panel-settings" ng-cloak ng-controller="formController as vm">
                             <div class="panel panel-default panel-main" ng-show="vm.selectType === 'node'">
-                                <div class="panel-heading">已选中节点: {{vm.currentVertex.id}} </div>
+                                <div class="panel-heading">已选中节点: {{vm.currentVertex.id || '未选择'}} </div>
 
                                 <div class="panel-body">
                                     <form class="form-horizontal">
