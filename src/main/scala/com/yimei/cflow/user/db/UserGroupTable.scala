@@ -1,12 +1,14 @@
 package com.yimei.cflow.user.db
 
 import java.sql.Timestamp
+
 import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.api.http.models.CangDBModel.UserGroupEntity
 
 /**
   * Created by xl on 16/12/19.
   */
-case class UserGroupEntity(id: Option[Long], party_id: Long, gid: String, user_id: String, ts_c: Timestamp)
+
 
 trait UserGroupTable {
   import driver.api._

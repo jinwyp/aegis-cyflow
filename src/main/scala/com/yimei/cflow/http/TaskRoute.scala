@@ -8,6 +8,7 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
+import com.yimei.cflow.api.http.models.CangDBModel._
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}

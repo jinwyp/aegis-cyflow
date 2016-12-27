@@ -3,12 +3,13 @@ package com.yimei.cflow.user.db
 import java.sql.Timestamp
 
 import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.api.http.models.CangDBModel.PartyClassEntity
 
 /**
   * Created by wangqi on 16/12/19.
   */
 
-case class PartyClassEntity(id:Option[Long],class_name:String,description:String)
+
 
 trait PartyClassTable {
   import driver.api._
