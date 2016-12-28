@@ -6,7 +6,10 @@
   "points": {
     "startPoint":"进入仓押系统时,带入的数",
     "trafficker" : "贸易方账户",
-    "traffickerFinance" : "贸易方资金方账户"
+    "traffickerFinance" : "贸易方资金方账户",
+    "traffickerAssignPort":"贸易方选择港口",
+    "traffickerAssignSupervisor":""
+
   },
   "vertices": {
     "V0": { "description":"发起申请","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"}

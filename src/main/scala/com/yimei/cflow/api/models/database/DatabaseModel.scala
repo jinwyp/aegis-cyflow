@@ -6,7 +6,7 @@ import java.sql.Timestamp
   * Created by xl on 16/12/27.
   */
 object FlowDBModel {
-  case class FlowInstanceEntity(id: Option[Long], flow_id: String, flow_type: String, user_type: String, user_id: String, state: String, finished: Int, ts_c: Timestamp)
+  case class FlowInstanceEntity(id: Option[Long], flow_id: String, flow_type: String, user_type: String, user_id: String, data: String, state:String, finished: Int, ts_c: Timestamp)
   case class FlowTaskEntity(id: Option[Long], flow_id: String, task_id: String, task_name: String, task_submit: String, user_type: String, user_id: String, ts_c: Timestamp)
 }
 
