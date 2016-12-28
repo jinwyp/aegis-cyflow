@@ -1,12 +1,12 @@
 package com.yimei.cflow.user.db
 import com.yimei.cflow.config.DatabaseConfig._
-
 import java.sql.Timestamp
+
+import com.yimei.cflow.api.models.database.FlowDBModel._
 
 /**
   * Created by hary on 16/12/16.
   */
-case class FlowInstanceEntity(id:Option[Long], flow_id:String, flow_type:String, user_type:String, user_id:String, state:String, finished:Int, ts_c:Timestamp)
 
 trait FlowInstanceTable {
   import driver.api._
@@ -17,11 +17,12 @@ trait FlowInstanceTable {
     def flow_type = column[String]("flow_type")
     def user_type = column[String]("user_type")
     def user_id = column[String]("user_id")
+    def data = column[String]("data")
     def state = column[String]("state")
     def finished = column[Int]("finished")
     def ts_c = column[Timestamp]("ts_c")
 
-    def * = (id,flow_id,flow_type,user_type,user_id,state,finished,ts_c) <> (FlowInstanceEntity.tupled,FlowInstanceEntity.unapply)
+    def * = (id,flow_id,flow_type,user_type,user_id,data,state,finished,ts_c) <> (FlowInstanceEntity.tupled,FlowInstanceEntity.unapply)
   }
 
   protected val flowInstance = TableQuery[FlowInstance]

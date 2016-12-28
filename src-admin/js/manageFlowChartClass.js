@@ -5,21 +5,30 @@
 
 (function(window, $, cytoscape){
 
+
     var styleList = [
         {
             selector: 'node',
             style: {
                 'shape': 'ellipse',
                 'width': function(ele){
-                    return Math.max(100, ele.data().id.length*16);
+                    return Math.max(60, ele.data().id.length*16);
                 },
-                'height': 100,
+                'height': 60,
+                'background-color': 'gray',
+                'color': '#fff',
                 'content': 'data(id)',
                 'text-valign': 'center',
                 'text-halign': 'center',
-                'background-color': 'gray',
-                'color': '#fff',
                 'font-size': '24px'
+            }
+        },
+
+        {
+            selector: 'node.isFirstNode',
+            style: {
+                'border-width': 3,
+                'border-color': 'red'
             }
         },
 
@@ -74,11 +83,66 @@
         {
             selector: 'edge',
             style: {
-                'width': 4,
-                'target-arrow-shape': 'triangle',
-                'line-color': 'gray',
-                'target-arrow-color': 'gray',
+                'label': function(ele){
+                    var total = 0;
+                    var number = {
+                        'autoTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'userTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'partUTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        },
+                        'partGTasks' : {
+                            count : 0,
+                            taskNameList : []
+                        }
+                    }
+                    ele.data().sourceData.allTask.forEach(function(task, taskIndex){
+
+                        for (var property in number){
+
+                            if(task.data.sourceData.type === property){
+                                number[property].count  += 1
+                                number[property].taskNameList.push(task.id)
+                            }
+                        }
+                        ++total
+                    })
+
+                    var text = ele.data().id + ' 共' + total + '个任务\n'
+
+                    for (var property in number){
+
+                        if (number[property].count > 0){
+                            text += property + number[property].count + '个\n'
+                        }
+                    }
+
+                    return text;
+                },
+
+                'text-wrap': 'wrap',
+                'font-size': '14px',
+                'text-valign': 'center',
+                'text-halign': 'center',
+                'width': 20,
                 'curve-style': 'bezier',
+                'line-color': '#9dbaea',
+                'target-arrow-shape': 'triangle',
+                'target-arrow-color': '#9dbaea',
+                'mid-source-arrow-shape': 'square',
+                'mid-source-arrow-color': 'gray',
+                'mid-source-arrow-fill': 'hollow',
+                'mid-target-arrow-shape': 'square',
+                'mid-target-arrow-color': 'gray',
+                'mid-target-arrow-fill': 'hollow'
+
                 // 'control-point-distances': '-30% 30%',
                 // 'control-point-weights': '0 1'
             }
@@ -128,9 +192,23 @@
             edges : [],
             formattedSource : {
                 edges : [],
-                vertices : []
+                vertices : [],
+                allTask : [],
+                userTasks : [],
+                autoTasks : [],
+                partUTasks : [],
+                partGTasks : [],
+
+                groupEdges : [],
+                groupVertices : []
             }
         };
+
+        function addStyleForNode (node){
+            if (node.data.id === source.initial) {
+                node.classes = node.classes + " isFirstNode "
+            }
+        }
 
         for (var property in source.edges){
 
@@ -138,28 +216,32 @@
             var tempEdge = {};
             var tempNode = {};
 
-            console.log(currentEdge)
-            tempEdge = {
-                classes : '',
+            //console.log(currentEdge)
 
+            // 整理边
+            tempEdge = {
+                classes : 'edge',
                 data : {
                     id : property,
                     source : currentEdge.begin,
-                    target : currentEdge.end
-                },
-
-                sourceData : {
-                    id : currentEdge.name,
-                    source : currentEdge.begin,
                     target : currentEdge.end,
-                    userTasks : currentEdge.userTasks,
-                    autoTasks : currentEdge.autoTasks,
-                    partGTasks : currentEdge.partGTasks,
-                    partUTasks : currentEdge.partUTasks
+                    sourceData : {
+                        id : currentEdge.name,
+                        source : currentEdge.begin,
+                        target : currentEdge.end,
+                        userTasks : currentEdge.userTasks,
+                        autoTasks : currentEdge.autoTasks,
+                        partGTasks : currentEdge.partGTasks,
+                        partUTasks : currentEdge.partUTasks,
+                        allTask : []
+                    }
                 }
             };
 
 
+
+
+            // 整理节点
             if (tempNodesId.indexOf(currentEdge.begin) === -1) {
 
                 var tempNodeBegin = {
@@ -167,31 +249,33 @@
                     program : ''
                 };
                 if (typeof source.vertices[currentEdge.begin] !== 'undefined' ){
-                    var tempNodeBegin = source.vertices[currentEdge.begin];
+
+                    if (typeof source.vertices[currentEdge.begin] === 'string'){
+                        tempNodeBegin.description = source.vertices[currentEdge.begin];
+                    }else {
+                        tempNodeBegin = source.vertices[currentEdge.begin]
+                    }
+
                 }
 
                 tempNode = {
-                    classes : '',
-
+                    classes : 'node',
                     data : {
-                        id : currentEdge.begin
-                    },
-
-                    sourceData : {
                         id : currentEdge.begin,
-                        description : tempNodeBegin.description,
-                        program : tempNodeBegin.program
+                        sourceData : {
+                            id : currentEdge.begin,
+                            description : tempNodeBegin.description,
+                            program : tempNodeBegin.program
+                        }
                     }
                 };
 
-                tempNodesId.push(currentEdge.begin)
+                addStyleForNode(tempNode)
 
+                tempNodesId.push(currentEdge.begin)
                 result.nodes.push(tempNode)
                 result.formattedSource.vertices.push(tempNode)
-
             }
-
-
 
             if (tempNodesId.indexOf(currentEdge.end) === -1) {
 
@@ -201,31 +285,151 @@
                 };
 
                 if (typeof source.vertices[currentEdge.end] !== 'undefined' ){
-                    tempNodeTarget = source.vertices[currentEdge.end];
+
+                    if (typeof source.vertices[currentEdge.end] === 'string'){
+                        tempNodeTarget.description = source.vertices[currentEdge.end];
+                    }else {
+                        tempNodeTarget = source.vertices[currentEdge.end]
+                    }
+
                 }
 
                 tempNode = {
-                    classes : '',
-
+                    classes : 'node',
                     data : {
-                        id : currentEdge.end
-                    },
-
-                    sourceData : {
                         id : currentEdge.end,
-                        description : tempNodeTarget.description,
-                        program : tempNodeTarget.program
+                        sourceData : {
+                            id : currentEdge.end,
+                            description : tempNodeTarget.description,
+                            program : tempNodeTarget.program
+                        }
                     }
                 };
+
+                addStyleForNode(tempNode)
+
                 tempNodesId.push(currentEdge.end)
                 result.nodes.push(tempNode)
                 result.formattedSource.vertices.push(tempNode)
             }
 
 
+
+
+
+
+
+
+            // 整理任务
+            var taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
+            taskTypeList.forEach(function(taskType, taskTypeIndex){
+
+                if (currentEdge[taskType] && currentEdge[taskType].length > 0){
+
+                    currentEdge[taskType].forEach(function(task, taskIndex){
+                        var tempTask = {};
+                        if (taskType === 'userTasks' ||  taskType === 'autoTasks') {
+
+                            tempTask = {
+                                classes : 'node task ' + taskType,
+                                data : {
+                                    id : task,
+                                    sourceData : {
+                                        id : task,
+                                        type : taskType,
+                                        description : source[taskType][task].description,
+                                        points : [],
+
+                                        belongToEdge : {
+                                            id : currentEdge.name,
+                                            source : currentEdge.begin,
+                                            target : currentEdge.end,
+                                            userTasks : currentEdge.userTasks,
+                                            autoTasks : currentEdge.autoTasks,
+                                            partGTasks : currentEdge.partGTasks,
+                                            partUTasks : currentEdge.partUTasks
+                                        }
+                                    }
+                                }
+                            };
+
+                            source[taskType][task].points.forEach(function(point, pointIndex){
+                                tempTask.data.sourceData.points.push({
+                                    id : point,
+                                    description : source.points[point]
+                                })
+                            })
+
+
+                            if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
+                            if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
+
+                            tempEdge.data.sourceData.allTask.push(tempTask)
+                            result.formattedSource.allTask.push(tempTask);
+                        }
+
+
+                        if (taskType === 'partUTasks' || taskType === 'partGTasks') {
+
+                            if (task.tasks && task.tasks.length > 0){
+                                task.tasks.forEach(function(subTask, subTaskIndex){
+
+                                    tempTask = {
+                                        classes : 'node task ' + taskType,
+                                        data : {
+                                            id : subTask,
+                                            sourceData : {
+                                                id : subTask,
+                                                type : taskType,
+                                                guidKey : '',
+                                                ggidKey : '',
+                                                description : source['userTasks'][subTask].description,
+                                                points : [],
+
+                                                belongToEdge : {
+                                                    id : currentEdge.name,
+                                                    source : currentEdge.begin,
+                                                    target : currentEdge.end,
+                                                    userTasks : currentEdge.userTasks,
+                                                    autoTasks : currentEdge.autoTasks,
+                                                    partGTasks : currentEdge.partGTasks,
+                                                    partUTasks : currentEdge.partUTasks
+                                                }
+                                            }
+                                        }
+                                    };
+
+                                    source['userTasks'][subTask].points.forEach(function(point, pointIndex){
+                                        tempTask.data.sourceData.points.push({
+                                            id : point,
+                                            description : source.points[point]
+                                        })
+                                    })
+
+                                    if (taskType === 'partUTasks') {
+                                        tempTask.data.sourceData.guidKey = task.guidKey
+                                        result.formattedSource.partUTasks.push(tempTask);
+                                    }
+
+                                    if (taskType === 'partGTasks') {
+                                        tempTask.data.sourceData.ggidKey = task.ggidKey
+                                        result.formattedSource.partGTasks.push(tempTask);
+                                    }
+
+                                    tempEdge.data.sourceData.allTask.push(tempTask)
+                                    result.formattedSource.allTask.push(tempTask);
+                                })
+                            }
+
+                        }
+                    })
+                }
+            })
+
+
+            // 整理边
             result.edges.push(tempEdge)
             result.formattedSource.edges.push(tempEdge)
-
 
         }
 
@@ -239,18 +443,23 @@
         return this.init(data, config);
     };
 
-
-    flowChart2.prototype.init =  function(sourceData, config){
-        var self = this;
-
+    var getConfig = function (config){
         var cfg = Object.assign({
             container: document.getElementById(config.domId),
 
             layout: {
-                name: 'dagre'
+                name: 'dagre',
+                fit: false,
+                minLen : function( edge ){
+                    return 4; // number of ranks to keep between the source and target of the edge
+                },
+                edgeWeight : function( edge ){
+                    return 1;  // higher weight edges are generally made shorter and straighter than lower weight edges
+                },
+                nodeSep: 200
             },
             style: styleList,
-            elements: formatterObjectToArray(sourceData),
+            elements: [],
 
             boxSelectionEnabled: false,
             autounselectify: false,
@@ -258,8 +467,9 @@
             userPanningEnabled: true,
             autoungrabify: false,
 
-            minZoom: 0.3, //http://js.cytoscape.org/#core
+            minZoom: 1, //http://js.cytoscape.org/#core
             maxZoom: 1,
+            zoom : 1,
 
             textureOnViewport : false
             // pixelRatio : 1.0
@@ -267,10 +477,20 @@
 
         }, config);
 
+        return cfg
+    }
+
+    flowChart2.prototype.init =  function(sourceData, config){
+
+        var cfg = getConfig(config);
+        cfg.elements = formatterObjectToArray(sourceData) ;
 
         var cy = cytoscape(cfg);
 
         cfg.eventCB(cy);
+
+        cy.formatterObjectToArray = formatterObjectToArray;
+        cy.getConfig = getConfig;
 
         return cy;
     };

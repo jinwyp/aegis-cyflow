@@ -9,16 +9,17 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.http.models.AdminModel._
-import com.yimei.cflow.api.models.flow.{DataPoint, State => FlowState}
-import com.yimei.cflow.api.models.user.UserProtocol
+import com.yimei.cflow.api.models.flow.{State => FlowState}
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.core.FlowRegistry
-import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.user.db.{FlowInstanceEntity, _}
+import com.yimei.cflow.exception.{DatabaseException, ParameterException}
+import com.yimei.cflow.api.models.database.FlowDBModel._
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
+import com.yimei.cflow.user.db._
 import com.yimei.cflow.util.DBUtils.dbrun
-import spray.json.{DefaultJsonProtocol, _}
+import spray.json._
 
 import scala.concurrent.Future
 
@@ -66,7 +67,8 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
 
             def insertFlow(p: PartyInstanceEntity, u: PartyUserEntity, s: FlowState): Future[FlowInstanceEntity] = {
               dbrun(flowInstance returning flowInstance.map(_.id) into ((ft, id) => ft.copy(id = id)) +=
-                FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id, s.toJson.toString, 0, Timestamp.from(Instant.now))) recover {
+                FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id,
+                  s.toJson.toString, FlowRegistry.flowGraph(s.flowType).flowInitial ,0, Timestamp.from(Instant.now))) recover {
                 case _ => throw new DatabaseException("添加流程错误")
               }
             }
@@ -134,7 +136,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   def getFLows = get {
     pathPrefix("flow") {
       pathEnd {
-        parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "limit".as[Int].?, "offset".as[Int].?)).as(FlowQuery) { fq =>
+        parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "page".as[Int].?, "pageSize".as[Int].?)).as(FlowQuery) { fq =>
           log.info("{}", fq)
           val q = flowInstance.filter { fi =>
             List(
@@ -146,8 +148,8 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
             ).collect({ case Some(a) => a }).reduceLeftOption(_ && _).getOrElse(true: Rep[Boolean])
           }
 
-          val flows: Future[Seq[FlowInstanceEntity]] = (fq.limit, fq.offset) match {
-            case (Some(l), Some(o)) => dbrun(q.drop(o).take(l).result)
+          val flows: Future[Seq[FlowInstanceEntity]] = (fq.page, fq.pageSize) match {
+            case (Some(p), Some(ps)) if(p > 0 && ps > 0) => dbrun(q.drop((p - 1) * ps).take(ps).result)
             case _ => dbrun(q.result)
           }
           val total: Future[Int] = dbrun(q.length.result)

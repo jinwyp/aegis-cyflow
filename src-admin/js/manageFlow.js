@@ -8,21 +8,6 @@
     $.ajaxSettings.async = false;
 
 
-
-    function formatVertex(vobj) {
-        var result = [];
-
-        for ( var property in vobj){
-            result.push({
-                id : property,
-                description : vobj[property]
-            })
-        }
-
-        return result;
-    }
-
-
     var testData1 = {
         "initial": "V0",
         "graphJar": "com.yimei.cflow.graph.money.MoneyGraphJar",
@@ -48,9 +33,6 @@
 
 
 
-
-
-
     angular.module('chartApp', []);
 
     angular.module('chartApp').controller('formController', formController);
@@ -59,18 +41,57 @@
     function formController ($scope){
         vm = this;
 
+        var cytoscapeChart;
+        var formattedData;
+        var sourceData;
+
+        var vertexIdList = [];
+        var edgeIdList = [];
+        var taskIdList = [];
+
+        vm.ouputData = {};
+        vm.selectType = 'node';
+        vm.isNewNode = true;
+        vm.taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
+
+        vm.errorAddNewVertex = {
+            notSelected : false,
+            vertexExist : false,
+            edgeExist : false,
+            ajax : false
+        };
+        vm.errorAddNewTask = {
+            taskExist : false,
+            ajax : false
+        };
+
         vm.currentVertex = {
-            id : '未选择',
+            id : '',
             description : ''
         };
+        vm.currentEdge = {
+            id : '',
+            source : '',
+            target : '',
+            sourceData : {}
+        };
         vm.currentTask = {
-            id : '未选择',
-            description : ''
+            id : '',
+            description : '',
+            type : ''
         };
 
         vm.newVertex = {
-            id : '未选择',
-            description : ''
+            id : 'V9',
+            description : 'V9XX'
+        };
+        vm.newEdge = {
+            id : ''
+        };
+        vm.newTask = {
+            id : '',
+            description : '',
+            type : ''
         };
 
         vm.globalConfig = {
@@ -94,20 +115,147 @@
         vm.partGTasks = [];
 
 
-        vm.addNewLine = function (){
-            console.log(vm.newVertex)
+        vm.addNewLine = function (form){
+
+            if (form.$valid){
+
+                if (vm.currentVertex.id){
+                    vm.errorAddNewVertex.notSelected = false;
+                }else{
+                    vm.errorAddNewVertex.notSelected = true;
+                    return;
+                }
+
+                if (edgeIdList.indexOf(vm.newEdge.id) > -1 ){
+                    vm.errorAddNewVertex.edgeExist = true;
+                    return;
+                }else{
+                    vm.errorAddNewVertex.edgeExist = false;
+                }
+
+                if (vm.isNewNode){
+
+                    if (vertexIdList.indexOf(vm.newVertex.id) > -1 ){
+                        vm.errorAddNewVertex.vertexExist = true;
+                        return;
+                    }else{
+                        vm.errorAddNewVertex.vertexExist = false;
+                    }
+                }else{
+
+                }
+
+                var newTempNode = {
+                    group: "nodes",
+                    classes : 'node',
+                    data : {
+                        id : vm.newVertex.id,
+                        description : vm.newVertex.description,
+                        sourceData : {
+                            id : vm.newVertex.id,
+                            description : vm.newVertex.description,
+                            program : ''
+                        }
+                    }
+                };
+
+                var newTempEdge = {
+                    group: "edges",
+                    classes : 'edge',
+                    data : {
+                        id : vm.newEdge.id,
+                        source : vm.currentVertex.id,
+                        target : vm.newVertex.id,
+                        sourceData : {
+                            id : vm.newEdge.id,
+                            source : vm.currentVertex.id,
+                            target : vm.newVertex.id,
+                            allTask : [],
+                            userTasks : [],
+                            autoTasks : [],
+                            partUTasks : [],
+                            partGTasks : []
+                        }
+                    }
+                };
+
+
+
+                if (vertexIdList.indexOf(vm.newEdge.id) === -1 ){
+                    vertexIdList.push(newTempNode.data.id)
+                }
+                if (edgeIdList.indexOf(vm.newEdge.id) === -1 ){
+                    edgeIdList.push(newTempEdge.data.id)
+                }
+
+                vm.vertices.push(newTempNode)
+                vm.edges.push(newTempEdge)
+
+                cytoscapeChart.add(newTempNode);
+                cytoscapeChart.add(newTempEdge);
+
+                cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
+                //cytoscapeChart.reset();
+            }
+
+        }
+
+
+        vm.addNewTask = function(form){
+            if (form.$valid){
+
+                if (taskIdList.indexOf(vm.newTask.id) > -1 ){
+                    vm.errorAddNewTask.taskExist = true;
+                    return;
+                }else{
+                    vm.errorAddNewTask.taskExist = false;
+                }
+
+
+                var newTempTask = {
+                    classes : 'node task ' + vm.newTask.type,
+                    data : {
+                        id : vm.newTask.id,
+                        sourceData : {
+                            id : vm.newTask.id,
+                            type : vm.newTask.type,
+                            description : vm.newTask.description,
+                            points : [],
+                            belongToEdge : {}
+                        }
+                    }
+                };
+
+                vm.taskTypeList.forEach(function(type, typeIndex){
+                    if (vm.newTask.type === type){
+                        vm.currentEdge.sourceData[type].push(newTempTask);
+                    }
+                })
+
+                vm.currentEdge.sourceData.allTask.push(newTempTask);
+                newTempTask.data.sourceData.belongToEdge = vm.currentEdge.sourceData;
+
+                if (taskIdList.indexOf(vm.newEdge.id) === -1 ){
+                    taskIdList.push(newTempTask.data.id)
+                }
+
+                cytoscapeChart.getElementById( vm.currentEdge.id ).data(sourceData, vm.currentEdge.sourceData);
+            }
+        }
+
+
+        vm.formatterArrayToObject = function (){
+
         }
 
 
 
 
-
-        var formattedData;
         var chartEventCallback= function(cy){
 
             cy.nodes('.node').qtip({
                 content: function(){
-                    return this.data().description;
+                    return this.data().sourceData.description;
                 },
                 show: {
                     event: 'click'
@@ -128,9 +276,15 @@
                 }
             })
 
-            cy.nodes('.task').qtip({
+            cy.edges('.edge').qtip({
                 content: function(){
-                    return this.data().description;
+                    return this.data().id;
+                },
+                show: {
+                    event: 'click'
+                },
+                hide: {
+                    event: 'unfocus'
                 },
                 position: {
                     my: 'bottom center',
@@ -145,23 +299,25 @@
                 }
             })
 
-            cy.nodes('.node').on('click', function(e){
+
+
+            cy.on('click', 'node', function(evt){
                 console.log('node:', this.data())
                 vm.currentVertex.id = this.data().id;
-                vm.currentVertex.description = this.data().description;
-                scope.$apply();
-
+                vm.currentVertex.description = this.data().sourceData.description;
+                vm.selectType = 'node';
+                $scope.$apply();
             })
 
-            cy.nodes('.task').on('click', function(e){
-                console.log('task:', this.data())
-                vm.currentTask.id = this.data().id;
-                vm.currentTask.description = this.data().description;
-                scope.$apply();
-                //data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
-                //    var val;
-                //    points.push({'key':p, 'value':val});
-                //})
+
+            cy.on('click', 'edge', function(evt){
+                console.log('edge:', this.data())
+                vm.currentEdge.id = this.data().id;
+                vm.currentEdge.source = this.data().source;
+                vm.currentEdge.target = this.data().target;
+                vm.currentEdge.sourceData = this.data().sourceData;
+                vm.selectType = 'edge';
+                $scope.$apply();
             })
 
         };
@@ -172,11 +328,8 @@
             init : function(){
                 $.getJSON('./json/data99.json', function(resultData){
                     formattedData = resultData;
+                    
                 })
-
-                vm.edges = formattedData.edges;
-                vm.vertices = formattedData.nodes;
-
                 this.drawChart();
             },
             drawChart : function(){
@@ -186,7 +339,29 @@
                     eventCB : chartEventCallback
                 };
 
-                var cytoscapeChart = new flowChart2(formattedData, configChart);
+                cytoscapeChart = new flowChart2(formattedData, configChart);
+                cytoscapeChart.center()
+                cytoscapeChart.pan({
+                    x: 10,
+                    y: 10
+                });
+
+                console.log(cytoscapeChart.edges().data())
+                sourceData = cytoscapeChart.formatterObjectToArray(formattedData)
+
+                vm.edges = sourceData.edges;
+                vm.vertices = sourceData.nodes;
+
+                vertexIdList = sourceData.nodes.map(function(vertex, vertexIndex){
+                    return vertex.data.id
+                })
+                edgeIdList = sourceData.edges.map(function(edge, edgeIndex){
+                    return edge.data.id
+                })
+                taskIdList = sourceData.formattedSource.allTask.map(function(task, taskIndex){
+                    return task.data.id
+                })
+
                 console.log(cytoscapeChart.width())
             }
         };

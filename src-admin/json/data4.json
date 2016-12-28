@@ -19,6 +19,18 @@
                 "PU2"
             ]
         },
+        "PU3": {
+            "description": "描述PU3",
+            "points": [
+                "PU3"
+            ]
+        },
+        "PG3": {
+            "description": "描述PG3",
+            "points": [
+                "PG3"
+            ]
+        },
         "PG": {
             "description": "描述PU",
             "points": [
@@ -68,12 +80,12 @@
                 "value": "50505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050",
                 "memo": "userdata"
             },
-            "UATESTAT2": {
+            "PU1": {
                 "used": false,
-                "timestamp": 1482288591168,
-                "id": "39117f49-796c-426a-9d86-b299c33a7c1d",
-                "operator": "001-hary1",
-                "value": "50",
+                "timestamp": 1482288586178,
+                "id": "9b19591b-0b24-40c4-98d7-860e0a24cb84",
+                "operator": "fund1-wangqiId1",
+                "value": "50505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050",
                 "memo": "userdata"
             },
             "B": {
@@ -92,6 +104,14 @@
                 "value": "50",
                 "memo": "userdata"
             },
+            "PG3": {
+                "used": false,
+                "timestamp": 1482288586178,
+                "id": "d8293e46-2203-4d8e-8767-114427582ab2",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
             "C": {
                 "used": true,
                 "timestamp": 10,
@@ -99,14 +119,6 @@
                 "operator": "C",
                 "value": "http://www.pdf995.com/samples/pdf.pdf",
                 "memo": "pdf"
-            },
-            "UATESTAT1": {
-                "used": false,
-                "timestamp": 1482288591168,
-                "id": "8292092c-7d07-47f9-87dc-ea33494a2756",
-                "operator": "001-hary1",
-                "value": "50",
-                "memo": "userdata"
             },
             "KPU1": {
                 "used": false,
@@ -133,8 +145,9 @@
             }
         },
         "flowId": "ying-001-hary1-1",
-        "edges": {"E3":true},
+        "edges": {"E4":true},
         "histories": [
+            "E3",
             "E2",
             "E1",
             "start"
@@ -172,12 +185,14 @@
         "E": "征信平分5",
         "PU2": "partition user1 采集数据点2",
         "PU1": "partition user1 采集数据点1",
+        "PU3": "partition user1 采集数据点3",
         "F": "征信平分6",
         "ATESTAT": "征信平分1",
         "PG1": "partition group1 采集数据点1",
         "UATESTAT2": "用户提交ATESTAT2",
         "B": "征信平分2",
         "PG2": "partition group1 采集数据点2",
+        "PG3": "partition group1 采集数据点3",
         "C": "征信平分3",
         "UATESTAT1": "用户提交ATESTAT1",
         "KPU1": "设置资金方 user1",
@@ -220,6 +235,29 @@
                     "guidKey": "KPU1",
                     "tasks": [
                         "PU"
+                    ]
+                }
+            ],
+            "autoTasks": [],
+            "end": "V3"
+        },
+        "E7": {
+            "userTasks": [],
+            "partGTasks": [
+                {
+                    "ggidKey": "KPG1",
+                    "tasks": [
+                        "PG3"
+                    ]
+                }
+            ],
+            "begin": "V2",
+            "name": "E7",
+            "partUTasks": [
+                {
+                    "guidKey": "KPU1",
+                    "tasks": [
+                        "PU3"
                     ]
                 }
             ],
@@ -282,7 +320,7 @@
         },
         "E4": {
             "userTasks": [
-                "UATESTATTESTAT"
+                "UATESTAT"
             ],
             "partGTasks": [],
             "begin": "V3",
