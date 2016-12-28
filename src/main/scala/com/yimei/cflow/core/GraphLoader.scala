@@ -5,6 +5,7 @@ import java.lang.reflect.Method
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
+import com.yimei.cflow.api.annotation.Description
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
@@ -150,8 +151,10 @@ object GraphLoader extends GraphConfigProtocol {
 
     // compile our configured program and add code in jar
     var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
-    allDeciders = allDeciders ++ getDeciders(mclass, graphJar)
+    val decidersFromJar =  getDeciders(mclass, graphJar);
+    allDeciders = allDeciders ++  decidersFromJar.map { entry => (entry._1, entry._2._1)}
     allAutos = allAutos ++ getAutoMap(mclass, graphJar)
+    graphConfig = graphConfig.copy(vertices = graphConfig.vertices ++ decidersFromJar.map { entry => (entry._1, Vertex(entry._2._2))} )
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -242,9 +245,14 @@ object GraphLoader extends GraphConfigProtocol {
         ptypes(0) == classOf[State] &&
         method.getReturnType == classOf[Seq[Arrow]]
     }.map { am =>
+
+      val annotation = am.getAnnotation(classOf[Description])
+      val description = if ( annotation == null) "no description" else annotation.value()
+
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(module, state).asInstanceOf[Seq[Arrow]]
-      (am.getName -> behavior)
+      (am.getName -> (behavior, description))
+
     }.toMap
   }
 

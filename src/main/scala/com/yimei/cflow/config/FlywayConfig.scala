@@ -16,7 +16,9 @@ trait FlywayConfig extends CoreConfig {
   )
 
   // 设置migration表为指定表
-  flyway.setTable("zflow_migration")
+  val schema = coreConfig.getString("flyway.schema")
+  flyway.setTable(if(schema == null) "schema" else schema)
+
 
   def migrate = {
     flyway.migrate()
