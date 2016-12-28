@@ -138,6 +138,14 @@
             }
         },
 
+        // {
+        //     selector: 'node.edgeGroup',
+        //     style: {
+        //         'shape': 'rectangle',
+        //         'background-color': '#bbb',
+        //     }
+        // },
+
         {
             selector: 'edge',
             style: {
@@ -317,6 +325,10 @@
             var edges = [];
             var historyEdges = [];
             var nodeGParents = [];
+
+            var node_index = {};
+            // var new_nodes = [];
+
             historyEdges = originalData.state.histories;
 
             for(var i in originalData.edges){
@@ -335,64 +347,113 @@
 
             edges.forEach(function(edgeItem, ei){
                 if(edgeItem.classes.indexOf('taskedge')<0){
-                    var nArr = [edgeItem.data.source, edgeItem.data.target];
-
-                    nArr.forEach(function(n, ni){
-                        var className = '';
-                        if(edgeItem.classes.indexOf('isFinished')>=0){
-                            className = 'isFinished';
-                        }else if(edgeItem.classes.indexOf('isProcessing')>=0){
-                            className = 'isProcessing';
-                            (ni==0)&&(edgeItem.data.sourceType=='node')&&(className='isFinished');
-                        }
-
-                        (ni==0)&&(className+=' '+edgeItem.data.sourceType);
-                        (ni==1)&&(className+=' '+edgeItem.data.endType);
-                        (ni==1)&&(edgeItem.data.children)&&(edgeItem.data.children.length==1)&&(className+=' singleChild');
-
-                        className += ' ' + edgeItem.data.taskType;
-
-                        if(node_keys.indexOf(n)<0){
-                            node_keys.push(n);
-                            var tempNode = {
-                                data: {
-                                    id : n,
-                                    taskType : edgeItem.data.taskType,
-                                    description : '',
-                                    program : '',
-                                    points : '',
-                                    original : originalData
-                                },
-                                classes: className
-                            };
-
-                            if (((ni==0) && (edgeItem.data.sourceType == 'node')) || ((ni==1) && (edgeItem.data.endType == 'node'))){
-                                tempNode.data.description = originalData.vertices[n]
-                            }else {
-                                var thisTask = originalData.userTasks[n] || originalData.autoTasks[n] || {};
-                                tempNode.data.description = thisTask.description;
-                                tempNode.data.points = thisTask.points;
-                            }
-                            nodes.push(tempNode)
+                    [edgeItem.data.source, edgeItem.data.target].forEach(function(n, ni){
+                        var source = (ni==1)?{ name: edgeItem.data.source, classes: edgeItem.classes}:'';
+                        var target = (ni==0)?{ name: edgeItem.data.target, classes: edgeItem.classes}:'';
+                        var taskType = (ni==0) ? edgeItem.data.sourceType : edgeItem.data.endType;
+                        var children = edgeItem.data.children || [];
+                        if(!node_index.hasOwnProperty(n)){
+                            node_index[n] = {'source': source?[source]:[], 'target':target?[target]:[], 'children':children, 'taskType': taskType, edge: edgeItem };
                         }else{
-                            var classes = nodes[node_keys.indexOf(n)].classes;
-                            if(classes.indexOf('isProcessing')<0){
-                                (className.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
-                                (className.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
-                                // (className.indexOf('isFinished')<0) && (className.indexOf('isProcessing')<0) && (classes = classes.replace(/(isProcessing|isFinished)/g, ''));
-                                nodes[node_keys.indexOf(n)].classes = classes;
-                            }
+                            source && node_index[n].source.push(source);
+                            target && node_index[n].target.push(target);
                         }
                     })
-
                     edgeItem.data.children && edgeItem.data.children.forEach(function(e, ei){
-                        if(e.data.id == 'PU'){
-                            console.log(1)
-                        }
                         nodes.push(e);
                     });
                 }
             })
+
+            for(var node in node_index){
+                var classes = 'isFinished';
+                for(var si=0; si<node_index[node].source.length; si++){
+                    var s = node_index[node].source[si];
+                    if(!(/(isProcessing|isFinished)/g.test(s.classes))){
+                        classes = '';
+                    }
+                    if(s.classes.indexOf('isProcessing')>=0){
+                        classes='isProcessing';
+                        break;
+                    }
+                }
+
+                classes += ' ' + node_index[node].taskType;
+                (node_index[node].children.length==1) && (node_index[node].taskType=='edgeGroup') && (classes += ' singleChild');
+                var tempNode = {
+                                data: {
+                                    id : node,
+                                    taskType : node_index[node].taskType,
+                                    description : (node_index[node].taskType=='node')?originalData.vertices[node]:'',
+                                    program : '',
+                                    points : '',
+                                    original : originalData
+                                },
+                                classes: classes
+                            };
+                nodes.push(tempNode);
+            }
+
+            // edges.forEach(function(edgeItem, ei){
+            //     if(edgeItem.classes.indexOf('taskedge')<0){
+            //         var nArr = [edgeItem.data.source, edgeItem.data.target];
+
+            //         nArr.forEach(function(n, ni){
+            //             var className = '';
+            //             if(edgeItem.classes.indexOf('isFinished')>=0){
+            //                 className = 'isFinished';
+            //             }else if(edgeItem.classes.indexOf('isProcessing')>=0){
+            //                 className = 'isProcessing';
+            //                 (ni==0)&&(edgeItem.data.sourceType=='node')&&(className='isFinished');
+            //             }
+
+            //             (ni==0)&&(className+=' '+edgeItem.data.sourceType);
+            //             (ni==1)&&(className+=' '+edgeItem.data.endType);
+            //             (ni==1)&&(edgeItem.data.children)&&(edgeItem.data.children.length==1)&&(className+=' singleChild');
+
+            //             className += ' ' + edgeItem.data.taskType;
+
+            //             if(node_keys.indexOf(n)<0){
+            //                 node_keys.push(n);
+            //                 var tempNode = {
+            //                     data: {
+            //                         id : n,
+            //                         taskType : edgeItem.data.taskType,
+            //                         description : '',
+            //                         program : '',
+            //                         points : '',
+            //                         original : originalData
+            //                     },
+            //                     classes: className
+            //                 };
+
+            //                 if (((ni==0) && (edgeItem.data.sourceType == 'node')) || ((ni==1) && (edgeItem.data.endType == 'node'))){
+            //                     tempNode.data.description = originalData.vertices[n]
+            //                 }else {
+            //                     var thisTask = originalData.userTasks[n] || originalData.autoTasks[n] || {};
+            //                     tempNode.data.description = thisTask.description;
+            //                     tempNode.data.points = thisTask.points;
+            //                 }
+            //                 nodes.push(tempNode)
+            //             }else{
+            //                 var classes = nodes[node_keys.indexOf(n)].classes;
+            //                 if(classes.indexOf('isProcessing')<0){
+            //                     (className.indexOf('isFinished')>=0) && (!$.trim(classes) || classes.indexOf('isFinished')<0) && (classes+=' isFinished');
+            //                     (className.indexOf('isProcessing')>=0) && (!$.trim(classes) || classes.indexOf('isProcessing')<0) && ((classes = classes.replace('isFinished', '')) && (classes+=' isProcessing'));
+            //                     // (className.indexOf('isFinished')<0) && (className.indexOf('isProcessing')<0) && (classes = classes.replace(/(isProcessing|isFinished)/g, ''));
+            //                     nodes[node_keys.indexOf(n)].classes = classes;
+            //                 }
+            //             }
+            //         })
+
+            //         edgeItem.data.children && edgeItem.data.children.forEach(function(e, ei){
+            //             if(e.data.id == 'PU'){
+            //                 console.log(1)
+            //             }
+            //             nodes.push(e);
+            //         });
+            //     }
+            // })
 
             console.log({nodes: nodes, edges: edges})
             return {nodes: nodes, edges: edges};
