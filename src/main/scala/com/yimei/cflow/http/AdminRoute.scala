@@ -68,7 +68,8 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
 
             def insertFlow(p: PartyInstanceEntity, u: PartyUserEntity, s: FlowState): Future[FlowInstanceEntity] = {
               dbrun(flowInstance returning flowInstance.map(_.id) into ((ft, id) => ft.copy(id = id)) +=
-                FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id, s.toJson.toString, 0, Timestamp.from(Instant.now))) recover {
+                FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id,
+                  s.toJson.toString, FlowRegistry.flowGraph(s.flowType).flowInitial ,0, Timestamp.from(Instant.now))) recover {
                 case _ => throw new DatabaseException("添加流程错误")
               }
             }

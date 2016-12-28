@@ -5,7 +5,8 @@ create table flow_instance(
   flow_type varchar(16) not null,     -- cang   ying
   user_type varchar(32) not null,    -- 用户类型  相当于party_id
   user_id varchar(64) not null,  -- 用户id  ?????
-  state  varchar(8192),         -- 流程上下文
+  data  varchar(8192),         -- 流程上下文
+  state varchar(1024),
   finished TINYINT not NULL ,    -- 0：未完成 1：已完成
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
@@ -51,7 +52,7 @@ create table deploy(
 -- 参与方类别
 create table party_class (
   id BIGINT not null auto_increment,
-  class_name varchar(8),       -- 参与方类别名称     todo: 应该改为三位编码
+  class_name varchar(32),       -- 参与方类别名称     todo: 应该改为三位编码
   description varchar(64) ,    -- 参与方类别描述
   enable BOOL,                 -- 激活
   PRIMARY KEY (id)
@@ -66,7 +67,7 @@ CREATE UNIQUE INDEX class_name_index ON party_class(class_name);
 -- ...
 create table  party_instance (
   id BIGINT not null auto_increment,
-  party_class varchar(8) not null,    -- 参与方类别 -  zjf  rzf  myf,      三位编码
+  party_class varchar(32) not null,    -- 参与方类别 -  zjf  rzf  myf,      三位编码
   instance_id varchar(32),            -- 比如融资方-1, 融资方-2     todo: 应该改为8位编码
   party_name varchar(256),            -- 参与方名称
   ts_c timestamp default current_timestamp,

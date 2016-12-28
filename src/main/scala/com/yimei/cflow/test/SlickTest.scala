@@ -16,7 +16,7 @@ object SlickTest extends App with FlywayConfig with FlowInstanceTable{
   import driver.api._
   migrate
 
-  dbrun(flowInstance returning flowInstance.map(_.id) += FlowInstanceEntity(None,"123","cang","rz-001","12345","somedata",0,Timestamp.from(Instant.now))) map {
+  dbrun(flowInstance returning flowInstance.map(_.id) += FlowInstanceEntity(None,"123","cang","rz-001","12345","somedata","init",0,Timestamp.from(Instant.now))) map {
     fid =>
       log.info("插入记录，Id："+fid)
       dbrun(flowInstance.filter(_.id===fid).result) map(

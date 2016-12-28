@@ -1,28 +1,37 @@
 {
-  "initial": "V0",
+  "initial": "financingStep11",
   "graphJar": "com.yimei.cflow.graph.cang.CangGraphJar",
   "timeout": 100,
   "persistent": true,
   "points": {
     "startPoint":"进入仓押系统时,带入的数",
-    "trafficker" : "贸易方账户",
-    "traffickerFinance" : "贸易方资金方账户"
+    "traderUserId" : "贸易方业务方账户",
+    "traderAccountantUserId":"贸易方财务账户",
+    "harborUserId" : "港口账户",
+    "supervisorUserId" : "监管账户",
+    "fundProviderUserId":"资金方账户",
+    "fundProviderAccountantUserId":"资金方财务账户"
+
   },
   "vertices": {
-    "V0": { "description":"发起申请","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"}
+    "financingStep11": { "description":"等待贸易商选择港口,监管方和资金","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep12\", Some(\"E1\")))"}
   },
   "autoTasks": {
   },
   "userTasks": {
+    "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] }
   },
   "edges": {
     "E1": {
       "name": "E1",
-      "begin": "V0",
-      "end": "V1",
+      "begin": "financingStep11",
+      "end": "financingStep12",
       "userTasks": [],
       "partGTasks": [],
-      "partUTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a11SelectHarborAndSupervisor"]
+      }],
       "autoTasks": []
     }
   }

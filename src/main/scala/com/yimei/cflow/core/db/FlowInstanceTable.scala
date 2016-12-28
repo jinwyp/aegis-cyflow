@@ -18,11 +18,12 @@ trait FlowInstanceTable {
     def flow_type = column[String]("flow_type")
     def user_type = column[String]("user_type")
     def user_id = column[String]("user_id")
+    def data = column[String]("data")
     def state = column[String]("state")
     def finished = column[Int]("finished")
     def ts_c = column[Timestamp]("ts_c")
 
-    def * = (id,flow_id,flow_type,user_type,user_id,state,finished,ts_c) <> (FlowInstanceEntity.tupled,FlowInstanceEntity.unapply)
+    def * = (id,flow_id,flow_type,user_type,user_id,data,state,finished,ts_c) <> (FlowInstanceEntity.tupled,FlowInstanceEntity.unapply)
   }
 
   protected val flowInstance = TableQuery[FlowInstance]
