@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.graph.cang.config.Config._
 import com.yimei.cflow.graph.cang.config.ExceptionHandle
-import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute}
+import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute, SessionDemoRoute}
 
 /**
   * Created by wangqi on 16/12/26.
@@ -12,7 +12,8 @@ import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute}
 object Main extends App with ExceptionHandle{
 
   var root: Route = pathPrefix("cang") {
-    CangFlowRoute.route() ~ CangUserRoute.route()
+    CangFlowRoute.route() ~ CangUserRoute.route() ~
+      SessionDemoRoute.route()
   }
 
   println(s"http is listening on ${port}")
