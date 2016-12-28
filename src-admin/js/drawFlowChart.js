@@ -5,219 +5,6 @@
 
 (function(window, $, cytoscape){
 
-    var styleArr = [
-        {
-            selector: 'node',
-            style: {
-                'shape': 'ellipse',
-                // 'shape': 'diamond',
-                'width': function(ele){
-                    return 100;
-                    // return Math.max(100, ele.data().id.length*16);
-                },
-                'height': 100,
-                'content': 'data(id)',
-                'text-valign': 'center',
-                'text-halign': 'center',
-                'background-color': 'gray',
-                'color': '#fff',
-                'font-size': '24px',
-                'text-outline-width': 8,
-                'text-outline-color': 'gray'
-            }
-        },
-
-        {
-            selector: 'node.isProcessing',
-            style: {
-                'background-color': 'orange',
-                'text-outline-color': 'orange'
-            }
-        },
-
-        {
-            selector: 'node.isFinished',
-            style: {
-                'background-color': 'green',
-                'text-outline-color': 'green'
-            }
-        },
-
-        {
-            selector: 'node.task-node',
-            style: {
-                // 'shape': 'roundrectangle',
-                'shape': 'triangle',
-                'width': function(ele){
-                    return 150;
-                    // return Math.max(150, ele.data().id.length*16);
-                },
-                'height': 80
-            }
-        },
-
-        {
-            selector: 'node.task-node.autoTasks',
-            style: {
-                'shape': 'star',
-                'width': function(ele){
-                    return 110;
-                    // return Math.max(110, ele.data().id.length*20);
-                },
-                'height': function(ele){
-                    return 94;
-                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    // return h
-                }
-
-            }
-        },
-
-        {
-            selector: 'node.task-node.userTasks',
-            style: {
-                'shape': 'hexagon',
-                'width': function(ele){
-                    return 110;
-                    // return Math.max(110, ele.data().id.length*20);
-                },
-                'height': function(ele){
-                    return 94;
-                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    // return h
-                }
-
-            }
-        },
-
-        {
-            selector: 'node.task-node.partUTasks',
-            style: {
-                // 'shape': 'pentagon',
-                'shape': 'polygon',
-                'width': function(ele){
-                    return 110;
-                    // return Math.max(110, ele.data().id.length*20);
-                },
-                'height': function(ele){
-                    return 94;
-                    // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
-                    // return h
-                }
-
-            }
-        },
-
-        {
-            selector: 'node.task-node:selected',
-            style: {
-                'border-width': 3,
-                'border-color': '#e86e81'
-            }
-        },
-        {
-            selector: '$node > node',
-            style: {
-                'padding-top': '10px',
-                'padding-left': '10px',
-                'padding-bottom': '10px',
-                'padding-right': '10px',
-                'text-valign': 'top',
-                'text-halign': 'center',
-                'color': '#333',
-                'background-color': '#bbb',
-                'text-outline-width': 0
-            }
-        }, 
-
-        {
-            selector: 'node.singleChild',
-            style: {
-                'background-color': '#d8dee4',
-                'border-width': 0 
-            }
-        },
-
-        // {
-        //     selector: 'node.edgeGroup',
-        //     style: {
-        //         'shape': 'rectangle',
-        //         'background-color': '#bbb',
-        //     }
-        // },
-
-        {
-            selector: 'edge',
-            style: {
-                'width': 4,
-                'target-arrow-shape': 'triangle',
-                'line-color': 'gray',
-                'target-arrow-color': 'gray',
-                'curve-style': 'bezier',
-                // 'control-point-distances': '-30% 30%',
-                // 'control-point-weights': '0 1'
-            }
-        },
-
-        {
-            selector: 'edge.toRight',
-            style: {
-                'curve-style': 'unbundled-bezier',
-                'control-point-distances': '30% -30%',
-                'control-point-weights': '0 1'
-            }
-        },
-
-        {
-            selector: 'edge.toLeft',
-            style: {
-                'curve-style': 'unbundled-bezier',
-                'control-point-distances': '-30% 30%',
-                'control-point-weights': '0 1'
-            }
-        },
-
-        {
-            selector: 'edge.isProcessing',
-            style: {
-                'line-color': 'orange',
-                'target-arrow-color': 'orange'
-            }
-        },
-
-        {
-            selector: 'edge.isFinished',
-            style: {
-                'line-color': 'green',
-                'target-arrow-color': 'green'
-            }
-        },
-
-        {
-            // 任务edge不显示，显示为parent edge
-            selector: 'edge.taskedge',
-            style: {
-                'visibility': 'hidden'
-            }
-        },
-        
-        {
-            // 只有一个子任务的edge parent
-            selector: 'edge.singleChild',
-            style: {
-                'visibility': 'hidden'
-            }
-        },
-
-        {
-            // 只有一个子任务
-            selector: 'edge.taskedge.singleChild',
-            style: {
-                'visibility': 'visible'
-            }
-        },
-    ];
-    
     var flowChart = function (domId, data, actionCB, config){
         this.config = config || {};
         this.domId = domId || '';
@@ -227,6 +14,218 @@
     };
 
     flowChart.prototype.getStyle =  function(){
+        var styleArr = [
+            {
+                selector: 'node',
+                style: {
+                    'shape': 'ellipse',
+                    // 'shape': 'diamond',
+                    'width': function(ele){
+                        return 100;
+                        // return Math.max(100, ele.data().id.length*16);
+                    },
+                    'height': 100,
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                    'text-halign': 'center',
+                    'background-color': 'gray',
+                    'color': '#fff',
+                    'font-size': '24px',
+                    'text-outline-width': 8,
+                    'text-outline-color': 'gray'
+                }
+            },
+
+            {
+                selector: 'node.isProcessing',
+                style: {
+                    'background-color': 'orange',
+                    'text-outline-color': 'orange'
+                }
+            },
+
+            {
+                selector: 'node.isFinished',
+                style: {
+                    'background-color': 'green',
+                    'text-outline-color': 'green'
+                }
+            },
+
+            {
+                selector: 'node.task-node',
+                style: {
+                    // 'shape': 'roundrectangle',
+                    'shape': 'triangle',
+                    'width': function(ele){
+                        return 150;
+                        // return Math.max(150, ele.data().id.length*16);
+                    },
+                    'height': 80
+                }
+            },
+
+            {
+                selector: 'node.task-node.autoTasks',
+                style: {
+                    'shape': 'star',
+                    'width': function(ele){
+                        return 110;
+                        // return Math.max(110, ele.data().id.length*20);
+                    },
+                    'height': function(ele){
+                        return 94;
+                        // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                        // return h
+                    }
+
+                }
+            },
+
+            {
+                selector: 'node.task-node.userTasks',
+                style: {
+                    'shape': 'hexagon',
+                    'width': function(ele){
+                        return 110;
+                        // return Math.max(110, ele.data().id.length*20);
+                    },
+                    'height': function(ele){
+                        return 94;
+                        // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                        // return h
+                    }
+
+                }
+            },
+
+            {
+                selector: 'node.task-node.partUTasks',
+                style: {
+                    // 'shape': 'pentagon',
+                    'shape': 'polygon',
+                    'width': function(ele){
+                        return 110;
+                        // return Math.max(110, ele.data().id.length*20);
+                    },
+                    'height': function(ele){
+                        return 94;
+                        // var h = (110 < ele.data().id.length*20) ? (ele.data().id.length*16) : 94;
+                        // return h
+                    }
+
+                }
+            },
+
+            {
+                selector: 'node.task-node:selected',
+                style: {
+                    'border-width': 3,
+                    'border-color': '#e86e81'
+                }
+            },
+            {
+                selector: '$node > node',
+                style: {
+                    'padding-top': '10px',
+                    'padding-left': '10px',
+                    'padding-bottom': '10px',
+                    'padding-right': '10px',
+                    'text-valign': 'top',
+                    'text-halign': 'center',
+                    'color': '#333',
+                    'background-color': '#bbb',
+                    'text-outline-width': 0
+                }
+            }, 
+
+            {
+                selector: 'node.singleChild',
+                style: {
+                    'background-color': '#d8dee4',
+                    'border-width': 0 
+                }
+            },
+
+            // {
+            //     selector: 'node.edgeGroup',
+            //     style: {
+            //         'shape': 'rectangle',
+            //         'background-color': '#bbb',
+            //     }
+            // },
+
+            {
+                selector: 'edge',
+                style: {
+                    'width': 4,
+                    'target-arrow-shape': 'triangle',
+                    'line-color': 'gray',
+                    'target-arrow-color': 'gray',
+                    'curve-style': 'bezier',
+                    // 'control-point-distances': '-30% 30%',
+                    // 'control-point-weights': '0 1'
+                }
+            },
+
+            {
+                selector: 'edge.toRight',
+                style: {
+                    'curve-style': 'unbundled-bezier',
+                    'control-point-distances': '30% -30%',
+                    'control-point-weights': '0 1'
+                }
+            },
+
+            {
+                selector: 'edge.toLeft',
+                style: {
+                    'curve-style': 'unbundled-bezier',
+                    'control-point-distances': '-30% 30%',
+                    'control-point-weights': '0 1'
+                }
+            },
+
+            {
+                selector: 'edge.isProcessing',
+                style: {
+                    'line-color': 'orange',
+                    'target-arrow-color': 'orange'
+                }
+            },
+
+            {
+                selector: 'edge.isFinished',
+                style: {
+                    'line-color': 'green',
+                    'target-arrow-color': 'green'
+                }
+            },
+
+            {
+                // 任务edge不显示，显示为parent edge
+                selector: 'edge.taskedge',
+                style: {
+                    'visibility': 'hidden'
+                }
+            },
+            
+            {
+                // 只有一个子任务的edge parent
+                selector: 'edge.singleChild',
+                style: {
+                    'visibility': 'hidden'
+                }
+            },
+
+            {
+                // 只有一个子任务
+                selector: 'edge.taskedge.singleChild',
+                style: {
+                    'visibility': 'visible'
+                }
+            },
+        ];
         return styleArr;
     };
 
@@ -363,6 +362,9 @@
 
         // judgeNodes status
         judgeNodes.forEach(function(jn, jni){
+            if(jn.data.id=='V3'){
+                console.log(1)
+            }
             var c = 'isFinished';
             for(var i=0; i<jn.data.ins.length; i++){
                 if(jn.data.ins[i].classes.indexOf('isProcessing')>=0){
@@ -373,6 +375,14 @@
                     c = '';
                 }
             }
+
+            for(var j=0; j<jn.data.out.length; j++){
+                if(/(isProcessing|isFinished)/g.test(jn.data.out[j].classes)){
+                    c = 'isFinished';
+                    break;
+                }
+            }
+
             jn.classes += ' ' + c;
         });
 
