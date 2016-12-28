@@ -1,8 +1,9 @@
-package com.yimei.cflow.user.db
-import com.yimei.cflow.config.DatabaseConfig._
+package com.yimei.cflow.core.db
+
 import java.sql.Timestamp
 
 import com.yimei.cflow.api.models.database.FlowDBModel._
+import com.yimei.cflow.config.DatabaseConfig._
 
 /**
   * Created by hary on 16/12/16.

@@ -15,6 +15,11 @@ trait FlywayConfig extends CoreConfig {
     coreConfig.getString("database.password")
   )
 
+  // 设置migration表为指定表
+  val schema = coreConfig.getString("flyway.schema")
+  flyway.setTable(if(schema == null) "schema" else schema)
+
+
   def migrate = {
     flyway.migrate()
     this

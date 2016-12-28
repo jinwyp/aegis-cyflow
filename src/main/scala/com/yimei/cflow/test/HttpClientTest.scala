@@ -43,9 +43,9 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
  // println(Map("LoanReceipt"->UserSubmitMap(Some("pdf"),"http://www.pdf995.com/samples/pdf.pdf")).toJson.prettyPrint)
 
-  val fileObj1 = FileObj("文件1","www.baidu.com","12345","h",None)
+  val fileObj1 = FileObj("文件1","www.baidu.com","12345")
 
-  val fileObj2 = FileObj("文件2","www.baidu.com","23456","h",Some(Timestamp.from(Instant.now)))
+  val fileObj2 = FileObj("文件2","www.baidu.com","23456")
 
 
 

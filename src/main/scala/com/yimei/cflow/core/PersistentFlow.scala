@@ -6,8 +6,8 @@ import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.api.models.flow.FlowProtocol
 import com.yimei.cflow.core.FlowRegistry._
-import com.yimei.cflow.user.db.FlowInstanceTable
 import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.core.db.FlowInstanceTable
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json._
 
