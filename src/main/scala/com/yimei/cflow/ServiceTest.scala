@@ -45,6 +45,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
       corsHandler(new SwaggerDocService(coreSystem).routes)
   } ~
     ResourceRoute.route(proxy) ~
+    EditorRoute.route(proxy) ~
   XieJieTestRoute().route
 
   def |+|(left: Route, right: Route) = left ~ right

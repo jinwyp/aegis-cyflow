@@ -6,8 +6,8 @@ import akka.actor.{ActorRef, Props, ReceiveTimeout}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
 import com.yimei.cflow.api.models.flow.FlowProtocol
 import com.yimei.cflow.core.FlowRegistry._
-import com.yimei.cflow.user.db.FlowInstanceTable
 import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.core.db.FlowInstanceTable
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json._
 
@@ -193,6 +193,15 @@ class PersistentFlow(
 
     val arrows = graph.deciders(e.end)(state)
 
+    //更新当前到达点
+    val udState = flowInstance.filter(f=>
+      f.flow_id === state.flowId
+    ).map(f=>(f.state)).update(
+      e.end
+    )
+
+    dbrun(udState)
+
     persist(DecisionUpdated(e.end, arrows)) { event =>
 
       updateState(event)
@@ -206,20 +215,11 @@ class PersistentFlow(
             // 更新数据库 todo王琦
             val pu = flowInstance.filter(f=>
               f.flow_id === state.flowId
-            ).map(f=>(f.state,f.finished)).update(
+            ).map(f=>(f.data,f.finished)).update(
               state.toJson.toString,1
             )
 
             dbrun(pu)
-//            map { i =>
-//              i match {
-//                case 1 => "success"
-//                case _ => "fail"
-//              }
-//            } recover {
-//              case _ => "fail"
-//            }
-
 
           case a@Arrow(j, Some(nextEdge)) =>
             val ne = graph.edges(nextEdge)

@@ -23,6 +23,7 @@ import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.api.http.models.TaskModel._
+import com.yimei.cflow.core.db.{FlowInstanceTable, FlowTaskTable}
 
 import scala.concurrent.Future
 

@@ -16,10 +16,17 @@ object Config {
   val url = config.getString("server.url")
   val port = config.getInt("client.port")
 
-  val rzf = "rzf"
+  val rzf = "financer"
+  val zjf = "fundProvider"
+  val myf = "trader"
+  val gkf = "harbor"
+  val jgf = "supervisor"
+  val adm = "systemAdmin"
+
   val flowType = "cang"
 
-  val zjfUserId = "zjf-88888888!77777"
-  val zjfFinanceId = "zjf-88888888!88888"
+  val myfUserId = "trader-88888888!77777"
+  val myfFinanceId = "trader-88888888!88888"
+  val adminId = "systemAdmin-00000000!00000"
 
 }

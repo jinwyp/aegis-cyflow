@@ -4,7 +4,7 @@ import com.yimei.cflow.api.models.flow._
 import spray.json.DefaultJsonProtocol
 
 
-case class Vertex(description: String, program: Option[String])
+case class Vertex(description: String, program: Option[String] = None)
 
 case class GraphConfig(
                         graphJar: String,

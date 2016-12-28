@@ -88,14 +88,6 @@
                 "value": "50505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050",
                 "memo": "userdata"
             },
-            "UATESTAT2": {
-                "used": false,
-                "timestamp": 1482288591168,
-                "id": "39117f49-796c-426a-9d86-b299c33a7c1d",
-                "operator": "001-hary1",
-                "value": "50",
-                "memo": "userdata"
-            },
             "B": {
                 "used": true,
                 "timestamp": 10,
@@ -112,6 +104,14 @@
                 "value": "50",
                 "memo": "userdata"
             },
+            "PG3": {
+                "used": false,
+                "timestamp": 1482288586178,
+                "id": "d8293e46-2203-4d8e-8767-114427582ab2",
+                "operator": "fund1-wangqiId1",
+                "value": "50",
+                "memo": "userdata"
+            },
             "C": {
                 "used": true,
                 "timestamp": 10,
@@ -119,14 +119,6 @@
                 "operator": "C",
                 "value": "http://www.pdf995.com/samples/pdf.pdf",
                 "memo": "pdf"
-            },
-            "UATESTAT1": {
-                "used": false,
-                "timestamp": 1482288591168,
-                "id": "8292092c-7d07-47f9-87dc-ea33494a2756",
-                "operator": "001-hary1",
-                "value": "50",
-                "memo": "userdata"
             },
             "KPU1": {
                 "used": false,
@@ -153,8 +145,9 @@
             }
         },
         "flowId": "ying-001-hary1-1",
-        "edges": {"E3":true},
+        "edges": {"E4":true},
         "histories": [
+            "E3",
             "E2",
             "E1",
             "start"

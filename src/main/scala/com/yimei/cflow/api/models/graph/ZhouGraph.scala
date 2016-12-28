@@ -22,22 +22,22 @@ class ZhouGraph {
   /////////////////////////////////////////////////////////////////////////////
   // 决策点设置
   /////////////////////////////////////////////////////////////////////////////
-  @VertexProperty( description = "决定1")
+  @Description("决定1")
   def V0(state: State): Seq[Arrow] = ???
 
-  @VertexProperty( description = "决定1" )
+  @Description( "决定1" )
   def V1(state: State): Seq[Arrow] = ???
 
-  @VertexProperty( description = "决定1" )
+  @Description( "决定1" )
   def V2(state: State): Seq[Arrow] = ???
 
-  @VertexProperty( description = "决定1" )
+  @Description( "决定1" )
   def V3(state: State): Seq[Arrow] = ???
 
-  @VertexProperty( description = "决定1" )
+  @Description( "决定1" )
   def V4(state: State): Seq[Arrow] = ???
 
-  @VertexProperty( description = "决定1" )
+  @Description( "决定1" )
   def V5(state: State): Seq[Arrow] = ???
 
 
