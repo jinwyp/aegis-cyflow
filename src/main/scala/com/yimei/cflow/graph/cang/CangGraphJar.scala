@@ -11,7 +11,6 @@ object CangGraphJar {
   val ArrowFail = Arrow("fail", None)
   val ArrowSuccess = Arrow("success", None)
 
-  @VertexProperty(description = "等待融资方,港口和监管方上传合同及单据")
   def financingStep12(state: State) = {
       Seq(ArrowSuccess)
   }
