@@ -2,7 +2,7 @@ package com.yimei.cflow.api.http.models
 
 import com.yimei.cflow.api.models.flow.DataPoint
 import com.yimei.cflow.api.models.user.UserProtocol
-import com.yimei.cflow.user.db.FlowInstanceEntity
+import com.yimei.cflow.api.models.database.FlowDBModel._
 import spray.json.DefaultJsonProtocol
 
 /**
@@ -14,7 +14,7 @@ object AdminModel {
 
   case class AllTasks(finishedTask: Seq[FlowInstanceEntity], processTask: Seq[FlowInstanceEntity], total: Int)
 
-  case class FlowQuery(flowId: Option[String], flowType: Option[String], userType: Option[String], userId: Option[String], status: Option[Int], limit: Option[Int], offset: Option[Int])
+  case class FlowQuery(flowId: Option[String], flowType: Option[String], userType: Option[String], userId: Option[String], status: Option[Int], page: Option[Int], pageSize: Option[Int])
 
   case class FlowQueryResponse(flows: Seq[FlowInstanceEntity], total: Int)
 

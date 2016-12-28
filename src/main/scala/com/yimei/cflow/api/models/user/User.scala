@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat
 
 import akka.actor.ActorRef
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
+import com.yimei.cflow.api.models.database.FlowDBModel._
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.user.db._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
@@ -78,7 +80,7 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit val partyInstanceFormat = jsonFormat5(PartyInstanceEntity)
 
-  implicit val flowInstanceEntityFormat = jsonFormat8(FlowInstanceEntity)
+  implicit val flowInstanceEntityFormat = jsonFormat9(FlowInstanceEntity)
 
   implicit val CommandCreateUserFormat = jsonFormat1(CommandCreateUser)
 
