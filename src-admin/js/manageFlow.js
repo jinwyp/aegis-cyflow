@@ -58,6 +58,7 @@
             notSelected : false,
             vertexExist : false,
             edgeExist : false,
+            vertexSelf : false,
             ajax : false
         };
         vm.errorAddNewTask = {
@@ -114,9 +115,8 @@
         vm.partUTasks = [];
         vm.partGTasks = [];
 
-
         vm.addNewLine = function (form){
-
+            console.log(vm.newVertex)
             if (form.$valid){
 
                 if (vm.currentVertex.id){
@@ -140,6 +140,13 @@
                         return;
                     }else{
                         vm.errorAddNewVertex.vertexExist = false;
+                    }
+                }else{
+                    if (vm.currentVertex.id === vm.newVertex.id ){
+                        vm.errorAddNewVertex.vertexSelf = true;
+                        return;
+                    }else{
+                        vm.errorAddNewVertex.vertexSelf = false;
                     }
                 }
 
@@ -193,11 +200,13 @@
                 }
 
                 vm.edges.push(newTempEdge)
-
                 cytoscapeChart.add(newTempEdge);
 
-                //cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
-                cytoscapeChart.reset();
+                vm.newEdge.id = ''
+                vm.newVertex.id = ''
+                vm.newVertex.description = ''
+
+                cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
             }
 
         }

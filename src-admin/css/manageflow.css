@@ -23,12 +23,12 @@ body{
 
 #chart{
     float: left;
-    width:400px; height:2000px;
+    width:600px; height:2000px;
 }
 
 #panel-settings {
     float: right;
-    width : 600px;
+    width : 400px;
     height: 500px;
 
 }

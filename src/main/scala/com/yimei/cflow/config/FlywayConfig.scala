@@ -16,8 +16,13 @@ trait FlywayConfig extends CoreConfig {
   )
 
   // 设置migration表为指定表
-  val schema = coreConfig.getString("flyway.schema")
-  flyway.setTable(if(schema == null) "schema" else schema)
+  val schema = try {
+    val a = coreConfig.getString("flyway.schema")
+    if (a == null || a == "") "schema" else a
+  } catch {
+    case _ => "schema"
+  }
+  flyway.setTable(schema)
 
 
   def migrate = {
