@@ -28,7 +28,7 @@
                         <div id="panel-settings" ng-cloak ng-controller="formController as vm">
 
                             <div class="panel panel-default" ng-show="vm.selectType === 'node' && vm.currentVertex.id">
-                                <div class="panel-heading"> <h4>已选中节点: {{vm.currentVertex.id || '未选择'}}</h4> </div>
+                                <div class="panel-heading"> <h4>已选中节点: {{vm.currentVertex.id || '未选择'}} {{vm.newVertex.id}}</h4> </div>
 
                                 <div class="panel-body">
                                     <form class="form-horizontal" name="formNode">
@@ -72,6 +72,7 @@
                                                         ng-options="item.data.id as item.data.id for item in vm.vertices track by item.id" ng-model="vm.newVertex.id"></select>
                                             </div>
                                         </div>
+
 
                                         <div class="form-group" ng-class="{'has-error' : formNode.edgeId.$invalid && formNode.edgeId.$dirty}">
                                             <div class="col-lg-6">
