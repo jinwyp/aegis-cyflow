@@ -31,6 +31,7 @@
                                 <div class="panel-heading"> <h4>已选中节点: {{vm.currentVertex.id || '未选择'}} {{vm.newVertex.id}}</h4> </div>
 
                                 <div class="panel-body">
+
                                     <form class="form-horizontal" name="formNode">
                                         <div class="form-group">
                                             <div class="col-lg-10">
@@ -69,7 +70,7 @@
                                         <div class="form-group" ng-if="!vm.isNewNode">
                                             <div class="col-lg-10">
                                                 <select class="form-control m-b"
-                                                        ng-options="item.data.id as item.data.id for item in vm.vertices track by item.id" ng-model="vm.newVertex.id"></select>
+                                                        ng-options="item.data.id as item.data.id for item in vm.vertices track by item.data.id" ng-model="vm.newVertex.id" ></select>
                                             </div>
                                         </div>
 
@@ -93,6 +94,7 @@
                                                 <span class="help-block" ng-if="vm.errorAddNewVertex.notSelected">请选择一个节点!</span>
                                                 <span class="help-block" ng-if="vm.errorAddNewVertex.vertexExist">节点ID已存在!</span>
                                                 <span class="help-block" ng-if="vm.errorAddNewVertex.edgeExist">连线ID已存在!</span>
+                                                <span class="help-block" ng-if="vm.errorAddNewVertex.vertexSelf">节点连线不能指向自己!</span>
                                             </div>
                                         </div>
                                     </form>
