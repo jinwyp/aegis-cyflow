@@ -1,15 +1,13 @@
 package com.yimei.cflow
 
+import java.util.Optional
+
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.model.ResponseEntity
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.stream.scaladsl.Source
-import akka.util.ByteString
-import com.yimei.cflow.config.ApplicationConfig
-import com.yimei.cflow.graph.cang.models.UserModel
-import com.yimei.cflow.graph.cang.models.UserModel.AddUser
-import com.yimei.cflow.util.DBUtils._
+import com.yimei.cflow.config.{ApplicationConfig, CoreConfig}
 
 import scala.concurrent.Future
 import scala.util.Random
@@ -17,7 +15,7 @@ import scala.util.Random
 /**
   * Created by liuxinjie on 2016/12/23.
   */
-class XieJieTestRoute extends App with ApplicationConfig with SprayJsonSupport {
+class XieJieTestRoute extends App with CoreConfig with ApplicationConfig with SprayJsonSupport {
 
   val f = Future {
     "abc"
@@ -32,7 +30,7 @@ class XieJieTestRoute extends App with ApplicationConfig with SprayJsonSupport {
   def hello1: Route = get {
     pathPrefix("hello" / Segment) { id =>
       pathEnd(
-        complete("Hello" + " -------|||| " + id)
+        complete("Hello" + " -------  |||| " + id)
       )
     }
   }
@@ -58,10 +56,10 @@ class XieJieTestRoute extends App with ApplicationConfig with SprayJsonSupport {
     }
   }
 
-  import UserModel._
+  import com.yimei.cflow.graph.cang.models.UserModel._
 
   def addUser: Route = post {
-    pathPrefix("usertest" ) {
+    pathPrefix("usertest") {
       pathEnd {
         entity(as[AddUser]) { user =>
           println(" -------- user --------- " + user.toString)
@@ -71,7 +69,58 @@ class XieJieTestRoute extends App with ApplicationConfig with SprayJsonSupport {
     }
   }
 
-  def route: Route = hello ~ hello1 ~ hello2 ~ hello3 ~ addUser
+  import java.io.FileOutputStream
+  import java.util.UUID
+
+  import akka.http.scaladsl.model.{HttpResponse, Multipart, StatusCodes}
+  import akka.util.ByteString
+  import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
+
+  val localPath = coreConfig.getString("filePath")
+
+
+  def uploadFile: Route = post {
+    pathPrefix("apz" / "upload" / "file") {
+      pathEnd {
+        entity(as[Multipart.FormData]) { (fileData: Multipart.FormData) =>
+          println(" ================================= ")
+          println(" ================================= ")
+          println(" ----------------------------- ")
+          val fileName = UUID.randomUUID().toString
+          val filePath = "./files/cang/" + fileName + ".png"
+          val fileOriginName: String = processFile(filePath, fileData)
+          val fileObj = FileObj(fileOriginName, filePath)
+          println(" eeeeeeeeeeeeeeeeeeeeeeee111111 ")
+          println(fileObj.toString)
+          complete(fileObj)
+        }
+      }
+    }
+  }
+
+  private def processFile(filePath: String, fileData: Multipart.FormData): String = {
+    val fileOutput = new FileOutputStream(filePath)
+    var fileName: String = ""
+    fileData.parts.mapAsync(1) {
+      bodyPart =>
+        println(" 123456 ------ " + bodyPart.getName() + " --- " + bodyPart.getFilename())
+        def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
+          val byteArray: Array[Byte] = byteString.toArray
+          fileOutput.write(byteArray)
+          array ++ byteArray
+        }
+        println(bodyPart.getName() == "file")
+        if (bodyPart.getName().equals("file")) {
+          fileName += String.valueOf(bodyPart.getFilename())
+        }
+        bodyPart.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
+    }.runFold(0)(_ + _.length)
+    return fileName
+  }
+
+  def route: Route = hello ~ hello1 ~ hello2 ~ hello3 ~ addUser ~ uploadFile
+
+
 }
 
 object XieJieTestRoute {
@@ -80,3 +129,5 @@ object XieJieTestRoute {
 
   def route: Route = XieJieTestRoute().route
 }
+
+
