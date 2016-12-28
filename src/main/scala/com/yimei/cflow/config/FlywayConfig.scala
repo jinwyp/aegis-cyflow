@@ -15,6 +15,9 @@ trait FlywayConfig extends CoreConfig {
     coreConfig.getString("database.password")
   )
 
+  // 设置migration表为指定表
+  flyway.setTable("zflow_migration")
+
   def migrate = {
     flyway.migrate()
     this
