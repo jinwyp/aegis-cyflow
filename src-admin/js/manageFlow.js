@@ -202,6 +202,10 @@
                 vm.edges.push(newTempEdge)
                 cytoscapeChart.add(newTempEdge);
 
+                vm.newEdge.id = ''
+                vm.newVertex.id = ''
+                vm.newVertex.description = ''
+
                 cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
             }
 
