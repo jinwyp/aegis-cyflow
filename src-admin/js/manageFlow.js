@@ -82,8 +82,8 @@
         };
 
         vm.newVertex = {
-            id : 'V9',
-            description : 'V9XX'
+            id : '',
+            description : ''
         };
         vm.newEdge = {
             id : ''
@@ -141,8 +141,6 @@
                     }else{
                         vm.errorAddNewVertex.vertexExist = false;
                     }
-                }else{
-
                 }
 
                 var newTempNode = {
@@ -188,14 +186,18 @@
                     edgeIdList.push(newTempEdge.data.id)
                 }
 
-                vm.vertices.push(newTempNode)
+
+                if (vm.isNewNode){
+                    vm.vertices.push(newTempNode)
+                    cytoscapeChart.add(newTempNode);
+                }
+
                 vm.edges.push(newTempEdge)
 
-                cytoscapeChart.add(newTempNode);
                 cytoscapeChart.add(newTempEdge);
 
-                cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
-                //cytoscapeChart.reset();
+                //cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
+                cytoscapeChart.reset();
             }
 
         }
