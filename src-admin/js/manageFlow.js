@@ -49,6 +49,7 @@
         var edgeIdList = [];
         var taskIdList = [];
 
+        vm.ouputData = {};
         vm.selectType = 'node';
         vm.isNewNode = true;
         vm.taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
@@ -81,8 +82,8 @@
         };
 
         vm.newVertex = {
-            id : '',
-            description : ''
+            id : 'V9',
+            description : 'V9XX'
         };
         vm.newEdge = {
             id : ''
@@ -180,11 +181,21 @@
 
 
 
+                if (vertexIdList.indexOf(vm.newEdge.id) === -1 ){
+                    vertexIdList.push(newTempNode.data.id)
+                }
+                if (edgeIdList.indexOf(vm.newEdge.id) === -1 ){
+                    edgeIdList.push(newTempEdge.data.id)
+                }
+
                 vm.vertices.push(newTempNode)
                 vm.edges.push(newTempEdge)
 
                 cytoscapeChart.add(newTempNode);
                 cytoscapeChart.add(newTempEdge);
+
+                cytoscapeChart.layout(cytoscapeChart.getConfig({}).layout);
+                //cytoscapeChart.reset();
             }
 
         }
@@ -224,8 +235,17 @@
                 vm.currentEdge.sourceData.allTask.push(newTempTask);
                 newTempTask.data.sourceData.belongToEdge = vm.currentEdge.sourceData;
 
+                if (taskIdList.indexOf(vm.newEdge.id) === -1 ){
+                    taskIdList.push(newTempTask.data.id)
+                }
+
                 cytoscapeChart.getElementById( vm.currentEdge.id ).data(sourceData, vm.currentEdge.sourceData);
             }
+        }
+
+
+        vm.formatterArrayToObject = function (){
+
         }
 
 
@@ -280,7 +300,8 @@
             })
 
 
-            cy.nodes('.node').on('click', function(e){
+
+            cy.on('click', 'node', function(evt){
                 console.log('node:', this.data())
                 vm.currentVertex.id = this.data().id;
                 vm.currentVertex.description = this.data().sourceData.description;
@@ -288,7 +309,8 @@
                 $scope.$apply();
             })
 
-            cy.edges('.edge').on('click', function(e){
+
+            cy.on('click', 'edge', function(evt){
                 console.log('edge:', this.data())
                 vm.currentEdge.id = this.data().id;
                 vm.currentEdge.source = this.data().source;
@@ -296,14 +318,6 @@
                 vm.currentEdge.sourceData = this.data().sourceData;
                 vm.selectType = 'edge';
                 $scope.$apply();
-            })
-
-            cy.nodes('.task').on('click', function(e){
-                console.log('task:', this.data())
-                //data.original[(data.taskType=='autoTasks')?'autoTasks':'userTasks'][data.id].points.forEach(function(p, pi){
-                //    var val;
-                //    points.push({'key':p, 'value':val});
-                //})
             })
 
         };
@@ -326,6 +340,13 @@
                 };
 
                 cytoscapeChart = new flowChart2(formattedData, configChart);
+                cytoscapeChart.center()
+                cytoscapeChart.pan({
+                    x: 10,
+                    y: 10
+                });
+
+                console.log(cytoscapeChart.edges().data())
                 sourceData = cytoscapeChart.formatterObjectToArray(formattedData)
 
                 vm.edges = sourceData.edges;

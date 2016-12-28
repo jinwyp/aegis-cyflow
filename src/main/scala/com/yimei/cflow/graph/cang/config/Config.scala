@@ -17,9 +17,16 @@ object Config {
   val port = config.getInt("client.port")
 
   val rzf = "rzf"
+  val zjf = "zjf"
+  val myf = "myf"
+  val gkf = "gkf"
+  val jgf = "jgf"
+  val adm = "adm"
+
   val flowType = "cang"
 
   val zjfUserId = "zjf-88888888!77777"
   val zjfFinanceId = "zjf-88888888!88888"
+  val adminId = "adm-00000000!00000"
 
 }

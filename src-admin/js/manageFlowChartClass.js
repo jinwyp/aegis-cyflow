@@ -443,10 +443,7 @@
         return this.init(data, config);
     };
 
-
-    flowChart2.prototype.init =  function(sourceData, config){
-        var self = this;
-
+    var getConfig = function (config){
         var cfg = Object.assign({
             container: document.getElementById(config.domId),
 
@@ -459,10 +456,10 @@
                 edgeWeight : function( edge ){
                     return 1;  // higher weight edges are generally made shorter and straighter than lower weight edges
                 },
-                nodeSep: 500
+                nodeSep: 200
             },
             style: styleList,
-            elements: formatterObjectToArray(sourceData),
+            elements: [],
 
             boxSelectionEnabled: false,
             autounselectify: false,
@@ -480,12 +477,20 @@
 
         }, config);
 
+        return cfg
+    }
+
+    flowChart2.prototype.init =  function(sourceData, config){
+
+        var cfg = getConfig(config);
+        cfg.elements = formatterObjectToArray(sourceData) ;
 
         var cy = cytoscape(cfg);
 
         cfg.eventCB(cy);
 
         cy.formatterObjectToArray = formatterObjectToArray;
+        cy.getConfig = getConfig;
 
         return cy;
     };
