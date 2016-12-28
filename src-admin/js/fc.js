@@ -5,7 +5,7 @@
     var originalData;
 
     var chartEventCallback= function(cy){
-        cy.nodes('.task').qtip({
+        cy.nodes('.task-node').qtip({
             content: function(){
                 return this.data().description || '暂无描述';
             },
@@ -28,7 +28,7 @@
             }
         })
 
-        cy.nodes('.task').on('click', function(e){
+        cy.nodes('.task-node').on('click', function(e){
             var classes = this._private.classes;
             var data = this.data();
             var points = [];
@@ -95,7 +95,7 @@
             })
         })
 
-        cy.nodes('.node').qtip({
+        cy.nodes('.judge-node').qtip({
             content: function(){
                 return this.data().description;
             },
@@ -337,7 +337,7 @@
                     name: 'dagre',
                     // name: 'cose-bilkent',
                     fit: true,
-                    rankDir: "LR"
+                    // rankDir: "LR"
                 }});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');

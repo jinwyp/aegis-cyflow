@@ -72,14 +72,6 @@
                 "operator": "ATESTAT",
                 "value":"5079315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e67f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c979315428-5714-4ff4-bcf3-79e6be7f84c9"
             },
-            "PG1": {
-                "used": false,
-                "timestamp": 1482288586178,
-                "id": "9b19591b-0b24-40c4-98d7-860e0a24cb84",
-                "operator": "fund1-wangqiId1",
-                "value": "50505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050505050",
-                "memo": "userdata"
-            },
             "PU1": {
                 "used": false,
                 "timestamp": 1482288586178,
@@ -104,7 +96,7 @@
                 "value": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
                 "memo": "img"
             },
-            "PG2": {
+            "PG3": {
                 "used": false,
                 "timestamp": 1482288586178,
                 "id": "d8293e46-2203-4d8e-8767-114427582ab2",
