@@ -19,6 +19,9 @@ object FlowService extends UserModelProtocol with Config{
         val gkUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(gkf,tass.portCompanyId,tass.portUserId))
         val jgUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(jgf,tass.supervisorCompanyId,tass.supervisorUserId))
 
+       // val
+
+
 
 
         for {

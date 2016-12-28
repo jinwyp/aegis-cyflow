@@ -98,5 +98,7 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit val TaskDequeueFormat = jsonFormat1(TaskDequeue)
 
+  implicit val UserGroupEntityFormat = jsonFormat5(UserGroupEntity)
+
 
 }

@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
+import com.yimei.cflow.api.models.group.GroupProtocol
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
@@ -20,7 +21,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import com.yimei.cflow.user.db._
 
-class GroupRoute extends UserProtocol with PartyGroupTable with SprayJsonSupport {
+class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable with SprayJsonSupport with GroupProtocol{
 
   import driver.api._
 
@@ -67,7 +68,19 @@ class GroupRoute extends UserProtocol with PartyGroupTable with SprayJsonSupport
       }
   }
 
-  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty
+
+  def getUserByGroupAndParty  = get {
+    pathPrefix("ugroup"/ Segment / Segment / Segment) { (party_id,gid,user_id) =>
+      val result: Future[Seq[UserGroupEntity]] = dbrun(userGroup.filter(u=>
+          u.party_id === party_id.toLong   &&
+          u.gid      === gid      &&
+          u.user_id  === user_id
+      ).result)
+      complete(result)
+    }
+  }
+
+  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty ~ getUserByGroupAndParty
 }
 
 
