@@ -83,15 +83,11 @@ class XieJieTestRoute extends App with CoreConfig with ApplicationConfig with Sp
     pathPrefix("apz" / "upload" / "file") {
       pathEnd {
         entity(as[Multipart.FormData]) { (fileData: Multipart.FormData) =>
-          println(" ================================= ")
-          println(" ================================= ")
-          println(" ----------------------------- ")
+//          fileData.parts.mapAsync(1)
           val fileName = UUID.randomUUID().toString
-          val filePath = "./files/cang/" + fileName + ".png"
+          val filePath = "./files/cang/" + fileName
           val fileOriginName: String = processFile(filePath, fileData)
-          val fileObj = FileObj(fileOriginName, filePath)
-          println(" eeeeeeeeeeeeeeeeeeeeeeee111111 ")
-          println(fileObj.toString)
+          val fileObj = FileObj(fileName, fileOriginName, filePath)
           complete(fileObj)
         }
       }

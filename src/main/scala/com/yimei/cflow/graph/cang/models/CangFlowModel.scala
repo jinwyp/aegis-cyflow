@@ -7,8 +7,8 @@ import BaseFormatter._;
 
 object CangFlowModel extends DefaultJsonProtocol {
 
-  case class FileObj(name: String, url: String)
-  implicit val fileObjFormat = jsonFormat2(FileObj)
+  case class FileObj(name: String, originName: String, url: String)
+  implicit val fileObjFormat = jsonFormat3(FileObj)
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
