@@ -20,7 +20,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  migrate
+  //migrate
 
   GraphLoader.loadall()
 

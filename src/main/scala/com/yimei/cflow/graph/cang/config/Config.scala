@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by wangqi on 16/12/26.
   */
-object Config {
+trait Config {
   implicit val coreSystem = ActorSystem("ClientSystem")
   implicit val coreExecutor = coreSystem.dispatcher
   implicit val coreMaterializer = ActorMaterializer()
