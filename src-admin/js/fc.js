@@ -337,7 +337,7 @@
                     name: 'dagre',
                     // name: 'cose-bilkent',
                     fit: true,
-                    // rankDir: "LR"
+                    rankDir: "LR"
                 }});
                 var count = 0;
                 $('#cy canvas').css('visibility','hidden');
