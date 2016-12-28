@@ -53,6 +53,7 @@ create table party_class (
   id BIGINT not null auto_increment,
   class_name varchar(8),       -- 参与方类别名称     todo: 应该改为三位编码
   description varchar(64) ,    -- 参与方类别描述
+  enable BOOL,                 -- 激活
   PRIMARY KEY (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- class_name 唯一索引

@@ -55,11 +55,11 @@ case class ProgramCompiler(graphConfig: GraphConfig) {
 
   def make() = {
     val d = graphConfig.vertices.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse( deciPrefix + entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
+      (entry._1 -> toolbox.compile(toolbox.parse(deciPrefix + entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
     };
 
     val a = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse( autoPrefix + entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
+      (entry._1 -> toolbox.compile(toolbox.parse(autoPrefix + entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
     }
     (d, a)
   }
@@ -70,24 +70,37 @@ case class ProgramCompiler(graphConfig: GraphConfig) {
   */
 object GraphLoader extends GraphConfigProtocol {
 
+  def deploy(flowType: String) = {
+    FlowRegistry.register(flowType, loadGraph(flowType))
+  }
 
   def loadall() =
     new File("flows")
       .listFiles()
       .filter(_.isDirectory())
-      .map(_.getName)
-      .foreach(flowType => FlowRegistry.register(flowType, loadGraph(flowType)))
+      .map { file =>
+       val flowType =  file.getName
+        val status = try {
+          FlowRegistry.register(flowType, loadGraph(flowType))
+        } catch {
+          case _ => false
+        }
+        (flowType, status)
+      }.toMap
 
   def getClassLoader(flowType: String) = {
     flowType match {
-      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "ying" => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case "cang"  => CangGraphJar.getClass.getClassLoader
+      case "cang" => CangGraphJar.getClass.getClassLoader
       case _ => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
         new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
+        // todo 王琦
+        // 改为从数据库读取jar文件 写入/tmp/xxx.jar
+        // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
     }
   }
 
@@ -99,10 +112,10 @@ object GraphLoader extends GraphConfigProtocol {
     import spray.json._
 
     val jsonFile = gFlowType match {
-      case "ying"  => "ying.json"
+      case "ying" => "ying.json"
       case "money" => "money.json"
-      case "cang"  => "cang.json"
-      case _       => "flow.json"
+      case "cang" => "cang.json"
+      case _ => "flow.json"
     }
 
     val classLoader = getClassLoader(gFlowType)
@@ -238,7 +251,7 @@ object GraphLoader extends GraphConfigProtocol {
   def getRoutes(m: Class[_], module: AnyRef): Seq[ActorRef => Route] = {
     m.getMethods.filter { method =>
       val ptypes = method.getParameterTypes
-        ptypes.length == 1 &&
+      ptypes.length == 1 &&
         ptypes(0) == classOf[ActorRef] &&
         method.getReturnType == classOf[Route]
     }.map { am =>
