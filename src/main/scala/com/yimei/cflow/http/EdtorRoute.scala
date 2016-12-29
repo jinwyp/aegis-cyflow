@@ -1,11 +1,9 @@
 package com.yimei.cflow.http
 
 import akka.actor.ActorRef
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
-
-import scala.concurrent.Future
 
 /**
   * Created by hary on 16/12/28.
