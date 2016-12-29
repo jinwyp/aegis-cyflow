@@ -12,22 +12,31 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.util.DBUtils._
 import com.yimei.cflow.user.db._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import com.yimei.cflow.api.http.models.PartyModel.PartyInstanceInfo
 
 import scala.concurrent.Future
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.UserProtocol
+import com.yimei.cflow.api.http.models.PartyModel._
 
-class InstRoute extends PartyInstanceTable with UserProtocol with SprayJsonSupport{
+class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocal with SprayJsonSupport{
   import driver.api._
 
   //POST /inst/:party_class/:instance_id/:party_name          创建参与方实例
   def createPartyInstance: Route = post {
-    pathPrefix("inst" / Segment / Segment / Segment) { (pc, ii, pn) =>
-      val entity: Future[PartyInstanceEntity] = dbrun(
-        (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, pc, ii, pn, Timestamp.from(Instant.now))
-      )
-      complete(entity)
+    pathPrefix("inst") {
+      entity(as[PartyInstanceInfo]) { info =>
+        val entity: Future[PartyInstanceEntity] = dbrun(
+          (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, info.party, info.instanceId, info.companyName, Timestamp.from(Instant.now))
+        )
+        complete(entity)
+      }
     }
+//      val entity: Future[PartyInstanceEntity] = dbrun(
+//        (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, pc, ii, pn, Timestamp.from(Instant.now))
+//      )
+//      complete(entity)
+//    }
   }
 
   //GET  /inst/:party/:instance_id           查询参与方实例

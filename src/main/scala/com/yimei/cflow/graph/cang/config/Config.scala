@@ -29,6 +29,9 @@ trait Config {
   val myfFinanceId = "trader-88888888!88888"
   val adminId = "systemAdmin-00000000!00000"
 
+  val zjfyw = "fundProvider"
+  val zjfcw = "fundProviderAccountant"
+
 
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
