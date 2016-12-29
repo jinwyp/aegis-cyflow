@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by wangqi on 16/12/26.
   */
-object Config {
+trait Config {
   implicit val coreSystem = ActorSystem("ClientSystem")
   implicit val coreExecutor = coreSystem.dispatcher
   implicit val coreMaterializer = ActorMaterializer()
@@ -28,5 +28,9 @@ object Config {
   val myfUserId = "trader-88888888!77777"
   val myfFinanceId = "trader-88888888!88888"
   val adminId = "systemAdmin-00000000!00000"
+
+
+  //tasks
+  val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
 
 }
