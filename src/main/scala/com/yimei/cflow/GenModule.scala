@@ -25,4 +25,9 @@ object GenModule extends App with GraphConfigProtocol {
 
   println(graphConfig)
 
+  //
+  //     aegis-flow-ying/sfdasdfafas   /tmp
+  //  aegis-flow-ying.tar.gz           /tmp  aegis-flow-ying.tar.gz
+  //
+
 }
