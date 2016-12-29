@@ -24,10 +24,12 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   import com.yimei.cflow.graph.cang.models.UserModel._
 
-  // http://127.0.0.1:9001/cang/fse/:user_id/:company_Id/:company_Name  get
-  def financeSideEnterRoute: Route = get {
-    pathPrefix("fse" / Segment / Segment / Segment) { (ui, ci, cn) =>
-      complete(financeSideEnter(ui, ci, cn))
+  // http://127.0.0.1:9001/cang/fse/:user_id/:company_Id body:companyName post
+  def financeSideEnterRoute: Route = post {
+    pathPrefix("fse" / Segment / Segment ) { (ui, ci) =>
+      entity(as[AddUser]) { user =>
+        complete(financeSideEnter(ui, ci, user))
+      }
     }
   }
 

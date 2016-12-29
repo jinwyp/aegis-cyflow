@@ -32,17 +32,12 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
         complete(entity)
       }
     }
-//      val entity: Future[PartyInstanceEntity] = dbrun(
-//        (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, pc, ii, pn, Timestamp.from(Instant.now))
-//      )
-//      complete(entity)
-//    }
   }
 
   //GET  /inst/:party/:instance_id           查询参与方实例
   def queryPartyInstance: Route = get {
     pathPrefix("inst" / Segment / Segment) { (pc, ii) =>
-      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result.head))
+      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result))
     }
   }
 

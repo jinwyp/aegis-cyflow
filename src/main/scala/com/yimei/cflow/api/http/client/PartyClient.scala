@@ -21,12 +21,13 @@ trait PartyClient extends UserProtocol{
     }
   }
 
-  def queryPartyInstance(party_class: String, instance_id: String): Future[PartyInstanceEntity] = {
+  //访问com.yimei.cflow.http.InstRoute中的queryPartyInstance接口
+  def queryPartyInstance(party_class: String, instance_id: String): Future[List[PartyInstanceEntity]] = {
     sendRequest(
       path = "api/inst",
       pathVariables = Array(party_class, instance_id),
       method = "get") map { result =>
-      result.parseJson.convertTo[PartyInstanceEntity]
+      result.parseJson.convertTo[List[PartyInstanceEntity]]
     }
   }
 }
