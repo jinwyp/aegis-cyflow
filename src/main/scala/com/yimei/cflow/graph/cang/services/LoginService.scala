@@ -8,6 +8,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Result}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -15,7 +16,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateUser}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -110,6 +111,29 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     for {
       re <- result
+    } yield getResult(re)
+  }
+
+  //用户修改自己信息
+  def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UpdateSelf]] = {
+    log.info(s"get into method userModifySelf, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
+
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+    def update(qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    def getResult(result: String): Result[UpdateSelf] = {
+      if(result == "success"){
+        Result(data = Some(userInfo), success = true, error = null, meta = null)
+      }else {
+        Result(data = None, success = false, meta = null)
+      }
+    }
+
+    for {
+      qur <- getPartyUser
+      re <- update(qur)
     } yield getResult(re)
   }
 }

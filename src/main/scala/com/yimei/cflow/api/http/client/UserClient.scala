@@ -1,6 +1,6 @@
 package com.yimei.cflow.api.http.client
 
-import com.yimei.cflow.api.http.models.UserModel.{UserInfo, UserModelProtocol}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserModelProtocol}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
@@ -34,7 +34,7 @@ trait UserClient extends UserModelProtocol{
     }
   }
 
-  def updatePartyUser(party: String, instance_id: String, userId: String, userInfo: String) : Future[String] = {
+  def updatePartyUser(party: String, instance_id: String, userId: String, userInfo: String): Future[String] = {
     //访问com.yimei.cflow.http.UserRoute中的putUser接口
     sendRequest(
       path = "api/user",
@@ -42,5 +42,16 @@ trait UserClient extends UserModelProtocol{
       method = "put",
       bodyEntity = Some(userInfo)
     )
+  }
+
+  def getSpecificPartyUser(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
+    //访问com.yimei.cflow.http.UserRoute中的getUser接口
+    sendRequest(
+      path = "api/user",
+      pathVariables = Array(party, instance_id, userId),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[QueryUserResult]
+    }
   }
 }
