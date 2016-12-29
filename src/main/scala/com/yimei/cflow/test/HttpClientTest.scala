@@ -11,25 +11,6 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel._
 /**
   * Created by wangqi on 16/12/21.
   */
-//class HttpClientTest extends Actor with ActorLogging with CoreConfig{
-//
-//  import akka.pattern.pipe
-//  import context.dispatcher
-//
-//  val http = Http(context.system)
-//  val url = "http://localhost:9000"
-//
-//
-//  override def receive: Receive = {
-//    case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-//      entity.dataBytes.runFold(ByteString(""))(_ ++ _).foreach { body =>
-//        log.info("Got response, body: " + body.utf8String)
-//      }
-//    case resp @ HttpResponse(code, _, _, _) =>
-//      log.info("Request failed, response code: " + code)
-//      resp.discardEntityBytes()
-//  }
-//}
 import spray.json._
 
 object ClientMain extends App with AdminProtocol with TaskProtocol with UserModelProtocol{

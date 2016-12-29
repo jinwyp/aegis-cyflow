@@ -44,12 +44,15 @@ object FlowService extends UserModelProtocol
 
         //发送用户的提交
         def commitTask(gk:QueryUserResult,jg:QueryUserResult,zjA:UserGroupEntity,zjF:UserGroupEntity) = {
+
+          val op = genGuId(myf,instant_id,user_id)
+
           //采集的数据点
           val points = Map(
-            harborUserId     -> genGuId(gkf,tass.harborCompanyId,tass.harborUserId).wrap(),
-            supervisorUserId -> genGuId(jgf,tass.supervisorCompanyId,tass.supervisorUserId).wrap(),
-            fundProviderUserId -> genGuId(zjf,tass.fundProviderCompanyId,zjA.user_id).wrap(),
-            fundProviderAccountantUserId -> genGuId(zjf,tass.fundProviderCompanyId,zjF.user_id).wrap()
+            harborUserId     -> genGuId(gkf,tass.harborCompanyId,tass.harborUserId).wrap(operator = Some(op)),
+            supervisorUserId -> genGuId(jgf,tass.supervisorCompanyId,tass.supervisorUserId).wrap(operator = Some(op)),
+            fundProviderUserId -> genGuId(zjf,tass.fundProviderCompanyId,zjA.user_id).wrap(operator = Some(op)),
+            fundProviderAccountantUserId -> genGuId(zjf,tass.fundProviderCompanyId,zjF.user_id).wrap(operator = Some(op))
           )
           val userSubmit = UserSubmitEntity(tass.flowId,a11SelectHarborAndSupervisor,points)
           request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,tass.taskId),model = Some(userSubmit),method = "put")
