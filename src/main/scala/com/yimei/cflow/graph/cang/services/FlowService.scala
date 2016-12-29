@@ -8,7 +8,9 @@ import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.TraffickerAssignUsers
+import com.yimei.cflow.graph.cang.models.CangFlowModel._
+
+import scala.concurrent.Future
 /**
   * Created by wangqi on 16/12/28.
   */
@@ -30,7 +32,15 @@ object FlowService extends UserModelProtocol
         val gkUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(gkf,tass.harborCompanyId,tass.harborUserId))
         val jgUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(jgf,tass.supervisorCompanyId,tass.supervisorUserId))
 
-        val zjfCompany = request[String,PartyInstanceEntity](path="api/inst", pathVariables = Array(zjf,tass.fundProviderCompanyId))
+        def zjfCompany: Future[PartyInstanceEntity] = {
+          request[String,Seq[PartyInstanceEntity]](path="api/inst", pathVariables = Array(zjf,tass.fundProviderCompanyId)) map { t=>
+            t.length match {
+              case 1 => t(0)
+              case _ => throw new BusinessException(s"CompanyId:"+tass.fundProviderCompanyId+" 有多个资金方公司")
+            }
+
+          }
+        }
 
         //获取指定资金方的指定组的账户
         def getzjfAccount(party_id:String,gid:String) = {
@@ -71,5 +81,26 @@ object FlowService extends UserModelProtocol
       case _     => throw new BusinessException("该用户:"+genGuId(party_class,instant_id,user_id)+"没有提交"+a11SelectHarborAndSupervisor+"任务的权限")
     }
   }
+
+
+  //融资方上传文件或监管方上传文件
+  def submitA12AndA14(party_class:String,user_id:String,instant_id:String,taskName:String,upload:UploadContract) = {
+    val dataPoint: String = (party_class,taskName) match {
+      case (`rzf`,`a12FinishedUpload`) => financerContractFiles
+      case (`jgf`,`a14FinishedUpload`) => supervisorContractFiles
+      case _                           => throw new BusinessException(s"用户类型：$party_class 和任务 $taskName 不匹配")
+    }
+
+    val op = genGuId(party_class,instant_id,user_id)
+
+    val points = Map( dataPoint -> upload.fileList.wrap(operator = Some(op)) )
+
+    val userSubmit = UserSubmitEntity(upload.flowId,taskName,points)
+
+    request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,upload.taskId),model = Some(userSubmit),method = "put")
+
+  }
+
+
 
 }

@@ -47,7 +47,7 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
   def submintTask = post {
     pathPrefix("financeorders") {
       pathPrefix("action" / Segment) { action =>
-        // todo 获取用户信息
+        // todo 大磊哥 获取用户信息
         val user_id = "77777"
         val party_class = myf
         val instance_id = "88888888"
@@ -56,16 +56,19 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
 
         action match {
           //完成选择港口,监管方和资金方
-          case `a11SelectHarborAndSupervisor` => entity(as[TraffickerAssignUsers]) { tAssign =>
+          case `a11SelectHarborAndSupervisor` =>
+            entity(as[TraffickerAssignUsers]) { tAssign =>
             complete(submitA11(party_class, user_id, instance_id, tAssign))
           }
+          case `a12FinishedUpload` | `a14FinishedUpload` =>
+            entity(as[UploadContract]) {  upload =>
+              complete("success")
+            }
           case _ => throw new BusinessException("不支持的任务类型")
         }
       }
     }
   }
-
-
   def route = startFlow ~ submintTask
 }
 

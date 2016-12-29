@@ -44,5 +44,11 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
   println(sflow.toJson.prettyPrint)
 
 
+  val a = "hello"
+
+  println(a)
+  println(a.toJson.toString)
+
+
 
 }

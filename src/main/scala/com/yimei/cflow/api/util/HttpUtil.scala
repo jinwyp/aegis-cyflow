@@ -95,7 +95,7 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
         log.info(r)
         throw new BusinessException(r)
       case e =>
-        log.error("{}",e)
+        log.error("url:{},err:{}",path,e)
         throw new BusinessException("网络异常")
     }
   }

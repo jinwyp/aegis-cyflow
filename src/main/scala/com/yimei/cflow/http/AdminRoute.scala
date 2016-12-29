@@ -70,7 +70,9 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
               dbrun(flowInstance returning flowInstance.map(_.id) into ((ft, id) => ft.copy(id = id)) +=
                 FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id,
                   s.toJson.toString, FlowRegistry.flowGraph(s.flowType).flowInitial ,0, Timestamp.from(Instant.now))) recover {
-                case _ => throw new DatabaseException("添加流程错误")
+                case e =>
+                  log.error("{}",e)
+                  throw new DatabaseException("添加流程错误")
               }
             }
 

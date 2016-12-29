@@ -116,7 +116,7 @@ object CangFlowValidator {
       customerUploadContract =>
         customerUploadContract.taskId as "任务id" is notEmpty
         customerUploadContract.taskId.length as "任务id字段" max(10)
-        customerUploadContract.FileList.each is valid
+        customerUploadContract.fileList.each is valid
     }
 
 
@@ -136,7 +136,7 @@ object CangFlowValidator {
         portUploadContract.taskId.length as "任务id字段" max(10)
         portUploadContract.confirmCoalAmount as "确认吨数" is notNull
         portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        portUploadContract.FileList.each is valid
+        portUploadContract.fileList.each is valid
     }
 
   /** 贸易商审核 **/

@@ -19,7 +19,7 @@ object PointUtil {
   }
 
   implicit class object2str[A:JsonFormat](o: A){
-    def str = o.toJson.toString()
+    def str: String = if ( o.isInstanceOf[String]) o.asInstanceOf[String] else o.toJson.toString()
   }
 
   implicit class dataPointUnWrapper(dp: DataPoint) {
@@ -28,7 +28,7 @@ object PointUtil {
   }
 
   implicit class dataPointWrapper[A:JsonFormat](a: A) {
-    def wrap(memo: Option[String] = None, operator: Option[String] = None) = DataPoint(a.str, memo, operator, UUID.randomUUID().toString,
-      Timestamp.from(Instant.now()).getTime, false)
+    def wrap(memo: Option[String] = None, operator: Option[String] = None) =
+      DataPoint(a.str, memo, operator, UUID.randomUUID().toString, Timestamp.from(Instant.now()).getTime, false)
   }
 }
