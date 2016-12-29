@@ -16,6 +16,13 @@ trait Config {
   val url = config.getString("server.url")
   val port = config.getInt("client.port")
 
+  //文件类型
+  val default = "default"   //默认类型
+  val contract = "contract" //合同
+  val financeFile  = "financeFile" //财务文件
+  val businessFile = "businessFile" //业务文件
+
+  //参与方
   val rzf = "financer"
   val zjf = "fundProvider"
   val myf = "trader"
@@ -23,8 +30,10 @@ trait Config {
   val jgf = "supervisor"
   val adm = "systemAdmin"
 
+  //流程类型
   val flowType = "cang"
 
+  //初始化的用户UserId，贸易方，贸易方财务，管理员
   val myfUserId = "trader-88888888!77777"
   val myfFinanceId = "trader-88888888!88888"
   val adminId = "systemAdmin-00000000!00000"
@@ -33,8 +42,20 @@ trait Config {
   val fundGid = "1"
   val fundFinanceGid = "2"
 
+  //vertices
+  val financingStep11 = "financingStep11"
+  val financingStep12 = "financingStep12"
+  val financingStep13 = "financingStep13"
+
+  //edge
+  val E1 = "E1"
+  val E2 = "E2"
+
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
+  val a12FinishedUpload = "a12FinishedUpload"
+  val a13FinishedUpload = "a13FinishedUpload"
+  val a14FinishedUpload = "a14FinishedUpload"
 
   //points
   val startPoint = "startPoint"
@@ -45,5 +66,10 @@ trait Config {
   val supervisorUserId = "supervisorUserId"
   val fundProviderUserId = "fundProviderUserId"
   val fundProviderAccountantUserId = "fundProviderAccountantUserId"
+
+  val financerContractFiles = "financerContractFiles"
+  val harborContractFiles = "harborContractFiles"
+  val harborConfirmAmount = "harborConfirmAmount"
+  val supervisorContractFiles = "supervisorContractFiles"
 
 }

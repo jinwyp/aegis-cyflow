@@ -1,14 +1,14 @@
 package com.yimei.cflow.graph.cang.models
 
 import java.sql.Timestamp
-
 import spray.json.DefaultJsonProtocol
-import BaseFormatter._;
+import BaseFormatter._
+import com.yimei.cflow.graph.cang.config.Config
 
-object CangFlowModel extends DefaultJsonProtocol {
+object CangFlowModel extends DefaultJsonProtocol with Config {
 
-  case class FileObj(name: String, originName: String, url: String)
-  implicit val fileObjFormat = jsonFormat3(FileObj)
+  case class FileObj(name: String, originName: String, url: String, fileType:String = default )
+  implicit val fileObjFormat = jsonFormat4(FileObj)
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
@@ -89,23 +89,22 @@ object CangFlowModel extends DefaultJsonProtocol {
                                    fundProviderCompanyId: String)            //资金方公司id
   implicit val traffickerAssignUsersFormat = jsonFormat7(TraffickerAssignUsers)
 
-  /** 融资方上传 合同, 财务, 业务 文件 **/
-  case class CustomerUploadContract(taskId: String,
-                                    contractFileList: List[FileObj],
-                                    financeFileList: List[FileObj],
-                                    businessFileList: List[FileObj])
-  implicit val customerUploadContractFormat = jsonFormat4(CustomerUploadContract)
-
   /** 监管方上传合同 **/
-  case class SupervisorUploadContract(taskId: String,
-                                      contractFileList: List[FileObj])
-  implicit val supervisorUploadContractFormat = jsonFormat2(SupervisorUploadContract)
+  /** 融资方上传 合同, 财务, 业务 文件 **/
+  case class UploadContract(taskId: String,
+                                    FileList: List[FileObj])
+  implicit val customerUploadContractFormat = jsonFormat2(UploadContract)
+
+//  /** 监管方上传合同 **/
+//  case class SupervisorUploadContract(taskId: String,
+//                                      FileList: List[FileObj])
+//  implicit val supervisorUploadContractFormat = jsonFormat2(SupervisorUploadContract)
 
   /** 港口上传合同, 填写确认吨数 **/
-  case class PortUploadContract(taskId: String,
+  case class HarborUploadContract(taskId: String,
                                 confirmCoalAmount: BigDecimal,
-                                contractFileList: List[FileObj])
-  implicit val portUploadContractFormat = jsonFormat3(PortUploadContract)
+                                FileList: List[FileObj])
+  implicit val portUploadContractFormat = jsonFormat3(HarborUploadContract)
 
   /** 贸易商审核 **/
   case class TraffickerAudit(taskId: String,

@@ -8,18 +8,30 @@
     "orderId":"审批Id",
     "traderUserId" : "贸易方业务方账户",
     "traderAccountantUserId":"贸易方财务账户",
+
     "harborUserId" : "港口账户",
     "supervisorUserId" : "监管账户",
     "fundProviderUserId":"资金方账户",
-    "fundProviderAccountantUserId":"资金方财务账户"
+    "fundProviderAccountantUserId":"资金方财务账户",
+
+    "financerContractFiles":"融资方合同，财务，业务文件",
+    "harborContractFiles":"港口合同文件",
+    "harborConfirmAmount":"港口确认吨数",
+    "supervisorContractFiles":"监管方合同文件"
   },
   "vertices": {
-    "financingStep11": { "description":"等待贸易商选择港口,监管方和资金","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep12\", Some(\"E1\")))"}
+    "financingStep11": { "description":"等待贸易商选择港口,监管方和资金","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep12\", Some(\"E1\")))"},
+    "financingStep12": { "description":"等待融资方,港口和监管方上传合同及单","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep13\", Some(\"E2\")))"},
+    "financingStep13": {"description":"等待融资方,港口和监管方上传合同及单"}
   },
   "autoTasks": {
   },
   "userTasks": {
-    "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] }
+    "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] },
+
+    "a12FinishedUpload"            : {"description": "融资方上传文件", "points": ["financerContractFiles"] },
+    "a13FinishedUpload"            : {"description": "港口方上传文件", "points": ["harborContractFiles","harborConfirmAmount"]},
+    "a14FinishedUpload"            : {"description": "监管方上传文件", "points": ["supervisorContractFiles"]}
   },
   "edges": {
     "E1": {
@@ -32,6 +44,22 @@
         "guidKey": "traderUserId",
         "tasks": ["a11SelectHarborAndSupervisor"]
       }],
+      "autoTasks": []
+    },
+    "E2": {
+      "name": "E2",
+      "begin": "financingStep12",
+      "end": "financingStep13",
+      "userTasks": ["a12FinishedUpload"],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "harborUserId",
+        "tasks": ["a13FinishedUpload"]
+      },
+        {
+          "guidKey": "supervisorUserId",
+          "tasks": ["a14FinishedUpload"]
+        }],
       "autoTasks": []
     }
   }
