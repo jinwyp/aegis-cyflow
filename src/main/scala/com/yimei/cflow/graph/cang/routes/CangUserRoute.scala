@@ -43,23 +43,26 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-//  def createUserRoute: Route = post {
-//    pathPrefix("user" / Segment / Segment / Segment) { (party, instance_id, userId) =>
-//      entity(as[AddUser]) { user =>
-//
-//        complete("us")
-////        val userInfo = UserInfo(password = user)
-////        complete(createUser(party, instance_id, userId, ))
-//        }
-//
-//    }
-//  }
+  def adminModifyUserRoute: Route = post {
+    pathPrefix("amu" / Segment / Segment) { (party, instance_id) =>
+      entity(as[UpdateUser]) { user =>
+        complete(adminModifyUser(party, instance_id, user))
+      }
+    }
+  }
 
+  def userModifySelfRoute: Route = post {
+    (pathPrefix("umu") & entity(as[UpdateSelf])) { user =>
+      //session校验 todo
+      //party和instance_id应该从session里面 todo
+      val party = "financer"
+      val instance_id = "444"
+      val userId = "333"
+      complete(userModifySelf(party, instance_id, userId, user))
+    }
+  }
 
-
-
-
-  def route = financeSideEnterRoute ~ addInvestorRoute
+  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute
 }
 
 object CangUserRoute {

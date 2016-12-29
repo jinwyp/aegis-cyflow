@@ -9,7 +9,7 @@ import spray.json.{DefaultJsonProtocol, JsArray, JsNumber, JsObject, JsString, J
   */
 object ResultModel {
 
-  case class Result[T](data: T, success: Boolean = true, error: Error  = null, meta:Meta = null)
+  case class Result[T](data: Option[T], success: Boolean = true, error: Error  = null, meta:Meta = null)
   case class Meta(total:Int, count:Int, offset:Int, page:Int)
   case class Error(code:Int,message:String,field:String)
 

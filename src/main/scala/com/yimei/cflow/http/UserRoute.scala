@@ -63,7 +63,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
-               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))) recover {
+               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username,Timestamp.from(Instant.now))) recover {
                case e =>
                   log.error("{}",e)
                  throw new DatabaseException("添加用户错误")
@@ -216,8 +216,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
           val pu = partyUser.filter(u=>
             u.user_id===userId &&
               u.party_id===p.id
-          ).map(t=>(t.password,t.phone,t.email,t.name)).update(
-            user.password,user.phone,user.email,user.name
+          ).map(t=>(t.password,t.phone,t.email,t.name,t.username)).update(
+            user.password,user.phone,user.email,user.name,user.username
           )
 
           dbrun(pu) map { i =>
