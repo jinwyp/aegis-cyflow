@@ -12,10 +12,10 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
-  case class StartFlowBasicInfo(applyUserId: Long,                 //申请人-融资方 信息
+  case class StartFlowBasicInfo(applyUserId: String,                 //申请人-融资方 信息
                                 applyUserName: String,
                                 applyUserPhone: String,
-                                applyCompanyId: Long,
+                                applyCompanyId: String,
                                 applyCompanyName: String,
                                 businessCode: String,              //业务编号
                                 financeCreateTime: Timestamp,      //审批开始时间

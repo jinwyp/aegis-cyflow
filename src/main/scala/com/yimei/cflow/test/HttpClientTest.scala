@@ -30,7 +30,7 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
 
 
-  val sf = StartFlowBasicInfo(1111,"wangqi","13000000001",11111111,"阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
+  val sf = StartFlowBasicInfo("1111","wangqi","13000000001","11111111","阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
     BigDecimal(0.5),"不知道",1,BigDecimal(0.01),BigDecimal(0.02),"heheh",BigDecimal(0.01),"没合同","24678",List(fileObj1,fileObj2))
 
 
