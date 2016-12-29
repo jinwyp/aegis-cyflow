@@ -64,7 +64,9 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
                PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))) recover {
-               case _ => throw new DatabaseException("添加用户错误")
+               case e =>
+                  log.error("{}",e)
+                 throw new DatabaseException("添加用户错误")
                //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }

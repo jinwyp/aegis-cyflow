@@ -5,13 +5,13 @@
   "persistent": true,
   "points": {
     "startPoint":"进入仓押系统时,带入的数",
+    "orderId":"审批Id",
     "traderUserId" : "贸易方业务方账户",
     "traderAccountantUserId":"贸易方财务账户",
     "harborUserId" : "港口账户",
     "supervisorUserId" : "监管账户",
     "fundProviderUserId":"资金方账户",
     "fundProviderAccountantUserId":"资金方财务账户"
-
   },
   "vertices": {
     "financingStep11": { "description":"等待贸易商选择港口,监管方和资金","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep12\", Some(\"E1\")))"}

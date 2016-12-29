@@ -102,8 +102,8 @@ object CangFlowValidator {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.portCompanyId as "港口公司id" is notEmpty
-        traffickerAssignUsers.portUserId as "港口用户id" is notEmpty
+        traffickerAssignUsers.harborCompanyId as "港口公司id" is notEmpty
+        traffickerAssignUsers.harborUserId as "港口用户id" is notEmpty
         traffickerAssignUsers.supervisorCompanyId as "监管公司id" is notEmpty
         traffickerAssignUsers.supervisorUserId as "监管用户id" is notEmpty
         traffickerAssignUsers.fundProviderCompanyId as "资金方公司id" is notEmpty

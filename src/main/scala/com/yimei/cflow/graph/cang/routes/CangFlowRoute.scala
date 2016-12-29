@@ -31,9 +31,10 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
         //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
 
         val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
-          Map("startPoint" -> startFlow.toJson.toString,
-            "traderUserId" -> myfUserId,
-            "traderAccountantUserId" -> myfFinanceId)
+          Map(startPoint -> startFlow.toJson.toString,
+              orderId    -> startFlow.basicInfo.businessCode,
+              traderUserId -> myfUserId,
+              traderAccountantUserId -> myfFinanceId)
         ) map { c =>
           Result(c)
         }
@@ -47,9 +48,9 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
     pathPrefix("financeorders") {
       pathPrefix("action" / Segment) { action =>
         // todo 获取用户信息
-        val user_id = "123"
+        val user_id = "77777"
         val party_class = myf
-        val instance_id = ""
+        val instance_id = "88888888"
 
         println(action)
 
