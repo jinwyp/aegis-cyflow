@@ -79,7 +79,18 @@ class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable w
     }
   }
 
-  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty ~ getUserByGroupAndParty
+  def createUserGroup: Route = post {
+    pathPrefix("ugroup" / Segment / Segment / Segment) { (party_id, gid, user_id) =>
+
+      println("create user group begin")
+      val entity: Future[UserGroupEntity] = dbrun(
+        (userGroup returning userGroup.map(_.id)) into ((ug, id) => ug.copy(id = id)) += UserGroupEntity(None, party_id.toLong, gid, user_id, Timestamp.from(Instant.now))
+      )
+      complete(entity)
+    }
+  }
+
+  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty ~ getUserByGroupAndParty ~ createUserGroup
 }
 
 

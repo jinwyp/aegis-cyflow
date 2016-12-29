@@ -38,6 +38,9 @@ trait Config {
   val myfFinanceId = "trader-88888888!88888"
   val adminId = "systemAdmin-00000000!00000"
 
+  val zjfyw = "fundProvider"
+  val zjfcw = "fundProviderAccountant"
+  
   //资金方业务组ID和财务组Id
   val fundGid = "1"
   val fundFinanceGid = "2"
