@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, FileObj, FundProviderAudit, FundProviderFinanceLoad, HarborUploadContract, PortReleaseGoods, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods, UploadContract}
 
 object CangFlowValidator {
 
@@ -110,34 +110,33 @@ object CangFlowValidator {
     }
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
-  implicit val customerUploadContractValidator: Validator[CustomerUploadContract] =
-    validator[CustomerUploadContract] {
+  /** 监管方上传合同 **/
+  implicit val customerUploadContractValidator: Validator[UploadContract] =
+    validator[UploadContract] {
       customerUploadContract =>
         customerUploadContract.taskId as "任务id" is notEmpty
         customerUploadContract.taskId.length as "任务id字段" max(10)
-        customerUploadContract.businessFileList.each is valid
-        customerUploadContract.contractFileList.each is valid
-        customerUploadContract.financeFileList.each is valid
+        customerUploadContract.FileList.each is valid
     }
 
-  /** 监管方上传合同 **/
-  implicit val supervisorUploadContractValidator: Validator[SupervisorUploadContract] =
-    validator[SupervisorUploadContract] {
-      supervisorUploadContract =>
-        supervisorUploadContract.taskId as "任务id" is notEmpty
-        supervisorUploadContract.taskId.length as "任务id字段" max(10)
-        supervisorUploadContract.contractFileList.each is valid
-    }
+
+//  implicit val supervisorUploadContractValidator: Validator[SupervisorUploadContract] =
+//    validator[SupervisorUploadContract] {
+//      supervisorUploadContract =>
+//        supervisorUploadContract.taskId as "任务id" is notEmpty
+//        supervisorUploadContract.taskId.length as "任务id字段" max(10)
+//        supervisorUploadContract.FileList.each is valid
+//    }
 
   /** 港口上传合同 **/
-  implicit val portUploadContractValidator: Validator[PortUploadContract] =
-    validator[PortUploadContract] {
+  implicit val portUploadContractValidator: Validator[HarborUploadContract] =
+    validator[HarborUploadContract] {
       portUploadContract =>
         portUploadContract.taskId as "任务id" is notEmpty
         portUploadContract.taskId.length as "任务id字段" max(10)
         portUploadContract.confirmCoalAmount as "确认吨数" is notNull
         portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        portUploadContract.contractFileList.each is valid
+        portUploadContract.FileList.each is valid
     }
 
   /** 贸易商审核 **/

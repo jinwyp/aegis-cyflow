@@ -76,17 +76,21 @@ object GraphLoader extends GraphConfigProtocol {
 
   def getClassLoader(flowType: String) = {
     flowType match {
-      case "ying" => YingGraphJar.getClass.getClassLoader
+      case "ying"  => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case "cang" => CangGraphJar.getClass.getClassLoader
+      case "cang"  => CangGraphJar.getClass.getClassLoader
+      case "zhou"  =>
+        // todo xj
+      // 改为从数据库deploy表里读取jar文件 写入/tmp/$flowType.jar
+      // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
+        null
+
       case _ => val jars: Array[String] = (new File("flows/" + flowType))
         .listFiles()
         .filter(_.isFile())
         .map(_.getPath)
         new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-      // todo 王琦
-      // 改为从数据库读取jar文件 写入/tmp/xxx.jar
-      // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
+
     }
   }
 
