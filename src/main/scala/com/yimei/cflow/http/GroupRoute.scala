@@ -19,7 +19,7 @@ import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 
 class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable with SprayJsonSupport with GroupProtocol{
 
@@ -70,11 +70,10 @@ class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable w
 
 
   def getUserByGroupAndParty  = get {
-    pathPrefix("ugroup"/ Segment / Segment / Segment) { (party_id,gid,user_id) =>
+    pathPrefix("ugroup"/ Segment / Segment ) { (party_id,gid) =>
       val result: Future[Seq[UserGroupEntity]] = dbrun(userGroup.filter(u=>
           u.party_id === party_id.toLong   &&
-          u.gid      === gid      &&
-          u.user_id  === user_id
+          u.gid      === gid
       ).result)
       complete(result)
     }

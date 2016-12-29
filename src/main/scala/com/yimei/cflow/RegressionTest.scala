@@ -19,8 +19,8 @@ object RegressionTest extends App with ApplicationConfig with CorsSupport {
   "rm -fr data/journal/*".!
   "rm -fr data/snapshots/*".!
 
-  drop
-  migrate
+//  drop
+//  migrate
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor

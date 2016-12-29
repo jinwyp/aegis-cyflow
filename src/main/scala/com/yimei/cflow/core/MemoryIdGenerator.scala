@@ -1,6 +1,6 @@
 package com.yimei.cflow.core
 
-import com.yimei.cflow.api.models.id.{AbstractIdGenerator, CommandGetId, EventIncrease, Id}
+import com.yimei.cflow.api.models.id.{CommandGetId, EventIncrease, Id}
 
 
 /**

@@ -14,7 +14,7 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.user.db.{PartyInstanceTable, PartyUserTable}
+import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable}
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.util.DBUtils._
@@ -64,7 +64,9 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
                PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))) recover {
-               case _ => throw new DatabaseException("添加用户错误")
+               case e =>
+                  log.error("{}",e)
+                 throw new DatabaseException("添加用户错误")
                //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }

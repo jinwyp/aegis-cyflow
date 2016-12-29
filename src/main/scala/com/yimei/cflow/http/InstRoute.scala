@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.util.DBUtils._
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.yimei.cflow.api.http.models.PartyModel.PartyInstanceInfo
 

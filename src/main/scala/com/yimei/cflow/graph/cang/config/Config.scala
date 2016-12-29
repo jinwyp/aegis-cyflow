@@ -31,9 +31,22 @@ trait Config {
 
   val zjfyw = "fundProvider"
   val zjfcw = "fundProviderAccountant"
-
+  
+  //资金方业务组ID和财务组Id
+  val fundGid = "1"
+  val fundFinanceGid = "2"
 
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
+
+  //points
+  val startPoint = "startPoint"
+  val orderId = "orderId"
+  val traderUserId = "traderUserId"
+  val traderAccountantUserId = "traderAccountantUserId"
+  val harborUserId = "harborUserId"
+  val supervisorUserId = "supervisorUserId"
+  val fundProviderUserId = "fundProviderUserId"
+  val fundProviderAccountantUserId = "fundProviderAccountantUserId"
 
 }
