@@ -1,8 +1,7 @@
 package com.yimei.cflow.core
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
+import akka.actor.{Actor, ActorLogging, Props, Terminated}
 import com.yimei.cflow.api.models.flow.{Command, CommandCreateFlow}
-import com.yimei.cflow.api.models.id.IdGenerator
 import com.yimei.cflow.api.models.user.{Command => UserCommand}
 import com.yimei.cflow.auto.AutoMaster
 import com.yimei.cflow.config.GlobalConfig._
@@ -20,11 +19,11 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persistent: Boolean = true): Props = {
     name match {
-      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_group, module_id))    // todo 依赖是确定的???
-      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_group, module_id))
+      case `module_flow` => FlowMaster.props(Array(module_user, module_auto, module_group, module_id)) // todo 依赖是确定的???
+      case `module_user` => UserMaster.props(Array(module_flow, module_auto, module_group, module_id))
       case `module_group` => GroupMaster.props(Array(module_user))
-      case `module_auto`  => AutoMaster.props(Array(module_user, module_flow, module_id))
-      case `module_id`    => IdGenerator.props(name, persistent)
+      case `module_auto` => AutoMaster.props(Array(module_user, module_flow, module_id))
+      case `module_id` => IdGenerator.props(name, persistent)
     }
   }
 

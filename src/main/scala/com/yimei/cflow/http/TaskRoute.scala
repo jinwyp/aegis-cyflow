@@ -16,7 +16,7 @@ import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json.{DefaultJsonProtocol, _}
 import com.yimei.cflow.api.models.group.{GroupProtocol, State => GroupState}

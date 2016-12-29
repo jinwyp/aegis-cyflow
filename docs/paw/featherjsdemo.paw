@@ -588,7 +588,7 @@
         <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z153 z154"></relationship>
     </object>
     <object type="LMENVIRONMENTVARIABLEVALUE" id="z153">
-        <attribute name="value" type="string">/api</attribute>
+        <attribute name="value" type="string">/apimock</attribute>
         <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z108"></relationship>
         <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z152"></relationship>
     </object>

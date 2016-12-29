@@ -6,7 +6,7 @@ import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 import com.yimei.cflow.util.DBUtils._
 
 import scala.concurrent.Future

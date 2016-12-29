@@ -7,7 +7,7 @@ import akka.actor.ActorRef
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 trait Command {
