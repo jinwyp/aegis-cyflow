@@ -14,7 +14,7 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.user.db.{PartyInstanceTable, PartyUserTable}
+import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable}
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.util.DBUtils._

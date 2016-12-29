@@ -19,7 +19,7 @@ import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 
 class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable with SprayJsonSupport with GroupProtocol{
 

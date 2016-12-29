@@ -1,4 +1,4 @@
-package com.yimei.cflow.user.db
+package com.yimei.cflow.organ.db
 
 import java.sql.Timestamp
 
