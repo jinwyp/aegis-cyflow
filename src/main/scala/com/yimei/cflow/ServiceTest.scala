@@ -45,6 +45,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     AdminRoute.route(proxy) ~
       UserRoute.route(proxy) ~
       GroupRoute.route ~
+      FileRoute().route ~
       TaskRoute.route(proxy) ~
       AutoRoute.route(proxy) ~
       PartyRoute.route ~
