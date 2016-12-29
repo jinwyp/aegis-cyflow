@@ -1,14 +1,13 @@
 package com.yimei.cflow.core
 
 import java.io.File
-import java.lang.reflect.Method
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.annotation.Description
+import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
-import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.cang.CangGraphJar
 import com.yimei.cflow.graph.money.MoneyGraphJar
 import com.yimei.cflow.graph.ying.YingGraphJar
@@ -72,22 +71,8 @@ case class ProgramCompiler(graphConfig: GraphConfig) {
 object GraphLoader extends GraphConfigProtocol {
 
   def deploy(flowType: String) = {
-    FlowRegistry.register(flowType, loadGraph(flowType))
+    FlowRegistry.register(flowType, loadGraph(flowType, getClassLoader(flowType)))
   }
-
-  def loadall() =
-    new File("flows")
-      .listFiles()
-      .filter(_.isDirectory())
-      .map { file =>
-       val flowType =  file.getName
-        val status = try {
-          FlowRegistry.register(flowType, loadGraph(flowType))
-        } catch {
-          case _ => false
-        }
-        (flowType, status)
-      }.toMap
 
   def getClassLoader(flowType: String) = {
     flowType match {
@@ -99,17 +84,40 @@ object GraphLoader extends GraphConfigProtocol {
         .filter(_.isFile())
         .map(_.getPath)
         new java.net.URLClassLoader(jars.map(new File(_).toURI.toURL), this.getClass.getClassLoader)
-        // todo 王琦
-        // 改为从数据库读取jar文件 写入/tmp/xxx.jar
-        // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
+      // todo 王琦
+      // 改为从数据库读取jar文件 写入/tmp/xxx.jar
+      // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
     }
   }
 
-  def loadGraphConfigFromJar() = {
-
+  // todo 王琦
+  // 改为从数据加载
+  def loadFromDB() = {
+    // select * from deploy where enabled = true
+    // 对每个entry,   取出jar内容, 放入/tmp目录下, 然后拿到classLoader
+    // graph = loadGraph(flowType, classLoader)
+    // FlowRegistry.register(flowType, graph)
   }
 
-  def loadGraph(gFlowType: String): FlowGraph = {
+  // 从目录加载
+  def loadall() =
+    new File("flows")
+      .listFiles()
+      .filter(_.isDirectory())
+      .map { file =>
+        val flowType = file.getName
+        val classLoader = getClassLoader(flowType)
+
+        val status = try {
+          FlowRegistry.register(flowType, loadGraph(flowType, classLoader))
+        } catch {
+          case _: Throwable => false
+        }
+        (flowType, status)
+
+      }.toMap
+
+  def loadGraph(gFlowType: String, classLoader: ClassLoader): FlowGraph = {
     import spray.json._
 
     val jsonFile = gFlowType match {
@@ -118,8 +126,6 @@ object GraphLoader extends GraphConfigProtocol {
       case "cang" => "cang.json"
       case _ => "flow.json"
     }
-
-    val classLoader = getClassLoader(gFlowType)
 
     var graphConfig = Source.fromInputStream(classLoader.getResourceAsStream(jsonFile))
       .mkString
@@ -151,10 +157,10 @@ object GraphLoader extends GraphConfigProtocol {
 
     // compile our configured program and add code in jar
     var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
-    val decidersFromJar =  getDeciders(mclass, graphJar);
-    allDeciders = allDeciders ++  decidersFromJar.map { entry => (entry._1, entry._2._1)}
+    val decidersFromJar = getDeciders(mclass, graphJar);
+    allDeciders = allDeciders ++ decidersFromJar.map { entry => (entry._1, entry._2._1) }
     allAutos = allAutos ++ getAutoMap(mclass, graphJar)
-    graphConfig = graphConfig.copy(vertices = graphConfig.vertices ++ decidersFromJar.map { entry => (entry._1, Vertex(entry._2._2))} )
+    graphConfig = graphConfig.copy(vertices = graphConfig.vertices ++ decidersFromJar.map { entry => (entry._1, Vertex(entry._2._2)) })
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -247,11 +253,11 @@ object GraphLoader extends GraphConfigProtocol {
     }.map { am =>
 
       val annotation = am.getAnnotation(classOf[Description])
-      val description = if ( annotation == null) "no description" else annotation.value()
+      val description = if (annotation == null) "no description" else annotation.value()
 
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(module, state).asInstanceOf[Seq[Arrow]]
-      (am.getName -> (behavior, description))
+      (am.getName ->(behavior, description))
 
     }.toMap
   }
