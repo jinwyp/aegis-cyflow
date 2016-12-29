@@ -24,7 +24,6 @@ trait UserClient extends UserModelProtocol{
   }
 
   def createUserGroup(party_id: String, gid: String, user_id: String): Future[UserGroupEntity] = {
-    println("party_id---------------" + party_id)
     //访问com.yimei.cflow.http.GroupRoute中的createUserGroup接口
     sendRequest(
       path = "api/ugroup",
@@ -35,4 +34,13 @@ trait UserClient extends UserModelProtocol{
     }
   }
 
+  def updatePartyUser(party: String, instance_id: String, userId: String, userInfo: String) : Future[String] = {
+    //访问com.yimei.cflow.http.UserRoute中的putUser接口
+    sendRequest(
+      path = "api/user",
+      pathVariables = Array(party, instance_id, userId),
+      method = "put",
+      bodyEntity = Some(userInfo)
+    )
+  }
 }

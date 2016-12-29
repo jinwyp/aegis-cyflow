@@ -43,6 +43,14 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  def adminModifyUserRoute: Route = post {
+    pathPrefix("amu" / Segment / Segment) { (party, instance_id) =>
+      entity(as[UpdateUser]) { user =>
+        complete(adminModifyUser(party, instance_id, user))
+      }
+    }
+  }
+
 //  def createUserRoute: Route = post {
 //    pathPrefix("user" / Segment / Segment / Segment) { (party, instance_id, userId) =>
 //      entity(as[AddUser]) { user =>
@@ -59,7 +67,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
 
 
-  def route = financeSideEnterRoute ~ addInvestorRoute
+  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute
 }
 
 object CangUserRoute {

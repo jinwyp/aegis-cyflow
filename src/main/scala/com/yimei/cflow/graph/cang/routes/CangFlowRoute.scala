@@ -36,7 +36,7 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
               traderUserId -> myfUserId,
               traderAccountantUserId -> myfFinanceId)
         ) map { c =>
-          Result(c)
+          Result(Some(c))
         }
         complete(create)
       }

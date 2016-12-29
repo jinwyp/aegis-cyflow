@@ -15,7 +15,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.AddUser
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateUser}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -84,14 +84,32 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     }
     yield {
       log.info("success insert data")
-      p success Result(data = res, success = true, error = null, meta = null)
+      p success Result(data = Some(res), success = true, error = null, meta = null)
     } ) recover {
       case e: BusinessException => {
         log.info(s"error happen, ${e.message}")
-        p success  Result(data = State("", "", Map()), success = false, error = Error(code = 111, message = e.message, field =""), meta = null)
+        p success  Result(data = None, success = false, error = Error(code = 111, message = e.message, field =""), meta = null)
       }
     }
 
     p.future
+  }
+
+  //管理员修改用户
+  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UpdateUser]] = {
+    log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
+    val result = updatePartyUser(party, instance_id, userInfo.id.toString, userInfo.toJson.toString)
+
+    def getResult(result: String): Result[UpdateUser] = {
+      if(result == "success"){
+        Result(data = Some(userInfo), success = true, error = null, meta = null)
+      }else {
+        Result(data = None, success = false, meta = null)
+      }
+    }
+
+    for {
+      re <- result
+    } yield getResult(re)
   }
 }
