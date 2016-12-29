@@ -26,15 +26,33 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
   case class PartyClassEntity(id:Option[Long],class_name:String,description:String)
 
-  //资金方进入仓压
-  def financeSideEnter(userId: String, companyId: String, companyName: String): String = {
-    log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${companyName}")
-    val qpi = queryPartyInstance(zjf, companyId)
+  //融资方进入仓压
+  def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {
+    log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${userInfo.companyName}")
 
-//    val cpi = createPartyInstance(zjf, companyId, companyName)
+    val exist: Future[Boolean] = for {
+      qpi <- queryPartyInstance(rzf, companyId)
+    } yield { qpi.toList.length > 0 }
 
-    "success"
+    val p = Promise[String]()
 
+    def add(exitst: Boolean): Future[String] = {
+      if(!exitst){
+        for {
+          cpi <- createPartyInstance(PartyInstanceInfo(rzf, companyId, userInfo.companyName).toJson.toString)
+          cu <- createPartyUser(rzf, cpi.instance_id, userId, userInfo.toJson.toString)
+        } yield {
+          "success"
+        }
+      }else{
+        p.success("exist").future
+      }
+    }
+
+    for {
+      e <- exist
+      result <- add(e)
+    } yield result
   }
 
   //添加资金方
@@ -49,7 +67,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     def add(qym: Boolean): Future[State] = {
       if(qym == true) {
         for {
-          cp <- createPartyInstance(PartyInstanceInfo(zjf, instance_id, userInfo.companyName).toJson.toString)//zjf, instance_id, userInfo.companyName)
+          cp <- createPartyInstance(PartyInstanceInfo(zjf, instance_id, userInfo.companyName).toJson.toString)
           cu <- createPartyUser(zjf, instance_id, userId, userInfo.toJson.toString)
           cug <- createUserGroup(cp.id.get.toString, gid.toString, cu.userId)
         } yield cu
