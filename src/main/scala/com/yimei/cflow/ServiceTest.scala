@@ -37,6 +37,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     AdminRoute.route(proxy) ~
       UserRoute.route(proxy) ~
       GroupRoute.route ~
+      FileRoute().route ~
       TaskRoute.route(proxy) ~
       AutoRoute.route(proxy) ~
       PartyRoute.route ~
@@ -46,7 +47,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   } ~
     ResourceRoute.route(proxy) ~
     EditorRoute.route(proxy) ~
-  XieJieTestRoute().route
+    XieJieTestRoute().route
 
   def |+|(left: Route, right: Route) = left ~ right
   val empty: Route = get { path("impossible") {complete("impossible")}}
