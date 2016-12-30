@@ -20,13 +20,17 @@ import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.util.DBUtils._
 import com.yimei.cflow
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
+import com.yimei.cflow.config.DatabaseConfig
+import com.yimei.cflow.graph.cang.models.UserModel.UserLogin
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import com.yimei.cflow.config.DatabaseConfig.db
+import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 
 
 @Path("/user/:userId")
-class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with PartyInstanceTable{
+class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with PartyInstanceTable with SessionProtocol{
 
   implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
   import driver.api._
@@ -239,7 +243,30 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList
+  def getLoginUserInfo: Route = post {
+    (pathPrefix("login") & entity(as[UserLogin])) { user =>
+      //待优化，使用slick的join语法  todo
+      val getPartyUsrInstance = dbrun(partyUser.filter( p =>
+        p.username === user.username &&
+        p.password === user.password).result.head)
+
+      def getPartyInstance(pue: PartyUserEntity) = dbrun(partyInstance.filter( p =>
+        p.id === pue.party_id
+      ).result.head)
+
+      complete(for {
+        pu <- getPartyUsrInstance
+        pi <- getPartyInstance(pu)
+      } yield MySession(pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name))
+
+//      val getInfo = for {
+//        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password)
+//      } yield (pu.user_id, pu.username, pi.party_class, pi.instance_id, pi.party_name)
+//
+//      complete(db.run(getInfo))
+    }
+  }
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo
 }
 
 

@@ -16,16 +16,15 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserLogin}
+import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by xl on 16/12/26.
   */
-object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal{
-
-  case class PartyClassEntity(id:Option[Long],class_name:String,description:String)
+object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal {
 
   //融资方进入仓压
   def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {
@@ -136,4 +135,10 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       re <- update(qur)
     } yield getResult(re)
   }
+
+  def getLoginUserInfo(userLogin: UserLogin): Future[MySession] = {
+    getLoginUserInfo(userLogin.toJson.toString)
+  }
+
+
 }

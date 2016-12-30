@@ -20,10 +20,10 @@ object CangFlowValidator {
   implicit val startFlowBasicInfoValidator: Validator[StartFlowBasicInfo] =
     validator[StartFlowBasicInfo] {
       basicInfo =>
-        basicInfo.applyCompanyId as "融资方公司id" min(1)
+        basicInfo.applyCompanyId as "融资方公司id" is notEmpty
         basicInfo.applyCompanyName as "融资方公司名称" is notEmpty
         basicInfo.applyCompanyName.length as "融资方公司名称字段长度" is between(1, 100)
-        basicInfo.applyUserId as "融资方用户id" min(1)
+        basicInfo.applyUserId as "融资方用户id" is notEmpty
         basicInfo.applyUserName as "融资方用户姓名" is notEmpty
         basicInfo.applyUserName.length as "融资方用户姓名字段长度" is between(1, 10)
         basicInfo.applyUserPhone as "融资方用户手机号" is notEmpty
