@@ -1,3 +1,11 @@
+package xxxxxxx;
+
+import com.yimei.cflow.api.models.flow.{Arrow, State}
+import com.yimei.cflow.api.models.user.{State}
+import com.yimei.cflow.api.models.group.{State}
+import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.api.services.MultiParty
+import scala.concurrent.Future
 
 ```scala
 object MyGraphJar {

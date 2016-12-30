@@ -1,4 +1,4 @@
-package com.yimei.cflow.organ.services
+package com.yimei.cflow.api.services
 
 import com.yimei.cflow.organ.db.{PartyClassTable, PartyGroupTable, PartyUserTable, UserGroupTable}
 
