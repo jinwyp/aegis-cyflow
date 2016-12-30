@@ -6,7 +6,7 @@ import java.time.Instant
 import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
 import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
-import com.yimei.cflow.graph.cang.models.CangFlowModel._
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{TraderAudit, _}
 
 /**
   * Created by wangqi on 16/12/21.
@@ -54,8 +54,10 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
  // println(t.toJson.toString)
 
   val t1 = HarborUploadContract("123","123",1000.12,List(fileObj1,fileObj2))
-  println(t1.toJson.toString)
+ // println(t1.toJson.toString)
 
+  val t3 = TraderAudit("123","123",1,1024.1)
+  println(t3.toJson.toString)
 
 
 

@@ -1,6 +1,6 @@
 package com.yimei.cflow
 
-import java.io.File
+import java.io.{File, PrintWriter}
 
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
 import spray.json._
@@ -18,12 +18,10 @@ import scala.io.Source
 //
 object GenModule extends App with GraphConfigProtocol {
 
-  val classLoader = this.getClass.getClassLoader;
+  val classLoader = this.getClass.getClassLoader
 
-  var graphConfig = Source.fromInputStream(classLoader.getResourceAsStream("ying.json"))
-    .mkString
-    .parseJson
-    .convertTo[GraphConfig]
+  var graphConfigStr = Source.fromInputStream(classLoader.getResourceAsStream("ying.json")).mkString
+  var graphConfig = graphConfigStr.parseJson.convertTo[GraphConfig]
 
   val rootDir = "./tmp"
   val projectDir = "/project"
@@ -37,23 +35,56 @@ object GenModule extends App with GraphConfigProtocol {
   val configScala = "/Config.scala"
   val templateGraphJarScala = "/TemplateGraphJar.scala"
   val scalaDir = "/scala"
-  var file: File = new File(rootDir)
-  if (!file.exists()) file.mkdir()
-
-  println(graphConfig.graphJar)
+  var templateDir = "./template"
   val graphJarStr = graphConfig.graphJar
   val nameArray: Array[String] = graphJarStr.split('.')
   var directoryName = "/" + nameArray(nameArray.length - 2)
   var jarName = nameArray(nameArray.length - 1)
   var jarDirName = "/" + graphJarStr.substring(0, graphJarStr.length - directoryName.length - jarName.length - 1).replace(".", "-")
+
+  val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + buildProperties)).mkString
+  val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + pluginsSbt)).mkString
+  var configScalaContent = "\nobject Config {\n"
+  configScalaContent += "\n\t// points\n"
+  graphConfig.points.toList.sortBy(p => p._1).foreach(p =>
+    configScalaContent += "\tval point_" + p._1 + " = \"" + p._1 + "\"\t\t\t//" + p._2 + "\n"
+  )
+  configScalaContent += "\n\t// vertices\n"
+  graphConfig.vertices.toList.sortBy(v => v._1).foreach(v =>
+    configScalaContent += "\tval vertex_" + v._1 + " = \"" + v._1 + "\"\t\t\t//" + v._2 + "\n"
+  )
+  configScalaContent += "\n\t// autoTasks\n"
+  graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a =>
+    configScalaContent += "\tval auto_" + a._1 + " = \"" + a._1 + "\"\t\t\t//" + a._2 + "\n"
+  )
+  configScalaContent += "\n\t// userTasks\n"
+  graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u =>
+    configScalaContent += "\tval task_" + u._1 + " = \"" + u._1 + "\"\t\t\t//" + u._2 + "\n"
+  )
+  configScalaContent += "}\n"
+
+  var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
+  templateGraphJarScalaContent += "\n\t// 决策点\n"
+  templateGraphJarScalaContent += "\n\t// 自动任务\n"
+  templateGraphJarScalaContent += "\n\t// 任务路由 get\n"
+  templateGraphJarScalaContent += "\n\t// 任务路由 post\n"
+
+  templateGraphJarScalaContent += "}\n"
+
+  var file: File = new File(rootDir)
+  if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + projectDir)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + projectDir + buildProperties)
-  if (!file.exists()) file.createNewFile()
+  val pw_build = new PrintWriter(file)
+  pw_build.write(buildPropertiesContent)
+  pw_build.close
   file = new File(rootDir + directoryName + projectDir + pluginsSbt)
-  if (!file.exists()) file.createNewFile()
+  val pw_plugins = new PrintWriter(file)
+  pw_plugins.write(pluginsSbtContent)
+  pw_plugins.close
   file = new File(rootDir + directoryName + srcDir)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + srcDir + mainDir)
@@ -61,7 +92,9 @@ object GenModule extends App with GraphConfigProtocol {
   file = new File(rootDir + directoryName + srcDir + mainDir + resourceDir)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + srcDir + mainDir + resourceDir + flowJson)
-  if (!file.exists()) file.createNewFile()
+  val pw_flow = new PrintWriter(file)
+  pw_flow.write(graphConfigStr)
+  pw_flow.close
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir + jarDirName)
@@ -69,9 +102,13 @@ object GenModule extends App with GraphConfigProtocol {
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir + jarDirName + directoryName)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir + jarDirName + directoryName + configScala)
-  if (!file.exists()) file.createNewFile()
+  val pw_config = new PrintWriter(file)
+  pw_config.write(configScalaContent)
+  pw_config.close
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir + jarDirName + directoryName + templateGraphJarScala)
-  if (!file.exists()) file.createNewFile()
+  val pw_templateGraphJar = new PrintWriter(file)
+  pw_templateGraphJar.write(templateGraphJarScalaContent)
+  pw_templateGraphJar.close
 
 
 
