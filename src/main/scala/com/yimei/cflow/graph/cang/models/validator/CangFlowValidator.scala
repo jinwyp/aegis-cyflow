@@ -2,7 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, FileObj, FundProviderAudit, FundProviderFinanceLoad, HarborUploadContract, PortReleaseGoods, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods, UploadContract}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, FileObj, FundProviderAudit, FundProviderFinanceLoad, HarborUploadContract, PortReleaseGoods, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, TraderAudit, TraffickerAssignUsers , TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods, UploadContract}
 
 object CangFlowValidator {
 
@@ -140,13 +140,13 @@ object CangFlowValidator {
     }
 
   /** 贸易商审核 **/
-  implicit val traffickerAuditValidator: Validator[TraffickerAudit] =
-    validator[TraffickerAudit] {
+  implicit val traffickerAuditValidator: Validator[TraderAudit] =
+    validator[TraderAudit] {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.statusId as "审核状态id" min(0)
-        traffickerAssignUsers.statusId as "审核状态id" max(1)
+        traffickerAssignUsers.status as "审核状态id" min(0)
+        traffickerAssignUsers.status as "审核状态id" max(1)
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is notNull
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
     }
