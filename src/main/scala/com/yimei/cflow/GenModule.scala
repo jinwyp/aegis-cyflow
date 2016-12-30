@@ -85,7 +85,6 @@ object GenModule extends App with GraphConfigProtocol {
     templateGraphJarScalaContent += "\t@Description(\"" + u._2 +"\")\n"
     templateGraphJarScalaContent += "\tdef post" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
   })
-
   templateGraphJarScalaContent += "}\n"
 
   var file: File = new File(rootDir)
