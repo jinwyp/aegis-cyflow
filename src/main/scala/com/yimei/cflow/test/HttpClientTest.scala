@@ -41,13 +41,21 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
   val sflow = StartFlow(sf,sfi,sfs)
 
-  println(sflow.toJson.prettyPrint)
+ // println(sflow.toJson.prettyPrint)
 
 
   val a = "hello"
 
-  println(a)
-  println(a.toJson.toString)
+  //println(a)
+  //println(a.toJson.toString)
+
+  val t = UploadContract("1234","12345",List(fileObj1,fileObj2))
+
+ // println(t.toJson.toString)
+
+  val t1 = HarborUploadContract("123","123",1000.12,List(fileObj1,fileObj2))
+  println(t1.toJson.toString)
+
 
 
 
