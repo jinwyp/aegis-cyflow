@@ -8,6 +8,7 @@ import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.core.{DaemonMaster, FlowRegistry, GraphLoader}
+import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute, SessionDemoRoute}
 import com.yimei.cflow.http._
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.TestClient
@@ -20,7 +21,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor
 
-  //migrate
+  drop
+  migrate
 
   GraphLoader.loadall()
 
@@ -32,11 +34,18 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
 
   Thread.sleep(2000);
 
+//  var root: Route = pathPrefix("cang") {
+//    CangFlowRoute.route() ~
+//      CangUserRoute.route() ~
+//      SessionDemoRoute.route()
+//  }
+
   // 3> http
   val base: Route = pathPrefix("api") {
     AdminRoute.route(proxy) ~
       UserRoute.route(proxy) ~
       GroupRoute.route ~
+      FileRoute().route ~
       TaskRoute.route(proxy) ~
       AutoRoute.route(proxy) ~
       PartyRoute.route ~
@@ -46,6 +55,11 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   } ~
     ResourceRoute.route(proxy) ~
     EditorRoute.route(proxy) ~
+    pathPrefix("cang") {
+      CangFlowRoute.route() ~
+        CangUserRoute.route() ~
+        SessionDemoRoute.route()
+    }
   XieJieTestRoute().route
 
   def |+|(left: Route, right: Route) = left ~ right

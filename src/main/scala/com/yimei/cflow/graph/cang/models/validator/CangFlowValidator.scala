@@ -20,10 +20,10 @@ object CangFlowValidator {
   implicit val startFlowBasicInfoValidator: Validator[StartFlowBasicInfo] =
     validator[StartFlowBasicInfo] {
       basicInfo =>
-        basicInfo.applyCompanyId as "融资方公司id" min(1)
+        basicInfo.applyCompanyId as "融资方公司id" is notEmpty
         basicInfo.applyCompanyName as "融资方公司名称" is notEmpty
         basicInfo.applyCompanyName.length as "融资方公司名称字段长度" is between(1, 100)
-        basicInfo.applyUserId as "融资方用户id" min(1)
+        basicInfo.applyUserId as "融资方用户id" is notEmpty
         basicInfo.applyUserName as "融资方用户姓名" is notEmpty
         basicInfo.applyUserName.length as "融资方用户姓名字段长度" is between(1, 10)
         basicInfo.applyUserPhone as "融资方用户手机号" is notEmpty
@@ -116,7 +116,7 @@ object CangFlowValidator {
       customerUploadContract =>
         customerUploadContract.taskId as "任务id" is notEmpty
         customerUploadContract.taskId.length as "任务id字段" max(10)
-        customerUploadContract.FileList.each is valid
+        customerUploadContract.fileList.each is valid
     }
 
 
@@ -136,7 +136,7 @@ object CangFlowValidator {
         portUploadContract.taskId.length as "任务id字段" max(10)
         portUploadContract.confirmCoalAmount as "确认吨数" is notNull
         portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        portUploadContract.FileList.each is valid
+        portUploadContract.fileList.each is valid
     }
 
   /** 贸易商审核 **/

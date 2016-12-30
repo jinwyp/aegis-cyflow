@@ -81,6 +81,7 @@ create table party_user(
   id BIGINT not null auto_increment,
   party_id BIGINT not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
   user_id varchar(10) not null,       -- 应该改为  todo 5位编码
+  username VARCHAR(128) DEFAULT NULL COMMENT '登录名' ,
 
   password varchar(128) not null,
   phone varchar(32),
@@ -91,7 +92,7 @@ create table party_user(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_id+user_id 唯一索引
 CREATE UNIQUE INDEX party_id_user_id_index ON party_user(party_id,user_id);
-CREATE UNIQUE INDEX part_user_name_index ON party_user(name);
+CREATE UNIQUE INDEX part_user_name_index ON party_user(username);
 
 -- 用户群组表
 create table user_group(

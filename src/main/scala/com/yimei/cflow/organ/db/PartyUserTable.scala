@@ -21,9 +21,10 @@ trait PartyUserTable {
     def phone = column[Option[String]]("phone")
     def email = column[Option[String]]("email")
     def name = column[String]("name")
+    def username = column[String]("username")
     def ts_c = column[Timestamp]("ts_c")
 
-    def * = (id,party_id,user_id,password,phone,email,name,ts_c) <> (PartyUserEntity.tupled,PartyUserEntity.unapply)
+    def * = (id,party_id,user_id,password,phone,email,name,username,ts_c) <> (PartyUserEntity.tupled,PartyUserEntity.unapply)
   }
 
   protected val partyUser = TableQuery[PartyUser]

@@ -31,8 +31,8 @@ object UserValidator {
     validator[UpdateUser] {
       updateUser =>
         updateUser.id as "用户id" min(1)
-        updateUser.className as "用户类型" is notEmpty
-        updateUser.className.length as "用户类型字段长度" is between(1, 10)
+//        updateUser.className as "用户类型" is notEmpty
+//        updateUser.className.length as "用户类型字段长度" is between(1, 10)
         updateUser.username as "登录名" is notEmpty
         updateUser.username.length as "登录名字段长度" is between(2, 20)
         updateUser.name as "姓名" is notEmpty
@@ -40,8 +40,8 @@ object UserValidator {
         updateUser.email as "邮箱" is notEmpty
         updateUser.email.length as "邮箱字段长度" is between(1, 100)
         updateUser.phone.length as "手机号字段长度" is between(11, 20)
-        updateUser.companyName as "公司名称" is notEmpty
-        updateUser.companyName.length as "公司名称字段长度" is between(1, 100)
+//        updateUser.companyName as "公司名称" is notEmpty
+//        updateUser.companyName.length as "公司名称字段长度" is between(1, 100)
     }
 
   /** 用户修改自己信息 **/

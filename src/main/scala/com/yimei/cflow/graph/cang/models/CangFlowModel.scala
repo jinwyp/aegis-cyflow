@@ -12,10 +12,10 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
-  case class StartFlowBasicInfo(applyUserId: Long,                 //申请人-融资方 信息
+  case class StartFlowBasicInfo(applyUserId: String,                 //申请人-融资方 信息
                                 applyUserName: String,
                                 applyUserPhone: String,
-                                applyCompanyId: Long,
+                                applyCompanyId: String,
                                 applyCompanyName: String,
                                 businessCode: String,              //业务编号
                                 financeCreateTime: Timestamp,      //审批开始时间
@@ -92,8 +92,9 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   /** 监管方上传合同 **/
   /** 融资方上传 合同, 财务, 业务 文件 **/
   case class UploadContract(taskId: String,
-                                    FileList: List[FileObj])
-  implicit val customerUploadContractFormat = jsonFormat2(UploadContract)
+                            flowId: String,
+                            fileList: List[FileObj])
+  implicit val customerUploadContractFormat = jsonFormat3(UploadContract)
 
 //  /** 监管方上传合同 **/
 //  case class SupervisorUploadContract(taskId: String,
@@ -102,9 +103,10 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
 
   /** 港口上传合同, 填写确认吨数 **/
   case class HarborUploadContract(taskId: String,
-                                confirmCoalAmount: BigDecimal,
-                                FileList: List[FileObj])
-  implicit val portUploadContractFormat = jsonFormat3(HarborUploadContract)
+                                  flowId: String,
+                                  confirmCoalAmount: BigDecimal,
+                                  fileList: List[FileObj])
+  implicit val portUploadContractFormat = jsonFormat4(HarborUploadContract)
 
   /** 贸易商审核 **/
   case class TraffickerAudit(taskId: String,

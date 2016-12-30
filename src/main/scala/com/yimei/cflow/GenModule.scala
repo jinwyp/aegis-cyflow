@@ -1,5 +1,7 @@
 package com.yimei.cflow
 
+import java.io.File
+
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
 import spray.json._
 
@@ -23,7 +25,15 @@ object GenModule extends App with GraphConfigProtocol {
     .parseJson
     .convertTo[GraphConfig]
 
+  val rootPath = "./tmp"
+  val file: File = new File(rootPath)
+  if (!file.exists()) file.mkdir()
+
+
+  graphConfig.graphJar
   println(graphConfig)
+
+
 
   //
   //     aegis-flow-ying/sfdasdfafas   /tmp
