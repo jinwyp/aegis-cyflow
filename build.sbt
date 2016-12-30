@@ -75,7 +75,11 @@ libraryDependencies ++= {
     "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
     // scalaz
-    "org.scalaz" %% "scalaz-core" % "7.2.8"
+    "org.scalaz" %% "scalaz-core" % "7.2.8",
+
+    //files tar.gz
+  "org.apache.commons" % "commons-compress" % "1.12"
+
   )
 }
 
