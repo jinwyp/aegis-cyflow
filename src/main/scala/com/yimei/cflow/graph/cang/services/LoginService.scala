@@ -8,7 +8,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Result}
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -16,16 +16,15 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserLogin}
+import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * Created by xl on 16/12/26.
   */
-object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal{
-
-  case class PartyClassEntity(id:Option[Long],class_name:String,description:String)
+object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal {
 
   //融资方进入仓压
   def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {
@@ -135,5 +134,64 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       qur <- getPartyUser
       re <- update(qur)
     } yield getResult(re)
+  }
+
+  //用户登录
+  def getLoginUserInfo(userLogin: UserLogin): Future[MySession] = {
+    log.info(s"get into method getLoginUserInfo, username:${userLogin.username}")
+    getLoginUserInfo(userLogin.toJson.toString)
+  }
+
+  //用户修改密码
+  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[String]] = {
+    log.info(s"get into method userModifyPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+
+    def update(qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(user.newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    def comparePassword(qur: QueryUserResult, userInfo: UserChangePwd) = {
+      if(qur.userInfo.password != userInfo.oldPassword) {
+        throw BusinessException("您输入的旧密码有误！")
+      }
+      if(userInfo.oldPassword == userInfo.newPassword) {
+        throw BusinessException("您输入的新旧密码相同！")
+      }
+    }
+
+    (for {
+      qur <- getPartyUser
+      cr = comparePassword(qur, user)
+      ur <- update(qur)
+    } yield { Result(data = Some(ur), success = true)}) recover {
+      case e: BusinessException => Result[String](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+    }
+  }
+
+  //管理员重置用户密码
+  def adminResetUserPassword(party: String, instance_id: String, userId: String): Future[Result[String]] = {
+    log.info(s"get into method adminResetUserPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+
+    val newPassword = "111111"
+    def update(qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    for {
+      qur <- getPartyUser
+      ur <- update(qur)
+    } yield { Result(data = Some(ur), success = true)}
+  }
+
+  //管理员查询用户列表
+  def adminGetUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[Result[UserListEntity]] = {
+    log.info(s"get into method adminGetUserList, party:${party}, instance_id:${instance_id}")
+    for {
+      list <- getUserList(party, instance_id, limit, offset)
+    } yield Result(data = Some(list), success = true)
   }
 }

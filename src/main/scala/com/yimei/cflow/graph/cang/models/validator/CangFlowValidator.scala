@@ -2,8 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, FileObj, FundProviderAudit, FundProviderFinanceLoad, HarborUploadContract, PortReleaseGoods, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods, UploadContract}
-
+import com.yimei.cflow.graph.cang.models.CangFlowModel._
 object CangFlowValidator {
 
   /** 文件 **/
@@ -140,25 +139,25 @@ object CangFlowValidator {
     }
 
   /** 贸易商审核 **/
-  implicit val traffickerAuditValidator: Validator[TraffickerAudit] =
-    validator[TraffickerAudit] {
+  implicit val traffickerAuditValidator: Validator[TraderAudit] =
+    validator[TraderAudit] {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.statusId as "审核状态id" min(0)
-        traffickerAssignUsers.statusId as "审核状态id" max(1)
+        traffickerAssignUsers.status as "审核状态id" min(0)
+        traffickerAssignUsers.status as "审核状态id" max(1)
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is notNull
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
     }
 
   /** 贸易商财务给出放款建议 **/
-  implicit val traffickerFinanceAuditValidator: Validator[TraffickerFinanceAudit] =
-    validator[TraffickerFinanceAudit] {
+  implicit val traffickerFinanceAuditValidator: Validator[TraderRecommendAmount] =
+    validator[TraderRecommendAmount] {
       traffickerFinanceAudit =>
         traffickerFinanceAudit.taskId as "任务id" is notEmpty
         traffickerFinanceAudit.taskId.length as "任务id字段" max(10)
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is notNull
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        traffickerFinanceAudit.recommendAmount as "确认放款金额" is notNull
+        traffickerFinanceAudit.recommendAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
     }
 
   /** 资金方审核 **/

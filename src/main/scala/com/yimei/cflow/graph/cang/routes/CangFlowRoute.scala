@@ -58,13 +58,25 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
             entity(as[TraffickerAssignUsers]) { tAssign =>
             complete(submitA11(party_class, user_id, instance_id, tAssign))
           }
+          //融资方上传文件或监管方上传文件
           case `a12FinishedUpload` | `a14FinishedUpload` =>
             entity(as[UploadContract]) {  upload =>
               complete(submitA12AndA14(party_class, user_id, instance_id,action,upload))
             }
+          //港口方上传文件和确认吨数
           case `a13FinishedUpload` =>
             entity(as[HarborUploadContract]) { upload =>
               complete(submitA13(party_class, user_id, instance_id,action,upload))
+            }
+          //贸易方审核
+          case `a15traderAudit`  =>
+            entity(as[TraderAudit]) { audit =>
+              complete(submitA15(party_class, user_id, instance_id,action,audit))
+            }
+          //贸易方给出建议金额
+          case `a16traderRecommendAmount` =>
+            entity(as[TraderRecommendAmount]) { recommend =>
+              complete(submitA16(party_class, user_id, instance_id,action,recommend))
             }
           case _ => throw BusinessException("不支持的任务类型")
         }

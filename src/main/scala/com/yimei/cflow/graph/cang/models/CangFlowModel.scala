@@ -109,15 +109,17 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   implicit val portUploadContractFormat = jsonFormat4(HarborUploadContract)
 
   /** 贸易商审核 **/
-  case class TraffickerAudit(taskId: String,
-                             statusId: Int,
-                             fundProviderInterestRate: BigDecimal)
-  implicit val traffickerAuditFormat = jsonFormat3(TraffickerAudit)
+  case class TraderAudit(taskId: String,
+                         flowId: String,
+                         status: Int,
+                         fundProviderInterestRate: BigDecimal)
+  implicit val traffickerAuditFormat = jsonFormat4(TraderAudit)
 
   /** 贸易商财务给出 放款金额 **/
-  case class TraffickerFinanceAudit(taskId: String,
-                                    confirmFinancingAmount: BigDecimal)
-  implicit val traffickerFinanceAuditFormat = jsonFormat2(TraffickerFinanceAudit)
+  case class TraderRecommendAmount(taskId: String,
+                                    flowId: String,
+                                    recommendAmount: BigDecimal)
+  implicit val traffickerFinanceAuditFormat = jsonFormat3(TraderRecommendAmount)
 
   /** 资金方审核 **/
   case class FundProviderAudit(taskId: String, statusId: Int)

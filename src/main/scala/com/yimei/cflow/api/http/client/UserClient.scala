@@ -1,9 +1,10 @@
 package com.yimei.cflow.api.http.client
 
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserModelProtocol}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
+import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import spray.json._
 
 import scala.concurrent.Future
@@ -11,7 +12,7 @@ import scala.concurrent.Future
 /**
   * Created by hary on 16/12/23.
   */
-trait UserClient extends UserModelProtocol{
+trait UserClient extends UserModelProtocol with SessionProtocol {
   def createPartyUser(party: String, instance_id: String, userId: String, userInfo: String): Future[State] = {
     //访问com.yimei.cflow.http.UserRoute中的postUser接口
     sendRequest(
@@ -52,6 +53,29 @@ trait UserClient extends UserModelProtocol{
       method = "get"
     ) map { result =>
       result.parseJson.convertTo[QueryUserResult]
+    }
+  }
+
+  def getLoginUserInfo(userInfo: String): Future[MySession] = {
+    //访问com.yimei.cflow.http.UserRoute中的getLoginUserInfo接口
+    sendRequest(
+      path = "api/login",
+      method = "post",
+      bodyEntity = Some(userInfo)
+    ) map { result =>
+      result.parseJson.convertTo[MySession]
+    }
+  }
+
+  def getUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[UserListEntity] = {
+    //访问com.yimei.cflow.http.UserRoute中的getUserList接口
+    sendRequest(
+      path = "api/user",
+      paramters = Map("limit" -> limit.toString, "offset" -> offset.toString),
+      pathVariables = Array(party, instance_id),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[UserListEntity]
     }
   }
 }
