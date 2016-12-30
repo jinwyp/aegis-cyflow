@@ -66,3 +66,17 @@ echo "task_id is $task_id"
 k='{"flowId":'$flow_id',"taskId":'$task_id',"confirmCoalAmount":1000.12,"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a13FinishedUpload/h1id/harbor/1 -d "$k")
 echo $res
+
+#10>贸易方审核
+res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
+
+k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1,"fundProviderInterestRate":1024.1}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a15traderAudit/77777/trader/88888888 -d "$k")
+echo $res
+
+
+
+
+
