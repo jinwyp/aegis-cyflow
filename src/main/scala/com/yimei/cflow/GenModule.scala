@@ -64,6 +64,10 @@ object GenModule extends App with GraphConfigProtocol {
   configScalaContent += "}\n"
 
   var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
+  templateGraphJarScalaContent += "\n\t// 决策点\n"
+  templateGraphJarScalaContent += "\n\t// 自动任务\n"
+  templateGraphJarScalaContent += "\n\t// 任务路由 get\n"
+  templateGraphJarScalaContent += "\n\t// 任务路由 post\n"
 
   templateGraphJarScalaContent += "}\n"
 
