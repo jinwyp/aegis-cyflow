@@ -38,10 +38,10 @@ object GenModule extends App with GraphConfigProtocol {
   var templateDir = "./template"
   val graphJarStr = graphConfig.graphJar
   val nameArray: Array[String] = graphJarStr.split('.')
-  var projectName = "aegis-flow-" + nameArray(nameArray.length - 2)
-  var projectRootDir = "/" + projectName
-  var jarName = nameArray(nameArray.length - 1)
-  var jarDirName = "/" + graphJarStr.substring(0, graphJarStr.length - nameArray(nameArray.length - 2).length - jarName.length - 2).replace(".", "-")
+  val projectName = "aegis-flow-" + nameArray(nameArray.length - 2)
+  val projectRootDir = "/" + projectName
+  val jarName = nameArray(nameArray.length - 1)
+  val jarDirName = "/" + graphJarStr.substring(0, graphJarStr.length - nameArray(nameArray.length - 2).length - jarName.length - 2).replace(".", "-")
 
   val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + buildProperties)).mkString
   val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + pluginsSbt)).mkString
@@ -125,7 +125,11 @@ object GenModule extends App with GraphConfigProtocol {
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
-  file = new File(projectName)
+  val allProjectContent = "" //Source.fromInputStream(classLoader.getResourceAsStream(rootDir + projectRootDir + "/.")).mkString
+  file = new File(rootDir + projectRootDir + projectRootDir + ".tar.gz")
+  val pw_project = new PrintWriter(file)
+  pw_project.write(templateGraphJarScalaContent)
+  pw_project.close
 
   //
   //     aegis-flow-ying/sfdasdfafas   /tmp
