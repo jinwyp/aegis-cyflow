@@ -86,7 +86,9 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
 
       r.status match {
         case StatusCodes.OK =>
-          result map(_.parseJson.convertTo[R])
+          result map{r =>
+            log.info("{}",r)
+            r.parseJson.convertTo[R]}
         case _            =>
           result map( r => throw new BusinessException(r.toString))
       }
