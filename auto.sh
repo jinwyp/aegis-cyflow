@@ -37,14 +37,32 @@ echo "task_id is $task_id"
 
 # 6> 贸易方指定四个参与方
 k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"1"}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a11SelectHarborAndSupervisor -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
+# 7> 融资方上传文件
+res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
 
+k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a12FinishedUpload/f1id/financer/1 -d "$k")
+echo $res
 
+#8>监管方上传合同
+res=$(curl -X GET http://localhost:9000/api/utask/supervisor/1/s1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
 
+k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a14FinishedUpload/s1id/supervisor/1 -d "$k")
+echo $res
 
+#9>港口上传合同和确认吨数
+res=$(curl -X GET http://localhost:9000/api/utask/harbor/1/h1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
 
-
-
-
+k='{"flowId":'$flow_id',"taskId":'$task_id',"confirmCoalAmount":1000.12,"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a13FinishedUpload/h1id/harbor/1 -d "$k")
+echo $res

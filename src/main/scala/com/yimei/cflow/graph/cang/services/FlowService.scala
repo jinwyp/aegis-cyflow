@@ -20,12 +20,18 @@ object FlowService extends UserModelProtocol
 
 
   def genGuId(party_id:String, company_id:String, user_Id:String) = {
-    party_id+"_"+company_id+"!"+user_Id
+    party_id+"-"+company_id+"!"+user_Id
   }
 
 
-
-  //完成选择港口,监管方和资金 -- 该操作只能由贸易方完成
+  /**
+    * 贸易方完成选择港口,监管方和资金
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param tass
+    * @return
+    */
   def submitA11(party_class:String,user_id:String,instant_id:String,tass:TraffickerAssignUsers) = {
     party_class match {
       case `myf` =>
@@ -36,7 +42,7 @@ object FlowService extends UserModelProtocol
           request[String,Seq[PartyInstanceEntity]](path="api/inst", pathVariables = Array(zjf,tass.fundProviderCompanyId)) map { t=>
             t.length match {
               case 1 => t(0)
-              case _ => throw new BusinessException(s"CompanyId:"+tass.fundProviderCompanyId+" 有多个资金方公司")
+              case _ => throw new BusinessException("CompanyId:"+tass.fundProviderCompanyId+" 有多个资金方公司")
             }
 
           }
@@ -83,7 +89,15 @@ object FlowService extends UserModelProtocol
   }
 
 
-  //融资方上传文件或监管方上传文件
+  /**
+    * 融资方上传文件或监管方上传文件
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param upload
+    * @return
+    */
   def submitA12AndA14(party_class:String,user_id:String,instant_id:String,taskName:String,upload:UploadContract) = {
     val dataPoint: String = (party_class,taskName) match {
       case (`rzf`,`a12FinishedUpload`) => financerContractFiles
@@ -101,6 +115,26 @@ object FlowService extends UserModelProtocol
 
   }
 
-
-
+  /**
+    * 港口方上传文件和确认吨数
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param harborUpload
+    * @return
+    */
+  def submitA13(party_class:String,user_id:String,instant_id:String,taskName:String,harborUpload:HarborUploadContract) = {
+    party_class match {
+      case `gkf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          harborContractFiles -> harborUpload.fileList.wrap(operator = Some(op)),
+          harborConfirmAmount -> harborUpload.confirmCoalAmount.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(harborUpload.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,harborUpload.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 }
