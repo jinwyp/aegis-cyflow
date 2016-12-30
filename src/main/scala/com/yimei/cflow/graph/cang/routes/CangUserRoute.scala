@@ -74,8 +74,19 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  def userModifyPasswordRoute: Route = post {
+    (pathPrefix("mpw") & entity(as[UserChangePwd])) { user =>
+      //需要session校验身份 todo
+      //从session中获取party和instance_id todo
+      val party = "financer"
+      val instance_id = "444"
+      val userId = "333"
+      complete(userModifyPassword(party, instance_id, userId, user))
+    }
+  }
 
-  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute
+
+  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute
 }
 
 object CangUserRoute {

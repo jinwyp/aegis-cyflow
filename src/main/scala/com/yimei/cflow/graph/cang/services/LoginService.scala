@@ -16,7 +16,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -136,9 +136,40 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield getResult(re)
   }
 
+  //用户登录
   def getLoginUserInfo(userLogin: UserLogin): Future[MySession] = {
+    log.info(s"get into method getLoginUserInfo, username:${userLogin.username}")
     getLoginUserInfo(userLogin.toJson.toString)
   }
 
+  //用户修改密码
+  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[String]] = {
+    log.info(s"get into method userModifyPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+
+    def update(qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(user.newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    def comparePassword(qur: QueryUserResult, userInfo: UserChangePwd) = {
+      if(qur.userInfo.password != userInfo.oldPassword) {
+        throw BusinessException("您输入的旧密码有误！")
+      }
+      if(userInfo.oldPassword == userInfo.newPassword) {
+        throw BusinessException("您输入的新旧密码相同！")
+      }
+    }
+
+    val result = (for {
+      qur <- getPartyUser
+      cr = comparePassword(qur, user)
+      ur <- update(qur)
+    } yield { Result(data = Some(ur), success = true)}) recover {
+      case e: BusinessException => Result[String](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+    }
+
+    result
+  }
 
 }
