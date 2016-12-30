@@ -161,15 +161,30 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
-    val result = (for {
+    (for {
       qur <- getPartyUser
       cr = comparePassword(qur, user)
       ur <- update(qur)
     } yield { Result(data = Some(ur), success = true)}) recover {
       case e: BusinessException => Result[String](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
     }
+  }
 
-    result
+  //管理员重置用户密码
+  def adminResetUserPassword(party: String, instance_id: String, userId: String): Future[Result[String]] = {
+    log.info(s"get into method adminResetUserPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+
+    val newPassword = "111111"
+    def update(qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    for {
+      qur <- getPartyUser
+      ur <- update(qur)
+    } yield { Result(data = Some(ur), success = true)}
   }
 
 }
