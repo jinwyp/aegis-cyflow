@@ -2,8 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, FileObj, FundProviderAudit, FundProviderFinanceLoad, HarborUploadContract, PortReleaseGoods, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, TraderAudit, TraffickerAssignUsers , TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods, UploadContract}
-
+import com.yimei.cflow.graph.cang.models.CangFlowModel._
 object CangFlowValidator {
 
   /** 文件 **/
@@ -152,13 +151,13 @@ object CangFlowValidator {
     }
 
   /** 贸易商财务给出放款建议 **/
-  implicit val traffickerFinanceAuditValidator: Validator[TraffickerFinanceAudit] =
-    validator[TraffickerFinanceAudit] {
+  implicit val traffickerFinanceAuditValidator: Validator[TraderRecommendAmount] =
+    validator[TraderRecommendAmount] {
       traffickerFinanceAudit =>
         traffickerFinanceAudit.taskId as "任务id" is notEmpty
         traffickerFinanceAudit.taskId.length as "任务id字段" max(10)
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is notNull
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        traffickerFinanceAudit.recommendAmount as "确认放款金额" is notNull
+        traffickerFinanceAudit.recommendAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
     }
 
   /** 资金方审核 **/
