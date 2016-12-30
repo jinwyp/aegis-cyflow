@@ -8,7 +8,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Result}
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -187,4 +187,11 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield { Result(data = Some(ur), success = true)}
   }
 
+  //管理员查询用户列表
+  def adminGetUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[Result[UserListEntity]] = {
+    log.info(s"get into method adminGetUserList, party:${party}, instance_id:${instance_id}")
+    for {
+      list <- getUserList(party, instance_id, limit, offset)
+    } yield Result(data = Some(list), success = true)
+  }
 }
