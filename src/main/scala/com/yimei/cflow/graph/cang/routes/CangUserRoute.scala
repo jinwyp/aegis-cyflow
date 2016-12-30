@@ -6,21 +6,20 @@ import java.time.Instant
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import com.yimei.cflow.api.http.models.ResultModel.ResultProtocol
+import com.yimei.cflow.api.http.models.ResultModel.{Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.UserModel._
-
 import com.yimei.cflow.util.DBUtils._
 
 import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
-import com.yimei.cflow.graph.cang.session.Session
+import com.yimei.cflow.graph.cang.session.{MySession, Session, SessionProtocol}
 import spray.json._
 
 
 /**
   * Created by xl on 16/12/26.
   */
-class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelProtocol with Session {
+class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelProtocol with Session with SessionProtocol {
 
   import com.yimei.cflow.graph.cang.models.UserModel._
 
@@ -62,7 +61,32 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute
+  def loginRoute: Route = post {
+    (pathPrefix("login") & entity(as[UserLogin])) { user =>
+      import scala.concurrent.ExecutionContext.Implicits.global
+      val result = for {
+        s <- getLoginUserInfo(user)
+      } yield {
+        mySetSession(s)
+        Result[MySession](data = Some(s), success = true)
+      }
+      complete(result)
+    }
+  }
+
+  def userModifyPasswordRoute: Route = post {
+    (pathPrefix("mpw") & entity(as[UserChangePwd])) { user =>
+      //需要session校验身份 todo
+      //从session中获取party和instance_id todo
+      val party = "financer"
+      val instance_id = "444"
+      val userId = "333"
+      complete(userModifyPassword(party, instance_id, userId, user))
+    }
+  }
+
+
+  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute
 }
 
 object CangUserRoute {
