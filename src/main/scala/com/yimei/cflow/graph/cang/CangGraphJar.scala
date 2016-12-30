@@ -30,9 +30,13 @@ object CangGraphJar extends Config {
 
   def financingStep14(state: State) = {
      state.points(traderAuditResult).value match {
-       case "1" => Seq(ArrowSuccess)
+       case "1" => Seq(Arrow(financingStep15,Some(E4)))
        case "0" => Seq(TraderDisapprove)
        case _ => throw BusinessException("贸易商审核提交数据有误")
      }
+  }
+
+  def financingStep15(state: State) = {
+    Seq(ArrowSuccess)
   }
 }
