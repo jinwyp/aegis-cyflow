@@ -160,12 +160,4 @@ object GenModule extends App with GraphConfigProtocol {
     }
   }
 
-  //val allProjectContent = Source.fromInputStream(classLoader.getResourceAsStream(rootDir + projectRootDir + "/_")).mkString
-//  val pw_project = new PrintWriter(file)
-//  pw_project.write(templateGraphJarScalaContent)
-//  pw_project.close
-//  //     aegis-flow-ying/sfdasdfafas   /tmp
-  //  aegis-flow-ying.tar.gz           /tmp  aegis-flow-ying.tar.gz
-  //
-
 }
