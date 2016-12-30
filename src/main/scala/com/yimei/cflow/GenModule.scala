@@ -47,19 +47,19 @@ object GenModule extends App with GraphConfigProtocol {
   var configScalaContent = "\nobject Config {\n"
   configScalaContent += "\n\t// points\n"
   graphConfig.points.toList.sortBy(p => p._1).foreach(p =>
-    configScalaContent += "\tval point_" + p._1 + "=\"" + p._1 + "\"\t\t\t//" + p._2 + "\n"
+    configScalaContent += "\tval point_" + p._1 + " = \"" + p._1 + "\"\t\t\t//" + p._2 + "\n"
   )
   configScalaContent += "\n\t// vertices\n"
   graphConfig.vertices.toList.sortBy(v => v._1).foreach(v =>
-    configScalaContent += "\tval vertex_" + v._1 + "=\"" + v._1 + "\"\t\t\t//" + v._2 + "\n"
+    configScalaContent += "\tval vertex_" + v._1 + " = \"" + v._1 + "\"\t\t\t//" + v._2 + "\n"
   )
   configScalaContent += "\n\t// autoTasks\n"
   graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a =>
-    configScalaContent += "\tval auto_" + a._1 + "=\"" + a._1 + "\"\t\t\t//" + a._2 + "\n"
+    configScalaContent += "\tval auto_" + a._1 + " = \"" + a._1 + "\"\t\t\t//" + a._2 + "\n"
   )
   configScalaContent += "\n\t// userTasks\n"
   graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u =>
-    configScalaContent += "\tval task_" + u._1 + "=\"" + u._1 + "\"\t\t\t//" + u._2 + "\n"
+    configScalaContent += "\tval task_" + u._1 + " = \"" + u._1 + "\"\t\t\t//" + u._2 + "\n"
   )
   configScalaContent += "}\n"
 
