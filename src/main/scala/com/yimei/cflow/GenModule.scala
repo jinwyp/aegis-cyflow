@@ -63,6 +63,10 @@ object GenModule extends App with GraphConfigProtocol {
   )
   configScalaContent += "}\n"
 
+  var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
+
+  templateGraphJarScalaContent += "}\n"
+
   var file: File = new File(rootDir)
   if (!file.exists()) file.mkdir()
   file = new File(rootDir + directoryName)
@@ -99,7 +103,7 @@ object GenModule extends App with GraphConfigProtocol {
   pw_config.close
   file = new File(rootDir + directoryName + srcDir + mainDir + scalaDir + jarDirName + directoryName + templateGraphJarScala)
   val pw_templateGraphJar = new PrintWriter(file)
-  pw_templateGraphJar.write("")
+  pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
 
