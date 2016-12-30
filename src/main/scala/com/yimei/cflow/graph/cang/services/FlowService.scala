@@ -8,7 +8,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel._
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{TraderRecommendAmount, _}
 
 import scala.concurrent.Future
 /**
@@ -161,6 +161,28 @@ object FlowService extends UserModelProtocol
     }
   }
 
+
+  /**
+    * 贸易方给出建议金额
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param recommend
+    * @return
+    */
+  def submitA16(party_class:String,user_id:String,instant_id:String,taskName:String,recommend:TraderRecommendAmount) = {
+    party_class match {
+      case `myf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          recommendAmount -> recommend.recommendAmount.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(recommend.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,recommend.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
 
 
