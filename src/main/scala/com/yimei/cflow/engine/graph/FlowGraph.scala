@@ -3,7 +3,7 @@ package com.yimei.cflow.engine.graph
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow._
-import com.yimei.cflow.engine.auto.AutoMaster._
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 
 import scala.concurrent.Future
 

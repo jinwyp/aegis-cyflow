@@ -5,7 +5,7 @@ import com.yimei.cflow.api.models.flow.State
 import com.yimei.cflow.api.services.{ModuleMaster, ServicableBehavior}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.FlowRegistry
-import com.yimei.cflow.engine.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 
 /**
   * Created by hary on 16/12/3.
@@ -26,12 +26,6 @@ object AutoMaster {
     }
   }
 
-  /**
-    *
-    * @param state     State
-    * @param actorName actorName
-    */
-  case class CommandAutoTask(state: State, flowType: String, actorName: String)
 
   def props(dependOn: Array[String]) = Props(new AutoMaster(dependOn))
 
