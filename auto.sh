@@ -103,4 +103,11 @@ k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/1 -d "$k")
 echo $res
 
+sleep 5
 
+#14>资金方放款（自动任务）
+#k='http://localhost:9000/cang/fortest/'$flowId'/fundProviderPaySuccess/success'
+#echo $k
+res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
+echo $res
+#curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success

@@ -1,8 +1,13 @@
 package com.yimei.cflow.graph.cang
 
+import akka.actor.ActorLogging
+import akka.camel.Consumer
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
+
+import scala.concurrent.Future
 
 /**
   * Created by wangqi on 16/12/26.
@@ -53,9 +58,36 @@ object CangGraphJar extends Config {
 
   def financingStep17(state: State) = {
     state.points(fundProviderAccountantAuditResult).value match {
-      case "1" => Seq(ArrowSuccess)
+      case "1" => Seq(Arrow(financingStep18,Some(E7)))
       case "0" => Seq(FundProviderAccountantDisapprove)
       case _   => throw BusinessException("资金方财务审核提交数据有误")
     }
   }
+
+
+  def financingStep18(state: State) = {
+    Seq(ArrowSuccess)
+  }
+
+
+
+  //自动任务-------------------------
+  //资金方自动付款
+  def fundProviderPayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
+    //todo 向数据库中插入一条记录
+    Future{Map(fundProviderPaying -> "yes")}
+  }
 }
+
+
+//这个后面要写，现在直接用http代替。
+//object ScheduleTask {
+//  class CiticSchedule extends Consumer with ActorLogging {
+//    def endpointUri = "quartz://schedule-citic?cron=1+0+*+*+*+?"
+//
+//    def receive = {
+//      case msg =>
+//        log.info("开始支付")
+//    }
+//  }
+//}
