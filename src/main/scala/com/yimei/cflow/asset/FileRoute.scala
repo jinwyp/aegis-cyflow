@@ -34,10 +34,15 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
   }
 
 
+  /**
+    *
+    * @return
+    */
   def uploadFile: Route = post {
     pathPrefix("file" / "upload") {
       pathEnd {
         entity(as[Multipart.FormData]) { fileData =>
+          // 多个文件
           val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
             case file:
               BodyPart if file.name == "file" =>
@@ -48,6 +53,8 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
             case data: BodyPart => data.toStrict(2.seconds)
               .map(strict => data.name -> strict.entity.data.utf8String)
           }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
+
+
           complete {
             result.map { data => {
               val url = data.get("url").get
