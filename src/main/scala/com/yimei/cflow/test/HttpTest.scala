@@ -7,6 +7,7 @@ import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, FlywayConfig}
 import com.yimei.cflow.engine.graph.GraphLoader
+import com.yimei.cflow.engine.routes.AutoRoute
 import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http.{ResourceRoute, _}
