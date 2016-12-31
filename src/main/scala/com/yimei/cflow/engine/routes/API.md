@@ -40,7 +40,7 @@ POST /utask/:taskId
 
 4. 查询组任务
 GET /gtask
-guid=:guid&
+ggid=:ggid&
 flowType=:flowType&
 page=:page&
 pageSize=:pageSize
