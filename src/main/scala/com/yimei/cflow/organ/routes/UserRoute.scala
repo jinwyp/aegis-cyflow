@@ -66,7 +66,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
-               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username,Timestamp.from(Instant.now))) recover {
+               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username, 0,Timestamp.from(Instant.now))) recover {
                case e =>
                   log.error("{}",e)
                  throw new DatabaseException("添加用户错误")
@@ -123,7 +123,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
           dbrun(partyUser.filter(u=>
             u.user_id===userId &&
-            u.party_id===p.id
+            u.party_id===p.id &&
+            u.disable === 0
           ).result.head) recover {
             case _ => throw new DatabaseException("不存在该用户")
           }
@@ -156,7 +157,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
           def getUserList(p: PartyInstanceEntity): Future[Seq[PartyUserEntity]] = {
             dbrun(partyUser.filter(u =>
-                u.party_id === p.id
+                u.party_id === p.id &&
+                u.disable === 0
             ).drop(offset).take(limit).result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
@@ -164,7 +166,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
           def getTotal(p: PartyInstanceEntity) = {
             dbrun(partyUser.filter(u =>
-              u.party_id === p.id
+              u.party_id === p.id &&
+              u.disable === 0
             ).length.result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
@@ -245,7 +248,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
   def getLoginUserInfo: Route = post {
     (pathPrefix("login") & entity(as[UserLogin])) { user =>
       val getInfo: Future[Seq[(String, String, String, String, String)]] = dbrun((for {
-        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password)
+        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
       } yield (pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name)).result)
 
 
@@ -265,7 +268,25 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo
+  def disAbleUser: Route = get {
+    pathPrefix("disable" / Segment) { userId =>
+      val pu = partyUser.filter(u =>
+        u.user_id === userId &&
+        u.disable === 0
+      ).map(t => (t.disable)).update(1)
+
+      complete(dbrun(pu) map { i =>
+        i match {
+          case 1 => "success"
+          case _ => "fail"
+        }
+      } recover {
+        case _ => "fail"
+      })
+    }
+  }
+
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser
 }
 
 

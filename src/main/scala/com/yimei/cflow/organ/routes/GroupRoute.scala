@@ -10,7 +10,6 @@ import akka.util.Timeout
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.group.GroupProtocol
 import com.yimei.cflow.api.models.user.UserProtocol
-import com.yimei.cflow.api.util.DBUtils
 import com.yimei.cflow.api.util.DBUtils._
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
 import com.yimei.cflow.organ.db._
@@ -99,7 +98,8 @@ class GroupRoute extends UserProtocol
     * @return
     */
   def userInGroup = get {
-    pathPrefix("ugroup"/Segment/Segment/Segment/Segment){ (party_class,instant_id,user_id,gid) =>
+    pathPrefix("validateugroup"/Segment/Segment/Segment/Segment){ (party_class,instant_id,user_id,gid) =>
+
       val exist: Future[Seq[UserGroupEntity]] = dbrun((for{
         (pi,ug) <- partyInstance.filter(p=>
           p.party_class === party_class &&
@@ -111,13 +111,15 @@ class GroupRoute extends UserProtocol
       } yield {
         ug
       }).result)
+
       complete(exist)
     }
   }
 
 
 
-  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty ~ getUserByGroupAndParty ~ createUserGroup
+  def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ userInGroup ~
+    updateGroupParty ~ getUserByGroupAndParty ~ createUserGroup
 }
 
 

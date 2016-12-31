@@ -16,6 +16,8 @@ object CangGraphJar extends Config {
   val TraderDisapprove = Arrow("TraderDisapprove",None)
   //资金方审核不通过
   val FundProviderDisapprove = Arrow("FundProviderDisapprove",None)
+  //资金方财务不通过
+  val FundProviderAccountantDisapprove = Arrow("FundProviderAccountantDisapprove",None)
 
   def financingStep11(state: State) = {
     Seq(Arrow(financingStep12,Some(E1)))
@@ -43,9 +45,17 @@ object CangGraphJar extends Config {
 
   def financingStep16(state: State) = {
     state.points(fundProviderAuditResult).value match {
-      case "1" => Seq(ArrowSuccess)
+      case "1" => Seq(Arrow(financingStep17,Some(E6)))
       case "0" => Seq(FundProviderDisapprove)
       case _   => throw BusinessException("资金方审核提交数据有误")
+    }
+  }
+
+  def financingStep17(state: State) = {
+    state.points(fundProviderAccountantAuditResult).value match {
+      case "1" => Seq(ArrowSuccess)
+      case "0" => Seq(FundProviderAccountantDisapprove)
+      case _   => throw BusinessException("资金方财务审核提交数据有误")
     }
   }
 }

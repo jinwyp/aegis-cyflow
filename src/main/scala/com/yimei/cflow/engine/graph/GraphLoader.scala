@@ -117,7 +117,10 @@ object GraphLoader extends GraphConfigProtocol {
         val status = try {
           FlowRegistry.register(flowType, loadGraph(flowType, classLoader))
         } catch {
-          case _: Throwable => false
+          case e: Throwable =>
+            println("!!!!!!!"+e.getMessage)
+
+            false
         }
         (flowType, status)
 

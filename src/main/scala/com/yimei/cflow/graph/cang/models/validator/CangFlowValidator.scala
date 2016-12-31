@@ -171,13 +171,13 @@ object CangFlowValidator {
     }
 
   /** 资金方财务放款 **/
-  implicit val fundProviderFinanceLoadValidator: Validator[FundProviderFinanceLoad] =
-    validator[FundProviderFinanceLoad] {
+  implicit val fundProviderFinanceLoadValidator: Validator[FundProviderAccountantAudit] =
+    validator[FundProviderAccountantAudit] {
       fundProviderFinanceLoad =>
         fundProviderFinanceLoad.taskId as "任务id" is notEmpty
         fundProviderFinanceLoad.taskId.length as "任务id字段" max(10)
-        fundProviderFinanceLoad.statusId as "放款状态id" min(0)
-        fundProviderFinanceLoad.statusId as "放款状态id" max(1)
+        fundProviderFinanceLoad.status as "放款状态id" min(0)
+        fundProviderFinanceLoad.status as "放款状态id" max(1)
     }
 
   /** 融资方付款给贸易商 **/

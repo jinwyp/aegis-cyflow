@@ -100,8 +100,14 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  def adminDisableUserRoute: Route = get {
+    pathPrefix("adu" / Segment) { userId =>
+      complete(adminDisableUser(userId))
+    }
+  }
+
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute
 }
 
 object CangUserRoute {
