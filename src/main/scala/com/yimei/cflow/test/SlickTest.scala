@@ -6,8 +6,9 @@ import java.time.Instant
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.config.FlywayConfig
 import com.yimei.cflow.api.models.database.FlowDBModel._
-import com.yimei.cflow.core.db.FlowInstanceTable
-import com.yimei.cflow.util.DBUtils._
+import com.yimei.cflow.api.util.DBUtils
+import com.yimei.cflow.engine.db.FlowInstanceTable
+import DBUtils._
 
 /**
   * Created by wangqi on 16/12/16.

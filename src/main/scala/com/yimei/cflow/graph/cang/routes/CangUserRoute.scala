@@ -8,7 +8,8 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.api.http.models.ResultModel.{Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.UserModel._
-import com.yimei.cflow.util.DBUtils._
+import com.yimei.cflow.api.util.DBUtils
+import DBUtils._
 
 import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._

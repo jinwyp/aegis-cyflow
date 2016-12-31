@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.models.flow.{Arrow, _}
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.engine.auto.AutoMaster.CommandAutoTask
 
 import scala.concurrent.Future
 

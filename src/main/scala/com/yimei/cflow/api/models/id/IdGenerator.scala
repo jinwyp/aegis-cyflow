@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.models.id
 
 import akka.actor.{Actor, ActorLogging, Props}
-import com.yimei.cflow.core.{MemoryIdGenerator, PersistentIdGenerator}
+import com.yimei.cflow.engine.id.MemoryIdGenerator
 import spray.json.DefaultJsonProtocol
 
 // Command

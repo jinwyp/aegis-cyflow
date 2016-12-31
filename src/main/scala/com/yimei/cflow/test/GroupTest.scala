@@ -3,7 +3,7 @@ package com.yimei.cflow.test
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.DaemonMaster
+import com.yimei.cflow.engine.DaemonMaster
 import com.yimei.cflow.graph.ying.YingConfig._
 
 /**

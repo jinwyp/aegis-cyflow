@@ -4,9 +4,11 @@ import akka.actor.Props
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{DaemonMaster, GraphLoader}
+import com.yimei.cflow.engine.DaemonMaster
+import com.yimei.cflow.engine.graph.GraphLoader
 import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
+
 import scala.sys.process._
 
 /**
