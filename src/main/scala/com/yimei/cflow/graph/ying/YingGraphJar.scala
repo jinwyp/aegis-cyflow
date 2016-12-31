@@ -1,8 +1,8 @@
 package com.yimei.cflow.graph.ying
 
 import com.yimei.cflow.api.annotation.Description
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.graph.ying.YingConfig._
 
 import scala.concurrent.Future

@@ -1,7 +1,7 @@
 package com.yimei.cflow.graph.cang
 
 import com.yimei.cflow.api.models.flow.{Edge, Graph, State, TaskInfo}
-import com.yimei.cflow.core.FlowGraph
+import com.yimei.cflow.engine.graph.FlowGraph
 import com.yimei.cflow.graph.cang.CangConfig._
 
 /**

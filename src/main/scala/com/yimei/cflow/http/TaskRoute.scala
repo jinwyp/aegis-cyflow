@@ -15,12 +15,12 @@ import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.api.models.group.{State => GroupState}
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.core.db.{FlowInstanceTable, FlowTaskTable}
+import com.yimei.cflow.engine.db.{FlowInstanceTable, FlowTaskTable}
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.organ.db._
-import com.yimei.cflow.util.DBUtils.dbrun
 import spray.json._
 
 import scala.concurrent.Future
@@ -46,6 +46,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     *用户当前任务
+    *
     * @return
     */
   def getUTask = get {
@@ -79,6 +80,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     *用户历史任务
+    *
     * @return
     */
   def getUTaskHistory = get{
@@ -122,6 +124,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     * 用户提交任务
+    *
     * @return
     */
   def putTask = put {
@@ -176,6 +179,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     * 用户提交任务
+    *
     * @return
     */
   def putMapTask = put {
@@ -292,6 +296,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     * 用户claim任务
+    *
     * @return
     */
   def claimTask = put {
@@ -336,6 +341,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
   /**
     * 发起自动任务
+    *
     * @return
     */
   def autoTask = post {

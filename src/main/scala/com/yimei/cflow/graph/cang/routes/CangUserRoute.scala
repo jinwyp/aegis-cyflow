@@ -8,7 +8,8 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.api.http.models.ResultModel.{Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.UserModel._
-import com.yimei.cflow.util.DBUtils._
+import com.yimei.cflow.api.util.DBUtils
+import DBUtils._
 
 import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
@@ -91,8 +92,16 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  def adminGetUserListRoute: Route = get {
+    pathPrefix("gul" / Segment / Segment) { (party, instance_id) =>
+      (parameter('limit.as[Int]) & parameter('offset.as[Int])) { (limit, offset) =>
+        complete(adminGetUserList(party, instance_id, limit, offset))
+      }
+    }
+  }
+
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute
 }
 
 object CangUserRoute {

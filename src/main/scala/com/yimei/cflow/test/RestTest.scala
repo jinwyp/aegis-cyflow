@@ -5,11 +5,11 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.config.FlywayConfig
-import com.yimei.cflow.http.{GroupRoute, InstRoute, PartyRoute}
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import com.yimei.cflow.organ.routes.{GroupRoute, InstRoute, PartyRoute}
 
 /**
   * Created by xl on 16/12/20.

@@ -6,10 +6,10 @@ import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, Com
 import com.yimei.cflow.api.models.group.{Command => GroupCommand, State => GroupState, _}
 import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, Command => IdGeneratorCommand, State => IdGeneratorState}
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, Command => UserCommand, State => UserState}
-import com.yimei.cflow.auto.AutoMaster
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.engine.auto.AutoMaster
 
 import scala.concurrent.Future
 
@@ -114,7 +114,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 数据模块交互
-    case cmd: AutoMaster.CommandAutoTask =>
+    case cmd: CommandAutoTask =>
       log.debug(s"收到 ${cmd}")
       modules.get(module_auto).foreach(_ forward cmd)
 

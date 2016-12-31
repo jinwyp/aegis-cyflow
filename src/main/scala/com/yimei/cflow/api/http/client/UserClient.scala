@@ -1,6 +1,6 @@
 package com.yimei.cflow.api.http.client
 
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserModelProtocol}
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
@@ -64,6 +64,18 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       bodyEntity = Some(userInfo)
     ) map { result =>
       result.parseJson.convertTo[MySession]
+    }
+  }
+
+  def getUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[UserListEntity] = {
+    //访问com.yimei.cflow.http.UserRoute中的getUserList接口
+    sendRequest(
+      path = "api/user",
+      paramters = Map("limit" -> limit.toString, "offset" -> offset.toString),
+      pathVariables = Array(party, instance_id),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[UserListEntity]
     }
   }
 }

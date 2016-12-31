@@ -2,7 +2,7 @@ package com.yimei.cflow.api.models.graph
 
 import com.yimei.cflow.api.annotation._
 import com.yimei.cflow.api.models.flow.{Arrow, State}
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 
 import scala.concurrent.Future
 
