@@ -26,3 +26,7 @@ object UserOrganizationDBModel {
   case class PartyUserEntity(id:Option[Long], party_id:Long, user_id:String, password:String, phone:Option[String], email:Option[String], name:String, username:String, ts_c:Timestamp)
   case class UserGroupEntity(id: Option[Long], party_id: Long, gid: String, user_id: String, ts_c: Timestamp)
 }
+
+object AssetDBModel {
+  case class AssetEntity()
+}

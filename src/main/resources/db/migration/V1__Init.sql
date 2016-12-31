@@ -120,5 +120,16 @@ create table party_group(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- 文件资源管理
+create table asset(
+  id BIGINT not null auto_increment,
+  asset_id varchar(36) not null,
+  description varchar(512),
+  position varchar(256) not null,
+  ts_c timestamp default current_timestamp,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE UNIQUE INDEX asset_index ON asset(asset_id);
+
 
 

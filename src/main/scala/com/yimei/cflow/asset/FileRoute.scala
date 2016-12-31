@@ -1,7 +1,6 @@
-package com.yimei.cflow.http
+package com.yimei.cflow.asset
 
-import java.io.{BufferedOutputStream, FileOutputStream}
-import java.net.{HttpURLConnection, URL}
+import java.io.FileOutputStream
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
