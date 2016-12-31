@@ -78,6 +78,11 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
             entity(as[TraderRecommendAmount]) { recommend =>
               complete(submitA16(party_class, user_id, instance_id,action,recommend))
             }
+          //资金方审核
+          case `a17fundProviderAudit`   =>
+            entity(as[FundProviderAudit]) { fundAudit =>
+              complete(submitA17(party_class, user_id, instance_id,action,fundAudit))
+            }
           case _ => throw BusinessException("不支持的任务类型")
         }
       }

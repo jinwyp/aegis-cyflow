@@ -166,8 +166,8 @@ object CangFlowValidator {
       fundProviderAudit =>
         fundProviderAudit.taskId as "任务id" is notEmpty
         fundProviderAudit.taskId.length as "任务id字段" max(10)
-        fundProviderAudit.statusId as "审核状态id" min(0)
-        fundProviderAudit.statusId as "审核状态id" max(0)
+        fundProviderAudit.status as "审核状态id" min(0)
+        fundProviderAudit.status as "审核状态id" max(0)
     }
 
   /** 资金方财务放款 **/

@@ -77,15 +77,22 @@ res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/can
 echo $res
 
 #11>贸易商给出放款建议金额
-res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
+res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/88888)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"recommendAmount":1024.1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a16traderRecommendAmount/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a16traderRecommendAmount/88888/trader/88888888 -d "$k")
 echo $res
 
+#12>资金方审核
+res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/1/zj1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
 
+k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
+echo $res
 
 
 

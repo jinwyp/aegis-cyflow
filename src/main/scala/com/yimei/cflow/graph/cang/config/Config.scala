@@ -51,12 +51,14 @@ trait Config {
   val financingStep13 = "financingStep13"
   val financingStep14 = "financingStep14"
   val financingStep15 = "financingStep15"
+  val financingStep16 = "financingStep16"
 
   //edge
   val E1 = "E1"
   val E2 = "E2"
   val E3 = "E3"
   val E4 = "E4"
+  val E5 = "E5"
 
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
@@ -65,6 +67,7 @@ trait Config {
   val a14FinishedUpload = "a14FinishedUpload"
   val a15traderAudit    = "a15traderAudit"
   val a16traderRecommendAmount = "a16traderRecommendAmount"
+  val a17fundProviderAudit = "a17fundProviderAudit"
 
   //points
   val startPoint = "startPoint"
@@ -85,4 +88,6 @@ trait Config {
   val fundProviderInterestRate = "fundProviderInterestRate"
 
   val recommendAmount = "recommendAmount"
+
+  val fundProviderAuditResult = "fundProviderAuditResult"
 }

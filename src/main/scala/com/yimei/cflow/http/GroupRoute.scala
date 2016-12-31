@@ -2,9 +2,7 @@ package com.yimei.cflow.http
 
 import java.sql.Timestamp
 import java.time.Instant
-import javax.ws.rs.Path
 
-import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -12,16 +10,21 @@ import akka.util.Timeout
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.group.GroupProtocol
 import com.yimei.cflow.api.models.user.UserProtocol
-import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
+import com.yimei.cflow.organ.db._
 import com.yimei.cflow.util.DBUtils._
-import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
+import spray.json.DefaultJsonProtocol
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-import com.yimei.cflow.organ.db._
 
-class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable with SprayJsonSupport with GroupProtocol{
+class GroupRoute extends UserProtocol
+  with DefaultJsonProtocol
+  with PartyGroupTable
+  with UserGroupTable
+  with PartyInstanceTable
+  with SprayJsonSupport
+  with GroupProtocol{
 
   import driver.api._
 
@@ -89,6 +92,29 @@ class GroupRoute extends UserProtocol with PartyGroupTable with UserGroupTable w
       complete(entity)
     }
   }
+
+  /**
+    * 判断该用户是否在改群组中
+    * @return
+    */
+  def userInGroup = get {
+    pathPrefix("ugroup"/Segment/Segment/Segment/Segment){ (party_class,instant_id,user_id,gid) =>
+      val exist: Future[Seq[UserGroupEntity]] = dbrun((for{
+        (pi,ug) <- partyInstance.filter(p=>
+          p.party_class === party_class &&
+          p.instance_id === instant_id
+        ) join userGroup.filter( u=>
+          u.user_id === user_id &&
+          u.gid     === gid
+        ) on(_.id === _.party_id)
+      } yield {
+        ug
+      }).result)
+      complete(exist)
+    }
+  }
+
+
 
   def route: Route = getGroupParty ~ createGroupParty ~ deleteGroupParty ~ updateGroupParty ~ getUserByGroupAndParty ~ createUserGroup
 }

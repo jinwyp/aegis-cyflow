@@ -24,6 +24,15 @@ object FlowService extends UserModelProtocol
   }
 
 
+//  def validateUserGroupRelation(party_class:String,user_id:String,instant_id:String,gid:String) = {
+//    val company = request[String,Seq[PartyInstanceEntity]](path="api/inst", pathVariables = Array(party_class,instant_id)) map { t=>
+//      t.length match {
+//        case 1 => t(0)
+//        case _ => throw new BusinessException(s"$party_class 类型,CompanyId: $instant_id 有多个方公司")
+//      }
+//  }
+
+
   /**
     * 贸易方完成选择港口,监管方和资金
     * @param party_class
@@ -33,8 +42,8 @@ object FlowService extends UserModelProtocol
     * @return
     */
   def submitA11(party_class:String,user_id:String,instant_id:String,tass:TraffickerAssignUsers) = {
-    party_class match {
-      case `myf` =>
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfUserId`  =>
         val gkUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(gkf,tass.harborCompanyId,tass.harborUserId))
         val jgUser = request[String,QueryUserResult](path="api/user", pathVariables = Array(jgf,tass.supervisorCompanyId,tass.supervisorUserId))
 
@@ -148,8 +157,8 @@ object FlowService extends UserModelProtocol
     * @return
     */
   def submitA15(party_class:String,user_id:String,instant_id:String,taskName:String,audit:TraderAudit) = {
-    party_class match {
-      case `myf` =>
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfUserId` =>
         val op = genGuId(party_class,instant_id,user_id)
         val points = Map(
           traderAuditResult -> audit.status.wrap(operator = Some(op)),
@@ -163,7 +172,7 @@ object FlowService extends UserModelProtocol
 
 
   /**
-    * 贸易方给出建议金额
+    * 贸易方财务给出建议金额
     * @param party_class
     * @param user_id
     * @param instant_id
@@ -172,8 +181,8 @@ object FlowService extends UserModelProtocol
     * @return
     */
   def submitA16(party_class:String,user_id:String,instant_id:String,taskName:String,recommend:TraderRecommendAmount) = {
-    party_class match {
-      case `myf` =>
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfFinanceId` =>
         val op = genGuId(party_class,instant_id,user_id)
         val points = Map(
           recommendAmount -> recommend.recommendAmount.wrap(operator = Some(op))
@@ -184,7 +193,27 @@ object FlowService extends UserModelProtocol
     }
   }
 
-
+  /**
+    * 资金方审核
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param fundAudit
+    * @return
+    */
+  def submitA17(party_class:String,user_id:String,instant_id:String,taskName:String,fundAudit:FundProviderAudit) = {
+    party_class match {
+      case `zjf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          fundProviderAuditResult -> fundAudit.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(fundAudit.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,fundAudit.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
 
 

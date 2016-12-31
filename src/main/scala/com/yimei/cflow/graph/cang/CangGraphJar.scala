@@ -3,8 +3,6 @@ package com.yimei.cflow.graph.cang
 import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel._
-import spray.json._
 
 /**
   * Created by wangqi on 16/12/26.
@@ -14,7 +12,10 @@ object CangGraphJar extends Config {
   val ArrowFail = Arrow("fail", None)
   val ArrowSuccess = Arrow("success", None)
 
+  //贸易方审核不通过
   val TraderDisapprove = Arrow("TraderDisapprove",None)
+  //资金方审核不通过
+  val FundProviderDisapprove = Arrow("FundProviderDisapprove",None)
 
   def financingStep11(state: State) = {
     Seq(Arrow(financingStep12,Some(E1)))
@@ -37,6 +38,14 @@ object CangGraphJar extends Config {
   }
 
   def financingStep15(state: State) = {
-    Seq(ArrowSuccess)
+    Seq(Arrow(financingStep16,Some(E5)))
+  }
+
+  def financingStep16(state: State) = {
+    state.points(fundProviderAuditResult).value match {
+      case "1" => Seq(ArrowSuccess)
+      case "0" => Seq(FundProviderDisapprove)
+      case _   => throw BusinessException("资金方审核提交数据有误")
+    }
   }
 }
