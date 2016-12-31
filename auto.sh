@@ -110,4 +110,12 @@ sleep 5
 #echo $k
 res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
 echo $res
-#curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success
+
+sleep 5
+#15>贸易方向融资方放款（自动任务）
+res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
+echo $res
+
+
+
+

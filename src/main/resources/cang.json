@@ -29,7 +29,10 @@
     "fundProviderAccountantAuditResult":"资金方财务审核结果",
 
     "fundProviderPaying":"资金方支付中",
-    "fundProviderPaySuccess":"资金方付款成功"
+    "fundProviderPaySuccess":"资金方付款成功",
+
+    "traderPaying":"贸易商付钱给融资方",
+    "traderPaySuccess":"贸易商付钱给融资方成功"
 
   },
   "vertices": {
@@ -39,11 +42,13 @@
     "financingStep14": {"description":"等待贸易商审核"},
     "financingStep15": {"description":"待贸易商财务放款建议"},
     "financingStep16": {"description":"贸易商财务放款建议审核通过,待资金方审核"},
-    "financingStep17": {"description":"资金方财务放款"},
-    "financingStep18": {"description":"贸易方给融资方放款"}
+    "financingStep17": {"description":"资金方财务同意放款"},
+    "financingStep18": {"description":"资金方给贸易方放款"},
+    "financingStep19": {"description":"贸易方给融资方放款"}
   },
   "autoTasks": {
-    "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]}
+    "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
+    "traderPayingTask":{"description": "贸易方付款给融资方",   "points": ["traderPaying","traderPaySuccess"]}
   },
   "userTasks": {
     "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] },
@@ -146,6 +151,15 @@
       "partGTasks": [],
       "partUTasks": [],
       "autoTasks": ["fundProviderPayingTask"]
+    },
+    "E8": {
+      "name": "E8",
+      "begin": "financingStep18",
+      "end": "financingStep19",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": ["traderPayingTask"]
     }
 
   }
