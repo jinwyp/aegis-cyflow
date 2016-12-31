@@ -1,8 +1,10 @@
 package com.yimei.cflow
 
-import java.io.{File, PrintWriter}
+import java.io._
+import java.util.zip.GZIPOutputStream
 
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
+import org.apache.commons.compress.utils.IOUtils
 import spray.json._
 
 import scala.io.Source
@@ -10,12 +12,6 @@ import scala.io.Source
 /**
   * Created by hary on 16/12/29.
   */
-
-//
-// todo xj
-// 生成类似于类路径下 template目录下的整个目录
-//
-//
 object GenModule extends App with GraphConfigProtocol {
 
   val classLoader = this.getClass.getClassLoader
@@ -124,15 +120,44 @@ object GenModule extends App with GraphConfigProtocol {
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
-  val allProjectContent = "" //Source.fromInputStream(classLoader.getResourceAsStream(rootDir + projectRootDir + "/.")).mkString
   file = new File(rootDir + projectRootDir + projectRootDir + ".tar.gz")
-  val pw_project = new PrintWriter(file)
-  pw_project.write(templateGraphJarScalaContent)
-  pw_project.close
 
-  //
-  //     aegis-flow-ying/sfdasdfafas   /tmp
-  //  aegis-flow-ying.tar.gz           /tmp  aegis-flow-ying.tar.gz
-  //
+  val fileList: List[File] = List(
+    new File(rootDir + projectRootDir),
+    new File(rootDir + projectRootDir + projectDir + buildProperties),
+    new File(rootDir + projectRootDir + projectDir + pluginsSbt),
+    new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir + flowJson),
+    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + configScala),
+    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
+  )
+
+  import org.apache.commons.compress.archivers.tar.{TarArchiveOutputStream, TarArchiveEntry}
+  val fos: FileOutputStream = new FileOutputStream(rootDir + projectRootDir + ".tar.gz")
+  val bos: BufferedOutputStream = new BufferedOutputStream(fos)
+  val gos: GZIPOutputStream = new GZIPOutputStream(bos)
+  val taos: TarArchiveOutputStream = new TarArchiveOutputStream(gos)
+  taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
+  taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
+  fileList.foreach(file => {
+    addFileToCompression(taos, file, ".")
+  })
+  taos.close()
+  fos.close()
+
+  def addFileToCompression(taos: TarArchiveOutputStream, file: File, dir: String) {
+    val tae: TarArchiveEntry = new TarArchiveEntry(file, dir)
+    taos.putArchiveEntry(tae)
+    if(file.isDirectory()){
+      taos.closeArchiveEntry()
+      file.listFiles().foreach(childFile =>
+        addFileToCompression(taos, childFile, dir + "/" + childFile.getName())
+      )
+    } else{
+      val fis: FileInputStream = new FileInputStream(file)
+      IOUtils.copy(fis, taos)
+      taos.flush()
+      taos.closeArchiveEntry()
+    }
+  }
 
 }
