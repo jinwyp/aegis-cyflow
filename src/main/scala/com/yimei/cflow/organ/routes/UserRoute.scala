@@ -20,7 +20,9 @@ import com.yimei.cflow.graph.cang.models.UserModel.UserLogin
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable}
 import DBUtils._
+import com.yimei.cflow.graph.cang.exception.BusinessException
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
+import slick.lifted
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -64,7 +66,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
            def insert(p:PartyInstanceEntity): Future[PartyUserEntity] = {
              dbrun(partyUser returning partyUser.map(_.id) into ((pu,id)=>pu.copy(id=id)) +=
-               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username,Timestamp.from(Instant.now))) recover {
+               PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username, 0,Timestamp.from(Instant.now))) recover {
                case e =>
                   log.error("{}",e)
                  throw new DatabaseException("添加用户错误")
@@ -121,7 +123,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         def getUser(p:PartyInstanceEntity): Future[PartyUserEntity] = {
           dbrun(partyUser.filter(u=>
             u.user_id===userId &&
-            u.party_id===p.id
+            u.party_id===p.id &&
+            u.disable === 0
           ).result.head) recover {
             case _ => throw new DatabaseException("不存在该用户")
           }
@@ -154,7 +157,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
           def getUserList(p: PartyInstanceEntity): Future[Seq[PartyUserEntity]] = {
             dbrun(partyUser.filter(u =>
-                u.party_id === p.id
+                u.party_id === p.id &&
+                u.disable === 0
             ).drop(offset).take(limit).result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
@@ -162,7 +166,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
           def getTotal(p: PartyInstanceEntity) = {
             dbrun(partyUser.filter(u =>
-              u.party_id === p.id
+              u.party_id === p.id &&
+              u.disable === 0
             ).length.result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
@@ -242,28 +247,46 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
   def getLoginUserInfo: Route = post {
     (pathPrefix("login") & entity(as[UserLogin])) { user =>
-      //待优化，使用slick的join语法  todo
-      val getPartyUsrInstance = dbrun(partyUser.filter( p =>
-        p.username === user.username &&
-        p.password === user.password).result.head)
+      val getInfo: Future[Seq[(String, String, String, String, String)]] = dbrun((for {
+        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
+      } yield (pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name)).result)
 
-      def getPartyInstance(pue: PartyUserEntity) = dbrun(partyInstance.filter( p =>
-        p.id === pue.party_id
-      ).result.head)
 
-      complete(for {
-        pu <- getPartyUsrInstance
-        pi <- getPartyInstance(pu)
-      } yield MySession(pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name))
+      def getResult(info: Seq[(String, String, String, String, String)]): MySession = {
+        if(info.length == 0) {
+          throw BusinessException("登录信息有误！")
+        } else {
+          MySession(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5)
+        }
+      }
 
-//      val getInfo = for {
-//        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password)
-//      } yield (pu.user_id, pu.username, pi.party_class, pi.instance_id, pi.party_name)
-//
-//      complete(db.run(getInfo))
+      val result = for {
+        info <- getInfo
+      } yield getResult(info)
+
+      complete(result)
     }
   }
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo
+
+  def disAbleUser: Route = get {
+    pathPrefix("disable" / Segment) { userId =>
+      val pu = partyUser.filter(u =>
+        u.user_id === userId &&
+        u.disable === 0
+      ).map(t => (t.disable)).update(1)
+
+      complete(dbrun(pu) map { i =>
+        i match {
+          case 1 => "success"
+          case _ => "fail"
+        }
+      } recover {
+        case _ => "fail"
+      })
+    }
+  }
+
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser
 }
 
 

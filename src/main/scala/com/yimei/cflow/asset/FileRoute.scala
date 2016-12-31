@@ -1,7 +1,6 @@
-package com.yimei.cflow.http
+package com.yimei.cflow.asset
 
-import java.io.{BufferedOutputStream, FileOutputStream}
-import java.net.{HttpURLConnection, URL}
+import java.io.FileOutputStream
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -35,10 +34,15 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
   }
 
 
+  /**
+    *
+    * @return
+    */
   def uploadFile: Route = post {
     pathPrefix("file" / "upload") {
       pathEnd {
         entity(as[Multipart.FormData]) { fileData =>
+          // 多个文件
           val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
             case file:
               BodyPart if file.name == "file" =>
@@ -49,6 +53,8 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
             case data: BodyPart => data.toStrict(2.seconds)
               .map(strict => data.name -> strict.entity.data.utf8String)
           }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
+
+
           complete {
             result.map { data => {
               val url = data.get("url").get

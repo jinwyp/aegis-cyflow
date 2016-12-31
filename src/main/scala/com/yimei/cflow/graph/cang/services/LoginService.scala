@@ -194,4 +194,21 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       list <- getUserList(party, instance_id, limit, offset)
     } yield Result(data = Some(list), success = true)
   }
+
+  //管理员禁用用户
+  def adminDisableUser(userId: String): Future[Result[String]] = {
+    log.info(s"get into method adminDisableUser, userId:${userId}")
+
+    def getResult(result: String): Result[String] = {
+      if(result == "success"){
+        Result(data = Some(result), success = true, error = null, meta = null)
+      }else {
+        Result(data = None, success = false, meta = null)
+      }
+    }
+
+    for {
+      re <- disableUser(userId)
+    } yield getResult(re)
+  }
 }
