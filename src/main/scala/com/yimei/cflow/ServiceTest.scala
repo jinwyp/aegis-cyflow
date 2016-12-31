@@ -8,7 +8,7 @@ import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.graph.GraphLoader
-import com.yimei.cflow.engine.routes.{EditorRoute, ResourceRoute}
+import com.yimei.cflow.engine.routes.EditorRoute
 import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute, SessionDemoRoute}
 import com.yimei.cflow.http._
