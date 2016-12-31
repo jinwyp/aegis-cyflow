@@ -87,6 +87,7 @@ create table party_user(
   phone varchar(32),
   email varchar(128),
   name varchar(128) not null,   -- todo 王琦:   这里是登录名?  需要让这个字段作唯一索引
+  disable tinyint not null DEFAULT 0,    -- 是否被禁用  0: 未禁用,  1: 禁用
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
