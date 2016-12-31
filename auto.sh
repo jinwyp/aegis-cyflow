@@ -94,6 +94,13 @@ k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
 echo $res
 
+#13>资金方财务审核
+res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/1/zj2id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
 
+k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/1 -d "$k")
+echo $res
 
 

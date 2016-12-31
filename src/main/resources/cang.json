@@ -24,7 +24,9 @@
 
     "recommendAmount":"贸易商给出的放款金额",
 
-    "fundProviderAuditResult":"资金方审核结果"
+    "fundProviderAuditResult":"资金方审核结果",
+
+    "fundProviderAccountantAuditResult":"资金方财务审核结果"
 
   },
   "vertices": {
@@ -33,7 +35,8 @@
     "financingStep13": {"description":"等待融资方,港口和监管方上传合同及单"},
     "financingStep14": {"description":"等待贸易商审核"},
     "financingStep15": {"description":"待贸易商财务放款建议"},
-    "financingStep16": {"description":"贸易商财务放款建议审核通过,待资金方审核"}
+    "financingStep16": {"description":"贸易商财务放款建议审核通过,待资金方审核"},
+    "financingStep17": {"description":"资金方财务放款"}
   },
   "autoTasks": {
   },
@@ -48,7 +51,9 @@
 
     "a16traderRecommendAmount"     : {"description": "贸易方审核", "points": ["recommendAmount"]},
 
-    "a17fundProviderAudit"         : {"description": "资金方审核", "points": ["fundProviderAuditResult"]}
+    "a17fundProviderAudit"         : {"description": "资金方审核", "points": ["fundProviderAuditResult"]},
+
+    "a18fundProviderAccountantAudit":{"description":"资金方财务审核", "points":["fundProviderAccountantAuditResult"]}
 
   },
   "edges": {
@@ -113,6 +118,18 @@
       "partUTasks": [{
         "guidKey": "fundProviderUserId",
         "tasks": ["a17fundProviderAudit"]
+      }],
+      "autoTasks": []
+    },
+    "E6": {
+      "name": "E6",
+      "begin": "financingStep16",
+      "end": "financingStep17",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "fundProviderAccountantUserId",
+        "tasks": ["a18fundProviderAccountantAudit"]
       }],
       "autoTasks": []
     }

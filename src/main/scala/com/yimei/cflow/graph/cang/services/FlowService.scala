@@ -205,15 +205,70 @@ object FlowService extends UserModelProtocol
   def submitA17(party_class:String,user_id:String,instant_id:String,taskName:String,fundAudit:FundProviderAudit) = {
     party_class match {
       case `zjf` =>
-        val op = genGuId(party_class,instant_id,user_id)
-        val points = Map(
-          fundProviderAuditResult -> fundAudit.status.wrap(operator = Some(op))
-        )
-        val userSubmit = UserSubmitEntity(fundAudit.flowId,taskName,points)
-        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,fundAudit.taskId),model = Some(userSubmit),method = "put")
+        val valid: Future[UserGroupEntity] = request[String,Seq[UserGroupEntity]](path="api/validateugroup",pathVariables = Array(party_class,instant_id,user_id,fundGid)) map { t =>
+          t.length match {
+            case 1 => t(0)
+            case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 公司： $instant_id 有误")
+          }
+        }
+
+        def submit(v:UserGroupEntity): Future[UserState] = {
+          //这里仅仅为了控制执行顺序。
+          val op = genGuId(party_class,instant_id,v.user_id)
+          val points = Map(
+            fundProviderAuditResult -> fundAudit.status.wrap(operator = Some(op))
+          )
+          val userSubmit = UserSubmitEntity(fundAudit.flowId,taskName,points)
+          request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,fundAudit.taskId),model = Some(userSubmit),method = "put")
+        }
+        for{
+          v <- valid
+          r <- submit(v)
+        } yield r
+
       case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
+
+
+  /**
+    * 资金方财务审核
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param fundAudit
+    * @return
+    */
+  def submitA18(party_class:String,user_id:String,instant_id:String,taskName:String,fundAudit:FundProviderAccountantAudit) = {
+    party_class match {
+      case `zjf` =>
+        val valid: Future[UserGroupEntity] = request[String,Seq[UserGroupEntity]](path="api/validateugroup",pathVariables = Array(party_class,instant_id,user_id,fundFinanceGid)) map { t =>
+          t.length match {
+            case 1 => t(0)
+            case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 公司： $instant_id 有误")
+          }
+        }
+
+        def submit(v:UserGroupEntity): Future[UserState] = {
+          //这里仅仅为了控制执行顺序。
+          val op = genGuId(party_class,instant_id,v.user_id)
+          val points = Map(
+            fundProviderAccountantAuditResult -> fundAudit.status.wrap(operator = Some(op))
+          )
+          val userSubmit = UserSubmitEntity(fundAudit.flowId,taskName,points)
+          request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,fundAudit.taskId),model = Some(userSubmit),method = "put")
+        }
+        for{
+          v <- valid
+          r <- submit(v)
+        } yield r
+
+      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
+
+
 
 
 
