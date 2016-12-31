@@ -123,9 +123,9 @@ create table party_group(
 create table asset(
   id BIGINT not null auto_increment,
   asset_id varchar(36) not null,
-  type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf,  2: image
+  file_type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf,  2: image
   description varchar(512),           -- 可以为空
-  position varchar(256) not null,
+  uri varchar(256) not null,
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
