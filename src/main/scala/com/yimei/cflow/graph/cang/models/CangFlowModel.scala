@@ -155,7 +155,9 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   implicit val portReleaseGoodsFormat = jsonFormat3(PortReleaseGoods)
 
   /** 贸易商审核是否已经回款完成 **/
-  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int, createTime: Option[Timestamp])
+  case class TraffickerAuditIfCompletePayment(taskId: String,
+                                              flowId: String,
+                                              status: Int)
   implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat3(TraffickerAuditIfCompletePayment)
 
   /** 贸易商同意付款给资金方 **/

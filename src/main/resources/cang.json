@@ -41,7 +41,9 @@
 
     "traderNoticeHarborRelease":"贸易方通知港口放货",
 
-    "harborReleaseGoods":"港口确认放货"
+    "harborReleaseGoods":"港口确认放货",
+
+    "TraderAuditIfCompletePayment":"贸易商确认是否收款完成"
 
 
 
@@ -59,7 +61,8 @@
     "repaymentStep20": {"description":"融资方确认回款"},
     "repaymentStep21": {"description":"融资方给贸易商回款"},
     "repaymentStep22": {"description":"贸易方通知港口放货"},
-    "repaymentStep23": {"description":"港口确认放货"}
+    "repaymentStep23": {"description":"港口确认放货"},
+    "repaymentStep24": {"description":"贸易商确认收款完成"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
@@ -85,7 +88,9 @@
 
     "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]},
 
-    "a21harborRelease"           :{"description":"港口确认放货","points":["harborReleaseGoods"]}
+    "a21harborRelease"           :{"description":"港口确认放货","points":["harborReleaseGoods"]},
+
+    "a22traderAuditIfComplete"  :{"description":"贸易商确认付款是否完成","points":["TraderAuditIfCompletePayment"]}
 
   },
   "edges": {
@@ -223,6 +228,27 @@
         "guidKey": "harborUserId",
         "tasks": ["a21harborRelease"]
       }],
+      "autoTasks": []
+    },
+    "E13": {
+      "name": "E13",
+      "begin": "repaymentStep23",
+      "end": "repaymentStep24",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a22traderAuditIfComplete"]
+      }],
+      "autoTasks": []
+    },
+    "E14": {
+      "name": "E14",
+      "begin": "repaymentStep24",
+      "end": "financingStep19",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
       "autoTasks": []
     }
 
