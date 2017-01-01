@@ -43,9 +43,11 @@
 
     "harborReleaseGoods":"港口确认放货",
 
-    "TraderAuditIfCompletePayment":"贸易商确认是否收款完成"
+    "TraderAuditIfCompletePayment":"贸易商确认是否收款完成",
 
+    "TraderConfirmPayToFundProvider":"贸易商确认回款给资金方",
 
+    "TraderAccountantConfirm":"贸易商财务确认回款"
 
   },
   "vertices": {
@@ -62,7 +64,9 @@
     "repaymentStep21": {"description":"融资方给贸易商回款"},
     "repaymentStep22": {"description":"贸易方通知港口放货"},
     "repaymentStep23": {"description":"港口确认放货"},
-    "repaymentStep24": {"description":"贸易商确认收款完成"}
+    "repaymentStep24": {"description":"贸易商确认收款完成"},
+    "repaymentStep25": {"description":"贸易商确认汇款给资金方"},
+    "repaymentStep26": {"description":"贸易商财务确认汇款给资金方"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
@@ -90,8 +94,11 @@
 
     "a21harborRelease"           :{"description":"港口确认放货","points":["harborReleaseGoods"]},
 
-    "a22traderAuditIfComplete"  :{"description":"贸易商确认付款是否完成","points":["TraderAuditIfCompletePayment"]}
+    "a22traderAuditIfComplete"  :{"description":"贸易商确认付款是否完成","points":["TraderAuditIfCompletePayment"]},
 
+    "a23ReturnMoney"          :{"description":"贸易商确认回款","points":["TraderConfirmPayToFundProvider"]},
+
+    "a24AccountantReturnMoney":{"description":"贸易商财务确认回款","points":["TraderAccountantConfirm"]}
   },
   "edges": {
     "E1": {
@@ -249,6 +256,30 @@
       "userTasks": [],
       "partGTasks": [],
       "partUTasks": [],
+      "autoTasks": []
+    },
+    "E15": {
+      "name": "E15",
+      "begin": "repaymentStep24",
+      "end": "repaymentStep25",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a23ReturnMoney"]
+      }],
+      "autoTasks": []
+    },
+    "E16": {
+      "name": "E16",
+      "begin": "repaymentStep25",
+      "end": "repaymentStep26",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderAccountantUserId",
+        "tasks": ["a24AccountantReturnMoney"]
+      }],
       "autoTasks": []
     }
 

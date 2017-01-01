@@ -91,12 +91,19 @@ object CangGraphJar extends Config {
 
   def repaymentStep24(state: State): Seq[Arrow] = {
     state.points(TraderAuditIfCompletePayment).value match {
-      case "1" => Seq(ArrowSuccess)
+      case "1" => Seq(Arrow(repaymentStep25,Some(E15)))
       case "0" => Seq(Arrow(financingStep19,Some(E14)))
       case _   => throw BusinessException("贸易方确认回款完成信息有误")
     }
   }
 
+  def repaymentStep25(state: State) = {
+    Seq(Arrow(repaymentStep26,Some(E16)))
+  }
+
+  def repaymentStep26(state: State) = {
+    Seq(ArrowSuccess)
+  }
 
   //自动任务-------------------------
   //资金方自动付款

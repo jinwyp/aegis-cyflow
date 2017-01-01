@@ -219,8 +219,8 @@ object CangFlowValidator {
       traffickerAuditIfCompletePayment =>
         traffickerAuditIfCompletePayment.taskId as "任务id" is notEmpty
         traffickerAuditIfCompletePayment.taskId.length as "任务id字段" max(10)
-        traffickerAuditIfCompletePayment.statusId as "审核状态id" min(0)
-        traffickerAuditIfCompletePayment.statusId as "审核状态id" max(1)
+        traffickerAuditIfCompletePayment.status as "审核状态id" min(0)
+        traffickerAuditIfCompletePayment.status as "审核状态id" max(1)
     }
 
   /** 贸易商同意付款给资金方 **/
@@ -229,8 +229,8 @@ object CangFlowValidator {
       traffickerConfirmPayToFundProvider =>
         traffickerConfirmPayToFundProvider.taskId as "任务id" is notEmpty
         traffickerConfirmPayToFundProvider.taskId.length as "任务id字段" max(10)
-        traffickerConfirmPayToFundProvider.statusId as "审核状态id" min(0)
-        traffickerConfirmPayToFundProvider.statusId as "审核状态id" max(1)
+        traffickerConfirmPayToFundProvider.status as "审核状态id" min(0)
+        traffickerConfirmPayToFundProvider.status as "审核状态id" max(1)
     }
 
   /** 贸易商财务放款给资金方,流程结束 **/
@@ -239,8 +239,8 @@ object CangFlowValidator {
       traffickerFinancePayToFundProvider =>
         traffickerFinancePayToFundProvider.taskId as "任务id" is notEmpty
         traffickerFinancePayToFundProvider.taskId.length as "任务id字段" max(10)
-        traffickerFinancePayToFundProvider.statusId as "付款状态id" min(0)
-        traffickerFinancePayToFundProvider.statusId as "付款状态id" max(1)
+        traffickerFinancePayToFundProvider.status as "付款状态id" min(0)
+        traffickerFinancePayToFundProvider.status as "付款状态id" max(1)
     }
 
 }
