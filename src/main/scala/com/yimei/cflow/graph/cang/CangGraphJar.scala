@@ -70,9 +70,12 @@ object CangGraphJar extends Config {
   }
 
   def financingStep19(state: State) = {
-    Seq(ArrowSuccess)
+    Seq(Arrow(repaymentStep20,Some(E9)))
   }
 
+  def repaymentStep20(state: State) = {
+    Seq(ArrowSuccess)
+  }
 
 
   //自动任务-------------------------

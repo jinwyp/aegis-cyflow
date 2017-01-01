@@ -116,6 +116,14 @@ sleep 5
 res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
 echo $res
 
+#16>融资方确认回款
+res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
+
+k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentAmount":1024.1024}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
+echo $res
 
 
 

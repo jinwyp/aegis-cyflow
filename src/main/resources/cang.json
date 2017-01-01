@@ -32,7 +32,9 @@
     "fundProviderPaySuccess":"资金方付款成功",
 
     "traderPaying":"贸易商付钱给融资方",
-    "traderPaySuccess":"贸易商付钱给融资方成功"
+    "traderPaySuccess":"贸易商付钱给融资方成功",
+
+    "repaymentAmount":"融资方还款金额"
 
   },
   "vertices": {
@@ -44,7 +46,8 @@
     "financingStep16": {"description":"贸易商财务放款建议审核通过,待资金方审核"},
     "financingStep17": {"description":"资金方财务同意放款"},
     "financingStep18": {"description":"资金方给贸易方放款"},
-    "financingStep19": {"description":"贸易方给融资方放款"}
+    "financingStep19": {"description":"贸易方给融资方放款"},
+    "repaymentStep20": {"description":"融资方确认回款"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
@@ -63,7 +66,9 @@
 
     "a17fundProviderAudit"         : {"description": "资金方审核", "points": ["fundProviderAuditResult"]},
 
-    "a18fundProviderAccountantAudit":{"description":"资金方财务审核", "points":["fundProviderAccountantAuditResult"]}
+    "a18fundProviderAccountantAudit":{"description":"资金方财务审核", "points":["fundProviderAccountantAuditResult"]},
+
+    "a19SecondReturnMoney"        : {"description":"融资方确认还款","points":["repaymentAmount"]}
 
   },
   "edges": {
@@ -160,6 +165,15 @@
       "partGTasks": [],
       "partUTasks": [],
       "autoTasks": ["traderPayingTask"]
+    },
+    "E9": {
+      "name": "E9",
+      "begin": "financingStep19",
+      "end": "repaymentStep20",
+      "userTasks": ["a19SecondReturnMoney"],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": []
     }
 
   }

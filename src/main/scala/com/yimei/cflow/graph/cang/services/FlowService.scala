@@ -8,7 +8,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{TraderRecommendAmount, _}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{FinancerToTrader, TraderRecommendAmount, _}
 
 import scala.concurrent.Future
 /**
@@ -51,7 +51,7 @@ object FlowService extends UserModelProtocol
           request[String,Seq[PartyInstanceEntity]](path="api/inst", pathVariables = Array(zjf,tass.fundProviderCompanyId)) map { t=>
             t.length match {
               case 1 => t(0)
-              case _ => throw new BusinessException("CompanyId:"+tass.fundProviderCompanyId+" 有多个资金方公司")
+              case _ => throw BusinessException("CompanyId:"+tass.fundProviderCompanyId+" 有多个资金方公司")
             }
 
           }
@@ -62,7 +62,7 @@ object FlowService extends UserModelProtocol
           request[String,Seq[UserGroupEntity]](path="api/ugroup", pathVariables = Array(party_id,gid)) map { result =>
               result.length match {
                 case 1 => result(0)
-                case _ => throw new BusinessException("资金方分组错误")
+                case _ => throw BusinessException("资金方分组错误")
               }
           }
         }
@@ -93,7 +93,7 @@ object FlowService extends UserModelProtocol
         } yield {
           r
         }
-      case _     => throw new BusinessException("该用户:"+genGuId(party_class,instant_id,user_id)+"没有提交"+a11SelectHarborAndSupervisor+"任务的权限")
+      case _     => throw BusinessException("该用户:"+genGuId(party_class,instant_id,user_id)+"没有提交"+a11SelectHarborAndSupervisor+"任务的权限")
     }
   }
 
@@ -143,7 +143,7 @@ object FlowService extends UserModelProtocol
         )
         val userSubmit = UserSubmitEntity(harborUpload.flowId,taskName,points)
         request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,harborUpload.taskId),model = Some(userSubmit),method = "put")
-      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
 
@@ -166,7 +166,7 @@ object FlowService extends UserModelProtocol
         )
         val userSubmit = UserSubmitEntity(audit.flowId,taskName,points)
         request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,audit.taskId),model = Some(userSubmit),method = "put")
-      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
 
@@ -189,7 +189,7 @@ object FlowService extends UserModelProtocol
         )
         val userSubmit = UserSubmitEntity(recommend.flowId,taskName,points)
         request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,recommend.taskId),model = Some(userSubmit),method = "put")
-      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+      case  _    => throw  BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
 
@@ -264,7 +264,30 @@ object FlowService extends UserModelProtocol
           r <- submit(v)
         } yield r
 
-      case  _    => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
+
+
+  /**
+    * 融资方确认回款
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param ft
+    * @return
+    */
+  def submitA19(party_class:String,user_id:String,instant_id:String,taskName:String,ft:FinancerToTrader) = {
+    party_class match {
+      case `rzf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          repaymentAmount -> ft.repaymentAmount.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(ft.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,ft.taskId),model = Some(userSubmit),method = "put")
+      case _     => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
 
