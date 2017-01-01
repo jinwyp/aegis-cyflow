@@ -56,6 +56,8 @@ trait Config {
   val financingStep18 = "financingStep18"
   val financingStep19 = "financingStep19"
   val repaymentStep20 = "repaymentStep20"
+  val repaymentStep21 = "repaymentStep21"
+  val repaymentStep22 = "repaymentStep22"
 
   //edge
   val E1 = "E1"
@@ -67,6 +69,8 @@ trait Config {
   val E7 = "E7"
   val E8 = "E8"
   val E9 = "E9"
+  val E10 = "E10"
+  val E11 = "E11"
 
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
@@ -80,6 +84,8 @@ trait Config {
   val fundProviderPayingTask = "fundProviderPayingTask" //auto task
   val traderPayingTask = "traderPayingTask"              //auto task
   val a19SecondReturnMoney = "a19SecondReturnMoney"
+  val financerPayingTask = "financerPayingTask"
+  val a20noticeHarborRelease = "a20noticeHarborRelease"
 
   //points
   val startPoint = "startPoint"
@@ -112,4 +118,9 @@ trait Config {
   val traderPaySuccess = "traderPaySuccess"
 
   val repaymentAmount = "repaymentAmount"
+
+  val financerPaying = "financerPaying"
+  val financerPaySuccess = "financerPaySuccess"
+
+  val traderNoticeHarborRelease = "traderNoticeHarborRelease"
 }

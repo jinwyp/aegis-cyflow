@@ -31,10 +31,15 @@
     "fundProviderPaying":"资金方支付中",
     "fundProviderPaySuccess":"资金方付款成功",
 
-    "traderPaying":"贸易商付钱给融资方",
+    "traderPaying":"贸易商付钱给融资方中",
     "traderPaySuccess":"贸易商付钱给融资方成功",
 
-    "repaymentAmount":"融资方还款金额"
+    "repaymentAmount":"融资方还款金额",
+
+    "financerPaying":"融资方回款中",
+    "financerPaySuccess":"融资方回款成功",
+
+    "traderNoticeHarborRelease":"贸易方通知港口放货"
 
   },
   "vertices": {
@@ -47,11 +52,14 @@
     "financingStep17": {"description":"资金方财务同意放款"},
     "financingStep18": {"description":"资金方给贸易方放款"},
     "financingStep19": {"description":"贸易方给融资方放款"},
-    "repaymentStep20": {"description":"融资方确认回款"}
+    "repaymentStep20": {"description":"融资方确认回款"},
+    "repaymentStep21": {"description":"融资方给贸易商回款"},
+    "repaymentStep22": {"description":"贸易方通知港口放货"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
-    "traderPayingTask":{"description": "贸易方付款给融资方",   "points": ["traderPaying","traderPaySuccess"]}
+    "traderPayingTask":{"description": "贸易方付款给融资方",   "points": ["traderPaying","traderPaySuccess"]},
+    "financerPayingTask":{"description":"融资方回款给贸易方", "points":["financerPaying","financerPaySuccess"]}
   },
   "userTasks": {
     "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] },
@@ -66,9 +74,11 @@
 
     "a17fundProviderAudit"         : {"description": "资金方审核", "points": ["fundProviderAuditResult"]},
 
-    "a18fundProviderAccountantAudit":{"description":"资金方财务审核", "points":["fundProviderAccountantAuditResult"]},
+    "a18fundProviderAccountantAudit":{"description":"资金方财务H审核", "points":["fundProviderAccountantAuditResult"]},
 
-    "a19SecondReturnMoney"        : {"description":"融资方确认还款","points":["repaymentAmount"]}
+    "a19SecondReturnMoney"        : {"description":"融资方确认还款","points":["repaymentAmount"]},
+
+    "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]}
 
   },
   "edges": {
@@ -173,6 +183,27 @@
       "userTasks": ["a19SecondReturnMoney"],
       "partGTasks": [],
       "partUTasks": [],
+      "autoTasks": []
+    },
+    "E10": {
+      "name": "E10",
+      "begin": "repaymentStep20",
+      "end": "repaymentStep21",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": ["financerPayingTask"]
+    },
+    "E11": {
+      "name": "E11",
+      "begin": "repaymentStep21",
+      "end": "repaymentStep22",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a20noticeHarborRelease"]
+      }],
       "autoTasks": []
     }
 
