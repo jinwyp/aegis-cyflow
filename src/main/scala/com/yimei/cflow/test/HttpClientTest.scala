@@ -59,8 +59,7 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
   val t3 = TraderAudit("123","123",1,1024.1)
   //println(t3.toJson.toString)
 
-  // case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean)
-  //val t4 = HijackEntity(updatePoints = Map(""))
-
+  val t4 = TraffickerNoticePortReleaseGoods("123","123",1024.1,"腾讯",List(fileObj1,fileObj2))
+  println(t4.toJson.toString)
 
 }

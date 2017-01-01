@@ -78,6 +78,10 @@ object CangGraphJar extends Config {
   }
 
   def repaymentStep21(state: State) = {
+    Seq(Arrow(repaymentStep22,Some(E11)))
+  }
+
+  def repaymentStep22(state: State) = {
     Seq(ArrowSuccess)
   }
 

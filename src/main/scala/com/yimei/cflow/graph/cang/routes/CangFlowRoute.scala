@@ -103,6 +103,11 @@ class CangFlowRoute extends AdminClient
             entity(as[FinancerToTrader]){ repayment =>
               complete(submitA19(party_class, user_id, instance_id,action,repayment))
             }
+          //贸易商通知港口放货
+          case `a20noticeHarborRelease` =>
+            entity(as[TraffickerNoticePortReleaseGoods]) { release =>
+              complete(submitA20(party_class, user_id, instance_id,action,release))
+            }
           case _ => throw BusinessException("不支持的任务类型")
         }
       }

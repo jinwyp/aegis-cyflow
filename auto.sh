@@ -130,3 +130,12 @@ sleep 5
 res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
 echo $res
 
+#18>贸易方通知港口放款
+res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
+
+k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}],"releaseAmount":1024.1,"goodsReceiveCompanyName":"腾讯"}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
+echo $res
+
