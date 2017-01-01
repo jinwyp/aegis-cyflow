@@ -118,7 +118,7 @@ object GraphLoader extends GraphConfigProtocol {
           FlowRegistry.register(flowType, loadGraph(flowType, classLoader))
         } catch {
           case e: Throwable =>
-            println("!!!!!!!"+e.getMessage)
+            println(flowType+"!!!!!!!"+e.getMessage)
 
             false
         }

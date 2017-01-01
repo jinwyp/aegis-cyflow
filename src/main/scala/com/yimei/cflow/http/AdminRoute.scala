@@ -116,17 +116,21 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
     * @return
     */
   def hijack = put {
-    pathPrefix("flow/admin/hijack" / Segment) { flowId =>
-      entity(as[HijackEntity]) { hjEntity =>
-        val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
-          case _ => throw new DatabaseException("该流程不存在")
+    pathPrefix("flow"){
+      pathPrefix("admin"){
+        pathPrefix("hijack" / Segment) { flowId =>
+          entity(as[HijackEntity]) { hjEntity =>
+            val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
+              case _ => throw new DatabaseException("该流程不存在")
+            }
+            complete(for {
+              f <- flow
+              r <- ServiceProxy.flowHijack(proxy, f.flow_id, hjEntity.updatePoints, hjEntity.decision, hjEntity.trigger)
+            } yield {
+              r
+            })
+          }
         }
-        complete(for {
-          f <- flow
-          r <- ServiceProxy.flowHijack(proxy, f.flow_id, hjEntity.updatePoints, hjEntity.decision, hjEntity.trigger)
-        } yield {
-          r
-        })
       }
     }
   }

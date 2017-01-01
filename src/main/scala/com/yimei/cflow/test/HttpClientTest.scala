@@ -3,7 +3,7 @@ package com.yimei.cflow.test
 import java.sql.Timestamp
 import java.time.Instant
 
-import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
 import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
 import com.yimei.cflow.graph.cang.models.CangFlowModel.{TraderAudit, _}
@@ -57,8 +57,10 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
  // println(t1.toJson.toString)
 
   val t3 = TraderAudit("123","123",1,1024.1)
-  println(t3.toJson.toString)
+  //println(t3.toJson.toString)
 
+  // case class HijackEntity(updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean)
+  //val t4 = HijackEntity(updatePoints = Map(""))
 
 
 }

@@ -181,14 +181,14 @@ object CangFlowValidator {
     }
 
   /** 融资方付款给贸易商 **/
-  implicit val customerPaymentToTraffickerValidator: Validator[CustomerPaymentToTrafficker] =
-    validator[CustomerPaymentToTrafficker] {
+  implicit val customerPaymentToTraffickerValidator: Validator[FinancerToTrader] =
+    validator[FinancerToTrader] {
       customerPaymentToTrafficker =>
         customerPaymentToTrafficker.taskId as "任务id" is notEmpty
         customerPaymentToTrafficker.taskId.length as "任务id字段" max(10)
-        customerPaymentToTrafficker.statusId as "付款状态id" min(0)
-        customerPaymentToTrafficker.statusId as "付款状态id" max(1)
-        customerPaymentToTrafficker.paymentPrinciple as "付款本金" is notNull
+        //customerPaymentToTrafficker.statusId as "付款状态id" min(0)
+        //customerPaymentToTrafficker.statusId as "付款状态id" max(1)
+        customerPaymentToTrafficker.repaymentAmount as "付款本金" is notNull
     }
 
   /** 贸易商通知港口放货 **/
