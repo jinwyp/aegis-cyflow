@@ -209,8 +209,8 @@ object CangFlowValidator {
       portReleaseGoods =>
         portReleaseGoods.taskId as "任务id" is notEmpty
         portReleaseGoods.taskId.length as "任务id字段" max(10)
-        portReleaseGoods.statusId as "放货状态id" min(0)
-        portReleaseGoods.statusId as "放货状态id" max(1)
+        portReleaseGoods.status as "放货状态id" min(0)
+        portReleaseGoods.status as "放货状态id" max(1)
     }
 
   /** 贸易商审核是否回款完成 **/

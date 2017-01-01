@@ -139,3 +139,18 @@ k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件1","
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
 echo $res
 
+#19>港口放货
+res=$(curl -X GET http://localhost:9000/api/utask/harbor/1/h1id)
+task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
+echo "task_id is $task_id"
+
+k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a21harborRelease/h1id/harbor/1 -d "$k")
+echo $res
+
+
+
+
+
+
+

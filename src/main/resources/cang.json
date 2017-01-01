@@ -39,7 +39,11 @@
     "financerPaying":"融资方回款中",
     "financerPaySuccess":"融资方回款成功",
 
-    "traderNoticeHarborRelease":"贸易方通知港口放货"
+    "traderNoticeHarborRelease":"贸易方通知港口放货",
+
+    "harborReleaseGoods":"港口确认放货"
+
+
 
   },
   "vertices": {
@@ -54,7 +58,8 @@
     "financingStep19": {"description":"贸易方给融资方放款"},
     "repaymentStep20": {"description":"融资方确认回款"},
     "repaymentStep21": {"description":"融资方给贸易商回款"},
-    "repaymentStep22": {"description":"贸易方通知港口放货"}
+    "repaymentStep22": {"description":"贸易方通知港口放货"},
+    "repaymentStep23": {"description":"港口确认放货"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
@@ -78,7 +83,9 @@
 
     "a19SecondReturnMoney"        : {"description":"融资方确认还款","points":["repaymentAmount"]},
 
-    "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]}
+    "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]},
+
+    "a21harborRelease"           :{"description":"港口确认放货","points":["harborReleaseGoods"]}
 
   },
   "edges": {
@@ -203,6 +210,18 @@
       "partUTasks": [{
         "guidKey": "traderUserId",
         "tasks": ["a20noticeHarborRelease"]
+      }],
+      "autoTasks": []
+    },
+    "E12": {
+      "name": "E12",
+      "begin": "repaymentStep22",
+      "end": "repaymentStep23",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "harborUserId",
+        "tasks": ["a21harborRelease"]
       }],
       "autoTasks": []
     }

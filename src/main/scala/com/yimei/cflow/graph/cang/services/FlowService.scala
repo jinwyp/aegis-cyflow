@@ -315,7 +315,27 @@ object FlowService extends UserModelProtocol
   }
 
 
-
+  /**
+    * 港口方放货
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param release
+    * @return
+    */
+  def submitA21(party_class:String,user_id:String,instant_id:String,taskName:String,release:PortReleaseGoods) = {
+    party_class match {
+      case `gkf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          harborReleaseGoods -> release.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(release.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,release.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
 
 
