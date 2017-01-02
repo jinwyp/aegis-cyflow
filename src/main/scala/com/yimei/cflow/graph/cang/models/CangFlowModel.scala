@@ -149,20 +149,28 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat5(TraffickerNoticePortReleaseGoods)
 
   /** 港口放货 **/
-  case class PortReleaseGoods(taskId: String, statusId: Int, createTime: Option[Timestamp])
+  case class PortReleaseGoods(taskId: String,
+                              flowId: String,
+                              status: Int)
   implicit val portReleaseGoodsFormat = jsonFormat3(PortReleaseGoods)
 
   /** 贸易商审核是否已经回款完成 **/
-  case class TraffickerAuditIfCompletePayment(taskId: String, statusId: Int, createTime: Option[Timestamp])
+  case class TraffickerAuditIfCompletePayment(taskId: String,
+                                              flowId: String,
+                                              status: Int)
   implicit val traffickerAuditIfCompletePaymentFormat = jsonFormat3(TraffickerAuditIfCompletePayment)
 
   /** 贸易商同意付款给资金方 **/
-  case class TraffickerConfirmPayToFundProvider(taskId: String, statusId: Int)
-  implicit val traffickerConfirmPayToFundProviderFormat = jsonFormat2(TraffickerConfirmPayToFundProvider)
+  case class TraffickerConfirmPayToFundProvider(taskId: String,
+                                                flowId: String,
+                                                status: Int)
+  implicit val traffickerConfirmPayToFundProviderFormat = jsonFormat3(TraffickerConfirmPayToFundProvider)
 
   /** 贸易商财务放款给资金方,流程结束 **/
-  case class TraffickerFinancePayToFundProvider(taskId: String, statusId: Int)
-  implicit val traffickerFinancePayToFundProviderFormat = jsonFormat2(TraffickerFinancePayToFundProvider)
+  case class TraffickerFinancePayToFundProvider(taskId: String,
+                                                flowId: String,
+                                                status: Int)
+  implicit val traffickerFinancePayToFundProviderFormat = jsonFormat3(TraffickerFinancePayToFundProvider)
 
 
 

@@ -8,7 +8,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{FinancerToTrader, TraderRecommendAmount, _}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 
 import scala.concurrent.Future
 /**
@@ -315,9 +315,95 @@ object FlowService extends UserModelProtocol
   }
 
 
+  /**
+    * 港口方放货
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param release
+    * @return
+    */
+  def submitA21(party_class:String,user_id:String,instant_id:String,taskName:String,release:PortReleaseGoods) = {
+    party_class match {
+      case `gkf` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          harborReleaseGoods -> release.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(release.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,release.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
 
+  /**
+    * 贸易商确认是否还款完成
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param cpl
+    * @return
+    */
+  def submitA22(party_class:String,user_id:String,instant_id:String,taskName:String,cpl:TraffickerAuditIfCompletePayment) = {
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfUserId` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          TraderAuditIfCompletePayment -> cpl.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(cpl.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,cpl.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
+  /**
+    * 贸易商确认回款给资金方
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param cf
+    * @return
+    */
+  def submitA23(party_class:String,user_id:String,instant_id:String,taskName:String,cf:TraffickerConfirmPayToFundProvider) = {
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfUserId` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          TraderConfirmPayToFundProvider -> cf.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(cf.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,cf.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
+
+
+  /**
+    * 贸易商财务确认回款给资金方
+    * @param party_class
+    * @param user_id
+    * @param instant_id
+    * @param taskName
+    * @param cf
+    * @return
+    */
+  def submitA24(party_class:String,user_id:String,instant_id:String,taskName:String,cf:TraffickerFinancePayToFundProvider) = {
+    genGuId(party_class,instant_id,user_id) match {
+      case `myfFinanceId` =>
+        val op = genGuId(party_class,instant_id,user_id)
+        val points = Map(
+          TraderAccountantConfirm -> cf.status.wrap(operator = Some(op))
+        )
+        val userSubmit = UserSubmitEntity(cf.flowId,taskName,points)
+        request[UserSubmitEntity,UserState](path="api/utask",pathVariables = Array(party_class,instant_id,user_id,cf.taskId),model = Some(userSubmit),method = "put")
+      case  _    => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
+    }
+  }
 
 
 

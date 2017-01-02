@@ -39,7 +39,15 @@
     "financerPaying":"融资方回款中",
     "financerPaySuccess":"融资方回款成功",
 
-    "traderNoticeHarborRelease":"贸易方通知港口放货"
+    "traderNoticeHarborRelease":"贸易方通知港口放货",
+
+    "harborReleaseGoods":"港口确认放货",
+
+    "TraderAuditIfCompletePayment":"贸易商确认是否收款完成",
+
+    "TraderConfirmPayToFundProvider":"贸易商确认回款给资金方",
+
+    "TraderAccountantConfirm":"贸易商财务确认回款"
 
   },
   "vertices": {
@@ -54,7 +62,11 @@
     "financingStep19": {"description":"贸易方给融资方放款"},
     "repaymentStep20": {"description":"融资方确认回款"},
     "repaymentStep21": {"description":"融资方给贸易商回款"},
-    "repaymentStep22": {"description":"贸易方通知港口放货"}
+    "repaymentStep22": {"description":"贸易方通知港口放货"},
+    "repaymentStep23": {"description":"港口确认放货"},
+    "repaymentStep24": {"description":"贸易商确认收款完成"},
+    "repaymentStep25": {"description":"贸易商确认汇款给资金方"},
+    "repaymentStep26": {"description":"贸易商财务确认汇款给资金方"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
@@ -78,8 +90,15 @@
 
     "a19SecondReturnMoney"        : {"description":"融资方确认还款","points":["repaymentAmount"]},
 
-    "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]}
+    "a20noticeHarborRelease"             :{"description":"通知港口放货","points":["traderNoticeHarborRelease"]},
 
+    "a21harborRelease"           :{"description":"港口确认放货","points":["harborReleaseGoods"]},
+
+    "a22traderAuditIfComplete"  :{"description":"贸易商确认付款是否完成","points":["TraderAuditIfCompletePayment"]},
+
+    "a23ReturnMoney"          :{"description":"贸易商确认回款","points":["TraderConfirmPayToFundProvider"]},
+
+    "a24AccountantReturnMoney":{"description":"贸易商财务确认回款","points":["TraderAccountantConfirm"]}
   },
   "edges": {
     "E1": {
@@ -203,6 +222,63 @@
       "partUTasks": [{
         "guidKey": "traderUserId",
         "tasks": ["a20noticeHarborRelease"]
+      }],
+      "autoTasks": []
+    },
+    "E12": {
+      "name": "E12",
+      "begin": "repaymentStep22",
+      "end": "repaymentStep23",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "harborUserId",
+        "tasks": ["a21harborRelease"]
+      }],
+      "autoTasks": []
+    },
+    "E13": {
+      "name": "E13",
+      "begin": "repaymentStep23",
+      "end": "repaymentStep24",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a22traderAuditIfComplete"]
+      }],
+      "autoTasks": []
+    },
+    "E14": {
+      "name": "E14",
+      "begin": "repaymentStep24",
+      "end": "financingStep19",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": []
+    },
+    "E15": {
+      "name": "E15",
+      "begin": "repaymentStep24",
+      "end": "repaymentStep25",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderUserId",
+        "tasks": ["a23ReturnMoney"]
+      }],
+      "autoTasks": []
+    },
+    "E16": {
+      "name": "E16",
+      "begin": "repaymentStep25",
+      "end": "repaymentStep26",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [{
+        "guidKey": "traderAccountantUserId",
+        "tasks": ["a24AccountantReturnMoney"]
       }],
       "autoTasks": []
     }
