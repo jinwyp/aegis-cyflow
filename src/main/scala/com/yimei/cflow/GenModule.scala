@@ -112,7 +112,7 @@ object GenModule extends App with GraphConfigProtocol {
     path
   }
 
-  // 创建动态文件
+  // 创建文件
   def createDynamicFile(names: Array[String], fileName: String, fileContent: String): Unit = {
     val path = createDynamicDir(names)
     val file = new File(path + "/" + fileName)
