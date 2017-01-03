@@ -5,11 +5,10 @@ import java.io.File
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.annotation.Description
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
 import com.yimei.cflow.engine.FlowRegistry
-import com.yimei.cflow.api.models.auto.CommandAutoTask
-import com.yimei.cflow.engine.auto.AutoMaster._
 import com.yimei.cflow.graph.cang.CangGraphJar
 import com.yimei.cflow.graph.money.MoneyGraphJar
 import com.yimei.cflow.graph.ying.YingGraphJar
