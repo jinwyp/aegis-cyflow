@@ -35,8 +35,7 @@ object GenModule extends App with GraphConfigProtocol {
   val projectName = "aegis-flow-" + graphConfig.artifact
   val projectNameDir = "/" + projectName
   val jarName = graphConfig.entry
-  val jarDirName = "/" + graphConfig.groupId.replace(".", "-")
-
+  val jarPackageNames = (graphConfig.groupId + "." + graphConfig.artifact).split('.')
   val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + buildProperties)).mkString
   val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + pluginsSbt)).mkString
   var configScalaContent = "\nobject Config {\n"
@@ -107,13 +106,12 @@ object GenModule extends App with GraphConfigProtocol {
   pw_flow.close
   file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName + configScala)
+  createDynamicDir(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames)
+  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, configScala)
   val pw_config = new PrintWriter(file)
   pw_config.write(configScalaContent)
   pw_config.close
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
+  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, templateGraphJarScala)
   val pw_templateGraphJar = new PrintWriter(file)
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
@@ -129,6 +127,21 @@ object GenModule extends App with GraphConfigProtocol {
   addFileToCompression(tos, destDir, ".")
   tos.close()
   fos.close()
+
+  def createDynamicDir(prefix: String, names: Array[String]): String = {
+    var path = prefix
+    names.toStream.foreach(name => {
+      path += "/" + name
+      val file = new File(path)
+      if (!file.exists()) file.mkdir()
+    })
+    path
+  }
+
+  def createDynamicFile(prefix: String, names: Array[String], fileName: String): File = {
+    val path = createDynamicDir(prefix, names)
+    new File(path + "/" + fileName)
+  }
 
   def addFileToCompression(tos: TarArchiveOutputStream, file: File, dir: String) {
     val tae: TarArchiveEntry = new TarArchiveEntry(file, dir)
