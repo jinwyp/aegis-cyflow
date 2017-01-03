@@ -9,9 +9,6 @@ import spray.json._
 
 import scala.io.Source
 
-/**
-  * Created by hary on 16/12/29.
-  */
 object GenModule extends App with GraphConfigProtocol {
 
   val classLoader = this.getClass.getClassLoader
@@ -19,108 +16,65 @@ object GenModule extends App with GraphConfigProtocol {
   var graphConfigStr = Source.fromInputStream(classLoader.getResourceAsStream("ying.json")).mkString
   var graphConfig = graphConfigStr.parseJson.convertTo[GraphConfig]
 
-  val rootDir = "./tmp"
-  val projectDir = "/project"
-  val buildProperties = "/build.properties"
-  val pluginsSbt = "/plugins.sbt"
-  val srcDir = "/src"
-  val mainDir = "/main"
-  val resourceDir = "/resources"
-  val flowJson = "/flow.json"
-  val buildSbt = "/build.sbt"
-  val scalaDir = "/scala"
-  val configScala = "/Config.scala"
-  val templateGraphJarScala = "/TemplateGraphJar.scala"
-  var templateDir = "./template"
+  // 文件目录
+  val rootDirName = "tmp"
   val projectName = "aegis-flow-" + graphConfig.artifact
-  val projectNameDir = "/" + projectName
-  val jarName = graphConfig.entry
-  val jarPackageNames = (graphConfig.groupId + "." + graphConfig.artifact).split('.')
-  val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + buildProperties)).mkString
-  val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + pluginsSbt)).mkString
-  var configScalaContent = "\nobject Config {\n"
-  configScalaContent += "\n\t// points\n"
-  graphConfig.points.toList.sortBy(p => p._1).foreach(p =>
-    configScalaContent += "\tval point_" + p._1 + " = \"" + p._1 + "\"\t\t\t//" + p._2 + "\n"
+  val buildPropertiesDir = Array(rootDirName, projectName, "project")
+  val buildProperties =  "build.properties"
+  val pluginsSbtFile = "plugins.sbt"
+  val flowJsonFileDir = Array(rootDirName, projectName, "src", "main", "resources")
+  val flowJsonFile = "flow.json"
+  val projectPackages = (graphConfig.groupId + "." + graphConfig.artifact).split('.')
+  var configScalaFileDir = Array(rootDirName, projectName, "src", "main", "scala")
+  configScalaFileDir ++= projectPackages
+  val configScalaFile = "Config.scala"
+  val graphJarScalaFile = graphConfig.entry + ".scala"
+
+  var templateDir = "./template"
+  val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + buildProperties)).mkString
+  val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + pluginsSbtFile)).mkString
+
+  // Config.scala 文件内容
+  var configScalaContent =
+    "\n" +
+      "object Config {" +
+      "\n"
+  val configElementList: Map[Array[String], Map[String, Serializable]] = Map(
+    Array("points", "val point_") -> graphConfig.points,
+    Array("vertices", "val vertex_") -> graphConfig.vertices,
+    Array("autoTasks", "val auto_") -> graphConfig.autoTasks,
+    Array("userTasks", "val task_") -> graphConfig.userTasks
   )
-  configScalaContent += "\n\t// vertices\n"
-  graphConfig.vertices.toList.sortBy(v => v._1).foreach(v =>
-    configScalaContent += "\tval vertex_" + v._1 + " = \"" + v._1 + "\"\t\t\t//" + v._2 + "\n"
-  )
-  configScalaContent += "\n\t// autoTasks\n"
-  graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a =>
-    configScalaContent += "\tval auto_" + a._1 + " = \"" + a._1 + "\"\t\t\t//" + a._2 + "\n"
-  )
-  configScalaContent += "\n\t// userTasks\n"
-  graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u =>
-    configScalaContent += "\tval task_" + u._1 + " = \"" + u._1 + "\"\t\t\t//" + u._2 + "\n"
-  )
+  configElementList.foreach(o => configScalaContent += createConfigContent(o._1, o._2))
   configScalaContent += "}\n"
 
-  var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
-  templateGraphJarScalaContent += "\n\t// 决策点\n"
-  graphConfig.vertices.toList.sortBy(v => v._1).foreach(v => {
-    templateGraphJarScalaContent += "\t@Description(\"" + v._2 + "\")\n"
-    templateGraphJarScalaContent += "\tdef " + v._1 + "(state: State): Seq[Arrow]  = ???\n\n"
-  })
-  templateGraphJarScalaContent += "\n\t// 自动任务\n"
-  graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a => {
-    templateGraphJarScalaContent += "\t@Description(\"" + a._2 + "\")\n"
-    templateGraphJarScalaContent += "\tdef " + a._1 + "(task: CommandAutoTask): Future[Map[String, String]] = ???\n\n"
-  })
-  templateGraphJarScalaContent += "\n\t// 任务路由 get\n"
-  graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 + "\")\n"
-    templateGraphJarScalaContent += "\tdef get" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
-  })
-  templateGraphJarScalaContent += "\n\t// 任务路由 post\n"
-  graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 + "\")\n"
-    templateGraphJarScalaContent += "\tdef post" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
-  })
-  templateGraphJarScalaContent += "}\n"
+  // GraphJar.scala 文件内容
+  var graphJarScalaContent =
+    "\n" +
+      "object " + graphConfig.entry + " {" +
+      "\n"
+  val graphJarElementList: Map[Array[String], Map[String, Serializable]] = Map(
+    Array("决策点", "@Description(", "def ", "(state: State): Seq[Arrow] = ???") -> graphConfig.vertices,
+    Array("自动任务", "@Description(", "def ", "(task: CommandAutoTask): Future[Map[String, String]] = ???") -> graphConfig.autoTasks,
+    Array("任务路由 get", "@Description(", "def get", "(proxy: ActorRef): Route = ???") -> graphConfig.userTasks,
+    Array("任务路由 post", "@Description(", "def post", "(proxy: ActorRef): Route = ???") -> graphConfig.userTasks
+  )
+  graphJarElementList.foreach(o => graphJarScalaContent += createGraphJarContent(o._1, o._2))
+  graphJarScalaContent += "}\n"
 
-  var file: File = new File(rootDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + projectDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + projectDir + buildProperties)
-  val pw_build = new PrintWriter(file)
-  pw_build.write(buildPropertiesContent)
-  pw_build.close
-  file = new File(rootDir + projectNameDir + projectDir + pluginsSbt)
-  val pw_plugins = new PrintWriter(file)
-  pw_plugins.write(pluginsSbtContent)
-  pw_plugins.close
-  file = new File(rootDir + projectNameDir + srcDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + srcDir + mainDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir + flowJson)
-  val pw_flow = new PrintWriter(file)
-  pw_flow.write(graphConfigStr)
-  pw_flow.close
-  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir)
-  if (!file.exists()) file.mkdir()
-  createDynamicDir(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames)
-  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, configScala)
-  val pw_config = new PrintWriter(file)
-  pw_config.write(configScalaContent)
-  pw_config.close
-  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, templateGraphJarScala)
-  val pw_templateGraphJar = new PrintWriter(file)
-  pw_templateGraphJar.write(templateGraphJarScalaContent)
-  pw_templateGraphJar.close
+  // 创建文件夹,文件
+  createDynamicFile(buildPropertiesDir, buildProperties, buildPropertiesContent)
+  createDynamicFile(buildPropertiesDir, pluginsSbtFile, pluginsSbtContent)
+  createDynamicFile(flowJsonFileDir, flowJsonFile, graphConfigStr)
+  createDynamicFile(configScalaFileDir, configScalaFile, configScalaContent)
+  createDynamicFile(configScalaFileDir, graphJarScalaFile, graphJarScalaContent)
 
-  val destDir = new File(rootDir + projectNameDir)
+  // 生成 tar.gz 文件
+  val destDir = new File(rootDirName + "/" + projectName)
 
   import org.apache.commons.compress.archivers.tar.{TarArchiveEntry, TarArchiveOutputStream}
 
-  val fos: FileOutputStream = new FileOutputStream(rootDir + projectNameDir + ".tar.gz")
+  val fos: FileOutputStream = new FileOutputStream(rootDirName + "/" + projectName + ".tar.gz")
   val tos: TarArchiveOutputStream = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)))
   tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
   tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
@@ -128,9 +82,29 @@ object GenModule extends App with GraphConfigProtocol {
   tos.close()
   fos.close()
 
-  def createDynamicDir(prefix: String, names: Array[String]): String = {
-    var path = prefix
-    names.toStream.foreach(name => {
+  // 生成 Config.scala 文件内容
+  def createConfigContent(strArray: Array[String], map: Map[String, Serializable]): String = {
+    var result = "\n\t// " + strArray(0) + "\n"
+    map.toList.sortBy(o => o._1).foreach(o =>
+      result += "\t" + strArray(1) + o._1 + " = \"" + o._1 + "\"\t\t\t//" + o._2 + "\n"
+    )
+    result
+  }
+
+  // 生成 GraphJar.scala 文件内容
+  def createGraphJarContent(strArray: Array[String], map: Map[String, Serializable]): String = {
+    var result = "\n\t// " + strArray(0) + "\n"
+    map.toList.sortBy(o => o._1).foreach(o => {
+      result += "\t" + strArray(1) + "(\"" + o._2 + "\")\n"
+      result += "\t" + strArray(2) + o._1 + strArray(3) + "\n\n"
+    })
+    result
+  }
+
+  // 创建动态文件目录
+  def createDynamicDir(names: Array[String]): String = {
+    var path: String = "."
+    names.foreach(name => {
       path += "/" + name
       val file = new File(path)
       if (!file.exists()) file.mkdir()
@@ -138,11 +112,16 @@ object GenModule extends App with GraphConfigProtocol {
     path
   }
 
-  def createDynamicFile(prefix: String, names: Array[String], fileName: String): File = {
-    val path = createDynamicDir(prefix, names)
-    new File(path + "/" + fileName)
+  // 创建动态文件
+  def createDynamicFile(names: Array[String], fileName: String, fileContent: String): Unit = {
+    val path = createDynamicDir(names)
+    val file = new File(path + "/" + fileName)
+    val pw = new PrintWriter(file)
+    pw.write(fileContent)
+    pw.close
   }
 
+  // 生成 tar.gz 文件
   def addFileToCompression(tos: TarArchiveOutputStream, file: File, dir: String) {
     val tae: TarArchiveEntry = new TarArchiveEntry(file, dir)
     tos.putArchiveEntry(tae)
