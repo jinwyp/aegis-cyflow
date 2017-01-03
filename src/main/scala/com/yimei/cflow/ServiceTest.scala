@@ -11,7 +11,7 @@ import com.yimei.cflow.engine.graph.GraphLoader
 import com.yimei.cflow.engine.routes.{AutoRoute, EditorRoute}
 import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.asset.FileRoute
-import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute, SessionDemoRoute}
+import com.yimei.cflow.graph.cang.routes.{BasicRoute, CangFlowRoute, CangUserRoute, SessionDemoRoute}
 import com.yimei.cflow.http._
 import com.yimei.cflow.organ.routes._
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
@@ -62,7 +62,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     pathPrefix("cang") {
       CangFlowRoute.route() ~
         CangUserRoute.route() ~
-        SessionDemoRoute.route()
+        SessionDemoRoute.route() ~
+      BasicRoute.route()
     }
   XieJieTestRoute().route
 
