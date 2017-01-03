@@ -2,6 +2,7 @@ package com.yimei.cflow.organ.routes
 
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.UUID
 import javax.ws.rs.Path
 
 import akka.actor.ActorRef
@@ -14,19 +15,21 @@ import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.user.{State => UserState}
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.api.util.DBUtils
-import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.exception.DatabaseException
-import com.yimei.cflow.graph.cang.models.UserModel.UserLogin
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable}
 import DBUtils._
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
+import slick.backend.DatabasePublisher
+import slick.dbio.Effect.Read
 import slick.lifted
+import slick.profile.FixedSqlStreamingAction
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
-
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Path("/user/:userId")
 class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with PartyInstanceTable with SessionProtocol{
@@ -246,17 +249,18 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
   }
 
   def getLoginUserInfo: Route = post {
-    (pathPrefix("login") & entity(as[UserLogin])) { user =>
-      val getInfo: Future[Seq[(String, String, String, String, String)]] = dbrun((for {
+    (pathPrefix("login") & entity(as[UserLoginInfo])) { user =>
+      val getInfo: Future[Seq[(String, String, String, String, String, String, String)]] = dbrun((for {
         (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
-      } yield (pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name)).result)
+      } yield (pu.username, pu.user_id, pu.email.getOrElse(""), pu.phone.getOrElse(""), pi.party_class, pi.instance_id, pi.party_name)).result)
 
+      def uuid() = UUID.randomUUID().toString
 
-      def getResult(info: Seq[(String, String, String, String, String)]): MySession = {
+      def getResult(info: Seq[(String, String, String, String, String, String, String)]): MySession = {
         if(info.length == 0) {
           throw BusinessException("登录信息有误！")
         } else {
-          MySession(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5)
+          MySession(uuid, info.head._1, info.head._2, info.head._3, info.head._4, info.head._5, info.head._6, info.head._7)
         }
       }
 
@@ -283,6 +287,61 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
       } recover {
         case _ => "fail"
       })
+    }
+  }
+
+  def dynamicSearchOfUserList(): Route = post {
+    (pathPrefix("dynamicSearch") & entity(as[DynamicUserSearch])) { uls =>
+
+      //      val piq: FixedSqlStreamingAction[Seq[PartyInstanceEntity], PartyInstanceEntity, Read] = partyInstance.filter { p =>
+      //        List(
+      //          uls.partyClass.map(p.party_class === _),
+      //          uls.companyName.map(p.party_class === _)
+      //        ).collect({ case Some(criteria) => criteria }).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean])
+      //      }.result
+      //
+      //      val uiq: Future[Unit] = db.stream(piq).foreach(pi => {
+      //        dbrun(partyUser.filter( p =>
+      //          List(
+      //            uls.username.map(p.username === _),
+      //            uls.name.map(p.name === _)
+      //          ).collect({case Some(criteria) => criteria}).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean])
+      //        ).result)
+      //      }
+      //      )
+      //username: Option[String], name: Option[String], companyName: Option[String], partyClass: Option[String])
+
+      val username = if (uls.username.isDefined) uls.username.get
+
+
+
+//      val getInfo: Future[Seq[(String, String, String, String, String)]] = dbrun((for {
+//        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) //if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
+//        List(
+//          uls.username.map(pu.username === _),
+//          uls.name.map(pu.name === _),
+//          uls.partyClass.map(pi.party_class === _),
+//          uls.companyName.map(pi.party_name === _)
+//        ).collect({ case Some(criteria) => criteria }).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean]).result
+//      } yield (pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name)).result)
+
+
+      //      def getResult(info: Seq[(String, String, String, String, String)]): MySession = {
+      //        if(info.length == 0) {
+      //          throw BusinessException("登录信息有误！")
+      //        } else {
+      //          MySession(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5)
+      //        }
+      //      }
+      //
+      //      val result = for {
+      //        info <- getInfo
+      //      } yield getResult(info)
+      //
+      //      complete(result)
+
+
+      complete("")
     }
   }
 

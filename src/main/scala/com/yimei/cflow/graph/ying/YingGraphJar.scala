@@ -1,6 +1,6 @@
 package com.yimei.cflow.graph.ying
 
-import com.yimei.cflow.api.annotation.Description
+import com.yimei.cflow.api.annotation.VertexProperty
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.graph.ying.YingConfig._
@@ -27,7 +27,7 @@ object YingGraphJar {
     }
   }
 
-  @Description("V4's description")
+  @VertexProperty("V4's description")
   def V4(state: State): Seq[Arrow] = {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
@@ -39,7 +39,7 @@ object YingGraphJar {
 
   var count = 3
 
-  @Description("V5's description")
+  @VertexProperty("V5's description")
   def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).points.contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt

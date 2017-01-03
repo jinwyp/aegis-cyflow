@@ -10,11 +10,16 @@ import com.yimei.cflow.api.http.models.ResultModel.{Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.UserModel._
 import com.yimei.cflow.api.util.DBUtils
 import DBUtils._
+import akka.http.scaladsl.model.headers.HttpOriginRange.*
+import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 
 import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
 import com.yimei.cflow.graph.cang.session.{MySession, Session, SessionProtocol}
 import spray.json._
+import ch.megard.akka.http.cors.CorsDirectives._
+import ch.megard.akka.http.cors.CorsSettings
+
 
 
 /**
@@ -62,16 +67,27 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def loginRoute: Route = post {
-    (pathPrefix("login") & entity(as[UserLogin])) { user =>
-      import scala.concurrent.ExecutionContext.Implicits.global
-      val result = for {
-        s <- getLoginUserInfo(user)
-      } yield {
-        mySetSession(s)
-        Result[MySession](data = Some(s), success = true)
+  /*
+   * api访问信息
+   * url      http://localhost:9001/auth/login
+   * method   post application/json
+   * body     {"username":"u3","password":"123456"}
+   */
+  def loginRoute: Route = cors(CorsSettings.defaultSettings.copy(allowCredentials = false, allowedOrigins = HttpOriginRange.*)) {
+    post{
+      pathPrefix("auth") {
+        (pathPrefix("login") & entity(as[UserLogin])) { user =>
+          import scala.concurrent.ExecutionContext.Implicits.global
+          val result = for {
+            s <- getLoginUserInfo(user)
+          } yield {
+            println("invoked ---------------")
+            mySetSession(s)
+            Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true)
+          }
+          complete(result)
+        }
       }
-      complete(result)
     }
   }
 

@@ -78,7 +78,14 @@ libraryDependencies ++= {
     "org.scalaz" %% "scalaz-core" % "7.2.8",
 
     //files tar.gz
-    "org.apache.commons" % "commons-compress" % "1.12"
+  "org.apache.commons" % "commons-compress" % "1.12",
+
+    //http cors
+    "ch.megard" %% "akka-http-cors" % "0.1.10",
+
+    "org.apache.commons" % "commons-compress" % "1.12",
+
+    "org.freemarker" % "freemarker" % "2.3.23"
 
   )
 }
