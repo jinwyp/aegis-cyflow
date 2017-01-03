@@ -63,22 +63,22 @@ object GenModule extends App with GraphConfigProtocol {
   var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
   templateGraphJarScalaContent += "\n\t// 决策点\n"
   graphConfig.vertices.toList.sortBy(v => v._1).foreach(v => {
-    templateGraphJarScalaContent += "\t@Description(\"" + v._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@Description(\"" + v._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef " + v._1 + "(state: State): Seq[Arrow]  = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 自动任务\n"
   graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a => {
-    templateGraphJarScalaContent += "\t@Description(\"" + a._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@Description(\"" + a._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef " + a._1 + "(task: CommandAutoTask): Future[Map[String, String]] = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 任务路由 get\n"
   graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@Description(\"" + u._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef get" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 任务路由 post\n"
   graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@Description(\"" + u._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef post" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
   })
   templateGraphJarScalaContent += "}\n"
@@ -120,43 +120,31 @@ object GenModule extends App with GraphConfigProtocol {
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
-  file = new File(rootDir + projectRootDir + projectRootDir + ".tar.gz")
+  val destDir = new File(rootDir + projectRootDir)
 
-  val fileList: List[File] = List(
-    new File(rootDir + projectRootDir),
-    new File(rootDir + projectRootDir + projectDir + buildProperties),
-    new File(rootDir + projectRootDir + projectDir + pluginsSbt),
-    new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir + flowJson),
-    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + configScala),
-    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
-  )
+  import org.apache.commons.compress.archivers.tar.{TarArchiveEntry, TarArchiveOutputStream}
 
-  import org.apache.commons.compress.archivers.tar.{TarArchiveOutputStream, TarArchiveEntry}
   val fos: FileOutputStream = new FileOutputStream(rootDir + projectRootDir + ".tar.gz")
-  val bos: BufferedOutputStream = new BufferedOutputStream(fos)
-  val gos: GZIPOutputStream = new GZIPOutputStream(bos)
-  val taos: TarArchiveOutputStream = new TarArchiveOutputStream(gos)
-  taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
-  taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
-  fileList.foreach(file => {
-    addFileToCompression(taos, file, ".")
-  })
-  taos.close()
+  val tos: TarArchiveOutputStream = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)))
+  tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
+  tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
+  addFileToCompression(tos, destDir, ".")
+  tos.close()
   fos.close()
 
-  def addFileToCompression(taos: TarArchiveOutputStream, file: File, dir: String) {
+  def addFileToCompression(tos: TarArchiveOutputStream, file: File, dir: String) {
     val tae: TarArchiveEntry = new TarArchiveEntry(file, dir)
-    taos.putArchiveEntry(tae)
-    if(file.isDirectory()){
-      taos.closeArchiveEntry()
+    tos.putArchiveEntry(tae)
+    if (file.isDirectory()) {
+      tos.closeArchiveEntry()
       file.listFiles().foreach(childFile =>
-        addFileToCompression(taos, childFile, dir + "/" + childFile.getName())
+        addFileToCompression(tos, childFile, dir + "/" + childFile.getName())
       )
-    } else{
+    } else {
       val fis: FileInputStream = new FileInputStream(file)
-      IOUtils.copy(fis, taos)
-      taos.flush()
-      taos.closeArchiveEntry()
+      IOUtils.copy(fis, tos)
+      tos.flush()
+      tos.closeArchiveEntry()
     }
   }
 
