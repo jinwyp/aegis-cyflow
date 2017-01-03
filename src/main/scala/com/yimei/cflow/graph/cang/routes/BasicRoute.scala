@@ -39,7 +39,7 @@ class BasicRoute {
 
 
   def adminLogin: Route = get {
-    path("admin" / "login") {
+    path("admin2" / "login") {
      val html: String = FreemarkerConfig.render("admin/login.ftl")
       complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
     }
