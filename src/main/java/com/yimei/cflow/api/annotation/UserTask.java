@@ -12,4 +12,5 @@ import java.lang.annotation.*;
 public @interface UserTask {
     String description() default "";
     String[] points();
+    String in();
 }

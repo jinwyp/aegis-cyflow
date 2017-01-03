@@ -4,68 +4,17 @@ import java.io.File
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
-import com.yimei.cflow.api.annotation.Description
-import com.yimei.cflow.api.models.flow._
-import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
-import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.api.models.auto.CommandAutoTask
-import com.yimei.cflow.engine.auto.AutoMaster._
+import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
+import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.graph.cang.CangGraphJar
 import com.yimei.cflow.graph.money.MoneyGraphJar
 import com.yimei.cflow.graph.ying.YingGraphJar
 
 import scala.concurrent.Future
 import scala.io.Source
-import scala.reflect.runtime._
 
-
-case class JudgeFactory(content: String) {
-
-  import reflect.runtime.currentMirror
-  import tools.reflect.ToolBox
-
-  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
-
-  val tree = toolbox.parse(content)
-  val compiledCode = toolbox.compile(tree)
-
-  def make() = compiledCode().asInstanceOf[State => Seq[Arrow]]
-}
-
-case class AutoFactory(content: String) {
-
-  import reflect.runtime.currentMirror
-  import tools.reflect.ToolBox
-
-  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
-
-  val tree = toolbox.parse(content)
-  val compiledCode = toolbox.compile(tree)
-
-  def make() = compiledCode().asInstanceOf[CommandAutoTask => Future[Map[String, String]]]
-}
-
-case class ProgramCompiler(graphConfig: GraphConfig) {
-
-  import reflect.runtime.currentMirror
-  import tools.reflect.ToolBox
-
-  val toolbox: ToolBox[universe.type] = currentMirror.mkToolBox()
-
-  val autoPrefix = "import com.yimei.cflow.auto.AutoMaster.CommandAutoTask; import scala.concurrent.Future; import scala.concurrent.ExecutionContext.Implicits.global;"
-  val deciPrefix = "import com.yimei.cflow.api.models.flow._;"
-
-  def make() = {
-    val d = graphConfig.vertices.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse(deciPrefix + entry._2.program.get))().asInstanceOf[State => Seq[Arrow]])
-    };
-
-    val a = graphConfig.autoTasks.filter(_._2.program != None).map { entry =>
-      (entry._1 -> toolbox.compile(toolbox.parse(autoPrefix + entry._2.program.get))().asInstanceOf[CommandAutoTask => Future[Map[String, String]]])
-    }
-    (d, a)
-  }
-}
 
 /**
   * Created by hary on 16/12/17.
@@ -78,13 +27,13 @@ object GraphLoader extends GraphConfigProtocol {
 
   def getClassLoader(flowType: String) = {
     flowType match {
-      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "ying" => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case "cang"  => CangGraphJar.getClass.getClassLoader
-      case "zhou"  =>
+      case "cang" => CangGraphJar.getClass.getClassLoader
+      case "zhou" =>
         // todo xj
-      // 改为从数据库deploy表里读取jar文件 写入/tmp/$flowType.jar
-      // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
+        // 改为从数据库deploy表里读取jar文件 写入/tmp/$flowType.jar
+        // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
         null
 
       case _ => val jars: Array[String] = (new File("flows/" + flowType))
@@ -117,7 +66,10 @@ object GraphLoader extends GraphConfigProtocol {
         val status = try {
           FlowRegistry.register(flowType, loadGraph(flowType, classLoader))
         } catch {
-          case _: Throwable => false
+          case e: Throwable =>
+            println(flowType + "!!!!!!!" + e.getMessage)
+
+            false
         }
         (flowType, status)
 
@@ -147,26 +99,12 @@ object GraphLoader extends GraphConfigProtocol {
     )
 
     // graphJar class and graphJar object
-    val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
+    val mclass = classLoader.loadClass(s"${graphConfig.groupId}.${graphConfig.artifact}.${graphConfig.entry}" + "$")
     val graphJar = mclass.getField("MODULE$").get(null)
 
-    // auto auto actor behavior from graphJar
-    // deciders from graphJar  + default decider
-    //    val autoMap = getAutoMap(mclass, graphJar)
-    //    var allDeciders: Map[String, (State) => Seq[Arrow]] =
-    //      graphConfig.vertices
-    //        .filter(_._2 != None)
-    //        .map { entry =>
-    //          (entry._1 -> JudgeFactory(entry._2.program.get).make())
-    //        }
-    //    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
-    // compile our configured program and add code in jar
-    var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
-    val decidersFromJar = getDeciders(mclass, graphJar);
-    allDeciders = allDeciders ++ decidersFromJar.map { entry => (entry._1, entry._2._1) }
-    allAutos = allAutos ++ getAutoMap(mclass, graphJar)
-    graphConfig = graphConfig.copy(vertices = graphConfig.vertices ++ decidersFromJar.map { entry => (entry._1, Vertex(entry._2._2)) })
+    val allDeciders = getDeciders(mclass, graphJar);
+    val allAutos = getAutoMap(mclass, graphJar);
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -258,12 +196,9 @@ object GraphLoader extends GraphConfigProtocol {
         method.getReturnType == classOf[Seq[Arrow]]
     }.map { am =>
 
-      val annotation = am.getAnnotation(classOf[Description])
-      val description = if (annotation == null) "no description" else annotation.value()
-
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(module, state).asInstanceOf[Seq[Arrow]]
-      (am.getName ->(behavior, description))
+      (am.getName -> behavior)
 
     }.toMap
   }

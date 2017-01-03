@@ -18,14 +18,14 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig {
     }
   }
 
-  // 2> 用户加载流程设计  :  GET /design/graph:id  --> JSON
+  // 2> 用户加载流程设计  :  GET /design/graph/:id  --> JSON
   def loadDesign: Route = get {
     path("design/graph" / Segment ) { id =>
       complete(s"loadDesign $id")
     }
   }
 
-  // 3> 保存流程设计:      POST /design/graph:id  + JSON
+  // 3> 保存流程设计:      POST /design/graph/:id  + JSON
   def saveDesign: Route =  post {
     path("design/graph" / Segment) { id =>
       complete(s"id is $id")

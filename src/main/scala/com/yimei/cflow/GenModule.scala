@@ -28,17 +28,14 @@ object GenModule extends App with GraphConfigProtocol {
   val resourceDir = "/resources"
   val flowJson = "/flow.json"
   val buildSbt = "/build.sbt"
+  val scalaDir = "/scala"
   val configScala = "/Config.scala"
   val templateGraphJarScala = "/TemplateGraphJar.scala"
-  val scalaDir = "/scala"
   var templateDir = "./template"
-  val graphJarStr = graphConfig.graphJar
-  val nameArray: Array[String] = graphJarStr.split('.')
-  val projectName = "aegis-flow-" + nameArray(nameArray.length - 2)
-  val projectRootDir = "/" + projectName
-  val jarName = nameArray(nameArray.length - 1)
-  val jarDirName = "/" + graphJarStr.substring(0, graphJarStr.length - nameArray(nameArray.length - 2).length - jarName.length - 2).replace(".", "-")
-
+  val projectName = "aegis-flow-" + graphConfig.artifact
+  val projectNameDir = "/" + projectName
+  val jarName = graphConfig.entry
+  val jarPackageNames = (graphConfig.groupId + "." + graphConfig.artifact).split('.')
   val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + buildProperties)).mkString
   val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + projectDir + pluginsSbt)).mkString
   var configScalaContent = "\nobject Config {\n"
@@ -63,100 +60,104 @@ object GenModule extends App with GraphConfigProtocol {
   var templateGraphJarScalaContent = "\nobject TemplateGraphJar {\n"
   templateGraphJarScalaContent += "\n\t// 决策点\n"
   graphConfig.vertices.toList.sortBy(v => v._1).foreach(v => {
-    templateGraphJarScalaContent += "\t@Description(\"" + v._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@VertexProperty(\"" + v._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef " + v._1 + "(state: State): Seq[Arrow]  = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 自动任务\n"
   graphConfig.autoTasks.toList.sortBy(a => a._1).foreach(a => {
-    templateGraphJarScalaContent += "\t@Description(\"" + a._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@VertexProperty(\"" + a._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef " + a._1 + "(task: CommandAutoTask): Future[Map[String, String]] = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 任务路由 get\n"
   graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@VertexProperty(\"" + u._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef get" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
   })
   templateGraphJarScalaContent += "\n\t// 任务路由 post\n"
   graphConfig.userTasks.toList.sortBy(u => u._1).foreach(u => {
-    templateGraphJarScalaContent += "\t@Description(\"" + u._2 +"\")\n"
+    templateGraphJarScalaContent += "\t@VertexProperty(\"" + u._2 + "\")\n"
     templateGraphJarScalaContent += "\tdef post" + u._1 + "(proxy: ActorRef): Route = ???\n\n"
   })
   templateGraphJarScalaContent += "}\n"
 
+
+
   var file: File = new File(rootDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir)
+  file = new File(rootDir + projectNameDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + projectDir)
+  file = new File(rootDir + projectNameDir + projectDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + projectDir + buildProperties)
+  file = new File(rootDir + projectNameDir + projectDir + buildProperties)
   val pw_build = new PrintWriter(file)
   pw_build.write(buildPropertiesContent)
   pw_build.close
-  file = new File(rootDir + projectRootDir + projectDir + pluginsSbt)
+  file = new File(rootDir + projectNameDir + projectDir + pluginsSbt)
   val pw_plugins = new PrintWriter(file)
   pw_plugins.write(pluginsSbtContent)
   pw_plugins.close
-  file = new File(rootDir + projectRootDir + srcDir)
+  file = new File(rootDir + projectNameDir + srcDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir + flowJson)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir + flowJson)
   val pw_flow = new PrintWriter(file)
   pw_flow.write(graphConfigStr)
   pw_flow.close
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName)
-  if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + configScala)
+  createDynamicDir(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames)
+  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, configScala)
   val pw_config = new PrintWriter(file)
   pw_config.write(configScalaContent)
   pw_config.close
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
+  file = createDynamicFile(rootDir + projectNameDir + srcDir + mainDir + scalaDir, jarPackageNames, templateGraphJarScala)
   val pw_templateGraphJar = new PrintWriter(file)
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
-  file = new File(rootDir + projectRootDir + projectRootDir + ".tar.gz")
+  val destDir = new File(rootDir + projectNameDir)
 
-  val fileList: List[File] = List(
-    new File(rootDir + projectRootDir),
-    new File(rootDir + projectRootDir + projectDir + buildProperties),
-    new File(rootDir + projectRootDir + projectDir + pluginsSbt),
-    new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir + flowJson),
-    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + configScala),
-    new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
-  )
+  import org.apache.commons.compress.archivers.tar.{TarArchiveEntry, TarArchiveOutputStream}
 
-  import org.apache.commons.compress.archivers.tar.{TarArchiveOutputStream, TarArchiveEntry}
-  val fos: FileOutputStream = new FileOutputStream(rootDir + projectRootDir + ".tar.gz")
-  val bos: BufferedOutputStream = new BufferedOutputStream(fos)
-  val gos: GZIPOutputStream = new GZIPOutputStream(bos)
-  val taos: TarArchiveOutputStream = new TarArchiveOutputStream(gos)
-  taos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
-  taos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
-  fileList.foreach(file => {
-    addFileToCompression(taos, file, ".")
-  })
-  taos.close()
+  val fos: FileOutputStream = new FileOutputStream(rootDir + projectNameDir + ".tar.gz")
+  val tos: TarArchiveOutputStream = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)))
+  tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
+  tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
+  addFileToCompression(tos, destDir, ".")
+  tos.close()
   fos.close()
 
-  def addFileToCompression(taos: TarArchiveOutputStream, file: File, dir: String) {
+  def createDynamicDir(prefix: String, names: Array[String]): String = {
+    var path = prefix
+    names.toStream.foreach(name => {
+      path += "/" + name
+      val file = new File(path)
+      if (!file.exists()) file.mkdir()
+    })
+    path
+  }
+
+  def createDynamicFile(prefix: String, names: Array[String], fileName: String): File = {
+    val path = createDynamicDir(prefix, names)
+    new File(path + "/" + fileName)
+  }
+
+  def addFileToCompression(tos: TarArchiveOutputStream, file: File, dir: String) {
     val tae: TarArchiveEntry = new TarArchiveEntry(file, dir)
-    taos.putArchiveEntry(tae)
-    if(file.isDirectory()){
-      taos.closeArchiveEntry()
+    tos.putArchiveEntry(tae)
+    if (file.isDirectory()) {
+      tos.closeArchiveEntry()
       file.listFiles().foreach(childFile =>
-        addFileToCompression(taos, childFile, dir + "/" + childFile.getName())
+        addFileToCompression(tos, childFile, dir + "/" + childFile.getName())
       )
-    } else{
+    } else {
       val fis: FileInputStream = new FileInputStream(file)
-      IOUtils.copy(fis, taos)
-      taos.flush()
-      taos.closeArchiveEntry()
+      IOUtils.copy(fis, tos)
+      tos.flush()
+      tos.closeArchiveEntry()
     }
   }
 

@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Description {
+public @interface VertexProperty {
     String value();
 }

@@ -1,5 +1,6 @@
 package com.yimei.cflow.api.models.graph
 
+import com.yimei.cflow.api.AnnotationConfigFlow
 import com.yimei.cflow.api.annotation._
 import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.api.models.auto.CommandAutoTask
@@ -14,79 +15,80 @@ import scala.concurrent.Future
   initial = "V0",
   graphType = "zhou"
 )
-class ZhouGraph {
+class ZhouGraph extends AnnotationConfigFlow {
 
-  @Points
-  val points = Map()
+
+  override val points: Map[String, String] = ???
 
   /////////////////////////////////////////////////////////////////////////////
   // 决策点设置
   /////////////////////////////////////////////////////////////////////////////
-  @Description("决定1")
+  @VertexProperty("决定1")
   def V0(state: State): Seq[Arrow] = ???
 
-  @Description( "决定1" )
+  @VertexProperty( "决定1" )
   def V1(state: State): Seq[Arrow] = ???
 
-  @Description( "决定1" )
+  @VertexProperty( "决定1" )
   def V2(state: State): Seq[Arrow] = ???
 
-  @Description( "决定1" )
+  @VertexProperty( "决定1" )
   def V3(state: State): Seq[Arrow] = ???
 
-  @Description( "决定1" )
+  @VertexProperty( "决定1" )
   def V4(state: State): Seq[Arrow] = ???
 
-  @Description( "决定1" )
+  @VertexProperty( "决定1" )
   def V5(state: State): Seq[Arrow] = ???
 
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // 自动任务定义
   ///////////////////////////////////////////////////////////////////////////////////////
-  @AutoTask( description = "A", points = Array("A") )
+  @AutoTask( description = "A", points = Array("A"), in = "E1")
   def autoA(autoTask: CommandAutoTask): Future[Map[String, String]] = ???
 
-  @AutoTask( description = "B", points = Array("B") )
+  @AutoTask( description = "B", points = Array("B"), in = "E1" )
   def autoB(autoTask: CommandAutoTask): Future[Map[String, String]] = ???
 
-  @AutoTask( description = "C", points = Array("C") )
+  @AutoTask( description = "C", points = Array("C"), in = "E1" )
   def autoC(autoTask: CommandAutoTask): Future[Map[String, String]] = ???
 
-  @AutoTask( description = "DEF", points = Array("D", "E", "F") )
+  @AutoTask( description = "DEF", points = Array("D", "E", "F"), in = "E1" )
   def autoDEF(autoTask: CommandAutoTask): Future[Map[String, String]] = ???
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // 用户任务定义
   ///////////////////////////////////////////////////////////////////////////////////////
-  @UserTask( points = Array("UA1", "UA2") )
+  @UserTask( points = Array("UA1", "UA2"), in = "E1")
   val UA =  "用户提交表单A"
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // 参与方任务设置
   ///////////////////////////////////////////////////////////////////////////////////////
-  @PartyUserTask( guidKey = "融资方审批", tasks = Array("UA1", "UA2") )
+  @PartyUserTask( guidKey = "融资方审批", tasks = Array("UA1", "UA2"), in = "E1")
   val puTask1 = "从guidKey中"
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // 参与方组任务设置
   ///////////////////////////////////////////////////////////////////////////////////////
-  @PartyGroupTask( ggidKey = "融资方审批", tasks = Array("UA1", "UA2") )
+  @PartyGroupTask( ggidKey = "融资方审批", tasks = Array("UA1", "UA2"), in = "E1" )
   val puTask2 = ???
 
   ///////////////////////////////////////////////////////////////////////////////////////
   // 边设置
   ///////////////////////////////////////////////////////////////////////////////////////
-  @EdgeProperty( begin = "V0", end = "V1", autoTasks = Array("A", "B", "C") )
+  @EdgeProperty( begin = "V0", end = "V1")
   val E1 = ???
 
-  @EdgeProperty( begin = "V1", end = "V2", userTasks = Array("TKPU1", "TKPG1") )
+  @EdgeProperty( begin = "V1", end = "V2")
   val E2 = ???
 
-  @EdgeProperty( begin = "V2", end = "V3", pgTasks = Array("pg1") )
+  @EdgeProperty( begin = "V2", end = "V3")
   val E3 = ???
 
-  @EdgeProperty( begin = "V3", end = "V4", userTasks = Array("UA") )
+  @EdgeProperty( begin = "V3", end = "V4")
   val E4 = ???
+
 }
 

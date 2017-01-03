@@ -20,6 +20,10 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
 
   import scala.concurrent.duration._
 
+  /**
+    *  GET asset/:asset_id  -- 下载asset_id资源
+    * @return
+    */
   def downloadFile: Route = get {
     pathPrefix("file" / "download") {
       pathEnd {
@@ -35,7 +39,7 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
 
 
   /**
-    *
+    * POST asset/    -- 上传文件
     * @return
     */
   def uploadFile: Route = post {

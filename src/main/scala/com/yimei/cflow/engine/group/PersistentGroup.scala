@@ -19,7 +19,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
   import com.yimei.cflow.api.models.group._
 
-  println(s"create persistenter group with guid = $ggid")
+  println(s"create persistenter group with ggid = $ggid")
 
 
   // 用户id与用户类型
@@ -58,7 +58,6 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
 
   def serving: Receive = {
 
-    // 采集数据请求
     case command: CommandGroupTask =>
       log.info(s"收到采集任务: $command")
       val taskId = uuid; // 生成任务id, 将任务保存
@@ -66,7 +65,7 @@ class PersistentGroup(ggid: String, modules: Map[String, ActorRef], passivateTim
         updateState(event)
       }
 
-    // 收到用户claim请求
+    // todo: 王琦, userId should be guid, we don't know userType, also ggid不应该被split为 userType + gid
     case command@CommandClaimTask(ggid: String, taskId: String, userId: String) =>
       log.info(s"claim的请求: $command")
       state.tasks.get(taskId) match {

@@ -12,7 +12,9 @@ import scala.concurrent.Future
   */
 class DeployRoute (proxy: ActorRef) extends CoreConfig {
 
-  def depoy = extractRequestContext { ctx =>
+
+  // POST /deploy/:flowType  + fileupload
+  def deploy = extractRequestContext { ctx =>
     implicit val materializer = ctx.materializer
     implicit val ec = ctx.executionContext
 

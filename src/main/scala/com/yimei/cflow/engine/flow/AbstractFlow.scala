@@ -20,13 +20,16 @@ abstract class AbstractFlow extends Actor with ActorLogging {
 
   //
   def updateState(ev: Event) = {
+    //todo 这里需要考虑决策点改变的情况
     ev match {
-      //      case Hijacked(updatePoints) => updateDecision match {
-      //        case Some(v) =>
-      //          state = state.copy(points = state.points ++ updatePoints)
-      //        case None =>
-      //          state = state.copy(points = state.points ++ updatePoints)
-      //      }
+      case Hijacked(updatePoints,_) =>
+        state = state.copy(points = state.points ++ updatePoints)
+//        updatePoints match {
+//        case Some(v) =>
+//          state = state.copy(points = state.points ++ updatePoints)
+//        case None =>
+//          state = state.copy(points = state.points ++ updatePoints)
+//      }
       case PointUpdated(name, point) => state = state.copy(points = state.points + (name -> point))
       case PointsUpdated(map) => state = state.copy(points = state.points ++ map)
 

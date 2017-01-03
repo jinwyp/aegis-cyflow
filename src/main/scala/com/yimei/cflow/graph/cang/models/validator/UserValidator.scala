@@ -77,10 +77,10 @@ object UserValidator {
   implicit val userListSearchValidator: Validator[UserListSearch] =
     validator[UserListSearch] {
       userListSearch =>
-        userListSearch.className.length as "用户类型字段长度" is between(1, 10)
-        userListSearch.username.length as "登录名字段长度" is between(2, 20)
-        userListSearch.name.length as "姓名字段长度" is between(1, 10)
-        userListSearch.companyName.length as "公司名称字段长度" is between(1, 100)
+//        userListSearch.className.length as "用户类型字段长度" is between(1, 10)
+//        userListSearch.username.length as "登录名字段长度" is between(2, 20)
+//        userListSearch.name.length as "姓名字段长度" is between(1, 10)
+//        userListSearch.companyName.length as "公司名称字段长度" is between(1, 100)
     }
 
   /** 管理员重置密码 **/

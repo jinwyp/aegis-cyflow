@@ -1,6 +1,8 @@
 {
   "initial": "V0",
-  "graphJar": "com.yimei.cflow.graph.money.MoneyGraphJar",
+  "groupId": "com.yimei.cflow.graph",
+  "artifact": "money",
+  "jarName": "MoneyGraphJar",
   "timeout": 100,
   "persistent": true,
   "points": {

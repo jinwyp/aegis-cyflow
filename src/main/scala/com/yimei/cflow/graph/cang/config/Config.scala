@@ -52,6 +52,17 @@ trait Config {
   val financingStep14 = "financingStep14"
   val financingStep15 = "financingStep15"
   val financingStep16 = "financingStep16"
+  val financingStep17 = "financingStep17"
+  val financingStep18 = "financingStep18"
+  val financingStep19 = "financingStep19"
+  val repaymentStep20 = "repaymentStep20"
+  val repaymentStep21 = "repaymentStep21"
+  val repaymentStep22 = "repaymentStep22"
+  val repaymentStep23 = "repaymentStep23"
+  val repaymentStep24 = "repaymentStep24"
+  val repaymentStep25 = "repaymentStep25"
+  val repaymentStep26 = "repaymentStep26"
+
 
   //edge
   val E1 = "E1"
@@ -59,6 +70,19 @@ trait Config {
   val E3 = "E3"
   val E4 = "E4"
   val E5 = "E5"
+  val E6 = "E6"
+  val E7 = "E7"
+  val E8 = "E8"
+  val E9 = "E9"
+  val E10 = "E10"
+  val E11 = "E11"
+  val E12 = "E12"
+  val E13 = "E13"
+  val E14 = "E14"
+  val E15 = "E15"
+  val E16 = "E16"
+
+
 
   //tasks
   val a11SelectHarborAndSupervisor = "a11SelectHarborAndSupervisor"
@@ -68,6 +92,18 @@ trait Config {
   val a15traderAudit    = "a15traderAudit"
   val a16traderRecommendAmount = "a16traderRecommendAmount"
   val a17fundProviderAudit = "a17fundProviderAudit"
+  val a18fundProviderAccountantAudit = "a18fundProviderAccountantAudit"
+  val fundProviderPayingTask = "fundProviderPayingTask" //auto task
+  val traderPayingTask = "traderPayingTask"              //auto task
+  val a19SecondReturnMoney = "a19SecondReturnMoney"
+  val financerPayingTask = "financerPayingTask"
+  val a20noticeHarborRelease = "a20noticeHarborRelease"
+  val a21harborRelease = "a21harborRelease"
+  val a22traderAuditIfComplete = "a22traderAuditIfComplete"
+  val a23ReturnMoney = "a23ReturnMoney"
+  val a24AccountantReturnMoney = "a24AccountantReturnMoney"
+
+
 
   //points
   val startPoint = "startPoint"
@@ -90,4 +126,28 @@ trait Config {
   val recommendAmount = "recommendAmount"
 
   val fundProviderAuditResult = "fundProviderAuditResult"
+
+  val fundProviderAccountantAuditResult = "fundProviderAccountantAuditResult"
+
+  val fundProviderPaying = "fundProviderPaying"
+  val fundProviderPaySuccess = "fundProviderPaySuccess"
+
+  val traderPaying = "traderPaying"
+  val traderPaySuccess = "traderPaySuccess"
+
+  val repaymentAmount = "repaymentAmount"
+
+  val financerPaying = "financerPaying"
+  val financerPaySuccess = "financerPaySuccess"
+
+  val traderNoticeHarborRelease = "traderNoticeHarborRelease"
+
+  val harborReleaseGoods = "harborReleaseGoods"
+
+
+  val TraderAuditIfCompletePayment = "TraderAuditIfCompletePayment"
+
+  val TraderConfirmPayToFundProvider = "TraderConfirmPayToFundProvider"
+
+  val TraderAccountantConfirm = "TraderAccountantConfirm"
 }

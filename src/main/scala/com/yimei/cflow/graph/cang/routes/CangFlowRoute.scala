@@ -5,10 +5,13 @@ import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.api.http.client.AdminClient
 import com.yimei.cflow.graph.cang.models.CangFlowModel._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.graph.cang.config.Config
 import spray.json._
 import com.yimei.cflow.api.http.models.ResultModel._
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowInstanceEntity
+import com.yimei.cflow.api.models.flow.State
+import com.yimei.cflow.api.util.HttpUtil.request
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.services.FlowService._
 
@@ -18,7 +21,11 @@ import scala.concurrent.Future
   * Created by wangqi on 16/12/26.
   * 流程相关路由
   */
-class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtocol with Config {
+class CangFlowRoute extends AdminClient
+  with AdminProtocol
+  with SprayJsonSupport
+  with ResultProtocol
+  with Config {
 
   /**
     * 初始化
@@ -43,7 +50,10 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
     }
   }
 
-
+  /**
+    * 提交任务
+    * @return
+    */
   def submitTask = post {
     pathPrefix("financeorders") {
       pathPrefix("action" / Segment/ Segment/ Segment/ Segment) { (action,user_id,party_class,instance_id) =>
@@ -83,13 +93,66 @@ class CangFlowRoute extends AdminClient with SprayJsonSupport with ResultProtoco
             entity(as[FundProviderAudit]) { fundAudit =>
               complete(submitA17(party_class, user_id, instance_id,action,fundAudit))
             }
+          //资金方财务审核
+          case `a18fundProviderAccountantAudit` =>
+            entity(as[FundProviderAccountantAudit]) { accountantAduit =>
+              complete(submitA18(party_class, user_id, instance_id,action,accountantAduit))
+            }
+          //融资方确认还款
+          case `a19SecondReturnMoney` =>
+            entity(as[FinancerToTrader]){ repayment =>
+              complete(submitA19(party_class, user_id, instance_id,action,repayment))
+            }
+          //贸易商通知港口放货
+          case `a20noticeHarborRelease` =>
+            entity(as[TraffickerNoticePortReleaseGoods]) { release =>
+              complete(submitA20(party_class, user_id, instance_id,action,release))
+            }
+          //港口放货
+          case `a21harborRelease` =>
+            entity(as[PortReleaseGoods]) { release =>
+              complete(submitA21(party_class, user_id, instance_id,action,release))
+            }
+           //贸易商选择是否完成
+          case `a22traderAuditIfComplete` =>
+            entity(as[TraffickerAuditIfCompletePayment]) { completePayment =>
+              complete(submitA22(party_class, user_id, instance_id,action,completePayment))
+            }
+           //贸易商确认回款给资金方
+          case `a23ReturnMoney`          =>
+            entity(as[TraffickerConfirmPayToFundProvider]) { confirm =>
+              complete(submitA23(party_class, user_id, instance_id,action,confirm))
+            }
+           //贸易商财务确认回款给资金方
+          case `a24AccountantReturnMoney` =>
+            entity(as[TraffickerFinancePayToFundProvider]) { confirm =>
+              complete(submitA24(party_class, user_id, instance_id,action,confirm))
+            }
+
           case _ => throw BusinessException("不支持的任务类型")
         }
       }
     }
   }
-  def route = startFlow ~ submitTask
+
+  import com.yimei.cflow.api.util.PointUtil._
+
+  def test = get {
+    pathPrefix("fortest"/ Segment / Segment / Segment) { (flowId,pointName,value) =>
+
+      println(s"!!!!$flowId @@@@ $pointName *** $value")
+
+      val point = Map(pointName->value.wrap())
+      val hijackEntity = HijackEntity(updatePoints = point,trigger=true,decision=None)
+      request[HijackEntity,State](path="api/flow/admin/hijack",pathVariables = Array(flowId),model = Some(hijackEntity),method = "put")
+      complete("success")
+    }
+  }
+
+
+  def route = startFlow ~ submitTask ~ test
 }
+
 
 
 object CangFlowRoute {
