@@ -8,4 +8,5 @@ import com.yimei.cflow.organ.db.{PartyClassTable, PartyGroupTable, PartyUserTabl
   */
 object MultiParty extends PartyClassTable with PartyGroupTable with PartyUserTable with UserGroupTable {
 
+  //  move
 }
