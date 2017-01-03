@@ -20,9 +20,12 @@
     "PG2" : "partition group1 采集数据点2"
   },
   "vertices": {
-    "V0": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"},
-    "V1": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V2\", Some(\"E2\")))"},
-    "V2": { "description":"判断0","program": "(state: State) => Seq(Arrow(\"V3\", Some(\"E3\")))"}
+    "V0": { "description":"判断0" },
+    "V1": { "description":"判断1" },
+    "V2": { "description":"判断2" },
+    "V3": { "description":"判断3" },
+    "V4": { "description":"判断4" },
+    "V5": { "description":"判断5" }
   },
   "autoTasks": {
     "A" :{"description": "描述",   "points": ["A"]},

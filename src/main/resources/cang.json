@@ -51,8 +51,8 @@
 
   },
   "vertices": {
-    "financingStep11": { "description":"等待贸易商选择港口,监管方和资金","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep12\", Some(\"E1\")))"},
-    "financingStep12": { "description":"等待融资方,港口和监管方上传合同及单","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"financingStep13\", Some(\"E2\")))"},
+    "financingStep11": { "description":"等待贸易商选择港口,监管方和资金" },
+    "financingStep12": { "description":"等待融资方,港口和监管方上传合同及单" },
     "financingStep13": {"description":"等待融资方,港口和监管方上传合同及单"},
     "financingStep14": {"description":"等待贸易商审核"},
     "financingStep15": {"description":"待贸易商财务放款建议"},
