@@ -33,7 +33,7 @@ CREATE UNIQUE INDEX flowId_taskid_index ON flow_task(flow_id,task_id);
 create table design(
   id BIGINT not null auto_increment,
   name varchar(64) not null,
-  json text(65532) not null,
+  json text(65532),
   meta text(65532) not null,
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
