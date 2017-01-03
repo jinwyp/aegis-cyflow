@@ -7,11 +7,12 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.ByteString
 import com.yimei.cflow.config.FreemarkerConfig
-
+import com.yimei.cflow.config.FreemarkerConfig._
 /**
   * Created by hary on 17/1/3.
   */
 class BasicRoute {
+
 
   val html =
     """
@@ -33,13 +34,14 @@ class BasicRoute {
 
   def cangHtml: Route = get {
     path("admin" / "test") {
-      complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
+     // complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
+      ftl("admin/login.ftl")
     }
   }
 
 
   def adminLogin: Route = get {
-    path("admin2" / "login") {
+    path("warehouse" / "login") {
      val html: String = FreemarkerConfig.render("admin/login.ftl")
       complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
     }
