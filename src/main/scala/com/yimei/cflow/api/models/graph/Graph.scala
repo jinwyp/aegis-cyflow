@@ -4,7 +4,7 @@ import com.yimei.cflow.api.models.flow._
 import spray.json.DefaultJsonProtocol
 
 
-case class Vertex(description: String, program: Option[String] = None)
+case class Vertex(description: String)
 
 case class GraphConfig(
                         graphJar: String,
@@ -19,6 +19,6 @@ case class GraphConfig(
                       )
 
 trait GraphConfigProtocol extends FlowProtocol with DefaultJsonProtocol {
-  implicit val defaultVertexFormat = jsonFormat2(Vertex)
+  implicit val defaultVertexFormat = jsonFormat1(Vertex)
   implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
 }
