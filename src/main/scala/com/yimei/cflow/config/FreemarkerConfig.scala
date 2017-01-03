@@ -19,6 +19,9 @@ object FreemarkerConfig extends CoreConfig {
 
   val staticPathAdmin = coreConfig.getString("cang.ftl")
 
+
+  // ftl   ==  ftl("admin/login.ftl", Some())
+
   def render(template: String, data: Option[JMap[String, String]] = None ) = {
     val os = new ByteArrayOutputStream()
     val out = new OutputStreamWriter(os)
