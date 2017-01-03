@@ -9,7 +9,7 @@ case class Vertex(description: String)
 case class GraphConfig(
                         groupId: String,
                         artifact: String,
-                        jarName: String,
+                        entry: String,
                         persistent: Boolean,
                         timeout: Int,
                         initial: String,

@@ -149,7 +149,7 @@ object GraphLoader extends GraphConfigProtocol {
     )
 
     // graphJar class and graphJar object
-    val mclass = classLoader.loadClass(s"${graphConfig.groupId}.${graphConfig.artifact}.${graphConfig.jarName}" + "$")
+    val mclass = classLoader.loadClass(s"${graphConfig.groupId}.${graphConfig.artifact}.${graphConfig.entry}" + "$")
     val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
