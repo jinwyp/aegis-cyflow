@@ -18,7 +18,7 @@ import scala.concurrent.Future
 class ZhouGraph extends AnnotationConfigFlow {
 
 
-  override val points: Map[String, String] = _
+  override val points: Map[String, String] = ???
 
   /////////////////////////////////////////////////////////////////////////////
   // 决策点设置
