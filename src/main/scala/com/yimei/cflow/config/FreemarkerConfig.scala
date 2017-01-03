@@ -18,6 +18,7 @@ object FreemarkerConfig extends CoreConfig {
   ftl.setLogTemplateExceptions(false);
 
   val staticPathAdmin = coreConfig.getString("cang.ftl")
+  val staticEnv = coreConfig.getAnyRef("cang.env")
 
 
   // ftl   ==  ftl("admin/login.ftl", Some())
