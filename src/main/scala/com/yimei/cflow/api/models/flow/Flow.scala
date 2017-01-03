@@ -213,7 +213,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   // 日期
   implicit object DateJsonFormat extends RootJsonFormat[Date] {
-    val formatter = new SimpleDateFormat("yyyy-MM-dd")   // todo change format
+    val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")   // todo change format
 
     override def write(obj: Date) = JsString(formatter.format(obj))
 

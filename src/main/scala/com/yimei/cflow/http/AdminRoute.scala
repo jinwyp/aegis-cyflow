@@ -221,14 +221,14 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
           dbrun(getQueryStatment(p, u).length.result)
         }
 
-        complete(for {
+        val res: Future[FlowQueryResponse] = for {
           p <- pi
           u <- getUser(p)
           alflow <- getAllFlows(p, u)
           total <- getFlowsCount(p, u)
-        } yield {
-          FlowQueryResponse(alflow, total)
-        })
+        } yield FlowQueryResponse(alflow, total)
+
+        complete(res)
 
       }
     }

@@ -13,4 +13,5 @@ import java.lang.annotation.*;
 public @interface PartyGroupTask {
     String ggidKey();
     String[] tasks();
+    String in();
 }

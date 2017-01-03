@@ -10,7 +10,9 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PartyUserTask {
+    String description() default "";
     String guidKey();
     String[] tasks();
+    String in();
 }
 
