@@ -28,14 +28,14 @@ object GenModule extends App with GraphConfigProtocol {
   val resourceDir = "/resources"
   val flowJson = "/flow.json"
   val buildSbt = "/build.sbt"
+  val scalaDir = "/scala"
+  val graphJarStr = graphConfig.graphJar
   val configScala = "/Config.scala"
   val templateGraphJarScala = "/TemplateGraphJar.scala"
-  val scalaDir = "/scala"
   var templateDir = "./template"
-  val graphJarStr = graphConfig.graphJar
   val nameArray: Array[String] = graphJarStr.split('.')
   val projectName = "aegis-flow-" + nameArray(nameArray.length - 2)
-  val projectRootDir = "/" + projectName
+  val projectNameDir = "/" + projectName
   val jarName = nameArray(nameArray.length - 1)
   val jarDirName = "/" + graphJarStr.substring(0, graphJarStr.length - nameArray(nameArray.length - 2).length - jarName.length - 2).replace(".", "-")
 
@@ -85,46 +85,46 @@ object GenModule extends App with GraphConfigProtocol {
 
   var file: File = new File(rootDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir)
+  file = new File(rootDir + projectNameDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + projectDir)
+  file = new File(rootDir + projectNameDir + projectDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + projectDir + buildProperties)
+  file = new File(rootDir + projectNameDir + projectDir + buildProperties)
   val pw_build = new PrintWriter(file)
   pw_build.write(buildPropertiesContent)
   pw_build.close
-  file = new File(rootDir + projectRootDir + projectDir + pluginsSbt)
+  file = new File(rootDir + projectNameDir + projectDir + pluginsSbt)
   val pw_plugins = new PrintWriter(file)
   pw_plugins.write(pluginsSbtContent)
   pw_plugins.close
-  file = new File(rootDir + projectRootDir + srcDir)
+  file = new File(rootDir + projectNameDir + srcDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + resourceDir + flowJson)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + resourceDir + flowJson)
   val pw_flow = new PrintWriter(file)
   pw_flow.write(graphConfigStr)
   pw_flow.close
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName)
   if (!file.exists()) file.mkdir()
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + configScala)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName + configScala)
   val pw_config = new PrintWriter(file)
   pw_config.write(configScalaContent)
   pw_config.close
-  file = new File(rootDir + projectRootDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
+  file = new File(rootDir + projectNameDir + srcDir + mainDir + scalaDir + jarDirName + templateGraphJarScala)
   val pw_templateGraphJar = new PrintWriter(file)
   pw_templateGraphJar.write(templateGraphJarScalaContent)
   pw_templateGraphJar.close
 
-  val destDir = new File(rootDir + projectRootDir)
+  val destDir = new File(rootDir + projectNameDir)
 
   import org.apache.commons.compress.archivers.tar.{TarArchiveEntry, TarArchiveOutputStream}
 
-  val fos: FileOutputStream = new FileOutputStream(rootDir + projectRootDir + ".tar.gz")
+  val fos: FileOutputStream = new FileOutputStream(rootDir + projectNameDir + ".tar.gz")
   val tos: TarArchiveOutputStream = new TarArchiveOutputStream(new GZIPOutputStream(new BufferedOutputStream(fos)))
   tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR)
   tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU)
