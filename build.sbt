@@ -78,7 +78,7 @@ libraryDependencies ++= {
     "org.scalaz" %% "scalaz-core" % "7.2.8",
 
     //files tar.gz
-  "org.apache.commons" % "commons-compress" % "1.12"
+    "org.apache.commons" % "commons-compress" % "1.12"
 
   )
 }
