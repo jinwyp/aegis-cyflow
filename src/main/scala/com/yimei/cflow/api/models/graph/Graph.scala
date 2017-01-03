@@ -7,7 +7,9 @@ import spray.json.DefaultJsonProtocol
 case class Vertex(description: String)
 
 case class GraphConfig(
-                        graphJar: String,
+                        groupId: String,
+                        artifact: String,
+                        jarName: String,
                         persistent: Boolean,
                         timeout: Int,
                         initial: String,
@@ -20,5 +22,5 @@ case class GraphConfig(
 
 trait GraphConfigProtocol extends FlowProtocol with DefaultJsonProtocol {
   implicit val defaultVertexFormat = jsonFormat1(Vertex)
-  implicit val graphConfigProtocolFormat = jsonFormat9(GraphConfig)
+  implicit val graphConfigProtocolFormat = jsonFormat11(GraphConfig)
 }

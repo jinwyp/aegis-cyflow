@@ -4,10 +4,9 @@ import java.io.File
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Route
-import com.yimei.cflow.api.annotation.Description
 import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow._
-import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol, Vertex}
+import com.yimei.cflow.api.models.graph.{GraphConfig, GraphConfigProtocol}
 import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.graph.cang.CangGraphJar
 import com.yimei.cflow.graph.money.MoneyGraphJar
@@ -15,7 +14,6 @@ import com.yimei.cflow.graph.ying.YingGraphJar
 
 import scala.concurrent.Future
 import scala.io.Source
-import scala.reflect.runtime._
 
 //
 //case class JudgeFactory(content: String) {
@@ -79,13 +77,13 @@ object GraphLoader extends GraphConfigProtocol {
 
   def getClassLoader(flowType: String) = {
     flowType match {
-      case "ying"  => YingGraphJar.getClass.getClassLoader
+      case "ying" => YingGraphJar.getClass.getClassLoader
       case "money" => MoneyGraphJar.getClass.getClassLoader
-      case "cang"  => CangGraphJar.getClass.getClassLoader
-      case "zhou"  =>
+      case "cang" => CangGraphJar.getClass.getClassLoader
+      case "zhou" =>
         // todo xj
-      // 改为从数据库deploy表里读取jar文件 写入/tmp/$flowType.jar
-      // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
+        // 改为从数据库deploy表里读取jar文件 写入/tmp/$flowType.jar
+        // 然后再  new java.net.URLClassLoader(new File("/tmp/xxx.jar").toURI.toURL), this.getClass.getClassLoader)
         null
 
       case _ => val jars: Array[String] = (new File("flows/" + flowType))
@@ -119,7 +117,7 @@ object GraphLoader extends GraphConfigProtocol {
           FlowRegistry.register(flowType, loadGraph(flowType, classLoader))
         } catch {
           case e: Throwable =>
-            println(flowType+"!!!!!!!"+e.getMessage)
+            println(flowType + "!!!!!!!" + e.getMessage)
 
             false
         }
@@ -151,7 +149,7 @@ object GraphLoader extends GraphConfigProtocol {
     )
 
     // graphJar class and graphJar object
-    val mclass = classLoader.loadClass(graphConfig.graphJar + "$")
+    val mclass = classLoader.loadClass(s"${graphConfig.groupId}.${graphConfig.artifact}.${graphConfig.jarName}" + "$")
     val graphJar = mclass.getField("MODULE$").get(null)
 
     // auto auto actor behavior from graphJar
@@ -166,9 +164,9 @@ object GraphLoader extends GraphConfigProtocol {
     //    allDeciders = allDeciders ++ getDeciders(mclass, graphJar) // 用jar中的覆盖配置中的
 
     // compile our configured program and add code in jar
-//    var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
+    //    var (allDeciders, allAutos) = ProgramCompiler(graphConfig).make()
     val allDeciders = getDeciders(mclass, graphJar);
-    val allAutos =  getAutoMap(mclass, graphJar);
+    val allAutos = getAutoMap(mclass, graphJar);
 
     // graph intial vertex
     val initial = graphConfig.initial
@@ -262,7 +260,7 @@ object GraphLoader extends GraphConfigProtocol {
 
       val behavior: State => Seq[Arrow] = (state: State) =>
         am.invoke(module, state).asInstanceOf[Seq[Arrow]]
-      (am.getName ->(behavior))
+      (am.getName -> (behavior))
 
     }.toMap
   }
