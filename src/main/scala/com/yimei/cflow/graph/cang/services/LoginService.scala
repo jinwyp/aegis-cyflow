@@ -16,7 +16,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -114,7 +114,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //用户修改自己信息
-  def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UpdateSelf]] = {
+  def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UserData]] = {
     log.info(s"get into method userModifySelf, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
 
     val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
@@ -122,9 +122,9 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
     }
 
-    def getResult(result: String): Result[UpdateSelf] = {
+    def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(userInfo), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party)), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -133,7 +133,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       qur <- getPartyUser
       re <- update(qur)
-    } yield getResult(re)
+    } yield getResult(re, qur)
   }
 
   //用户登录
@@ -143,7 +143,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //用户修改密码
-  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[String]] = {
+  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[UserData]] = {
     log.info(s"get into method userModifyPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
 
     val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
@@ -161,12 +161,17 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
+    def getResult(qur: QueryUserResult): UserData = {
+      UserData(qur.userInfo.user_id, qur.userInfo.username, qur.userInfo.email.getOrElse(""), qur.userInfo.phone.getOrElse(""), party)
+    }
+
     (for {
       qur <- getPartyUser
       cr = comparePassword(qur, user)
       ur <- update(qur)
-    } yield { Result(data = Some(ur), success = true)}) recover {
-      case e: BusinessException => Result[String](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+      re = getResult(qur)
+    } yield { Result(data = Some(re), success = true)}) recover {
+      case e: BusinessException => Result[UserData](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
     }
   }
 
