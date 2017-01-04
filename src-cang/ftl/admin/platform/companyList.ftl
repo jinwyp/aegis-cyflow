@@ -33,14 +33,10 @@
 
                         <div class="panel-body">
                             <form role="form" class="form-inline">
-                                <div class="form-group marginL">
-                                    <label for="input-email" class="">用户帐号:&nbsp;&nbsp;</label>
-                                    <input id="input-email" type="text" placeholder="用户帐号" class="form-control">
-                                </div>
 
                                 <div class="form-group marginL">
                                     <label for="input-password" class="">公司名称:&nbsp;&nbsp;</label>
-                                    <input id="input-password" type="text" placeholder="公司名称" class="form-control">
+                                    <input id="input-password"  class="form-control" type="text" placeholder="公司名称" ms-duplex="@searchQuery.party_name">
                                 </div>
                                 <div class="form-group marginL">
                                     <button class="btn btn-default btn-primary" ms-click="@clickSearchButton($event)">查询</button>
@@ -48,9 +44,7 @@
                                 <div class="form-group marginL">
                                     <a href="/warehouse/admin/home/company/add" class="btn btn-default btn-primary">添加公司</a>
                                 </div>
-
                             </form>
-
                         </div>
 
                         <div class="panel-body">
@@ -64,12 +58,12 @@
                                     </tr>
                                     <tr ms-for="(index, company) in @companyList">
 
-                                        <td>{{ company.companyName || '--'}}</td>
-                                        <td>{{company.role | rolename}}</td>
+                                        <td>{{ company.party_name || '--'}}</td>
+                                        <td>{{ company.party_class | rolename}}</td>
 
                                         <td>
                                             <span class="btn btn-default resetPassword" ms-click="@clickResetPassword">重置密码</span>
-                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/user/'+ user._id + '/edit'}">编辑</a>
+                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/company/'+ company._id + '/edit'}">编辑</a>
                                             <span class="btn btn-default marginL" ms-click="@clickDelete">删除</span>
                                         </td>
                                     </tr>
