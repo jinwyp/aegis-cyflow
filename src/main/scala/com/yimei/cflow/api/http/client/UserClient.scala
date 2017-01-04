@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.http.client
 
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
-import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}

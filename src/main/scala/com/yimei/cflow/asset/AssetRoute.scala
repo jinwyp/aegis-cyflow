@@ -9,6 +9,7 @@ import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.ByteString
+import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
 import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
 import com.yimei.cflow.config.CoreConfig
@@ -52,6 +53,7 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     *
     * @return
     */
+  import java.sql.Timestamp
   def uploadFile: Route = post {
     pathPrefix("file" / "upload") {
       pathEnd {
@@ -60,10 +62,10 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
             case file:
               BodyPart if file.name == "file" =>
-              val fileName = UUID.randomUUID().toString + "-" + file.getFilename().get()
-              val filePath = rootPath + fileName
-              processFile(filePath, fileData)
-              Future("url" -> filePath)
+              val uuId = UUID.randomUUID().toString
+              val fileName = uuId + "-" + file.getFilename().get()
+              processFile(fileName, fileData)
+              Future("url" -> fileName)
             case data: BodyPart => data.toStrict(2.seconds)
               .map(strict => data.name -> strict.entity.data.utf8String)
           }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
@@ -71,9 +73,11 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           val res = result.map { data => {
             val url = data.get("url").get
             val originName = data.get("name").get
-//            val fileType = data.get("type").get
-            //AssetObject()
-            FileObj(url.replace(rootPath, ""), originName, url)
+            val fileType = data.get("type").get
+            val assetId = url.substring(url.lastIndexOf("-"))
+            val assetEntity: AssetEntity = new AssetEntity(null, assetId, 0, 0, "username", Some("gid"), Some("description"), url, new Timestamp(new java.util.Date().getTime)) ;
+            assetClass.insertOrUpdate(assetEntity)
+            FileObj(url, originName, rootPath + url)
           }}
           complete(res)
         }
@@ -81,8 +85,9 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     }
   }
 
-  private def processFile(filePath: String, fileData: Multipart.FormData) {
-    val fileOutput = new FileOutputStream(filePath)
+  private def processFile(fileName: String, fileData: Multipart.FormData) {
+    val filePath = rootPath + fileName.replaceAll("-", "/")
+    val fileOutput = new FileOutputStream(rootPath + filePath)
     fileData.parts.mapAsync(1) {
       bodyPart =>
         def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {

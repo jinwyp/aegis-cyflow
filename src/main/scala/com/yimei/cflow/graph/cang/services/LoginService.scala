@@ -1,5 +1,8 @@
 package com.yimei.cflow.graph.cang.services
 
+import java.text.SimpleDateFormat
+import java.util.{Date, Random, UUID}
+
 import akka.event.{Logging, LoggingAdapter}
 import com.yimei.cflow.api.http.client.PartyClient
 import com.yimei.cflow.api.http.client.UserClient
@@ -7,7 +10,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
-import com.yimei.cflow.api.http.models.ResultModel.{Error, Result}
+import com.yimei.cflow.api.http.models.ResultModel.{Error, Meta, Result}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
@@ -16,8 +19,9 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -93,6 +97,29 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     }
 
     p.future
+  }
+
+  //管理员添加公司
+  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+    log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
+
+    val formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+    def instanceId = formatter.format(new Date())  + new Random(3).nextInt()
+
+    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+
+    for {
+      re <- createPartyInstance(partyInstanceInfo.toJson.toString)
+    } yield Result(data = Some(re), success = true)
+  }
+
+  //管理员获取所有公司信息
+  def adminGetAllCompany(page: Int, pageSize: Int): Future[Result[Seq[PartyInstanceEntity]]] = {
+    log.info(s"get into method adminGetAllCompany")
+
+    for {
+      pilist <- getAllPartyInstanceList(page, pageSize)
+    } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改用户

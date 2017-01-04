@@ -81,7 +81,7 @@ libraryDependencies ++= {
   "org.apache.commons" % "commons-compress" % "1.12",
 
     //http cors
-    "ch.megard" %% "akka-http-cors" % "0.1.10",
+//    "ch.megard" %% "akka-http-cors" % "0.1.10",
 
     "org.apache.commons" % "commons-compress" % "1.12",
 

@@ -22,7 +22,8 @@ object FreemarkerConfig extends CoreConfig {
   ftlConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
   ftlConfig.setLogTemplateExceptions(false);
 
-  val staticPathAdmin = "src-cang/frontend/src"
+  val staticPathAdmin = "/static"
+  val staticPath = "src-cang/frontend/src"
    // val staticEnv = coreConfig.getAnyRef("cang.env")
   val staticEnv = "fortest"
 

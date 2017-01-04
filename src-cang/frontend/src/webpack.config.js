@@ -106,9 +106,9 @@ module.exports = {
         port: 8000,  //默认8080
         proxy: {
             "/warehouse": "http://localhost:9000",
-            "/static": "http://localhost:8003",
-            "/apimock": "http://192.168.1.54:3030",
-            "/apz": "http://127.0.0.1:9000"
+            "/static": "http://localhost:9000",
+            "/api": "http://localhost:9000",
+            "/apimock": "http://192.168.1.54:3030"
         }
     }
 };

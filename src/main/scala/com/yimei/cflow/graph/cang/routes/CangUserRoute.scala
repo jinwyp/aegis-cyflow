@@ -17,8 +17,6 @@ import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
 import com.yimei.cflow.graph.cang.session.{MySession, Session, SessionProtocol}
 import spray.json._
-//import ch.megard.akka.http.cors.CorsDirectives._
-//import ch.megard.akka.http.cors.CorsSettings
 
 
 
@@ -49,13 +47,38 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
+   * 管理员添加公司
+   * url      http://localhost:9001/admin/company
+   * method   post application/json
+   * body     {"companyName":"瑞茂通","partyClass":"trader"}
+   */
+  def adminAddCompanyRoute: Route = post {
+    (path("admin" / "company") & entity(as[AddCompany])) { company =>
+      complete(adminAddCompany(company))
+    }
+  }
+
+  /*
+   * 管理员获取所有公司
+   * url      localhost:9000/cang/admin/company?page=x&pageSize=y
+   * method   get
+   */
+  def adminGetAllCompanyRoute: Route = get {
+    (path("admin" / "company") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+
+      complete(adminGetAllCompany(page, pageSize))
+    }
+  }
+
+
+  /*
    * 管理员修改邮箱、电话
-   * url      http://localhost:9001/admin/userinfo/:party/:instance_id
+   * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
    * method   post application/json
    * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
    */
   def adminModifyUserRoute: Route = post {
-    pathPrefix("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
+    path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
       entity(as[UpdateUser]) { user =>
         complete(adminModifyUser(party, instance_id, user))
       }
@@ -64,7 +87,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 用户修改邮箱、电话
-   * url      http://localhost:9001/user/info
+   * url      http://localhost:9000/cang/user/info
    * method   post application/json
    * body     {"email":"6789@6789.com","phone":"13800000002"}
    */
@@ -78,36 +101,19 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 用户登录
-   * url      http://localhost:9001/auth/login
+   * url      http://localhost:9000/cang/auth/login
    * method   post application/json
    * body     {"username":"u3","password":"123456"}
    */
-//  def loginRoute: Route = cors(CorsSettings.defaultSettings.copy(allowCredentials = false, allowedOrigins = HttpOriginRange.*)) {
   def loginRoute: Route = post {
     (path("auth" / "login") & entity(as[UserLogin])) { user =>
-
-      val s = MySession(token = "111", userName = "u3", userId = "00000", email = "12345@12345.com", phone = "13800000001", party = "systemAdmin", instanceId = "00000000", companyName = "管理员")
-      mySetSession(s) {
-        complete("ok")
+      import scala.concurrent.ExecutionContext.Implicits.global
+      onSuccess(getLoginUserInfo(user)) { s =>
+        mySetSession(s) {
+          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true))
+        }
       }
     }
-
-
-//      import scala.concurrent.ExecutionContext.Implicits.global
-//      val result: Future[MySession] = for {
-//        s <- getLoginUserInfo(user)
-//      } yield {
-//        Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true)
-//      }
-
-//  getLoginUserInfo(user) map { s =>
-//        mySetSession(s) {
-//          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true))
-//      }
-//
-//     // complete
-//
-//    }
   }
 
   /*
@@ -145,7 +151,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute
 }
 
 object CangUserRoute {

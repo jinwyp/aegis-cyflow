@@ -1,6 +1,27 @@
 # aegis-cyflow
-cy flow
 
+
+## 安装 Scala 环境
+1. ``` brew install scala ```
+2. ``` brew install sbt ```
+3. 配置 SBT 源, 编辑 ~/.sbt/repositories 文件 添加如下 
+
+```
+
+[repositories]
+  local
+    repox-maven: http://139.196.174.222:8078/
+    repox-ivy: http://139.196.174.222:8078/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+    
+```
+
+4. 设置 Intellij 配置  [官方配置](https://www.jetbrains.com/help/idea/2016.1/creating-and-running-your-scala-application.html)
+
+
+
+
+
+## Flow 流程图
 
 
 ```

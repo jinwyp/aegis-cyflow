@@ -180,3 +180,59 @@ exports.modifyPassword = function (userId, oldPassword, newPassword){
 
 };
 
+
+
+
+
+
+exports.getCompanyList = function (query){
+
+    var params = jQuery.extend({}, query);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList,
+        method   : 'GET',
+        data     : params
+    });
+
+};
+
+
+exports.addNewCompany = function (company){
+
+    var params = jQuery.extend({
+        party_name : '',
+        party_class : ''
+    }, company);
+
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList,
+        method   : 'POST',
+        data     : JSON.stringify(params)
+
+    });
+
+};
+
+exports.updateCompanyInfoById = function (companyId, company){
+
+    var params = jQuery.extend({}, company);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList + '/' + companyId,
+        method   : 'PATCH',
+        data     : JSON.stringify(params)
+
+    });
+
+};
