@@ -4,17 +4,24 @@ import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.engine.db.DesignTable
 
 /**
   * Created by hary on 16/12/28.
   */
 
-class EditorRoute(proxy: ActorRef) extends CoreConfig {
+class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable {
 
   // 1> 用户列出所有流程设计  :   GET /design/graph
   def listDesign: Route =  get {
-    path("design/graph") {
-      complete("listDegin...")
+    pathPrefix("design/graph") {
+      pathEnd {
+//        val q = for (d <- design) yield (d.name, d.id)
+//        val a = q.result
+//        val f: Future[Seq[String]] = dbrun(a)
+//        complete(dbrun(a))
+        complete("ok")
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.http.client
 
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
-import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
@@ -14,7 +14,7 @@ import scala.concurrent.Future
   */
 trait UserClient extends UserModelProtocol with SessionProtocol {
   def createPartyUser(party: String, instance_id: String, userId: String, userInfo: String): Future[State] = {
-    //访问com.yimei.cflow.http.UserRoute中的postUser接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的postUser接口
     sendRequest(
       path = "api/user",
       pathVariables = Array(party, instance_id, userId),
@@ -25,7 +25,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def createUserGroup(party_id: String, gid: String, user_id: String): Future[UserGroupEntity] = {
-    //访问com.yimei.cflow.http.GroupRoute中的createUserGroup接口
+    //访问com.yimei.cflow.organ.routes.GroupRoute中的createUserGroup接口
     sendRequest(
       path = "api/ugroup",
       pathVariables = Array(party_id, gid, user_id),
@@ -36,7 +36,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def updatePartyUser(party: String, instance_id: String, userId: String, userInfo: String): Future[String] = {
-    //访问com.yimei.cflow.http.UserRoute中的putUser接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的putUser接口
     sendRequest(
       path = "api/user",
       pathVariables = Array(party, instance_id, userId),
@@ -46,7 +46,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def getSpecificPartyUser(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
-    //访问com.yimei.cflow.http.UserRoute中的getUser接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getUser接口
     sendRequest(
       path = "api/user",
       pathVariables = Array(party, instance_id, userId),
@@ -57,7 +57,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def getLoginUserInfo(userInfo: String): Future[MySession] = {
-    //访问com.yimei.cflow.http.UserRoute中的getLoginUserInfo接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getLoginUserInfo接口
     sendRequest(
       path = "api/login",
       method = "post",
@@ -68,7 +68,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def getUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[UserListEntity] = {
-    //访问com.yimei.cflow.http.UserRoute中的getUserList接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getUserList接口
     sendRequest(
       path = "api/user",
       paramters = Map("limit" -> limit.toString, "offset" -> offset.toString),
@@ -80,7 +80,7 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
   }
 
   def disableUser(userId: String): Future[String] = {
-    //访问com.yimei.cflow.http.UserRoute中的disAbleUser接口
+    //访问com.yimei.cflow.organ.routes.UserRoute中的disAbleUser接口
     sendRequest(
       path = "api/disable",
       pathVariables = Array(userId),

@@ -1,5 +1,8 @@
 package com.yimei.cflow.graph.cang.services
 
+import java.text.SimpleDateFormat
+import java.util.{Date, Random, UUID}
+
 import akka.event.{Logging, LoggingAdapter}
 import com.yimei.cflow.api.http.client.PartyClient
 import com.yimei.cflow.api.http.client.UserClient
@@ -16,8 +19,9 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -95,14 +99,28 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     p.future
   }
 
-  //管理员修改用户
-  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UpdateUser]] = {
-    log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
-    val result = updatePartyUser(party, instance_id, userInfo.id.toString, userInfo.toJson.toString)
+//  //管理员添加公司
+  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+    log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
-    def getResult(result: String): Result[UpdateUser] = {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+    def instanceId = formatter.format(new Date())  + new Random(3).nextInt()
+
+    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+
+    for {
+      re <- createPartyInstance(partyInstanceInfo.toJson.toString)
+    } yield Result(data = Some(re), success = true)
+  }
+
+  //管理员修改用户
+  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
+    log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
+    val result = updatePartyUser(party, instance_id, userInfo.userid, userInfo.toJson.toString)
+
+    def getResult(result: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(userInfo), success = true, error = null, meta = null)
+        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party)), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }

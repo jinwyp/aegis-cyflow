@@ -53,6 +53,15 @@
 <#else>
     <script src="${staticPathAdmin}/js/common.bundle.js"></script>
     <script src="${staticPathAdmin}/js/demoEcharts.bundle.js"></script>
+
+<!-- 开发环境下 IE8 环境使用 /page-temp-bundle/ 文件 -->
+
+<!--[if lt IE 9]>
+<script src="${staticPathAdmin}/js/page-temp-bundle/common.bundle.js"></script>
+<script src="${staticPathAdmin}/js/page-temp-bundle/demoEcharts.bundle.js"></script>
+
+<![endif]-->
+
 </#if>
 
 

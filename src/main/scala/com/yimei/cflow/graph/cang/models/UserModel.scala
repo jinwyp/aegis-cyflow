@@ -12,7 +12,7 @@ object UserModel extends DefaultJsonProtocol {
   implicit val addUserFormat = jsonFormat7(AddUser)
 
   /** 管理员修改用户 **/
-  case class UpdateUser(id: Long, username: String, password: String, name: String, email: String, phone: String)
+  case class UpdateUser(userid: String, username: String, password: String, name: String, email: String, phone: String)
   implicit val updateUserFormat = jsonFormat6(UpdateUser)
 
   /** 用户修改自己信息 **/
@@ -38,6 +38,9 @@ object UserModel extends DefaultJsonProtocol {
   /** 管理员禁用用户 **/
   case class AdminDisableUser(id: Long)
   implicit val adminDisableUserFormat = jsonFormat1(AdminDisableUser)
+
+  case class AddCompany(companyName: String, partyClass: String)
+  implicit val addCompanyFormat = jsonFormat2(AddCompany)
 
   //-------------------------------------返回model----------------------------------
   //登录返回信息

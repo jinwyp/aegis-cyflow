@@ -16,20 +16,43 @@ import com.yimei.cflow.api.util.DBUtils
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.organ.db._
 import DBUtils._
+import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
 
 class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocal with SprayJsonSupport{
   import driver.api._
 
-  //POST /inst/:party_class/:instance_id/:party_name          创建参与方实例
+  //POST /inst         创建参与方实例
+  //body {party: String, instanceId: String, companyName: String}
   def createPartyInstance: Route = post {
     pathPrefix("inst") {
       entity(as[PartyInstanceInfo]) { info =>
-        val entity: Future[PartyInstanceEntity] = dbrun(
-          (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, info.party, info.instanceId, info.companyName, Timestamp.from(Instant.now))
+
+        val getPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(
+          partyInstance.filter( p =>
+            p.instance_id === info.instanceId &&
+            p.party_class === info.party
+          ).result
         )
-        complete(entity)
+
+        def entity(pies: Seq[PartyInstanceEntity]): Future[PartyInstanceEntity] = {
+          if(pies.length == 0) {
+            dbrun(
+              (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, info.party, info.instanceId, info.companyName, Timestamp.from(Instant.now))
+            )
+          } else {
+            throw BusinessException("已存在该公司")
+          }
+
+        }
+
+       val result = for {
+          pi <- getPartyInstance
+          r <- entity(pi)
+        } yield r
+
+        complete(result)
       }
     }
   }

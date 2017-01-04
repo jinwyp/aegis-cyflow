@@ -12,7 +12,7 @@ import spray.json._
   */
 trait PartyClient extends UserProtocol{
   def createPartyInstance(partyInfo: String): Future[PartyInstanceEntity] = {
-    //访问com.yimei.cflow.http.InstRoute中的createPartyInstance接口
+    //访问com.yimei.cflow.organ.routes.InstRoute中的createPartyInstance接口
     sendRequest(
       path = "api/inst",
       method = "post",

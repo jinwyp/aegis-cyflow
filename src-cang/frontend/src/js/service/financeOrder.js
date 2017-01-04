@@ -41,7 +41,7 @@ var actions = [
     {statusAt:"financingStep11", operator : 'trader', name : 'a11SelectHarborAndSupervisor', displayName : '完成选择港口,监管方和资金方'},
 
     {statusAt:"financingStep12", operator : 'financer', name : 'a12FinishedUpload', displayName : '确认完成上传资料并提交'},
-    {statusAt:"financingStep12", operator : 'harbor', name : 'a13FinishedUpload', displayName : '确认完成上传资料并提交'},
+    {statusAt:"financingStep12", operator : 'harbor', name : 'a13FinishedUpload', displayName : '确认完成上传资料并已确认货物数量'},
     {statusAt:"financingStep12", operator : 'supervisor', name : 'a14FinishedUpload', displayName : '确认完成上传资料并提交'},
 
     {statusAt:"financingStep12", operator : 'trader', name : 'a15Approved', displayName : '审核通过'},
@@ -197,37 +197,51 @@ exports.addNewFinanceOrder = function (order){
 
 };
 
-exports.auditFinanceOrder = function (orderId, userRole, actionName, selectUser, additionalData){
+exports.auditFinanceOrder = function (orderId, userRole, actionName, additionalData){
     console.log("流程:%s, 角色 %s 发出的动作: %s", orderId, userRole, actionName)
     var params = jQuery.extend({}, {
+        "taskId": orderId,
+        "flowId": orderId,
         "orderId": orderId,
         "action": actionName,
-        "operator": userRole,
+        "operator": userRole
         // "harborUserId": "583ea0b1f17d22ecde1ecb17",
         // "supervisorUserId": "583fc370e6e14eedaa51d2a0",
         // "fundProviderUserId": "583fd13e75a02a0f2935374e",
-        "fundProviderAccountantUserId": "583fd178551ff10f40108c8c"
+        // "fundProviderAccountantUserId": "583fd178551ff10f40108c8c"
     });
 
-    if (selectUser && selectUser.harborUserId) params.harborUserId = selectUser.harborUserId;
-    if (selectUser && selectUser.supervisorUserId) params.supervisorUserId = selectUser.supervisorUserId;
-    if (selectUser && selectUser.fundProviderUserId) params.fundProviderUserId = selectUser.fundProviderUserId;
-    if (selectUser && selectUser.fundProviderAccountantUserId) params.fundProviderAccountantUserId = selectUser.fundProviderAccountantUserId;
+    if (additionalData && additionalData.harborUserId) params.harborUserId = additionalData.harborUserId;
+    if (additionalData && additionalData.supervisorUserId) params.supervisorUserId = additionalData.supervisorUserId;
+    if (additionalData && additionalData.fundProviderUserId) params.fundProviderUserId = additionalData.fundProviderUserId;
+    if (additionalData && additionalData.fundProviderAccountantUserId) params.fundProviderAccountantUserId = additionalData.fundProviderAccountantUserId;
+
 
     if (additionalData && additionalData.fileList) params.fileList = additionalData.fileList;
     if (additionalData && additionalData.harborConfirmAmount) params.harborConfirmAmount = additionalData.harborConfirmAmount;
+
     if (additionalData && additionalData.loanValue) params.loanValue = additionalData.loanValue;
 
-    if (additionalData && additionalData.redemptionValue) params.redemptionValue = additionalData.redemptionValue;
+    if (additionalData && additionalData.repaymentValue) params.repaymentValue = additionalData.redemptionValue;
     if (additionalData && additionalData.redemptionAmount) params.redemptionAmount = additionalData.redemptionAmount;
-    if (additionalData && additionalData.redemptionfileList) params.redemptionfileList = additionalData.redemptionfileList;
     if (additionalData && additionalData.redemptionAmountDeliveryId) params.redemptionAmountDeliveryId = additionalData.redemptionAmountDeliveryId;
+
+    if (actionName === 'a15Approved' || actionName === 'a18Approved') {
+        params.approveStatus = 1
+    }
+    if (actionName === 'a16NotApproved' || actionName === 'a19NotApproved') {
+        params.approveStatus = 0
+    }
+
+    if (actionName === 'a17Approved' || actionName === 'a20Approved' || actionName === 'a36ReturnMoney' || actionName === 'a37Approved') {
+        params.status = 1
+    }
 
     return jQuery.ajax({
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.financeOrderList + '/audit',
+        url      : url.financeOrderList + '/task',
         method   : 'POST',
         data     :JSON.stringify(params)
 
