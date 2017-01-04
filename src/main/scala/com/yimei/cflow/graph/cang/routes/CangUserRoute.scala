@@ -48,8 +48,14 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  /*
+   * 管理员修改邮箱、电话
+   * url      http://localhost:9001/admin/userinfo/:party/:instance_id
+   * method   post application/json
+   * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
+   */
   def adminModifyUserRoute: Route = post {
-    pathPrefix("amu" / Segment / Segment) { (party, instance_id) =>
+    pathPrefix("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
       entity(as[UpdateUser]) { user =>
         complete(adminModifyUser(party, instance_id, user))
       }

@@ -96,13 +96,13 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员修改用户
-  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UpdateUser]] = {
+  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
     log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
-    val result = updatePartyUser(party, instance_id, userInfo.id.toString, userInfo.toJson.toString)
+    val result = updatePartyUser(party, instance_id, userInfo.userid, userInfo.toJson.toString)
 
-    def getResult(result: String): Result[UpdateUser] = {
+    def getResult(result: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(userInfo), success = true, error = null, meta = null)
+        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party)), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
