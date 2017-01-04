@@ -9,32 +9,29 @@ import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.ByteString
+import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
-import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class AssetRoute extends ApplicationConfig with AssetTable with SprayJsonSupport {
+class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
+  import driver.api._
+
   val rootPath = coreConfig.getString("filePath")
 
-  import scala.concurrent.duration._
+  import java.io.File
 
+  import scala.concurrent.duration._
   /**
     * GET asset/:asset_id  -- 下载asset_id资源
-    *
-    * @return
     */
   def downloadFile: Route = get {
-    pathPrefix("file" / "download") {
-      pathEnd {
-        parameter("url") { url =>
-          if (url == null || !url.startsWith(rootPath)) {
-            complete("error")
-          }
-          complete("ok")
-        }
-      }
+    path("file" / Segment) { id =>
+        val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+        getFromFile(new File(rootPath + url))
     }
   }
 
@@ -58,14 +55,6 @@ class AssetRoute extends ApplicationConfig with AssetTable with SprayJsonSupport
   def uploadFile: Route = post {
     pathPrefix("file" / "upload") {
       pathEnd {
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
-        println(" -------------- file upload ------------- ")
         entity(as[Multipart.FormData]) { fileData =>
           // 多个文件
           val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
