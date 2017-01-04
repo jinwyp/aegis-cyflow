@@ -14,14 +14,15 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class FileRoute extends ApplicationConfig with SprayJsonSupport {
+class AssetRoute extends ApplicationConfig with SprayJsonSupport {
   val rootPath = coreConfig.getString("filePath")
   val localPath = rootPath + "cang/"
 
   import scala.concurrent.duration._
 
   /**
-    *  GET asset/:asset_id  -- 下载asset_id资源
+    * GET asset/:asset_id  -- 下载asset_id资源
+    *
     * @return
     */
   def downloadFile: Route = get {
@@ -39,7 +40,19 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
 
 
   /**
-    * POST asset/    -- 上传文件
+    * POST asset/    -- 上传文件:
+    *
+    * 1. username        --> 上传用户
+    * 2. gid             --> 用户组
+    * 3. file_type       --> 后台计算   暂时依据后缀判断
+    * 4. busi_type       --> 表单
+    * 5. uri             --> 存储位置
+    *
+    * 算法:
+    * 1. 保持文件到文件系统, 记录位置为uri   --->    uuid  $file_root/xxxx/xx/xxx/xxx.pdf
+    *
+    * 2. 组织1, 2, 3, 4,5信息, 保存到数据库记录
+    *
     * @return
     */
   def uploadFile: Route = post {
@@ -58,15 +71,14 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
               .map(strict => data.name -> strict.entity.data.utf8String)
           }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
 
+          val ff = result.map { data => {
+            val url = data.get("url").get
+            val originName = data.get("name").get
+            FileObj(url.replace(localPath, ""), originName, url)
+          }}
 
-          complete {
-            result.map { data => {
-              val url = data.get("url").get
-              val originName = data.get("name").get
-              FileObj(url.replace(localPath, ""), originName, url)
-            }
-            }
-          }
+          complete(ff)
+
         }
       }
     }
@@ -89,9 +101,9 @@ class FileRoute extends ApplicationConfig with SprayJsonSupport {
   def route: Route = downloadFile ~ uploadFile
 }
 
-object FileRoute {
+object AssetRoute {
 
-  def route: Route = FileRoute().route
+  def route: Route = AssetRoute().route
 
-  def apply(): FileRoute = new FileRoute()
+  def apply(): AssetRoute = new AssetRoute()
 }

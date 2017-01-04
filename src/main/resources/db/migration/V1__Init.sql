@@ -122,11 +122,14 @@ create table party_group(
 
 -- 文件资源管理
 create table asset(
-  id BIGINT not null auto_increment,
-  asset_id varchar(36) not null,
-  file_type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf,  2: image
-  description varchar(512),           -- 可以为空
-  uri varchar(256) not null,
+  id BIGINT not null auto_increment,       -- 非业务主键
+  asset_id varchar(36) not null,           -- 资源id
+  file_type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf, 2: image
+  busi_type tinyint not null DEFAULT 0,    -- 业务类别  0: 未知,  1:   todo
+  username varchar(128) not null,          -- 上传用户
+  gid varchar(32),                         -- 上传用户当时属于哪个组
+  description varchar(512),                -- 可以为空
+  uri varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
