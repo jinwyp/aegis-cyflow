@@ -22,9 +22,10 @@ object FreemarkerConfig extends CoreConfig {
   ftlConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
   ftlConfig.setLogTemplateExceptions(false);
 
-  val staticPathAdmin = coreConfig.getString("cang.ftl")
+  val staticPathAdmin = "src-cang/frontend/src"
    // val staticEnv = coreConfig.getAnyRef("cang.env")
   val staticEnv = "fortest"
+
 
 
   // ftl   ==  ftl("admin/login.ftl", Some())
@@ -48,7 +49,7 @@ object FreemarkerConfig extends CoreConfig {
 
     val tdata = new java.util.HashMap[String, String]()
     tdata.putAll(data.getOrElse(new util.HashMap[String, String]()))
-    tdata.put("staticPathAdmin", staticPathAdmin)
+    tdata.put("staticPathAdmin", "/src-cang/frontend/src")
     tdata.put("env", "staging")
 
     ftlConfig.getTemplate(template).process(tdata, out)
