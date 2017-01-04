@@ -342,7 +342,7 @@
         <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z129 z128"></relationship>
     </object>
     <object type="LMENVIRONMENTVARIABLEVALUE" id="z128">
-        <attribute name="value" type="string">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ODNjZjE5ZGNkNmQ5N2MxMzE4NmNhMmIiLCJpYXQiOjE0ODM0MzA4MDQsImV4cCI6MTQ4MzUxNzIwNCwiaXNzIjoiZmVhdGhlcnMifQ.cxUH2ghu5g8tqDCybi_vhTv1xnCX5hYrV9uO9qEMdQ8</attribute>
+        <attribute name="value" type="string">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1ODNjZjE5ZGNkNmQ5N2MxMzE4NmNhMmIiLCJpYXQiOjE0ODM1MjIxNzMsImV4cCI6MTQ4MzYwODU3MywiaXNzIjoiZmVhdGhlcnMifQ.cdTIZKjhtb4pZiF9cdabYSzrnmFDeVr7qkV8m5hoDaU</attribute>
         <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z108"></relationship>
         <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z127"></relationship>
     </object>
