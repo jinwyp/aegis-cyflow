@@ -16,10 +16,6 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable {
   def listDesign: Route =  get {
     pathPrefix("design/graph") {
       pathEnd {
-//        val q = for (d <- design) yield (d.name, d.id)
-//        val a = q.result
-//        val f: Future[Seq[String]] = dbrun(a)
-//        complete(dbrun(a))
         complete("ok")
       }
     }

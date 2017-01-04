@@ -9,32 +9,30 @@ import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.ByteString
-import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
+import com.yimei.cflow.api.util.DBUtils.dbrun
+import com.yimei.cflow.asset.db.AssetTable
+import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport {
-  val rootPath = coreConfig.getString("file.root")
-  val localPath = s"${rootPath}/${bucket}/"
+class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
+  import driver.api._
+
+  val rootPath = coreConfig.getString("filePath")
+
+  import java.io.File
 
   import scala.concurrent.duration._
-
   /**
     * GET asset/:asset_id  -- 下载asset_id资源
-    *
-    * @return
     */
   def downloadFile: Route = get {
-    pathPrefix("file" / "download") {
-      pathEnd {
-        parameter("url") { url =>
-          if (url == null || !url.startsWith(rootPath)) {
-            complete("error")
-          }
-          complete("ok")
-        }
-      }
+    path("file" / Segment) { id =>
+        val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+        getFromFile(new File(rootPath + url))
     }
   }
 
@@ -55,6 +53,7 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
     *
     * @return
     */
+  import java.sql.Timestamp
   def uploadFile: Route = post {
     pathPrefix("file" / "upload") {
       pathEnd {
@@ -63,29 +62,32 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
           val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
             case file:
               BodyPart if file.name == "file" =>
-              val fileName = UUID.randomUUID().toString + "-" + file.getFilename().get()
-              val filePath = localPath + fileName
-              processFile(filePath, fileData)
-              Future("url" -> filePath)
+              val uuId = UUID.randomUUID().toString
+              val fileName = uuId + "-" + file.getFilename().get()
+              processFile(fileName, fileData)
+              Future("url" -> fileName)
             case data: BodyPart => data.toStrict(2.seconds)
               .map(strict => data.name -> strict.entity.data.utf8String)
           }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
 
-          val ff = result.map { data => {
+          val res = result.map { data => {
             val url = data.get("url").get
             val originName = data.get("name").get
-            FileObj(url.replace(localPath, ""), originName, url)
+            val fileType = data.get("type").get
+            val assetId = url.substring(url.lastIndexOf("-"))
+            val assetEntity: AssetEntity = new AssetEntity(null, assetId, 0, 0, "username", Some("gid"), Some("description"), url, new Timestamp(new java.util.Date().getTime)) ;
+            assetClass.insertOrUpdate(assetEntity)
+            FileObj(url, originName, rootPath + url)
           }}
-
-          complete(ff)
-
+          complete(res)
         }
       }
     }
   }
 
-  private def processFile(filePath: String, fileData: Multipart.FormData) {
-    val fileOutput = new FileOutputStream(filePath)
+  private def processFile(fileName: String, fileData: Multipart.FormData) {
+    val filePath = rootPath + fileName.replaceAll("-", "/")
+    val fileOutput = new FileOutputStream(rootPath + filePath)
     fileData.parts.mapAsync(1) {
       bodyPart =>
         def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
@@ -103,7 +105,7 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
 
 object AssetRoute {
 
-  def route(bucket: String): Route = AssetRoute(bucket).route
+  def route: Route = AssetRoute().route
 
-  def apply(bucket: String): AssetRoute = new AssetRoute(bucket)
+  def apply(): AssetRoute = new AssetRoute()
 }

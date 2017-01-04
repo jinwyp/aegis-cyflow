@@ -49,7 +49,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     AdminRoute.route(proxy) ~
       UserRoute.route(proxy) ~
       GroupRoute.route ~
-      AssetRoute("cang").route ~
+      AssetRoute.route ~
       TaskRoute.route(proxy) ~
       AutoRoute.route(proxy) ~
       PartyRoute.route ~

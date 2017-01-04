@@ -122,6 +122,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
+  //管理员修改公司信息
+  def adminUpdateCompany(party: String, instanceId: String, companyName: String): Future[Result[String]] = {
+    log.info(s"get into method adminUpdateCompany, party:${party}, intanceId:${instanceId}, companyName:${companyName}")
+    for {
+      re <- updatePartyInstance(party, instanceId, companyName)
+    } yield Result(data = Some(re), success = true)
+  }
+
   //管理员修改用户
   def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
     log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
