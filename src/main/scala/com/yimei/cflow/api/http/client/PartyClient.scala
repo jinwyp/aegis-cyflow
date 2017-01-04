@@ -23,7 +23,7 @@ trait PartyClient extends UserProtocol with PartyModelProtocal{
   }
 
   def queryPartyInstance(party_class: String, instance_id: String): Future[List[PartyInstanceEntity]] = {
-    //访问com.yimei.cflow.http.InstRoute中的queryPartyInstance接口
+    //访问com.yimei.cflow.organ.routes.InstRoute中的queryPartyInstance接口
     sendRequest(
       path = "api/inst",
       pathVariables = Array(party_class, instance_id),
@@ -33,7 +33,7 @@ trait PartyClient extends UserProtocol with PartyModelProtocal{
   }
 
   def getAllPartyInstanceList(page: Int, pageSize: Int): Future[PartyInstanceListEntity] = {
-    //访问com.yimei.cflow.http.InstRoute中的getPartyInstanceList接口
+    //访问com.yimei.cflow.organ.routes.InstRoute中的getPartyInstanceList接口
     sendRequest(
       path = "api/inst/list",
       paramters = Map("page" -> page.toString, "pageSize" -> pageSize.toString),
@@ -43,5 +43,13 @@ trait PartyClient extends UserProtocol with PartyModelProtocal{
     }
   }
 
-//  def
+  def updatePartyInstance(party: String, instanceId: String, companyName: String): Future[String] = {
+    //访问com.yimei.cflow.organ.routes.InstRoute中的updatePartyInstance接口
+    sendRequest(
+      path = "api/inst",
+      pathVariables = Array(party, instanceId),
+      method = "put",
+      bodyEntity = Some(companyName)
+    )
+  }
 }
