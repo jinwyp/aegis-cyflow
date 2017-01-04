@@ -38,11 +38,11 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
 
   Thread.sleep(2000);
 
-//  var root: Route = pathPrefix("cang") {
-//    CangFlowRoute.route() ~
-//      CangUserRoute.route() ~
-//      SessionDemoRoute.route()
-//  }
+  //  var root: Route = pathPrefix("cang") {
+  //    CangFlowRoute.route() ~
+  //      CangUserRoute.route() ~
+  //      SessionDemoRoute.route()
+  //  }
 
   // 3> http
   val base: Route = pathPrefix("api") {
@@ -62,19 +62,24 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     pathPrefix("cang") {
       CangFlowRoute.route() ~
         CangUserRoute.route() ~
-        SessionDemoRoute.route() ~
-      BasicRoute.route()
+        SessionDemoRoute.route()
     } ~
-  CangStatic.route() ~
-  XieJieTestRoute().route
+    CangStatic.route() ~
+    BasicRoute.route() ~
+    XieJieTestRoute().route
 
   def |+|(left: Route, right: Route) = left ~ right
-  val empty: Route = get { path("impossible") {complete("impossible")}}
+
+  val empty: Route = get {
+    path("impossible") {
+      complete("impossible")
+    }
+  }
 
   val flowRoute = FlowRegistry.registries.map { entry =>
-   pathPrefix(entry._1) {
-     entry._2.routes.map(_(proxy)).foldLeft(empty)(|+|)
-   }
+    pathPrefix(entry._1) {
+      entry._2.routes.map(_ (proxy)).foldLeft(empty)(|+|)
+    }
   }.foldLeft(empty)(|+|)
 
   val all = base ~ flowRoute

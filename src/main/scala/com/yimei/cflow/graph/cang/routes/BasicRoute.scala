@@ -1,6 +1,5 @@
 package com.yimei.cflow.graph.cang.routes
 
-import akka.http.scaladsl.model
 import akka.http.scaladsl.model.ContentTypes.`text/html(UTF-8)`
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
@@ -14,24 +13,6 @@ import com.yimei.cflow.config.FreemarkerConfig._
 class BasicRoute {
 
 
-  val html =
-    """
-      |<!DOCTYPE html>
-      |<html>
-      |<title>hello titel</title>
-      |
-      |<body>
-      |<p> hello </p>
-      |<p> hello </p>
-      |<p> hello </p>
-      |<p> hello </p>
-      |<p> hello </p>
-      |</body>
-      |
-      |</html>
-    """.stripMargin
-
-
   def cangHtml: Route = get {
     path("admin" / "test") {
      // complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
@@ -39,11 +20,12 @@ class BasicRoute {
     }
   }
 
-
+  /**
+    * 后台管理 平台管理首页
+    */
   def adminLogin: Route = get {
-    path("warehouse" / "login") {
-     val html: String = FreemarkerConfig.render("admin/login.ftl")
-      complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(html))))
+    path("warehouse"/ "admin" / "login") {
+      ftl("admin/login.ftl")
     }
   }
 
