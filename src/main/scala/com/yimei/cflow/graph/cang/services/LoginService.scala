@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.cang.services
 
+import java.util.UUID
+
 import akka.event.{Logging, LoggingAdapter}
 import com.yimei.cflow.api.http.client.PartyClient
 import com.yimei.cflow.api.http.client.UserClient
@@ -16,7 +18,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -94,6 +96,17 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     p.future
   }
+
+//  //管理员添加公司
+//  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+//    log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
+//
+//    def uuid() = UUID.randomUUID().toString
+//
+//    createPartyInstance
+//
+//
+//  }
 
   //管理员修改用户
   def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {

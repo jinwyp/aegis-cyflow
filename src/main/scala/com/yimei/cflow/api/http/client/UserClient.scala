@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.http.client
 
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
-import com.yimei.cflow.api.models.database.UserOrganizationDBModel.UserGroupEntity
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
@@ -23,6 +23,17 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       result.parseJson.convertTo[State]
     }
   }
+//
+//  def createPartyInstance(companyInfo: String): Future[PartyInstanceEntity] = {
+//    //访问com.yimei.cflow.organ.routes.GroupRoute中的createPartyInstance接口
+//    sendRequest(
+//      path = "api/inst",
+//      method = "post",
+//      bodyEntity = Some(companyInfo)
+//    ) map { result =>
+//      result.parseJson.convertTo[PartyInstanceEntity]
+//    }
+//  }
 
   def createUserGroup(party_id: String, gid: String, user_id: String): Future[UserGroupEntity] = {
     //访问com.yimei.cflow.organ.routes.GroupRoute中的createUserGroup接口
