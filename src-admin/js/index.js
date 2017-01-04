@@ -51,8 +51,7 @@
         return data;
     }
 
-    function getData (pageNumber){
-        console.log('------getData------');
+    function getSearchUrl (){
         var company_type = $("#input-company-type").val();
         var company_id = $("#input-company-id").val();
         var userId = $("#input-user-id").val();
@@ -83,23 +82,29 @@
         } else {
             url = "/api/flow?page="+currentPage+"&pageSize="+pageSize;
         }
+        return url;
+    }
+
+    function getData (pageNumber){
+        console.log('------getData------');
+
+        var dataList = [];
 
         //服务器数据
         $.ajax({
             method: "get",
-            url: url
+            url: getSearchUrl()
         }).done(function (data) {
             formatData(data);
             // console.dir(data);
         });
 
         //本地数据
-        var dataList = [];
-        $.getJSON('./json/dataList.json', function(res){
-            console.log(res.dataList[pageNumber-1]);
-             dataList= formatData(res.dataList[pageNumber-1]);
-            console.log(dataList);
-        });
+        // $.getJSON('./json/dataList.json', function(res){
+        //     console.log(res.dataList[pageNumber-1]);
+        //      dataList= formatData(res.dataList[pageNumber-1]);
+        //     console.log(dataList);
+        // });
         return dataList;
     }
 
