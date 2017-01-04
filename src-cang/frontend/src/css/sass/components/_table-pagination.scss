@@ -1,0 +1,59 @@
+@import '../helpers/_variables.scss';
+
+
+.table-pagination {
+
+    span {
+        margin: 4px 1px;
+        padding: 9px 9px;
+        display: block;
+        float: left;
+
+    }
+
+    .separator {
+        padding: 2px;
+        margin: 4px 5px;
+        height: 18px;
+        border-left: 2px solid #ccc;
+    }
+
+    .table-pagination-first {
+        background: url("#{$assetPath}/css/images/ui-icons_256x240.png")  no-repeat -80px -160px;
+    }
+
+    .table-pagination-prev {
+        background: url("#{$assetPath}/css/images/ui-icons_256x240.png")  no-repeat -48px -160px;
+    }
+
+    .table-pagination-next {
+        background: url("#{$assetPath}/css/images/ui-icons_256x240.png")  no-repeat -32px -160px;
+    }
+
+    .table-pagination-last {
+        background: url("#{$assetPath}/css/images/ui-icons_256x240.png")  no-repeat -64px -160px;
+    }
+
+    .table-pagination-input {
+        margin: 0px 1px;
+        padding: 0px ;
+    }
+
+    .table-pagination-total {
+        margin: 1px 1px;
+        padding: 0px 3px;
+        float: right;
+    }
+
+    .select {
+
+        margin-left: 5px;
+        margin-top: 2px;
+
+    }
+
+    .disabled{
+        opacity: 0.35;
+    }
+
+}

@@ -29,6 +29,27 @@ create table flow_task(
 -- flow_id和task_id唯一索引
 CREATE UNIQUE INDEX flowId_taskid_index ON flow_task(flow_id,task_id);
 
+-- 用户流程设计
+create table design(
+  id BIGINT not null auto_increment,
+  name varchar(64) not null,
+  json text(65532),
+  meta text(65532) not null,
+  ts_c timestamp default current_timestamp,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 流程部署
+create table deploy(
+  id BIGINT not null auto_increment,
+  flow_type varchar(64) not null,
+  jar blob(104857600) not null,   -- 100M
+  enable bool not null,           -- 激活
+  ts_c timestamp default current_timestamp,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 -- 参与方类别
 create table party_class (
   id BIGINT not null auto_increment,
@@ -60,17 +81,19 @@ create table party_user(
   id BIGINT not null auto_increment,
   party_id BIGINT not null,           -- 参与方的实体id, 这个等价于  userType    rz1 rz2
   user_id varchar(10) not null,       -- 应该改为  todo 5位编码
+  username VARCHAR(128) DEFAULT NULL COMMENT '登录名' ,
 
   password varchar(128) not null,
   phone varchar(32),
   email varchar(128),
   name varchar(128) not null,   -- todo 王琦:   这里是登录名?  需要让这个字段作唯一索引
+  disable tinyint not null DEFAULT 0,    -- 是否被禁用  0: 未禁用,  1: 禁用
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- party_id+user_id 唯一索引
 CREATE UNIQUE INDEX party_id_user_id_index ON party_user(party_id,user_id);
-CREATE UNIQUE INDEX part_user_name_index ON party_user(name);
+CREATE UNIQUE INDEX part_user_name_index ON party_user(username);
 
 -- 用户群组表
 create table user_group(
@@ -89,7 +112,6 @@ CREATE UNIQUE INDEX user_group_unq_index ON user_group(party_id,gid,user_id);
 -- 每一类运营方的组是预先定义好的 字典表
 --
 create table party_group(
-
   id BIGINT not null auto_increment,
   party_class varchar(32) not null,    -- 参与方类别
   gid varchar(32) not null,            -- 参与方组id
@@ -98,5 +120,18 @@ create table party_group(
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+-- 文件资源管理
+create table asset(
+  id BIGINT not null auto_increment,       -- 非业务主键
+  asset_id varchar(36) not null,           -- 资源id
+  file_type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf, 2: image
+  busi_type tinyint not null DEFAULT 0,    -- 业务类别  0: 未知,  1:   todo
+  username varchar(128) not null,          -- 上传用户
+  gid varchar(32),                         -- 上传用户当时属于哪个组
+  description varchar(512),                -- 可以为空
+  uri varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
+  ts_c timestamp default current_timestamp,
+  PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE UNIQUE INDEX asset_index ON asset(asset_id);
 

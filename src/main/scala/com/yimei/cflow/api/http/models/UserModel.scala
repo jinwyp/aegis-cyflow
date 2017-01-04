@@ -9,16 +9,22 @@ import spray.json.DefaultJsonProtocol
   */
 object UserModel {
 
-  case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String)
+  case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String, username: String)
 
   case class QueryUserResult(userInfo:PartyUserEntity,status:State)
 
   case class UserListEntity(userList:Seq[PartyUserEntity],total:Int)
 
+  case class DynamicUserSearch(username: Option[String], name: Option[String], companyName: Option[String], partyClass: Option[String])
+
+  case class UserLoginInfo(username: String, password: String)
+
   trait UserModelProtocol extends DefaultJsonProtocol with UserProtocol {
 
-    implicit val addUserModelFormat = jsonFormat4(UserInfo)
+    implicit val addUserModelFormat = jsonFormat5(UserInfo)
     implicit val queryUserResult = jsonFormat2(QueryUserResult)
     implicit val userlistFormat = jsonFormat2(UserListEntity)
+    implicit val dynamicUserSearchFormat = jsonFormat4(DynamicUserSearch)
+    implicit val userLoginInfoFormat = jsonFormat2(UserLoginInfo)
   }
 }

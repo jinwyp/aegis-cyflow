@@ -4,11 +4,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import akka.actor.ActorRef
-import com.yimei.cflow.auto.AutoMaster._
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.FlowRegistry._
-import com.yimei.cflow.group.GroupMaster.gfetch
-import com.yimei.cflow.user.UserMaster.ufetch
+import com.yimei.cflow.engine.FlowRegistry._
+import com.yimei.cflow.engine.group.GroupMaster.gfetch
+import com.yimei.cflow.engine.user.UserMaster.ufetch
+import com.yimei.cflow.engine.auto.AutoMaster._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 // 数据点: 值, 说明, 谁采集, 采集id, 采集时间
@@ -195,7 +195,7 @@ case class Edge(
                  begin: String = "God"
                ) extends EdgeBehavior
 
-case class TaskInfo(description: String, points: Seq[String], program: Option[String] = None)
+case class TaskInfo(description: String, points: Seq[String])
 
 case class Graph(
                   edges: Map[String, Edge],
@@ -213,7 +213,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   // 日期
   implicit object DateJsonFormat extends RootJsonFormat[Date] {
-    val formatter = new SimpleDateFormat("yyyy-MM-dd")   // todo change format
+    val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")   // todo change format
 
     override def write(obj: Date) = JsString(formatter.format(obj))
 
@@ -236,7 +236,7 @@ trait FlowProtocol extends DefaultJsonProtocol {
 
   implicit val stateFormat = jsonFormat7(State)
 
-  implicit val taskInfoFormat = jsonFormat3(TaskInfo)
+  implicit val taskInfoFormat = jsonFormat2(TaskInfo)
 
   implicit val graphFormat = jsonFormat6(Graph)
 

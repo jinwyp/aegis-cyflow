@@ -78,13 +78,17 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
         e.dataBytes
           .runFold(ByteString.empty) { case (acc, b) => acc ++ b }
       }
-      val result = byteString map {
-        _.decodeString("UTF-8").toJson.convertTo[R]
-      }
+      val result: Future[String] = byteString map(_.decodeString("UTF-8"))
+
+//        byteString map {
+//        _.decodeString("UTF-8").toJson.convertTo[R]
+//      }
 
       r.status match {
         case StatusCodes.OK =>
-          result
+          result map{r =>
+            log.info("{}",r)
+            r.parseJson.convertTo[R]}
         case _            =>
           result map( r => throw new BusinessException(r.toString))
       }
@@ -92,8 +96,8 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
       case BusinessException(r) =>
         log.info(r)
         throw new BusinessException(r)
-      case _ =>
-        log.error("!!!!!!!!!!!!!")
+      case e =>
+        log.error("url:{},err:{}",path,e)
         throw new BusinessException("网络异常")
     }
   }
@@ -159,5 +163,6 @@ object HttpUtil extends CoreConfig with ApplicationConfig{
         throw new BusinessException("网络异常")
     }
   }
+
 
 }

@@ -2,12 +2,11 @@ package com.yimei.cflow.api.services
 
 import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.pattern._
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, CommandFlowState, CommandHijack, CommandUpdatePoints, DataPoint, Graph, Command => FlowCommand, State => FlowState}
 import com.yimei.cflow.api.models.group.{Command => GroupCommand, State => GroupState, _}
 import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, Command => IdGeneratorCommand, State => IdGeneratorState}
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, Command => UserCommand, State => UserState}
-import com.yimei.cflow.auto.AutoMaster
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
 
@@ -34,8 +33,8 @@ object ServiceProxy extends CoreConfig {
   // 1> 创建流程 - 自动运行
   // 2> 查询流程
   // 3> 管理员更新数据点
-  def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String,init:Map[String,String] = Map()) =
-    (proxy ? CommandCreateFlow(flowType, s"${userType}!${userId}",init)).mapTo[FlowState]
+  def flowCreate(proxy: ActorRef, userType: String, userId: String, flowType: String, init: Map[String, String] = Map()) =
+    (proxy ? CommandCreateFlow(flowType, s"${userType}!${userId}", init)).mapTo[FlowState]
 
   def flowGraph(proxy: ActorRef, flowId: String) =
     (proxy ? CommandFlowGraph(flowId)).mapTo[Graph]
@@ -44,10 +43,12 @@ object ServiceProxy extends CoreConfig {
     (proxy ? CommandFlowState(flowId)).mapTo[FlowState]
 
   def flowUpdatePoints(proxy: ActorRef, flowId: String, updatePoint: Map[String, String], trigger: Boolean): Future[FlowState] =
-    (proxy ? CommandUpdatePoints(flowId, updatePoint, false)).mapTo[FlowState]   // todo
+    (proxy ? CommandUpdatePoints(flowId, updatePoint, false)).mapTo[FlowState] // todo
 
   def flowHijack(proxy: ActorRef, flowId: String, updatePoints: Map[String, DataPoint], decision: Option[String], trigger: Boolean): Future[FlowState] =
-    (proxy ? CommandHijack(flowId, updatePoints, decision, trigger)).mapTo[FlowState]   // todo
+    (proxy ? CommandHijack(flowId, updatePoints, decision, trigger)).mapTo[FlowState]
+
+  // todo
   // 1> 创建用户
   // 2> 查询用户
   // 3> 用户提交任务
@@ -84,8 +85,8 @@ object ServiceProxy extends CoreConfig {
   def groupTask(proxy: ActorRef, userType: String, gid: String, flowId: String, taskName: String, flowType: String): Unit =
     proxy ! CommandGroupTask(flowType, flowId, s"${userType}!${gid}", taskName)
 
-  def autoTask(proxy:ActorRef, state:FlowState, flowType:String, actorName:String) =
-    proxy ! CommandAutoTask(state,flowType,actorName)
+  def autoTask(proxy: ActorRef, state: FlowState, flowType: String, actorName: String) =
+    proxy ! CommandAutoTask(state, flowType, actorName)
 
 }
 
@@ -114,7 +115,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
       modules.get(module_flow).foreach(_ forward cmd)
 
     // 数据模块交互
-    case cmd: AutoMaster.CommandAutoTask =>
+    case cmd: CommandAutoTask =>
       log.debug(s"收到 ${cmd}")
       modules.get(module_auto).foreach(_ forward cmd)
 

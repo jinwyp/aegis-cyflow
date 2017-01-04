@@ -1,0 +1,109 @@
+@import '../helpers/_variables.scss';
+
+
+.marginL{
+  margin-left: 10px;
+}
+.marginR{
+  margin-right: 10px;
+}
+.text-danger{
+  line-height: 32px;
+}
+.lineH40{
+  line-height: 40px;
+}
+.border0{
+  border:0!important;
+}
+.paddingT0{
+  padding-top: 0!important;
+}
+.upload-box{
+  min-height: 100px;
+}
+.goods{
+  width: 110px;
+  height: 36px;
+  border-radius: 3px;
+  border: 1px solid #dde6e9;
+  padding-left: 10px;
+  font-size: 16px;
+}
+.positionR{
+  position: relative;
+}
+.positionA{
+  position: absolute;
+  left:56%;
+  top: 10px;
+}
+.contract-table{
+
+  th {
+    width: 200px;
+  }
+
+  a {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+.search-select {
+  width:162px !important;
+}
+
+.contract-type-select {
+  margin-top: 10px;
+  width:150px !important;
+}
+
+.payment-no {
+  width: 180px;
+  height: 33px;
+  border-radius: 4px;
+  border: 1px solid #dde6e9;
+  padding-left: 10px;
+  margin: 1px 5px 0px 2px;
+
+  font-size: 16px;
+}
+
+
+.flow {
+  position: relative;
+  height: 1000px;
+
+  .circle {
+    position: absolute;
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border : 1px solid red;
+  }
+  .circle-text {
+    position: absolute;
+    left : 17px;
+    top: 13px;
+  }
+
+
+  .line {
+    position: absolute;
+    display: block;
+    width:50px;
+    height: 100px;
+    border-left: 2px solid black;
+    padding-top: 20px;
+
+    span{
+      padding-left: 8px;
+    }
+  }
+}
+.flow-panel {
+  width: 200px;
+
+}

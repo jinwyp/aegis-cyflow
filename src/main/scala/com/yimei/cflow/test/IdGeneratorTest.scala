@@ -5,7 +5,7 @@ import akka.util.Timeout
 import com.yimei.cflow.api.services.{IdBufferable, ServiceProxy}
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.DaemonMaster
+import com.yimei.cflow.engine.DaemonMaster
 
 /**
   * Created by hary on 16/12/16.

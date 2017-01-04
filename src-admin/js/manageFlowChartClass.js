@@ -456,7 +456,8 @@
                 edgeWeight : function( edge ){
                     return 1;  // higher weight edges are generally made shorter and straighter than lower weight edges
                 },
-                nodeSep: 200
+                nodeSep: 200,
+                edgeSep: 300
             },
             style: styleList,
             elements: [],

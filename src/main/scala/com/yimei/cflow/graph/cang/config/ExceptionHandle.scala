@@ -8,14 +8,14 @@ import akka.http.scaladsl.server.Directives.{complete, extractUri}
 import akka.http.scaladsl.server.ExceptionHandler
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Result, ResultProtocol}
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.config.Config._
+import com.yimei.cflow.graph.cang.config.Config
 import spray.json._
 
 /**
   * Created by wangqi on 16/12/27.
   */
 
-trait ExceptionHandle extends ResultProtocol with SprayJsonSupport {
+trait ExceptionHandle extends ResultProtocol with SprayJsonSupport with Config{
 
 
 
@@ -25,14 +25,14 @@ trait ExceptionHandle extends ResultProtocol with SprayJsonSupport {
     case e:BusinessException =>
       extractUri { uri =>
         log.error(s"Request to $uri could not be handled normally!!!!!!!!! BusinessException")
-        complete(HttpResponse(StatusCodes.BadRequest,entity = Result(data = "",success = false,error = Error(409,e.message,"")).toJson.toString ))
+        complete(HttpResponse(StatusCodes.BadRequest,entity = Result[String](data = None,success = false,error = Error(409,e.message,"")).toJson.toString ))
       }
 
     case e =>
       extractUri { uri =>
         log.error(s"Request to $uri could not be handled normally!!!!!!!!!")
         log.error("{}",e)
-        complete(HttpResponse(StatusCodes.InternalServerError,entity = Result(data = "error",success = false,error = Error(500,"系统错误","")).toJson.toString ))
+        complete(HttpResponse(StatusCodes.InternalServerError,entity = Result(data = Some("error"),success = false,error = Error(500,"系统错误","")).toJson.toString ))
       }
   }
 }

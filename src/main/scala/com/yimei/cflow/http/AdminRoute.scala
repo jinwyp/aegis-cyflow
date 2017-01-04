@@ -9,16 +9,17 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.http.models.AdminModel._
-import com.yimei.cflow.api.models.flow.{State => FlowState}
-import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.config.DatabaseConfig.driver
-import com.yimei.cflow.core.FlowRegistry
-import com.yimei.cflow.exception.{DatabaseException, ParameterException}
 import com.yimei.cflow.api.models.database.FlowDBModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
-import com.yimei.cflow.user.db._
-import com.yimei.cflow.util.DBUtils.dbrun
+import com.yimei.cflow.api.models.flow.{State => FlowState}
+import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.api.util.DBUtils.dbrun
+import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.DatabaseConfig.driver
+import com.yimei.cflow.engine.FlowRegistry
+import com.yimei.cflow.engine.db.FlowInstanceTable
+import com.yimei.cflow.exception.DatabaseException
+import com.yimei.cflow.organ.db._
 import spray.json._
 
 import scala.concurrent.Future
@@ -69,7 +70,9 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
               dbrun(flowInstance returning flowInstance.map(_.id) into ((ft, id) => ft.copy(id = id)) +=
                 FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id,
                   s.toJson.toString, FlowRegistry.flowGraph(s.flowType).flowInitial ,0, Timestamp.from(Instant.now))) recover {
-                case _ => throw new DatabaseException("添加流程错误")
+                case e =>
+                  log.error("{}",e)
+                  throw new DatabaseException("添加流程错误")
               }
             }
 
@@ -113,17 +116,21 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
     * @return
     */
   def hijack = put {
-    pathPrefix("flow/admin/hijack" / Segment) { flowId =>
-      entity(as[HijackEntity]) { hjEntity =>
-        val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
-          case _ => throw new DatabaseException("该流程不存在")
+    pathPrefix("flow"){
+      pathPrefix("admin"){
+        pathPrefix("hijack" / Segment) { flowId =>
+          entity(as[HijackEntity]) { hjEntity =>
+            val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
+              case _ => throw new DatabaseException("该流程不存在")
+            }
+            complete(for {
+              f <- flow
+              r <- ServiceProxy.flowHijack(proxy, f.flow_id, hjEntity.updatePoints, hjEntity.decision, hjEntity.trigger)
+            } yield {
+              r
+            })
+          }
         }
-        complete(for {
-          f <- flow
-          r <- ServiceProxy.flowHijack(proxy, f.flow_id, hjEntity.updatePoints, hjEntity.decision, hjEntity.trigger)
-        } yield {
-          r
-        })
       }
     }
   }
@@ -214,14 +221,14 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
           dbrun(getQueryStatment(p, u).length.result)
         }
 
-        complete(for {
+        val res: Future[FlowQueryResponse] = for {
           p <- pi
           u <- getUser(p)
           alflow <- getAllFlows(p, u)
           total <- getFlowsCount(p, u)
-        } yield {
-          FlowQueryResponse(alflow, total)
-        })
+        } yield FlowQueryResponse(alflow, total)
+
+        complete(res)
 
       }
     }
@@ -231,6 +238,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
 
   /**
     * 得到任务中的数据节点
+    *
     * @return
     */
   def getGraph = get {

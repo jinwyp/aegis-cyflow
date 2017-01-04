@@ -1,7 +1,8 @@
 package com.yimei.cflow.graph.ying
 
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
+import com.yimei.cflow.api.annotation.VertexProperty
 import com.yimei.cflow.api.models.flow._
+import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.graph.ying.YingConfig._
 
 import scala.concurrent.Future
@@ -10,13 +11,12 @@ object YingGraphJar {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-//  def V0(state: State): Seq[Arrow] = Seq(Arrow(J1, Some("E1")))
-//
-//  def V1(state: State): Seq[Arrow] = Seq(Arrow(J2, Some("E2")))
-//
-//  def V2(state: State): Seq[Arrow] = Seq(Arrow(J3, Some("E3")))
-
   val ArrowFail = Arrow("fail", None)
+
+  def V0(state: State): Seq[Arrow] = Seq(Arrow(J1, Some("E1")))
+  def V1(state: State): Seq[Arrow] = Seq(Arrow(J2, Some("E2")))
+  def V2(state: State): Seq[Arrow] = Seq(Arrow(J3, Some("E3")))
+
   def V3(state: State): Seq[Arrow] = {
     //收集的pu_1,pu_2,pg-1,pg-2的总评分为100时通过
     state.points.filter(entry => List(point_PU1, point_PU2, point_PG1, point_PG2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
@@ -27,6 +27,7 @@ object YingGraphJar {
     }
   }
 
+  @VertexProperty("V4's description")
   def V4(state: State): Seq[Arrow] = {
     state.points.filter(entry => List(point_U_A1, point_U_A2).contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt
@@ -38,6 +39,7 @@ object YingGraphJar {
 
   var count = 3
 
+  @VertexProperty("V5's description")
   def V5(state: State): Seq[Arrow] = {
     state.points.filter(entry => autoPointMap(auto_DEF).points.contains(entry._1)).foldLeft(0) { (acc, entry) =>
       acc + entry._2.value.toInt

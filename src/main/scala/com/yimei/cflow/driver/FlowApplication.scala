@@ -6,11 +6,13 @@ import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
-import com.yimei.cflow.core.{DaemonMaster, FlowRegistry}
+import com.yimei.cflow.engine.routes.AutoRoute
+import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.cang.CangRoute
 import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.graph.ying.YingGraph
-import com.yimei.cflow.http._
+import com.yimei.cflow.http.{ResourceRoute, _}
+import com.yimei.cflow.organ.routes.{GroupRoute, UserRoute}
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 
 

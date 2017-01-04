@@ -1,5 +1,7 @@
 package com.yimei.cflow.api.util
 
+import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 
 import com.yimei.cflow.api.models.flow.DataPoint
@@ -17,14 +19,16 @@ object PointUtil {
   }
 
   implicit class object2str[A:JsonFormat](o: A){
-    def str = o.toJson.toString()
+    def str: String = if ( o.isInstanceOf[String]) o.asInstanceOf[String] else o.toJson.toString()
   }
 
   implicit class dataPointUnWrapper(dp: DataPoint) {
-    def unwrap[A:JsonFormat] = PointModel[A]( dp.value.parseJson.convertTo[A], dp.memo, dp.operator, UUID.randomUUID().toString, 0L)
+    def unwrap[A:JsonFormat] = PointModel[A]( dp.value.parseJson.convertTo[A], dp.memo, dp.operator, dp.id,
+      dp.timestamp)
   }
 
   implicit class dataPointWrapper[A:JsonFormat](a: A) {
-    def wrap(memo: Option[String] = None, operator: Option[String] = None) = DataPoint(a.str, memo, operator, UUID.randomUUID().toString, 0L, false)
+    def wrap(memo: Option[String] = None, operator: Option[String] = None) =
+      DataPoint(a.str, memo, operator, UUID.randomUUID().toString, Timestamp.from(Instant.now()).getTime, false)
   }
 }

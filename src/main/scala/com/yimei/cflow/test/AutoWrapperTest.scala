@@ -4,10 +4,10 @@ import java.io.File
 import java.lang.reflect.{Constructor, Method}
 
 import akka.actor.{ActorRef, Props}
-import com.yimei.cflow.auto.AutoMaster.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{Arrow, State}
-import com.yimei.cflow.auto.AutoActor
-import com.yimei.cflow.core.FlowGraph
+import com.yimei.cflow.api.models.auto.CommandAutoTask
+import com.yimei.cflow.engine.auto.{AutoActor, AutoMaster}
+import com.yimei.cflow.engine.graph.FlowGraph
 
 import scala.concurrent.Future
 

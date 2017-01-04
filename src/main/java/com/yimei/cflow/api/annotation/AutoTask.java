@@ -10,6 +10,8 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoTask {
-    String description() default "";
-    String[] points();
+    String description() default "";   // 描述
+    String[] points(); // 负责哪些数据点
+    String in();  // 在哪个edge上
 }
+

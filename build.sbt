@@ -18,42 +18,51 @@ libraryDependencies ++= {
   val slickVersion = "3.1.1"
   val circeV = "0.5.1"
   Seq(
-    "com.typesafe.akka" %% "akka-http-core" % akkaV,
 
+    // cluster
     "com.typesafe.akka" %% "akka-cluster" % akkaV,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaV,
     "com.typesafe.akka" %% "akka-cluster-sharding" % akkaV,
+
+    // compiler
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
 
+    // persistence
     "com.typesafe.akka" %% "akka-persistence" % akkaV,
     "com.hootsuite" %% "akka-persistence-redis" % "0.6.0",
-
     "org.iq80.leveldb"            % "leveldb"          % "0.7",
     "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8",
 
+    // akka-http
+    "com.typesafe.akka" %% "akka-http-core" % akkaV,
     "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaV % "test",
+    "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % "2.4.11",
+    "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
+    "com.softwaremill.akka-http-session" %% "core" % "0.3.0",
 
+    // database: slick and flyway
     "com.typesafe.slick" %% "slick" % slickVersion,
     "org.flywaydb" % "flyway-core" % "3.2.1",
-
     "com.zaxxer" % "HikariCP" % "2.4.5",
-    "org.slf4j" % "slf4j-nop" % "1.6.4",
 
+
+    // mysql
     "mysql" % "mysql-connector-java" % "6.0.5",
 
     "org.scalatest" %% "scalatest" % scalaTestV % "test",
-    "com.typesafe.akka" %% "akka-http-testkit" % akkaV % "test",
     "com.wix" %% "accord-core" % "0.6",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8",
-    "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % "2.4.11",
 
+    // camel integration
     "com.typesafe.akka" %% "akka-camel"   % "2.4.11",
     "org.apache.camel"  %  "camel-jetty"  % "2.16.4",
     "org.apache.camel"  %  "camel-quartz" % "2.16.4",
 
-    "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
+    // logger
     "ch.qos.logback" % "logback-classic" % "1.1.3",
+    "org.slf4j" % "slf4j-nop" % "1.6.4",
     "com.typesafe.akka" %% "akka-slf4j" % akkaV,
 
     // lens
@@ -65,10 +74,19 @@ libraryDependencies ++= {
     // scala-pb
     "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
+    // scalaz
     "org.scalaz" %% "scalaz-core" % "7.2.8",
 
-    //session
-    "com.softwaremill.akka-http-session" %% "core" % "0.3.0"
+    //files tar.gz
+  "org.apache.commons" % "commons-compress" % "1.12",
+
+    //http cors
+//    "ch.megard" %% "akka-http-cors" % "0.1.10",
+
+    "org.apache.commons" % "commons-compress" % "1.12",
+
+    "org.freemarker" % "freemarker" % "2.3.23"
+
   )
 }
 

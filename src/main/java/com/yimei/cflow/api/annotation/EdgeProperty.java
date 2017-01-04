@@ -12,8 +12,5 @@ import java.lang.annotation.*;
 public @interface EdgeProperty {
     String begin();
     String end();
-    String[] userTasks() default {};
-    String[] autoTasks() default {};
-    String[] pgTasks() default {};
-    String[] puTasks() default {};
 }
+

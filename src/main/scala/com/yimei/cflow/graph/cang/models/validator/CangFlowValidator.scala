@@ -2,8 +2,7 @@ package com.yimei.cflow.graph.cang.models.validator
 
 import com.wix.accord.Validator
 import com.wix.accord.dsl._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CustomerPaymentToTrafficker, CustomerUploadContract, FileObj, FundProviderAudit, FundProviderFinanceLoad, PortReleaseGoods, PortUploadContract, StartFlowBasicInfo, StartFlowInvestigationInfo, StartFlowSupervisorInfo, SupervisorUploadContract, TraffickerAssignUsers, TraffickerAudit, TraffickerAuditIfCompletePayment, TraffickerConfirmPayToFundProvider, TraffickerFinanceAudit, TraffickerFinancePayToFundProvider, TraffickerNoticePortReleaseGoods}
-
+import com.yimei.cflow.graph.cang.models.CangFlowModel._
 object CangFlowValidator {
 
   /** 文件 **/
@@ -20,10 +19,10 @@ object CangFlowValidator {
   implicit val startFlowBasicInfoValidator: Validator[StartFlowBasicInfo] =
     validator[StartFlowBasicInfo] {
       basicInfo =>
-        basicInfo.applyCompanyId as "融资方公司id" min(1)
+        basicInfo.applyCompanyId as "融资方公司id" is notEmpty
         basicInfo.applyCompanyName as "融资方公司名称" is notEmpty
         basicInfo.applyCompanyName.length as "融资方公司名称字段长度" is between(1, 100)
-        basicInfo.applyUserId as "融资方用户id" min(1)
+        basicInfo.applyUserId as "融资方用户id" is notEmpty
         basicInfo.applyUserName as "融资方用户姓名" is notEmpty
         basicInfo.applyUserName.length as "融资方用户姓名字段长度" is between(1, 10)
         basicInfo.applyUserPhone as "融资方用户手机号" is notEmpty
@@ -102,64 +101,63 @@ object CangFlowValidator {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.portCompanyId as "港口公司id" is notEmpty
-        traffickerAssignUsers.portUserId as "港口用户id" is notEmpty
+        traffickerAssignUsers.harborCompanyId as "港口公司id" is notEmpty
+        traffickerAssignUsers.harborUserId as "港口用户id" is notEmpty
         traffickerAssignUsers.supervisorCompanyId as "监管公司id" is notEmpty
         traffickerAssignUsers.supervisorUserId as "监管用户id" is notEmpty
         traffickerAssignUsers.fundProviderCompanyId as "资金方公司id" is notEmpty
     }
 
   /** 融资方上传 合同, 财务, 业务 文件 **/
-  implicit val customerUploadContractValidator: Validator[CustomerUploadContract] =
-    validator[CustomerUploadContract] {
+  /** 监管方上传合同 **/
+  implicit val customerUploadContractValidator: Validator[UploadContract] =
+    validator[UploadContract] {
       customerUploadContract =>
         customerUploadContract.taskId as "任务id" is notEmpty
         customerUploadContract.taskId.length as "任务id字段" max(10)
-        customerUploadContract.businessFileList.each is valid
-        customerUploadContract.contractFileList.each is valid
-        customerUploadContract.financeFileList.each is valid
+       // customerUploadContract.fileList.each is valid
     }
 
-  /** 监管方上传合同 **/
-  implicit val supervisorUploadContractValidator: Validator[SupervisorUploadContract] =
-    validator[SupervisorUploadContract] {
-      supervisorUploadContract =>
-        supervisorUploadContract.taskId as "任务id" is notEmpty
-        supervisorUploadContract.taskId.length as "任务id字段" max(10)
-        supervisorUploadContract.contractFileList.each is valid
-    }
+
+//  implicit val supervisorUploadContractValidator: Validator[SupervisorUploadContract] =
+//    validator[SupervisorUploadContract] {
+//      supervisorUploadContract =>
+//        supervisorUploadContract.taskId as "任务id" is notEmpty
+//        supervisorUploadContract.taskId.length as "任务id字段" max(10)
+//        supervisorUploadContract.FileList.each is valid
+//    }
 
   /** 港口上传合同 **/
-  implicit val portUploadContractValidator: Validator[PortUploadContract] =
-    validator[PortUploadContract] {
+  implicit val portUploadContractValidator: Validator[HarborUploadContract] =
+    validator[HarborUploadContract] {
       portUploadContract =>
         portUploadContract.taskId as "任务id" is notEmpty
         portUploadContract.taskId.length as "任务id字段" max(10)
-        portUploadContract.confirmCoalAmount as "确认吨数" is notNull
-        portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        portUploadContract.contractFileList.each is valid
+        portUploadContract.harborConfirmAmount as "确认吨数" is notNull
+        portUploadContract.harborConfirmAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+     //   portUploadContract.fileList.each is valid
     }
 
   /** 贸易商审核 **/
-  implicit val traffickerAuditValidator: Validator[TraffickerAudit] =
-    validator[TraffickerAudit] {
+  implicit val traffickerAuditValidator: Validator[TraderAudit] =
+    validator[TraderAudit] {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.statusId as "审核状态id" min(0)
-        traffickerAssignUsers.statusId as "审核状态id" max(1)
+        traffickerAssignUsers.approvedStatus as "审核状态id" min(0)
+        traffickerAssignUsers.approvedStatus as "审核状态id" max(1)
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is notNull
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
     }
 
   /** 贸易商财务给出放款建议 **/
-  implicit val traffickerFinanceAuditValidator: Validator[TraffickerFinanceAudit] =
-    validator[TraffickerFinanceAudit] {
+  implicit val traffickerFinanceAuditValidator: Validator[TraderRecommendAmount] =
+    validator[TraderRecommendAmount] {
       traffickerFinanceAudit =>
         traffickerFinanceAudit.taskId as "任务id" is notEmpty
         traffickerFinanceAudit.taskId.length as "任务id字段" max(10)
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is notNull
-        traffickerFinanceAudit.confirmFinancingAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        traffickerFinanceAudit.loanValue as "确认放款金额" is notNull
+        traffickerFinanceAudit.loanValue as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
     }
 
   /** 资金方审核 **/
@@ -168,29 +166,29 @@ object CangFlowValidator {
       fundProviderAudit =>
         fundProviderAudit.taskId as "任务id" is notEmpty
         fundProviderAudit.taskId.length as "任务id字段" max(10)
-        fundProviderAudit.statusId as "审核状态id" min(0)
-        fundProviderAudit.statusId as "审核状态id" max(0)
+        fundProviderAudit.approvedStatus as "审核状态id" min(0)
+        fundProviderAudit.approvedStatus as "审核状态id" max(0)
     }
 
   /** 资金方财务放款 **/
-  implicit val fundProviderFinanceLoadValidator: Validator[FundProviderFinanceLoad] =
-    validator[FundProviderFinanceLoad] {
+  implicit val fundProviderFinanceLoadValidator: Validator[FundProviderAccountantAudit] =
+    validator[FundProviderAccountantAudit] {
       fundProviderFinanceLoad =>
         fundProviderFinanceLoad.taskId as "任务id" is notEmpty
         fundProviderFinanceLoad.taskId.length as "任务id字段" max(10)
-        fundProviderFinanceLoad.statusId as "放款状态id" min(0)
-        fundProviderFinanceLoad.statusId as "放款状态id" max(1)
+        fundProviderFinanceLoad.status as "放款状态id" min(0)
+        fundProviderFinanceLoad.status as "放款状态id" max(1)
     }
 
   /** 融资方付款给贸易商 **/
-  implicit val customerPaymentToTraffickerValidator: Validator[CustomerPaymentToTrafficker] =
-    validator[CustomerPaymentToTrafficker] {
+  implicit val customerPaymentToTraffickerValidator: Validator[FinancerToTrader] =
+    validator[FinancerToTrader] {
       customerPaymentToTrafficker =>
         customerPaymentToTrafficker.taskId as "任务id" is notEmpty
         customerPaymentToTrafficker.taskId.length as "任务id字段" max(10)
-        customerPaymentToTrafficker.statusId as "付款状态id" min(0)
-        customerPaymentToTrafficker.statusId as "付款状态id" max(1)
-        customerPaymentToTrafficker.paymentPrinciple as "付款本金" is notNull
+        //customerPaymentToTrafficker.statusId as "付款状态id" min(0)
+        //customerPaymentToTrafficker.statusId as "付款状态id" max(1)
+        customerPaymentToTrafficker.repaymentValue as "付款本金" is notNull
     }
 
   /** 贸易商通知港口放货 **/
@@ -199,9 +197,9 @@ object CangFlowValidator {
       traffickerNoticePortReleaseGoods =>
         traffickerNoticePortReleaseGoods.taskId as "任务id" is notEmpty
         traffickerNoticePortReleaseGoods.taskId.length as "任务id字段" max(10)
-        traffickerNoticePortReleaseGoods.goodsFileList.each is valid
-        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is notNull
-        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
+       // traffickerNoticePortReleaseGoods.fileList.each is valid
+        traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is notNull
+        traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
         traffickerNoticePortReleaseGoods.goodsReceiveCompanyName as "接收方公司名称" is notEmpty
     }
 
@@ -211,8 +209,8 @@ object CangFlowValidator {
       portReleaseGoods =>
         portReleaseGoods.taskId as "任务id" is notEmpty
         portReleaseGoods.taskId.length as "任务id字段" max(10)
-        portReleaseGoods.statusId as "放货状态id" min(0)
-        portReleaseGoods.statusId as "放货状态id" max(1)
+        portReleaseGoods.status as "放货状态id" min(0)
+        portReleaseGoods.status as "放货状态id" max(1)
     }
 
   /** 贸易商审核是否回款完成 **/
@@ -221,8 +219,8 @@ object CangFlowValidator {
       traffickerAuditIfCompletePayment =>
         traffickerAuditIfCompletePayment.taskId as "任务id" is notEmpty
         traffickerAuditIfCompletePayment.taskId.length as "任务id字段" max(10)
-        traffickerAuditIfCompletePayment.statusId as "审核状态id" min(0)
-        traffickerAuditIfCompletePayment.statusId as "审核状态id" max(1)
+        traffickerAuditIfCompletePayment.status as "审核状态id" min(0)
+        traffickerAuditIfCompletePayment.status as "审核状态id" max(1)
     }
 
   /** 贸易商同意付款给资金方 **/
@@ -231,8 +229,8 @@ object CangFlowValidator {
       traffickerConfirmPayToFundProvider =>
         traffickerConfirmPayToFundProvider.taskId as "任务id" is notEmpty
         traffickerConfirmPayToFundProvider.taskId.length as "任务id字段" max(10)
-        traffickerConfirmPayToFundProvider.statusId as "审核状态id" min(0)
-        traffickerConfirmPayToFundProvider.statusId as "审核状态id" max(1)
+        traffickerConfirmPayToFundProvider.status as "审核状态id" min(0)
+        traffickerConfirmPayToFundProvider.status as "审核状态id" max(1)
     }
 
   /** 贸易商财务放款给资金方,流程结束 **/
@@ -241,8 +239,8 @@ object CangFlowValidator {
       traffickerFinancePayToFundProvider =>
         traffickerFinancePayToFundProvider.taskId as "任务id" is notEmpty
         traffickerFinancePayToFundProvider.taskId.length as "任务id字段" max(10)
-        traffickerFinancePayToFundProvider.statusId as "付款状态id" min(0)
-        traffickerFinancePayToFundProvider.statusId as "付款状态id" max(1)
+        traffickerFinancePayToFundProvider.status as "付款状态id" min(0)
+        traffickerFinancePayToFundProvider.status as "付款状态id" max(1)
     }
 
 }

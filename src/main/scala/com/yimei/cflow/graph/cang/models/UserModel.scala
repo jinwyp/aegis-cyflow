@@ -12,8 +12,8 @@ object UserModel extends DefaultJsonProtocol {
   implicit val addUserFormat = jsonFormat7(AddUser)
 
   /** 管理员修改用户 **/
-  case class UpdateUser(id: Long, username: String, name: String, email: String, phone: String, companyName: String, className: String)
-  implicit val updateUserFormat = jsonFormat7(UpdateUser)
+  case class UpdateUser(userid: String, username: String, password: String, name: String, email: String, phone: String)
+  implicit val updateUserFormat = jsonFormat6(UpdateUser)
 
   /** 用户修改自己信息 **/
   case class UpdateSelf(email: String, phone: String)
@@ -28,7 +28,7 @@ object UserModel extends DefaultJsonProtocol {
   implicit val userChangePwdFormat = jsonFormat2(UserChangePwd)
 
   /** 用户管理-列表, 搜索参数 **/
-  case class UserListSearch(username: String, name: String, companyName: String, className: String)
+  case class UserListSearch(username: Option[String], name: Option[String], companyName: Option[String], className: Option[String])
   implicit val userListSearchFormat = jsonFormat4(UserListSearch)
 
   /** 管理员重置密码 **/
@@ -39,6 +39,15 @@ object UserModel extends DefaultJsonProtocol {
   case class AdminDisableUser(id: Long)
   implicit val adminDisableUserFormat = jsonFormat1(AdminDisableUser)
 
+  case class AddCompany(companyName: String, partyClass: String)
+  implicit val addCompanyFormat = jsonFormat2(AddCompany)
+
+  //-------------------------------------返回model----------------------------------
+  //登录返回信息
+  case class UserData(userId: String, username: String, email: String, mobilePhone: String, role: String)
+  implicit val dataFormat = jsonFormat5(UserData)
+  case class LoginRespModel(token: String, data: UserData)
+  implicit val loginRespModelFormat = jsonFormat2(LoginRespModel)
 
 }
 

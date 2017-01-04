@@ -7,7 +7,7 @@ import akka.actor.ActorRef
 import com.yimei.cflow.api.models.flow.{DataPoint, FlowProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
-import com.yimei.cflow.user.db._
+import com.yimei.cflow.organ.db._
 import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsValue, RootJsonFormat}
 
 trait Command {
@@ -74,7 +74,7 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit val partClassFormat = jsonFormat3(PartyClassEntity)
 
-  implicit val partUserFormat = jsonFormat8(PartyUserEntity)
+  implicit val partUserFormat = jsonFormat10(PartyUserEntity)
 
   implicit val partyGroupFormat = jsonFormat5(PartyGroupEntity)
 
@@ -97,6 +97,8 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
   implicit val TaskEnqueueFormat = jsonFormat2(TaskEnqueue)
 
   implicit val TaskDequeueFormat = jsonFormat1(TaskDequeue)
+
+  implicit val UserGroupEntityFormat = jsonFormat5(UserGroupEntity)
 
 
 }

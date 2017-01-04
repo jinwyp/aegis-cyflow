@@ -3,33 +3,14 @@ package com.yimei.cflow.test
 import java.sql.Timestamp
 import java.time.Instant
 
-import com.yimei.cflow.api.http.models.AdminModel.AdminProtocol
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitMap}
 import com.yimei.cflow.api.http.models.UserModel.UserModelProtocol
-import com.yimei.cflow.graph.cang.models.CangFlowModel._
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{TraderAudit, _}
 
 /**
   * Created by wangqi on 16/12/21.
   */
-//class HttpClientTest extends Actor with ActorLogging with CoreConfig{
-//
-//  import akka.pattern.pipe
-//  import context.dispatcher
-//
-//  val http = Http(context.system)
-//  val url = "http://localhost:9000"
-//
-//
-//  override def receive: Receive = {
-//    case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-//      entity.dataBytes.runFold(ByteString(""))(_ ++ _).foreach { body =>
-//        log.info("Got response, body: " + body.utf8String)
-//      }
-//    case resp @ HttpResponse(code, _, _, _) =>
-//      log.info("Request failed, response code: " + code)
-//      resp.discardEntityBytes()
-//  }
-//}
 import spray.json._
 
 object ClientMain extends App with AdminProtocol with TaskProtocol with UserModelProtocol{
@@ -43,13 +24,13 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
  // println(Map("LoanReceipt"->UserSubmitMap(Some("pdf"),"http://www.pdf995.com/samples/pdf.pdf")).toJson.prettyPrint)
 
-  val fileObj1 = FileObj("文件1","www.baidu.com","12345","h",None)
+  val fileObj1 = FileObj("文件1","www.baidu.com","12345")
 
-  val fileObj2 = FileObj("文件2","www.baidu.com","23456","h",Some(Timestamp.from(Instant.now)))
+  val fileObj2 = FileObj("文件2","www.baidu.com","23456")
 
 
 
-  val sf = StartFlowBasicInfo(1111,"wangqi","13000000001",11111111,"阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
+  val sf = StartFlowBasicInfo("1111","wangqi","13000000001","11111111","阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
     BigDecimal(0.5),"不知道",1,BigDecimal(0.01),BigDecimal(0.02),"heheh",BigDecimal(0.01),"没合同","24678",List(fileObj1,fileObj2))
 
 
@@ -60,8 +41,25 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
   val sflow = StartFlow(sf,sfi,sfs)
 
-  println(sflow.toJson.prettyPrint)
+ // println(sflow.toJson.prettyPrint)
 
 
+  val a = "hello"
+
+  //println(a)
+  //println(a.toJson.toString)
+
+  val t = UploadContract("1234","12345",List("123","123"))
+
+ // println(t.toJson.toString)
+
+  val t1 = HarborUploadContract("123","123",1000.12,List("123","123"))
+ // println(t1.toJson.toString)
+
+  val t3 = TraderAudit("123","123",1,1024.1)
+  //println(t3.toJson.toString)
+
+  val t4 = TraffickerNoticePortReleaseGoods("123","123",1024.1,"腾讯",List("123","123"))
+  println(t4.toJson.toString)
 
 }

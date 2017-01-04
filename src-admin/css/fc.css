@@ -133,6 +133,9 @@ header{
 .cyContainer #ptDetail ul.hascontent li:hover{
     background:#3a5c79; color:#fff;
 }
+.cyContainer #ptDetail ul li label{
+    word-wrap: break-word; word-break: break-all;
+}
 .cyContainer #ptDetail ul.hascontent li label, .cyContainer #ptDetail ul.hascontent li span{
     text-align:center;
 }

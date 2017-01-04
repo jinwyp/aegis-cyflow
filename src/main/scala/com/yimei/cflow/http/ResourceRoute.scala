@@ -1,8 +1,8 @@
 package com.yimei.cflow.http
 
 import akka.actor.ActorRef
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server._
 import akka.util.Timeout
 import com.yimei.cflow.config.ApplicationConfig
 
