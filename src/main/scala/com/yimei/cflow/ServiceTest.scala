@@ -10,7 +10,7 @@ import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.graph.GraphLoader
 import com.yimei.cflow.engine.routes.{AutoRoute, EditorRoute}
 import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
-import com.yimei.cflow.asset.AssetRoute$
+import com.yimei.cflow.asset.AssetRoute
 import com.yimei.cflow.graph.cang.routes._
 import com.yimei.cflow.http._
 import com.yimei.cflow.organ.routes._
