@@ -22,6 +22,7 @@ var url = {
     deliveryList : prefix + '/deliveries',
     contractList : prefix + '/files',
     userList : prefix + '/users',
+    companyList : prefix + '/companies',
     login : prefix + '/auth/login',
     password : prefix + '/user/password'
 };

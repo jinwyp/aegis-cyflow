@@ -44,6 +44,7 @@ var header = function() {
     });
 
 
+
     // 退出登录
     $("#user-logout").on("click", function() {
         userService.logout();
@@ -52,11 +53,12 @@ var header = function() {
 
 
 
-    // 点击隐藏的左部菜单
+    // 点击隐藏的左部菜单, 并记住该设置
     var tempLeftMenuFolded = localStorage.getItem('leftMenuFolded') || '';
     var buttonToggleLeftMenu = $("[data-trigger-resize]");
     var body = $("body");
-    if (tempLeftMenuFolded){
+    if (tempLeftMenuFolded === 'true'){
+        console.log(tempLeftMenuFolded)
         body.addClass("aside-collapsed")
     }else{
         body.removeClass("aside-collapsed")
@@ -64,16 +66,16 @@ var header = function() {
 
     buttonToggleLeftMenu.on("click", function() {
         if (body.hasClass("aside-collapsed")){
-            localStorage.setItem('leftMenuFolded', false);
+            localStorage.setItem('leftMenuFolded', 'false');
             body.removeClass("aside-collapsed")
         }else{
-            localStorage.setItem('leftMenuFolded', true);
+            localStorage.setItem('leftMenuFolded', 'true');
             body.addClass("aside-collapsed")
         }
     });
 
 
-    // 记住点击展开的菜单
+    // 记住点击左部菜单中展开的菜单
     var tempLeftMenuExpanded = localStorage.getItem('leftMenuExpanded');
     var leftMenuExpanded = [];
 
@@ -98,7 +100,7 @@ var header = function() {
     });
 
 
-    // 记住点击的二级菜单
+    // 记住点击左部菜单中的二级菜单中的选中状态
     var leftMenuActive = localStorage.getItem('leftMenuActive') || '';
     if (leftMenuActive) {
         $( '#'+leftMenuActive ).parent().addClass('active')
