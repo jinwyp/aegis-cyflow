@@ -1,5 +1,7 @@
 package com.yimei.cflow.api.http.models
 
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
+import com.yimei.cflow.api.models.user.UserProtocol
 import spray.json.DefaultJsonProtocol
 
 /**
@@ -8,7 +10,10 @@ import spray.json.DefaultJsonProtocol
 object PartyModel {
   case class PartyInstanceInfo(party: String, instanceId: String, companyName: String)
 
-  trait PartyModelProtocal extends DefaultJsonProtocol {
+  case class PartyInstanceListEntity(partyInstanceList: Seq[PartyInstanceEntity], total: Int)
+
+  trait PartyModelProtocal extends DefaultJsonProtocol with UserProtocol{
     implicit val PartyInstanceInfoFormat = jsonFormat3(PartyInstanceInfo)
+    implicit val partyInstanceListEntityFormat = jsonFormat2(PartyInstanceListEntity)
   }
 }
