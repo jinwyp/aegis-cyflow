@@ -103,7 +103,7 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
 
 object AssetRoute {
 
-  def route: Route = AssetRoute().route
+  def route(bucket: String): Route = AssetRoute(bucket).route
 
-  def apply(): AssetRoute = new AssetRoute()
+  def apply(bucket: String): AssetRoute = new AssetRoute(bucket)
 }
