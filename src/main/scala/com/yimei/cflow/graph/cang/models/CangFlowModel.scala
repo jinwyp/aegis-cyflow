@@ -95,7 +95,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   /** 融资方上传 合同, 财务, 业务 文件 **/
   case class UploadContract(taskId: String,
                             flowId: String,
-                            fileList: List[FileObj])
+                            fileList: List[String])
   implicit val customerUploadContractFormat = jsonFormat3(UploadContract)
 
 //  /** 监管方上传合同 **/
@@ -107,7 +107,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   case class HarborUploadContract(taskId: String,
                                   flowId: String,
                                   harborConfirmAmount: BigDecimal,
-                                  fileList: List[FileObj])
+                                  fileList: List[String])
   implicit val portUploadContractFormat = jsonFormat4(HarborUploadContract)
 
   /** 贸易商审核 **/
@@ -147,7 +147,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                                               flowId: String,
                                               redemptionAmount: BigDecimal,
                                               goodsReceiveCompanyName: String,
-                                              goodsFileList: List[FileObj])
+                                              fileList: List[String])
   implicit val traffickerNoticePortReleaseGoodsFormat = jsonFormat5(TraffickerNoticePortReleaseGoods)
 
   /** 港口放货 **/

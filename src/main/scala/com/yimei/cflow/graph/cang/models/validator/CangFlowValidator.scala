@@ -115,7 +115,7 @@ object CangFlowValidator {
       customerUploadContract =>
         customerUploadContract.taskId as "任务id" is notEmpty
         customerUploadContract.taskId.length as "任务id字段" max(10)
-        customerUploadContract.fileList.each is valid
+       // customerUploadContract.fileList.each is valid
     }
 
 
@@ -135,7 +135,7 @@ object CangFlowValidator {
         portUploadContract.taskId.length as "任务id字段" max(10)
         portUploadContract.harborConfirmAmount as "确认吨数" is notNull
         portUploadContract.harborConfirmAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
-        portUploadContract.fileList.each is valid
+     //   portUploadContract.fileList.each is valid
     }
 
   /** 贸易商审核 **/
@@ -197,7 +197,7 @@ object CangFlowValidator {
       traffickerNoticePortReleaseGoods =>
         traffickerNoticePortReleaseGoods.taskId as "任务id" is notEmpty
         traffickerNoticePortReleaseGoods.taskId.length as "任务id字段" max(10)
-        traffickerNoticePortReleaseGoods.goodsFileList.each is valid
+       // traffickerNoticePortReleaseGoods.fileList.each is valid
         traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is notNull
         traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
         traffickerNoticePortReleaseGoods.goodsReceiveCompanyName as "接收方公司名称" is notEmpty
