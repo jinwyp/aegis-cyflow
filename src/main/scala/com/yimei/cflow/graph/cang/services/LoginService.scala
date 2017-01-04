@@ -114,7 +114,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //用户修改自己信息
-  def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UpdateSelf]] = {
+  def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UserData]] = {
     log.info(s"get into method userModifySelf, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
 
     val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
@@ -122,9 +122,9 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
     }
 
-    def getResult(result: String): Result[UpdateSelf] = {
+    def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(userInfo), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party)), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -133,7 +133,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       qur <- getPartyUser
       re <- update(qur)
-    } yield getResult(re)
+    } yield getResult(re, qur)
   }
 
   //用户登录

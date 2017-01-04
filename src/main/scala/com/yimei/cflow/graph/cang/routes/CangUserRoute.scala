@@ -56,19 +56,22 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  /*
+   * 用户修改邮箱、电话
+   * url      http://localhost:9001/user/info
+   * method   post application/json
+   * body     {"email":"6789@6789.com","phone":"13800000002"}
+   */
   def userModifySelfRoute: Route = post {
-    (pathPrefix("umu") & entity(as[UpdateSelf])) { user =>
-      //session校验 todo
-      //party和instance_id应该从session里面 todo
-      val party = "financer"
-      val instance_id = "444"
-      val userId = "333"
-      complete(userModifySelf(party, instance_id, userId, user))
+    (path("user" / "info") & entity(as[UpdateSelf])) { user =>
+      myRequiredSession { session =>
+        complete(userModifySelf(session.party, session.instanceId, session.userId, user))
+      }
     }
   }
 
   /*
-   * api访问信息
+   * 用户登录
    * url      http://localhost:9001/auth/login
    * method   post application/json
    * body     {"username":"u3","password":"123456"}
@@ -102,7 +105,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
-   * api访问信息
+   * 用户修改密码
    * url      http://localhost:9000/cang/user/password
    * method   post application/json
    * body     {"newPassword":"654321","oldPassword":"123456"}
