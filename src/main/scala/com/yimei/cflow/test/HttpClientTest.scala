@@ -49,17 +49,17 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
   //println(a)
   //println(a.toJson.toString)
 
-  val t = UploadContract("1234","12345",List(fileObj1,fileObj2))
+  val t = UploadContract("1234","12345",List("123","123"))
 
  // println(t.toJson.toString)
 
-  val t1 = HarborUploadContract("123","123",1000.12,List(fileObj1,fileObj2))
+  val t1 = HarborUploadContract("123","123",1000.12,List("123","123"))
  // println(t1.toJson.toString)
 
   val t3 = TraderAudit("123","123",1,1024.1)
   //println(t3.toJson.toString)
 
-  val t4 = TraffickerNoticePortReleaseGoods("123","123",1024.1,"腾讯",List(fileObj1,fileObj2))
+  val t4 = TraffickerNoticePortReleaseGoods("123","123",1024.1,"腾讯",List("123","123"))
   println(t4.toJson.toString)
 
 }
