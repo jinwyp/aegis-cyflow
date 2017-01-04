@@ -2,7 +2,7 @@
   "initial": "financingStep11",
   "groupId": "com.yimei.cflow.graph",
   "artifact": "cang",
-  "jarName": "CangGraphJar",
+  "entry": "CangGraphJar",
   "timeout": 100,
   "persistent": true,
   "points": {
@@ -49,7 +49,10 @@
 
     "TraderConfirmPayToFundProvider":"贸易商确认回款给资金方",
 
-    "TraderAccountantConfirm":"贸易商财务确认回款"
+    "TraderAccountantConfirm":"贸易商财务确认回款",
+
+    "traderRepaying":"贸易方回款中",
+    "traderRepaySuccess":"贸易方回款成功"
 
   },
   "vertices": {
@@ -68,12 +71,14 @@
     "repaymentStep23": {"description":"港口确认放货"},
     "repaymentStep24": {"description":"贸易商确认收款完成"},
     "repaymentStep25": {"description":"贸易商确认汇款给资金方"},
-    "repaymentStep26": {"description":"贸易商财务确认汇款给资金方"}
+    "repaymentStep26": {"description":"贸易商财务确认汇款给资金方"},
+    "repaymentStep27": {"description":"贸易方给资金方回款"}
   },
   "autoTasks": {
     "fundProviderPayingTask":{"description": "资金方付款给贸易方",   "points": ["fundProviderPaying","fundProviderPaySuccess"]},
     "traderPayingTask":{"description": "贸易方付款给融资方",   "points": ["traderPaying","traderPaySuccess"]},
-    "financerPayingTask":{"description":"融资方回款给贸易方", "points":["financerPaying","financerPaySuccess"]}
+    "financerPayingTask":{"description":"融资方回款给贸易方", "points":["financerPaying","financerPaySuccess"]},
+    "traderRepayingTask" :{"description":"贸易方给资金方回款", "points":["traderRepaying","traderRepaySuccess"]}
   },
   "userTasks": {
     "a11SelectHarborAndSupervisor" : {"description": "完成选择港口,监管方和资金", "points": ["harborUserId", "supervisorUserId","fundProviderUserId","fundProviderAccountantUserId"] },
@@ -283,7 +288,15 @@
         "tasks": ["a24AccountantReturnMoney"]
       }],
       "autoTasks": []
+    },
+    "E17": {
+      "name": "E17",
+      "begin": "repaymentStep26",
+      "end": "repaymentStep27",
+      "userTasks": [],
+      "partGTasks": [],
+      "partUTasks": [],
+      "autoTasks": ["traderRepayingTask"]
     }
-
   }
 }
