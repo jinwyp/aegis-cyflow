@@ -54,7 +54,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminAddCompanyRoute: Route = post {
     (path("admin" / "company") & entity(as[AddCompany])) { company =>
-      complete("ok")
+      complete(adminAddCompany(company))
     }
   }
 
@@ -139,7 +139,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute
 }
 
 object CangUserRoute {

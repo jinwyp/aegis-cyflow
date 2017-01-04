@@ -33,7 +33,7 @@
                     <#--</div>-->
 
                     <div class="form-group has-feedback " ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error',  @successInputName.indexOf('inputEmail')>-1 &&'has-success'] ">
-                        <input id="inputEmail" type="text" placeholder="邮箱" class="form-control" ms-duplex="@user.email | change" ms-rules='{required:true}'
+                        <input id="inputEmail" type="email" placeholder="邮箱" class="form-control" ms-duplex="@user.email | change" ms-rules='{required:true, email:true}'
                                data-required-message="请输入邮箱" data-email-message="邮箱格式不正确">
                         <span class="fa fa-user form-control-feedback text-muted"></span>
                         <span class="help-block" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</span>

@@ -46,70 +46,184 @@ var orderInfo = function () {
         currentOrder         : {},
 
         doAction             : function (actionName) {
-            var selectUser = {};
             var additionalData = {};
 
             if (sessionUserRole === vm.role.trader) {
 
+
+                // 贸易商 判断是否完成 融资方 港口 监管 上传文件
                 if (vm.currentOrder.statusChild1Financer && vm.currentOrder.statusChild2Harbor && vm.currentOrder.statusChild3Supervisor){
 
                     if (vm.currentOrder.status === 'repaymentStep31'){
-                        additionalData.redemptionfileList = []
-                        additionalData.redemptionAmount = vm.inputRedemptionAmount
 
-                        vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                            additionalData.redemptionfileList.push(file.fileId)
-                        })
+                        // 贸易商 返还货物 并给港口上传货物文件
+
+                        vm.errorRedemptionAmount = false;
+
+                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10) {
+                            vm.errorRedemptionAmount = true;
+                            return ;
+                        } else {
+
+                            var tempDelivery = {
+                                uploadFiles : [],
+                                redemptionAmount : vm.inputRedemptionAmount,
+                                orderId      : orderId,
+                                orderNo      : vm.currentOrder.orderNo
+                            }
+
+                            additionalData.fileList = []
+                            additionalData.redemptionAmount = vm.inputRedemptionAmount
+
+                            vm.inputRedemptionFileList.forEach(function(file, fileIndex){
+                                tempDelivery.uploadFiles.push(file.fileId)
+                                additionalData.fileList.push(file.fileId)
+                            })
+
+
+                            orderService.addNewDelivery(tempDelivery).done(function (data) {
+                                if (data.success) {
+                                    getOrderInfo()
+                                    $.notify("保存成功!", 'success');
+                                } else {
+                                    console.log(data.error);
+                                }
+                            })
+                        }
+
                     }
 
                 }else{
+
+                    // 贸易商选择 资金方 资金方财务 港口 监管方
+
                     vm.traderFormError.fundProvider = false;
+                    vm.traderFormError.fundProviderAccountant = false;
                     vm.traderFormError.harbor       = false;
                     vm.traderFormError.supervisor   = false;
 
                     if (!vm.traderForm.selectedFundProvider) vm.traderFormError.fundProvider = true;
+                    if (!vm.traderForm.selectedFundProviderAccountant) vm.traderFormError.fundProviderAccountant = true;
                     if (!vm.traderForm.selectedHarbor) vm.traderFormError.harbor = true;
                     if (!vm.traderForm.selectedSupervisor) vm.traderFormError.supervisor = true;
 
                     if (vm.traderFormError.fundProvider || vm.traderFormError.harbor || vm.traderFormError.supervisor) {
                         return;
-                    }
-                    selectUser = {
-                        "harborUserId"       : vm.traderForm.selectedHarbor,
-                        "supervisorUserId"   : vm.traderForm.selectedSupervisor,
-                        "fundProviderUserId" : vm.traderForm.selectedFundProvider
+                    }else{
+                        additionalData = {
+                            "harborUserId"                 : vm.traderForm.selectedHarbor,
+                            "supervisorUserId"             : vm.traderForm.selectedSupervisor,
+                            "fundProviderUserId"           : vm.traderForm.selectedFundProvider,
+                            "fundProviderAccountantUserId" : vm.traderForm.selectedFundProviderAccountant
+                        }
                     }
                 }
             }
 
+
+
+            // 融资方 港口 监管 上传文件
             if (sessionUserRole === vm.role.financer || sessionUserRole === vm.role.harbor || sessionUserRole === vm.role.supervisor){
                 additionalData.fileList = uploadFileList;
             }
 
             if (sessionUserRole === vm.role.harbor){
-                additionalData.harborConfirmAmount = vm.currentOrder.harborConfirmAmount
-                additionalData.redemptionAmountDeliveryId = tempDeliveryId
 
-                if (tempDeliveryId){
-                    orderService.updateDeliveryInfoById(tempDeliveryId, {}).done(function (data) {
+                // 港口确认货物
+                if (vm.currentOrder.status === 'financingStep12'){
+                    vm.errorHarborConfirmAmount = false;
+
+                    if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 100) {
+                        vm.errorHarborConfirmAmount = true;
+                        return ;
+                    } else {
+                        additionalData.harborConfirmAmount =  vm.inputHarborConfirmAmount
+
+                        orderService.updateFinanceOrderInfoById(orderId, { harborConfirmAmount : vm.inputHarborConfirmAmount }).done(function (data) {
+                            if (data.success) {
+                            } else {
+                                console.log(data.error);
+                            }
+                        })
+                    }
+                }
+
+                if (vm.currentOrder.status === 'repaymentStep32' || vm.currentOrder.status === 'repaymentStep33'){
+                    additionalData.redemptionAmountDeliveryId = tempDeliveryId
+
+                    if (tempDeliveryId){
+                        orderService.updateDeliveryInfoById(tempDeliveryId, {}).done(function (data) {
+                            if (data.success) {
+                            } else {
+                                console.log(data.error);
+                            }
+                        })
+                    }
+                }
+
+            }
+
+
+            // 贸易商财务 给出具体放款金额
+            if (sessionUserRole === vm.role.traderAccountant){
+
+                vm.errorActualLoanValue = false;
+
+                if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
+                    vm.errorActualLoanValue = true;
+                    return ;
+                } else {
+                    additionalData.loanValue = vm.inputActualLoanValue
+
+                    orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
                         if (data.success) {
                         } else {
                             console.log(data.error);
                         }
                     })
                 }
+
             }
 
-
-            if (sessionUserRole === vm.role.traderAccountant){
-                additionalData.loanValue = vm.currentOrder.loanValue
-            }
 
             if (sessionUserRole === vm.role.financer){
-                additionalData.redemptionValue = vm.inputReturnValue
+
+                // 融资方 还款金额
+
+                vm.errorRepaymentValue = false;
+
+                if (!vm.inputRepaymentValue || vm.inputRepaymentValue < 10) {
+                    vm.errorRepaymentValue = true;
+                    return ;
+
+                } else {
+                    var tempLeftValue = vm.currentOrder.loanValue;
+
+                    vm.repaymentList.forEach(function(pay){
+                        tempLeftValue = tempLeftValue - pay.redemptionValue;
+                    })
+
+                    var tempPaymentOrder = {
+                        redemptionValue : vm.inputRepaymentValue,
+                        leftPrincipalValue : tempLeftValue - vm.inputRepaymentValue,
+                        paymentType  : orderService.paymentTypeKey.repayment,
+                        orderId      : orderId,
+                        orderNo      : vm.currentOrder.orderNo
+                    }
+
+                    additionalData.repaymentValue = vm.inputRepaymentValue
+
+                    orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
+                        if (data.success) {
+                        } else {
+                            console.log(data.error);
+                        }
+                    })
+                }
+
             }
 
-            orderService.auditFinanceOrder(orderId, sessionUserRole, actionName, selectUser, additionalData).done(function (data) {
+            orderService.auditFinanceOrder(orderId, sessionUserRole, actionName, additionalData).done(function (data) {
                 if (data.success) {
                     getOrderInfo();
                     $.notify("提交成功!", 'success');
@@ -130,10 +244,14 @@ var orderInfo = function () {
         },
 
         traderForm       : {
-            selectedFundProvider           : '',
-            selectedFundProviderAccountant : '',
-            selectedHarbor                 : '',
-            selectedSupervisor             : ''
+            selectedFundProvider                  : '',
+            selectedFundProviderAccountant        : '',
+            selectedHarbor                        : '',
+            selectedSupervisor                    : '',
+            selectedFundProviderCompany           : '',
+            selectedFundProviderAccountantCompany : '',
+            selectedHarborCompany                 : '',
+            selectedSupervisorCompany             : ''
         },
         traderFormError  : {
             fundProvider           : '',
@@ -144,27 +262,12 @@ var orderInfo = function () {
         harborList       : [],
         supervisorList   : [],
         fundProviderList : [],
+        fundProviderAccountantList : [],
 
-        inputHarborConfirmAmount : 0,
+
+        inputHarborConfirmAmount : 0, // 港口确认货物
         errorHarborConfirmAmount : '',
-        saveOrder                : function () {
-            vm.errorHarborConfirmAmount = false;
 
-            if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 100) {
-                vm.errorHarborConfirmAmount = true;
-            } else {
-                orderService.updateFinanceOrderInfoById(orderId, {
-                    harborConfirmAmount : vm.inputHarborConfirmAmount
-                }).done(function (data) {
-                    if (data.success) {
-                        getOrderInfo();
-                        $.notify("保存成功, 并会通知贸易商!", 'success');
-                    } else {
-                        console.log(data.error);
-                    }
-                })
-            }
-        },
 
         inputDepositValue : 0,
         errorDepositValue : '',
@@ -215,57 +318,10 @@ var orderInfo = function () {
 
         inputActualLoanValue : 0,
         errorActualLoanValue : '',
-        saveActualLoanValue : function(event){
-            event.preventDefault();
-            vm.errorActualLoanValue = false;
 
-            if (!vm.inputActualLoanValue || vm.inputActualLoanValue.length < 10) {
-                vm.errorActualLoanValue = true;
-            } else {
-                orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
-                    if (data.success) {
-                        getOrderInfo()
-                        $.notify("保存成功!", 'success');
-                    } else {
-                        console.log(data.error);
-                    }
-                })
-            }
-        },
 
-        inputReturnValue : 0,
-        errorReturnValue : '',
-        saveReturnValue  : function (event) {
-            event.preventDefault();
-            vm.errorReturnValue = false;
-
-            if (!vm.inputReturnValue || vm.inputReturnValue < 10) {
-                vm.errorReturnValue = true;
-            } else {
-                var tempLeftValue = vm.currentOrder.loanValue;
-
-                vm.repaymentList.forEach(function(pay){
-                    tempLeftValue = tempLeftValue - pay.redemptionValue;
-                })
-
-                var tempPaymentOrder = {
-                    redemptionValue : vm.inputReturnValue,
-                    leftPrincipalValue : tempLeftValue - vm.inputReturnValue,
-                    paymentType  : orderService.paymentTypeKey.repayment,
-                    orderId      : orderId,
-                    orderNo      : vm.currentOrder.orderNo
-                }
-
-                orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
-                    if (data.success) {
-                        getOrderInfo()
-                        $.notify("保存成功!", 'success');
-                    } else {
-                        console.log(data.error);
-                    }
-                })
-            }
-        },
+        inputRepaymentValue : 0,
+        errorRepaymentValue : '',
 
         inputRedemptionAmount : 0,
         inputRedemptionFileList : [],
@@ -273,32 +329,7 @@ var orderInfo = function () {
         isNeedDelivery  : false,
         saveRedemptionAmount  : function (event) {
             event.preventDefault();
-            vm.errorRedemptionAmount = false;
 
-            if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10) {
-                vm.errorRedemptionAmount = true;
-            } else {
-
-                var tempDelivery = {
-                    uploadFiles : [],
-                    redemptionAmount : vm.inputRedemptionAmount,
-                    orderId      : orderId,
-                    orderNo      : vm.currentOrder.orderNo
-                }
-
-                vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                    tempDelivery.uploadFiles.push(file.fileId)
-                })
-
-                orderService.addNewDelivery(tempDelivery).done(function (data) {
-                    if (data.success) {
-                        getOrderInfo()
-                        $.notify("保存成功!", 'success');
-                    } else {
-                        console.log(data.error);
-                    }
-                })
-            }
         }
 
     });
@@ -378,6 +409,7 @@ var orderInfo = function () {
 
     }
 
+    getOrderInfo();
 
     function getUsersOfRoles() {
 
@@ -402,10 +434,19 @@ var orderInfo = function () {
                 console.log(data.error);
             }
         })
+        userService.getUserList({role : vm.role.fundProviderAccountant, $limit : 500}).done(function (data) {
+            if (data.success) {
+                vm.fundProviderAccountantList = data.data;
+            } else {
+                console.log(data.error);
+            }
+        })
     }
 
-    getOrderInfo();
 
+    if (vm.currentUser.role === vm.role.trader) {
+        getUsersOfRoles()
+    }
 
 
 
@@ -456,7 +497,6 @@ var orderInfo = function () {
 
 
         if (vm.currentUser.role === vm.role.trader){
-            getUsersOfRoles()
 
             var uploaderRedemptionFile = WebUploader.create(uploadSettingRedemptionFile);
 
@@ -476,7 +516,6 @@ var orderInfo = function () {
                 vm.inputRedemptionFileList.push(tempFile);
                 $.notify("上传成功!", 'success');
             });
-
         }
 
 
@@ -504,8 +543,6 @@ var orderInfo = function () {
             });
 
         }
-
-
 
     }
 

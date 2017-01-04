@@ -29,8 +29,6 @@
 
 
 
-
-
                     <!-- END panel-->
                 </div>
             </section>

@@ -23,17 +23,6 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       result.parseJson.convertTo[State]
     }
   }
-//
-//  def createPartyInstance(companyInfo: String): Future[PartyInstanceEntity] = {
-//    //访问com.yimei.cflow.organ.routes.GroupRoute中的createPartyInstance接口
-//    sendRequest(
-//      path = "api/inst",
-//      method = "post",
-//      bodyEntity = Some(companyInfo)
-//    ) map { result =>
-//      result.parseJson.convertTo[PartyInstanceEntity]
-//    }
-//  }
 
   def createUserGroup(party_id: String, gid: String, user_id: String): Future[UserGroupEntity] = {
     //访问com.yimei.cflow.organ.routes.GroupRoute中的createUserGroup接口

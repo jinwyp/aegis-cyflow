@@ -1,6 +1,7 @@
 package com.yimei.cflow.graph.cang.services
 
-import java.util.UUID
+import java.text.SimpleDateFormat
+import java.util.{Date, Random, UUID}
 
 import akka.event.{Logging, LoggingAdapter}
 import com.yimei.cflow.api.http.client.PartyClient
@@ -20,6 +21,7 @@ import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+
 
 //import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -98,15 +100,18 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
 //  //管理员添加公司
-//  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
-//    log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
-//
-//    def uuid() = UUID.randomUUID().toString
-//
-//    createPartyInstance
-//
-//
-//  }
+  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+    log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
+
+    val formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
+    def instanceId = formatter.format(new Date())  + new Random(3).nextInt()
+
+    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+
+    for {
+      re <- createPartyInstance(partyInstanceInfo.toJson.toString)
+    } yield Result(data = Some(re), success = true)
+  }
 
   //管理员修改用户
   def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
