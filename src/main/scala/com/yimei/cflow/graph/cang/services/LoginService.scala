@@ -16,7 +16,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -143,7 +143,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //用户修改密码
-  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[String]] = {
+  def userModifyPassword(party: String, instance_id: String, userId: String, user: UserChangePwd): Future[Result[UserData]] = {
     log.info(s"get into method userModifyPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
 
     val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
@@ -161,12 +161,17 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
+    def getResult(qur: QueryUserResult): UserData = {
+      UserData(qur.userInfo.user_id, qur.userInfo.username, qur.userInfo.email.getOrElse(""), qur.userInfo.phone.getOrElse(""), party)
+    }
+
     (for {
       qur <- getPartyUser
       cr = comparePassword(qur, user)
       ur <- update(qur)
-    } yield { Result(data = Some(ur), success = true)}) recover {
-      case e: BusinessException => Result[String](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+      re = getResult(qur)
+    } yield { Result(data = Some(re), success = true)}) recover {
+      case e: BusinessException => Result[UserData](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
     }
   }
 

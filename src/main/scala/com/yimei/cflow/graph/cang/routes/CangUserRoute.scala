@@ -17,8 +17,8 @@ import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
 import com.yimei.cflow.graph.cang.session.{MySession, Session, SessionProtocol}
 import spray.json._
-import ch.megard.akka.http.cors.CorsDirectives._
-import ch.megard.akka.http.cors.CorsSettings
+//import ch.megard.akka.http.cors.CorsDirectives._
+//import ch.megard.akka.http.cors.CorsSettings
 
 
 
@@ -73,32 +73,45 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method   post application/json
    * body     {"username":"u3","password":"123456"}
    */
-  def loginRoute: Route = cors(CorsSettings.defaultSettings.copy(allowCredentials = false, allowedOrigins = HttpOriginRange.*)) {
-    post{
-      pathPrefix("auth") {
-        (pathPrefix("login") & entity(as[UserLogin])) { user =>
-          import scala.concurrent.ExecutionContext.Implicits.global
-          val result = for {
-            s <- getLoginUserInfo(user)
-          } yield {
-            println("invoked ---------------")
-            mySetSession(s)
-            Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true)
-          }
-          complete(result)
-        }
+//  def loginRoute: Route = cors(CorsSettings.defaultSettings.copy(allowCredentials = false, allowedOrigins = HttpOriginRange.*)) {
+  def loginRoute: Route = post {
+    (path("auth" / "login") & entity(as[UserLogin])) { user =>
+
+      val s = MySession(token = "111", userName = "u3", userId = "00000", email = "12345@12345.com", phone = "13800000001", party = "systemAdmin", instanceId = "00000000", companyName = "管理员")
+      mySetSession(s) {
+        complete("ok")
       }
     }
+
+
+//      import scala.concurrent.ExecutionContext.Implicits.global
+//      val result: Future[MySession] = for {
+//        s <- getLoginUserInfo(user)
+//      } yield {
+//        Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true)
+//      }
+
+//  getLoginUserInfo(user) map { s =>
+//        mySetSession(s) {
+//          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true))
+//      }
+//
+//     // complete
+//
+//    }
   }
 
+  /*
+   * api访问信息
+   * url      http://localhost:9000/cang/user/password
+   * method   post application/json
+   * body     {"newPassword":"654321","oldPassword":"123456"}
+   */
   def userModifyPasswordRoute: Route = post {
-    (pathPrefix("mpw") & entity(as[UserChangePwd])) { user =>
-      //需要session校验身份 todo
-      //从session中获取party和instance_id todo
-      val party = "financer"
-      val instance_id = "444"
-      val userId = "333"
-      complete(userModifyPassword(party, instance_id, userId, user))
+    (path("user" / "password") & entity(as[UserChangePwd])) { user =>
+      myRequiredSession { session =>
+        complete(userModifyPassword(session.party, session.instanceId, session.userId, user))
+      }
     }
   }
 
