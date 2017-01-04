@@ -14,9 +14,9 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class AssetRoute extends ApplicationConfig with SprayJsonSupport {
-  val rootPath = coreConfig.getString("filePath")
-  val localPath = rootPath + "cang/"
+class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport {
+  val rootPath = coreConfig.getString("file.root")
+  val localPath = s"${rootPath}/${bucket}/"
 
   import scala.concurrent.duration._
 
