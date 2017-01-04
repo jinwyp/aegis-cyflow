@@ -60,7 +60,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员获取所有公司
-   * url      http://localhost:9001/admin/company
+   * url      localhost:9000/cang/admin/company?page=x&pageSize=y
    * method   get
    */
   def adminGetAllCompanyRoute: Route = get {
@@ -73,7 +73,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员修改邮箱、电话
-   * url      http://localhost:9001/admin/userinfo/:party/:instance_id
+   * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
    * method   post application/json
    * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
    */
@@ -87,7 +87,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 用户修改邮箱、电话
-   * url      http://localhost:9001/user/info
+   * url      http://localhost:9000/cang/user/info
    * method   post application/json
    * body     {"email":"6789@6789.com","phone":"13800000002"}
    */
@@ -101,7 +101,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 用户登录
-   * url      http://localhost:9001/auth/login
+   * url      http://localhost:9000/cang/auth/login
    * method   post application/json
    * body     {"username":"u3","password":"123456"}
    */
