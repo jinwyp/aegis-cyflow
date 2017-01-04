@@ -236,3 +236,18 @@ exports.updateCompanyInfoById = function (companyId, company){
     });
 
 };
+exports.getCompanyInfoById = function (companyId, query){
+
+    var params = jQuery.extend({}, query);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList + '/' + companyId,
+        method   : 'GET',
+        data     : params
+
+    });
+
+};
