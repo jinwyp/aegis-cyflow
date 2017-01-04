@@ -10,7 +10,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
-import com.yimei.cflow.api.http.models.ResultModel.{Error, Result}
+import com.yimei.cflow.api.http.models.ResultModel.{Error, Meta, Result}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
@@ -99,7 +99,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     p.future
   }
 
-//  //管理员添加公司
+  //管理员添加公司
   def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
     log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
@@ -111,6 +111,15 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       re <- createPartyInstance(partyInstanceInfo.toJson.toString)
     } yield Result(data = Some(re), success = true)
+  }
+
+  //管理员获取所有公司信息
+  def adminGetAllCompany(page: Int, pageSize: Int): Future[Result[Seq[PartyInstanceEntity]]] = {
+    log.info(s"get into method adminGetAllCompany")
+
+    for {
+      pilist <- getAllPartyInstanceList(page, pageSize)
+    } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改用户

@@ -58,6 +58,18 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  /*
+   * 管理员获取所有公司
+   * url      http://localhost:9001/admin/company
+   * method   get
+   */
+  def adminGetAllCompanyRoute: Route = get {
+    (path("admin" / "company") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+
+      complete(adminGetAllCompany(page, pageSize))
+    }
+  }
+
 
   /*
    * 管理员修改邮箱、电话
@@ -139,7 +151,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute
 }
 
 object CangUserRoute {
