@@ -10,8 +10,8 @@ import com.yimei.cflow.config.FreemarkerConfig._
 class CangStatic {
 
   def getStatic: Route = get {
-    path("src-cang" / "frontend" ) {
-      getFromDirectory(staticPathAdmin)
+    pathPrefix("static") {
+      getFromDirectory(staticPath)
     }
   }
 
