@@ -20,7 +20,7 @@ object ResultModel {
         if (obj==null){
           JsString("")
         } else {
-          JsArray(JsNumber(obj.total),JsNumber(obj.count),JsNumber(obj.offset),JsNumber(obj.page))
+          JsObject(("total", JsNumber(obj.total)) , ("count", JsNumber(obj.count)),  ("offset", JsNumber(obj.offset)), ("page",JsNumber(obj.page)))
         }
       }
 

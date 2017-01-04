@@ -17,7 +17,7 @@
 
 4. 设置 Intellij 配置  [官方配置](https://www.jetbrains.com/help/idea/2016.1/creating-and-running-your-scala-application.html)
 
-
+5. 加速 SBT (https://afoo.me/posts/2014-11-05-how-make-sbt-jump-over-GFW.html)
 
 
 

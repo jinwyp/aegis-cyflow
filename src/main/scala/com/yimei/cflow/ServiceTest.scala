@@ -82,7 +82,9 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     }
   }.foldLeft(empty)(|+|)
 
-  val all = base ~ flowRoute
+  val all = logRequest("debug") {
+    base ~ flowRoute
+  }
 
   implicit val mySystem = coreSystem // @todo fixme
 

@@ -18,8 +18,7 @@ var companyList = function() {
         $id : 'companyListController',
         companyList : [],
         searchQuery : {
-            username : '',
-            companyName : ''
+            party_name : ''
         },
 
         configPagination : {
@@ -57,6 +56,9 @@ var companyList = function() {
     function getCompanies(query){
         query = query || {};
 
+        if (vm.searchQuery.party_name){
+            query.party_name = vm.searchQuery.party_name;
+        }
         userService.getCompanyList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){
                 vm.companyList = data.data;
