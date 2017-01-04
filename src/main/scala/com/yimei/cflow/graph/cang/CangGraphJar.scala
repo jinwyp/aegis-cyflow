@@ -102,6 +102,10 @@ object CangGraphJar extends Config {
   }
 
   def repaymentStep26(state: State) = {
+    Seq(Arrow(repaymentStep27,Some(E17)))
+  }
+
+  def repaymentStep27(state: State) = {
     Seq(ArrowSuccess)
   }
 
@@ -123,7 +127,10 @@ object CangGraphJar extends Config {
     Future{Map(financerPaying -> "yes")}
   }
 
-
+  def traderRepayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
+    //todo 向数据库中插入一条记录
+    Future{Map(traderRepaying -> "yes")}
+  }
 
 }
 

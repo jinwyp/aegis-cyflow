@@ -219,4 +219,8 @@ k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a24AccountantReturnMoney/88888/trader/88888888 -d "$k")
 echo $res
 
+#23>贸易商回款自动任务
+#sleep 5
+#res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
+#echo $res
 

@@ -62,6 +62,7 @@ trait Config {
   val repaymentStep24 = "repaymentStep24"
   val repaymentStep25 = "repaymentStep25"
   val repaymentStep26 = "repaymentStep26"
+  val repaymentStep27 = "repaymentStep27"
 
 
   //edge
@@ -81,6 +82,7 @@ trait Config {
   val E14 = "E14"
   val E15 = "E15"
   val E16 = "E16"
+  val E17 = "E17"
 
 
 
@@ -102,6 +104,7 @@ trait Config {
   val a22traderAuditIfComplete = "a22traderAuditIfComplete"
   val a23ReturnMoney = "a23ReturnMoney"
   val a24AccountantReturnMoney = "a24AccountantReturnMoney"
+  val traderRepayingTask = "traderRepayingTask"
 
 
 
@@ -150,4 +153,7 @@ trait Config {
   val TraderConfirmPayToFundProvider = "TraderConfirmPayToFundProvider"
 
   val TraderAccountantConfirm = "TraderAccountantConfirm"
+
+  val traderRepaying = "traderRepaying"
+  val traderRepaySuccess = "traderRepaySuccess"
 }
