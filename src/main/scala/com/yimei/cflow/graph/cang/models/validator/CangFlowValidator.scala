@@ -133,8 +133,8 @@ object CangFlowValidator {
       portUploadContract =>
         portUploadContract.taskId as "任务id" is notEmpty
         portUploadContract.taskId.length as "任务id字段" max(10)
-        portUploadContract.confirmCoalAmount as "确认吨数" is notNull
-        portUploadContract.confirmCoalAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        portUploadContract.harborConfirmAmount as "确认吨数" is notNull
+        portUploadContract.harborConfirmAmount as "确认吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         portUploadContract.fileList.each is valid
     }
 
@@ -144,8 +144,8 @@ object CangFlowValidator {
       traffickerAssignUsers =>
         traffickerAssignUsers.taskId as "任务id" is notEmpty
         traffickerAssignUsers.taskId.length as "任务id字段" max(10)
-        traffickerAssignUsers.status as "审核状态id" min(0)
-        traffickerAssignUsers.status as "审核状态id" max(1)
+        traffickerAssignUsers.approvedStatus as "审核状态id" min(0)
+        traffickerAssignUsers.approvedStatus as "审核状态id" max(1)
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is notNull
         traffickerAssignUsers.fundProviderInterestRate as "资金方利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
     }
@@ -156,8 +156,8 @@ object CangFlowValidator {
       traffickerFinanceAudit =>
         traffickerFinanceAudit.taskId as "任务id" is notEmpty
         traffickerFinanceAudit.taskId.length as "任务id字段" max(10)
-        traffickerFinanceAudit.recommendAmount as "确认放款金额" is notNull
-        traffickerFinanceAudit.recommendAmount as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
+        traffickerFinanceAudit.loanValue as "确认放款金额" is notNull
+        traffickerFinanceAudit.loanValue as "确认放款金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
     }
 
   /** 资金方审核 **/
@@ -166,8 +166,8 @@ object CangFlowValidator {
       fundProviderAudit =>
         fundProviderAudit.taskId as "任务id" is notEmpty
         fundProviderAudit.taskId.length as "任务id字段" max(10)
-        fundProviderAudit.status as "审核状态id" min(0)
-        fundProviderAudit.status as "审核状态id" max(0)
+        fundProviderAudit.approvedStatus as "审核状态id" min(0)
+        fundProviderAudit.approvedStatus as "审核状态id" max(0)
     }
 
   /** 资金方财务放款 **/
@@ -188,7 +188,7 @@ object CangFlowValidator {
         customerPaymentToTrafficker.taskId.length as "任务id字段" max(10)
         //customerPaymentToTrafficker.statusId as "付款状态id" min(0)
         //customerPaymentToTrafficker.statusId as "付款状态id" max(1)
-        customerPaymentToTrafficker.repaymentAmount as "付款本金" is notNull
+        customerPaymentToTrafficker.repaymentValue as "付款本金" is notNull
     }
 
   /** 贸易商通知港口放货 **/
@@ -198,8 +198,8 @@ object CangFlowValidator {
         traffickerNoticePortReleaseGoods.taskId as "任务id" is notEmpty
         traffickerNoticePortReleaseGoods.taskId.length as "任务id字段" max(10)
         traffickerNoticePortReleaseGoods.goodsFileList.each is valid
-        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is notNull
-        traffickerNoticePortReleaseGoods.releaseAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
+        traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is notNull
+        traffickerNoticePortReleaseGoods.redemptionAmount as "放货吨数" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100000000))
         traffickerNoticePortReleaseGoods.goodsReceiveCompanyName as "接收方公司名称" is notEmpty
     }
 

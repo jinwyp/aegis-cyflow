@@ -36,7 +36,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 # 6> 贸易方指定四个参与方
-k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"1"}'
+k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"1","fundProviderUserId":"zj1id","fundProviderAccountantUserId":"zj2id"}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
@@ -63,7 +63,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/harbor/1/h1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"confirmCoalAmount":1000.12,"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"harborConfirmAmount":1000.12,"fileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}]}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a13FinishedUpload/h1id/harbor/1 -d "$k")
 echo $res
 
@@ -72,7 +72,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1,"fundProviderInterestRate":1024.1}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"approvedStatus":1,"fundProviderInterestRate":1024.1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a15traderAudit/77777/trader/88888888 -d "$k")
 echo $res
 
@@ -81,7 +81,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/88888)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"recommendAmount":1024.1}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"loanValue":1024.1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a16traderRecommendAmount/88888/trader/88888888 -d "$k")
 echo $res
 
@@ -90,7 +90,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/1/zj1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"approvedStatus":1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
 echo $res
 
@@ -121,7 +121,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentAmount":1024.1024}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":1024.1024}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
@@ -135,7 +135,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}],"releaseAmount":1024.1,"goodsReceiveCompanyName":"腾讯"}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}],"redemptionAmount":1024.1,"goodsReceiveCompanyName":"腾讯"}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
 echo $res
 
@@ -163,7 +163,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentAmount":2048}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":2048}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
@@ -177,7 +177,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件2","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件3","originName":"www.baidu.com","url":"23456","fileType":"default"}],"releaseAmount":2048.1,"goodsReceiveCompanyName":"腾讯"}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件2","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件3","originName":"www.baidu.com","url":"23456","fileType":"default"}],"redemptionAmount":2048.1,"goodsReceiveCompanyName":"腾讯"}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
 echo $res
 
@@ -220,7 +220,7 @@ res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/can
 echo $res
 
 #23>贸易商回款自动任务
-#sleep 5
-#res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
-#echo $res
+sleep 5
+res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
+echo $res
 
