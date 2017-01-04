@@ -30,7 +30,7 @@ object UserValidator {
   implicit val updateUserValidator: Validator[UpdateUser] =
     validator[UpdateUser] {
       updateUser =>
-        updateUser.id as "用户id" min(1)
+//        updateUser.id as "用户id" is notEmpty
 //        updateUser.className as "用户类型" is notEmpty
 //        updateUser.className.length as "用户类型字段长度" is between(1, 10)
         updateUser.username as "登录名" is notEmpty

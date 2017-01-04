@@ -12,7 +12,7 @@ trait AssetTable {
 
   import driver.api._
 
-  class AssetClass(tag:Tag) extends Table[AssetEntity](tag,"asset"){
+  class AssetClass(tag:Tag) extends Table[AssetEntity](tag, "asset"){
     def id          = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def asset_id    = column[String]("asset_id")
     def file_type   = column[Int]("file_type")
@@ -20,10 +20,10 @@ trait AssetTable {
     def username    = column[String]("username")
     def gid         = column[Option[String]]("gid")
     def description = column[Option[String]]("description")
-    def uri         = column[String]("uri")
+    def url         = column[String]("url")
     def ts_c        = column[Timestamp]("ts_c")
 
-    def * = (id, asset_id, file_type, busi_type, username, gid, description, uri, ts_c)<>(AssetEntity.tupled,AssetEntity.unapply)
+    def * = (id, asset_id, file_type, busi_type, username, gid, description, url, ts_c) <> (AssetEntity.tupled,AssetEntity.unapply)
   }
 
   protected val assetClass = TableQuery[AssetClass]
