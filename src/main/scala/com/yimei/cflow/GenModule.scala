@@ -19,23 +19,22 @@ object GenModule extends App with GraphConfigProtocol {
   // 文件目录
   val rootDirName = "tmp"
   val projectName = "aegis-flow-" + graphConfig.artifact
-  val buildPropertiesDir = Array(rootDirName, projectName, "project")
-  val buildProperties =  "build.properties"
-  val pluginsSbtFile = "plugins.sbt"
+  val buildPropertiesFileDir = Array(rootDirName, projectName, "project")
+  val buildPropertiesFileName =  "build.properties"
+  val pluginsSbtFileName = "plugins.sbt"
   val flowJsonFileDir = Array(rootDirName, projectName, "src", "main", "resources")
-  val flowJsonFile = "flow.json"
-  val projectPackages = (graphConfig.groupId + "." + graphConfig.artifact).split('.')
-  var configScalaFileDir = Array(rootDirName, projectName, "src", "main", "scala")
-  configScalaFileDir ++= projectPackages
-  val configScalaFile = "Config.scala"
-  val graphJarScalaFile = graphConfig.entry + ".scala"
+  val flowJsonFileName = "flow.json"
+  val projectPackages = (graphConfig.groupId.split('.') ++ Array(graphConfig.artifact))
+  var configScalaFileDir = (Array(rootDirName, projectName, "src", "main", "scala") ++ projectPackages)
+  val configScalaFileName = "Config.scala"
+  val graphJarScalaFileName = graphConfig.entry + ".scala"
 
   var templateDir = "./template"
-  val buildPropertiesContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + buildProperties)).mkString
-  val pluginsSbtContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + pluginsSbtFile)).mkString
+  val buildPropertiesFileContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + buildPropertiesFileName)).mkString
+  val pluginsSbtFileContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + pluginsSbtFileName)).mkString
 
   // Config.scala 文件内容
-  var configScalaContent =
+  var configScalaFileContent =
     "\n" +
       "object Config {" +
       "\n"
@@ -45,11 +44,11 @@ object GenModule extends App with GraphConfigProtocol {
     Array("autoTasks", "val auto_") -> graphConfig.autoTasks,
     Array("userTasks", "val task_") -> graphConfig.userTasks
   )
-  configElementList.foreach(o => configScalaContent += createConfigContent(o._1, o._2))
-  configScalaContent += "}\n"
+  configElementList.foreach(o => configScalaFileContent += createConfigContent(o._1, o._2))
+  configScalaFileContent += "}\n"
 
   // GraphJar.scala 文件内容
-  var graphJarScalaContent =
+  var graphJarScalaFileContent =
     "\n" +
       "object " + graphConfig.entry + " {" +
       "\n"
@@ -59,15 +58,15 @@ object GenModule extends App with GraphConfigProtocol {
     Array("任务路由 get", "@Description(", "def get", "(proxy: ActorRef): Route = ???") -> graphConfig.userTasks,
     Array("任务路由 post", "@Description(", "def post", "(proxy: ActorRef): Route = ???") -> graphConfig.userTasks
   )
-  graphJarElementList.foreach(o => graphJarScalaContent += createGraphJarContent(o._1, o._2))
-  graphJarScalaContent += "}\n"
+  graphJarElementList.foreach(o => graphJarScalaFileContent += createGraphJarContent(o._1, o._2))
+  graphJarScalaFileContent += "}\n"
 
   // 创建文件夹,文件
-  createDynamicFile(buildPropertiesDir, buildProperties, buildPropertiesContent)
-  createDynamicFile(buildPropertiesDir, pluginsSbtFile, pluginsSbtContent)
-  createDynamicFile(flowJsonFileDir, flowJsonFile, graphConfigStr)
-  createDynamicFile(configScalaFileDir, configScalaFile, configScalaContent)
-  createDynamicFile(configScalaFileDir, graphJarScalaFile, graphJarScalaContent)
+  createDynamicFile(buildPropertiesFileDir, buildPropertiesFileName, buildPropertiesFileContent)
+  createDynamicFile(buildPropertiesFileDir, pluginsSbtFileName, pluginsSbtFileContent)
+  createDynamicFile(flowJsonFileDir, flowJsonFileName, graphConfigStr)
+  createDynamicFile(configScalaFileDir, configScalaFileName, configScalaFileContent)
+  createDynamicFile(configScalaFileDir, graphJarScalaFileName, graphJarScalaFileContent)
 
   // 生成 tar.gz 文件
   val destDir = new File(rootDirName + "/" + projectName)
@@ -102,9 +101,9 @@ object GenModule extends App with GraphConfigProtocol {
   }
 
   // 创建动态文件目录
-  def createDynamicDir(names: Array[String]): String = {
+  def createDynamicDir(dirArray: Array[String]): String = {
     var path: String = "."
-    names.foreach(name => {
+    dirArray.foreach(name => {
       path += "/" + name
       val file = new File(path)
       if (!file.exists()) file.mkdir()
@@ -127,9 +126,7 @@ object GenModule extends App with GraphConfigProtocol {
     tos.putArchiveEntry(tae)
     if (file.isDirectory()) {
       tos.closeArchiveEntry()
-      file.listFiles().foreach(childFile =>
-        addFileToCompression(tos, childFile, dir + "/" + childFile.getName())
-      )
+      file.listFiles().foreach(childFile => addFileToCompression(tos, childFile, dir + "/" + childFile.getName()))
     } else {
       val fis: FileInputStream = new FileInputStream(file)
       IOUtils.copy(fis, tos)
