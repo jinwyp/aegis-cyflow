@@ -70,7 +70,21 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-
+  /*
+   * 管理员获取所有公司
+   * url      localhost:9000/cang/admin/:partyclass/:instance_id
+   * method   put
+   * body     瑞茂通
+   */
+  def adminUpdateCompanyRoute: Route = put {
+    path("admin" / Segment / Segment) { (party, instanceId) =>
+      entity(as[String]) { companyName =>
+        println(companyName + "----------" + party + "---------" + instanceId)
+        complete(adminUpdateCompany(party, instanceId, companyName))
+      }
+    }
+  }
+  
   /*
    * 管理员修改邮箱、电话
    * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
@@ -151,7 +165,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute
 }
 
 object CangUserRoute {

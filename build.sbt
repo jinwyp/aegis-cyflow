@@ -12,6 +12,10 @@ scalaVersion := "2.11.8"
 
 resolvers += Resolver.jcenterRepo
 
+resolvers += "OSChina Maven Repository" at "http://maven.oschina.net/content/groups/public/"
+
+externalResolvers := Resolver.withDefaultResolvers(resolvers.value, mavenCentral = false)
+
 libraryDependencies ++= {
   val akkaV = "2.4.11"
   val scalaTestV = "3.0.0"

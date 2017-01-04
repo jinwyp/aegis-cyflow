@@ -42,6 +42,9 @@ object UserModel extends DefaultJsonProtocol {
   case class AddCompany(companyName: String, partyClass: String)
   implicit val addCompanyFormat = jsonFormat2(AddCompany)
 
+//  case class UpdateCompany(companyName: String, partyClass: String)
+//  implicit val updateCompanyFormat = jsonFormat2(UpdateCompany)
+
   //-------------------------------------返回model----------------------------------
   //登录返回信息
   case class UserData(userId: String, username: String, email: String, mobilePhone: String, role: String)
