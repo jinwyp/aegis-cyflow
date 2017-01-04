@@ -21,7 +21,7 @@ import scala.concurrent.Future
 class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
   import driver.api._
 
-  val rootPath = coreConfig.getString("filePath")
+  val rootPath = coreConfig.getString("file.root")
 
   import java.io.File
 
