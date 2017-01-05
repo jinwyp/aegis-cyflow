@@ -44,7 +44,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       if(!exitst){
         for {
           cpi <- createPartyInstance(PartyInstanceInfo(rzf, companyId, userInfo.companyName).toJson.toString)
-          cu <- createPartyUser(rzf, cpi.instance_id, userId, userInfo.toJson.toString)
+          cu <- createPartyUser(rzf, cpi.instanceId, userId, userInfo.toJson.toString)
         } yield {
           "success"
         }

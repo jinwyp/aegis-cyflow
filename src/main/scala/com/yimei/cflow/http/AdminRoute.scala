@@ -68,7 +68,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
 
             def insertFlow(p: PartyInstanceEntity, u: PartyUserEntity, s: FlowState): Future[FlowInstanceEntity] = {
               dbrun(flowInstance returning flowInstance.map(_.id) into ((ft, id) => ft.copy(id = id)) +=
-                FlowInstanceEntity(None, s.flowId, flowType, p.party_class + "-" + p.instance_id, u.user_id,
+                FlowInstanceEntity(None, s.flowId, flowType, p.partyClass + "-" + p.instanceId, u.user_id,
                   s.toJson.toString, FlowRegistry.flowGraph(s.flowType).flowInitial ,0, Timestamp.from(Instant.now))) recover {
                 case e =>
                   log.error("{}",e)
@@ -79,7 +79,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
             val f = for {
               p <- pi
               u <- getUser(p)
-              s <- ServiceProxy.flowCreate(proxy, p.party_class + "-" + p.instance_id, u.user_id, flowType, init)
+              s <- ServiceProxy.flowCreate(proxy, p.partyClass + "-" + p.instanceId, u.user_id, flowType, init)
               f <- insertFlow(p, u, s)
             } yield f
             complete(f)
@@ -198,7 +198,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
         def getQueryStatment(p: PartyInstanceEntity, u: PartyUserEntity) = {
           flowInstance.filter { fi =>
             fi.user_id === u.user_id &&
-              fi.user_type === p.party_class + "-" + p.instance_id &&
+              fi.user_type === p.partyClass + "-" + p.instanceId &&
               List(
                 fq.flowType.map(fi.flow_type === _),
                 fq.status.map(fi.finished === _)

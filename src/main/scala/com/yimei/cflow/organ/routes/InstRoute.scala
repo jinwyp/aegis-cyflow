@@ -31,6 +31,7 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
 
         val getPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(
           partyInstance.filter( p =>
+            p.disable === 0 &&
             p.instance_id === info.instanceId &&
             p.party_class === info.party
           ).result
@@ -39,7 +40,7 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
         def entity(pies: Seq[PartyInstanceEntity]): Future[PartyInstanceEntity] = {
           if(pies.length == 0) {
             dbrun(
-              (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, info.party, info.instanceId, info.companyName, Timestamp.from(Instant.now))
+              (partyInstance returning partyInstance.map(_.id)) into ((pi, id) => pi.copy(id = id)) += PartyInstanceEntity(None, info.party, info.instanceId, info.companyName, 0, Timestamp.from(Instant.now))
             )
           } else {
             throw BusinessException("已存在该公司")
@@ -60,7 +61,7 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
   //GET  /inst/:party/:instance_id           查询参与方实例
   def queryPartyInstance: Route = get {
     pathPrefix("inst" / Segment / Segment) { (pc, ii) =>
-      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii).result))
+      complete(dbrun(partyInstance.filter(p => p.party_class === pc && p.instance_id === ii && p.disable === 0).result))
     }
   }
 
@@ -70,11 +71,11 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
     path("inst" / Segment / Segment) { (party, ii) =>
       entity(as[String]) { companyName =>
 
-        def getExistPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(partyInstance.filter(p => p.instance_id === ii).result)
+        def getExistPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(partyInstance.filter(p => p.instance_id === ii && p.disable === 0).result)
 
         def updatePartyInstance(pilist: Seq[PartyInstanceEntity]): Future[String] = {
           if(pilist.length == 1){
-            dbrun(partyInstance.filter(_.instance_id === ii).map(p => (p.party_class, p.party_name)).update(party, companyName)) map { count =>
+            dbrun(partyInstance.filter( p => p.instance_id === ii && p.disable === 0).map(p => (p.party_class, p.party_name)).update(party, companyName)) map { count =>
               if(count > 0) "success" else "fail"
             }
           }else{
@@ -101,11 +102,15 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
           throw BusinessException("分页参数错误")
 
         val query = if(companyName.isDefined) {
-          partyInstance.filter{ pi =>
+          partyInstance.filter( pi =>
+            pi.disable === 0
+          ).filter{ pi =>
             pi.party_name like "%" + companyName.get + "%"
           }
         } else {
-          partyInstance
+          partyInstance.filter{ pi =>
+            pi.disable === 0
+          }
         }
 
         def getPartyInstanceList: Future[Seq[PartyInstanceEntity]] = dbrun(query.drop((page - 1) * pageSize).take(pageSize).result)
