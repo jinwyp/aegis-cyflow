@@ -60,7 +60,7 @@ var orderInfo = function () {
 
                         vm.errorRedemptionAmount = false;
 
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10) {
+                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 || vm.inputRedemptionFileList.length === 0 ) {
                             vm.errorRedemptionAmount = true;
                             return ;
                         } else {

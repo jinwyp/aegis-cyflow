@@ -571,7 +571,7 @@
                                         <input type="text" class="form-control" ms-duplex-number="@inputRedemptionAmount" >
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorRedemptionAmount">
-                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨!</span>
+                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨, 并且必须上传放货文件!</span>
                                     </div>
                                 </div>
 

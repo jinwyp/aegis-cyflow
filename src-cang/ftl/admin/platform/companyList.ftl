@@ -36,7 +36,7 @@
 
                                 <div class="form-group marginL">
                                     <label for="input-password" class="">公司名称:&nbsp;&nbsp;</label>
-                                    <input id="input-password"  class="form-control" type="text" placeholder="公司名称" ms-duplex="@searchQuery.party_name">
+                                    <input id="input-password"  class="form-control" type="text" placeholder="公司名称" ms-duplex="@searchQuery.companyName">
                                 </div>
                                 <div class="form-group marginL">
                                     <button class="btn btn-default btn-primary" ms-click="@clickSearchButton($event)">查询</button>
