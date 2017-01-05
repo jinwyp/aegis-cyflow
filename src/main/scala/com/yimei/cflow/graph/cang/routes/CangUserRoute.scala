@@ -90,7 +90,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * body     瑞茂通
    */
   def adminUpdateCompanyRoute: Route = put {
-    path("admin" / Segment / Segment) { (party, instanceId) =>
+    path("admin" / "partyClass" / Segment/ "instanceId" / Segment) { (party, instanceId) =>
       entity(as[String]) { companyName =>
         println(companyName + "----------" + party + "---------" + instanceId)
         complete(adminUpdateCompany(party, instanceId, companyName))
