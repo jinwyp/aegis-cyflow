@@ -30,7 +30,6 @@ var header = function() {
             var data = jqXHR.responseText;
             if (jqXHR.getResponseHeader('content-type').indexOf('json') > -1){
                 data = JSON.parse(jqXHR.responseText);
-
             }
             $.notify(data || data.error.message, 'error');
         }
