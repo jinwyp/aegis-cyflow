@@ -13,23 +13,23 @@ object GenModule extends App with GraphConfigProtocol {
 
   val classLoader = this.getClass.getClassLoader
 
-  var graphConfigStr = Source.fromInputStream(classLoader.getResourceAsStream("ying.json")).mkString
-  var graphConfig = graphConfigStr.parseJson.convertTo[GraphConfig]
+  val graphConfigStr = Source.fromInputStream(classLoader.getResourceAsStream("ying.json")).mkString
+  val graphConfig = graphConfigStr.parseJson.convertTo[GraphConfig]
 
   // 文件目录
   val rootDirName = "tmp"
   val projectName = "aegis-flow-" + graphConfig.artifact
-  val buildPropertiesFileDir = Array(rootDirName, projectName, "project")
+  val buildPropertiesFileDir = rootDirName + "/" + projectName + "/project"
   val buildPropertiesFileName =  "build.properties"
   val pluginsSbtFileName = "plugins.sbt"
-  val flowJsonFileDir = Array(rootDirName, projectName, "src", "main", "resources")
+  val flowJsonFileDir = rootDirName + "/" + projectName + "/src/main/resources"
   val flowJsonFileName = "flow.json"
-  val projectPackages = (graphConfig.groupId.split('.') ++ Array(graphConfig.artifact))
-  var configScalaFileDir = (Array(rootDirName, projectName, "src", "main", "scala") ++ projectPackages)
+  val projectPackages = graphConfig.groupId.replace(".", "/") + "/" + graphConfig.artifact
+  val configScalaFileDir = rootDirName + "/" + projectName + "/src/main/scala/" + projectPackages
   val configScalaFileName = "Config.scala"
   val graphJarScalaFileName = graphConfig.entry + ".scala"
 
-  var templateDir = "./template"
+  val templateDir = "./template"
   val buildPropertiesFileContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + buildPropertiesFileName)).mkString
   val pluginsSbtFileContent = Source.fromInputStream(classLoader.getResourceAsStream(templateDir + "/project/" + pluginsSbtFileName)).mkString
 
@@ -100,21 +100,11 @@ object GenModule extends App with GraphConfigProtocol {
     result
   }
 
-  // 创建动态文件目录
-  def createDynamicDir(dirArray: Array[String]): String = {
-    var path: String = "."
-    dirArray.foreach(name => {
-      path += "/" + name
-      val file = new File(path)
-      if (!file.exists()) file.mkdir()
-    })
-    path
-  }
-
   // 创建文件
-  def createDynamicFile(names: Array[String], fileName: String, fileContent: String): Unit = {
-    val path = createDynamicDir(names)
-    val file = new File(path + "/" + fileName)
+  def createDynamicFile(dirs: String, fileName: String, fileContent: String): Unit = {
+    val newDir = new File(dirs)
+    newDir.mkdirs()
+    val file = new File(dirs + "/" + fileName)
     val pw = new PrintWriter(file)
     pw.write(fileContent)
     pw.close

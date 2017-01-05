@@ -33,5 +33,5 @@ object AssetDBModel {
 //      this.a = a ;
 //    }
 //  }
-  case class AssetEntity(id:Option[Long], asset_id: String, file_type: Int, busi_type: Int, username: String, gid: Option[String], description: Option[String], url: String, ts_c: Timestamp)
+  case class AssetEntity(id:Option[Long], asset_id: String, file_type: Int, busi_type: Int, username: String, gid: Option[String], description: Option[String], url: String, ts_c: Option[Timestamp])
 }
