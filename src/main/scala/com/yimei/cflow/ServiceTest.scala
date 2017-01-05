@@ -52,7 +52,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     corsHandler(new SwaggerDocService(coreSystem).routes) ~
     ResourceRoute.route(proxy) ~
     EditorRoute.route(proxy) ~
-    pathPrefix("cang") {
+    pathPrefix("api"/"cang") {
       CangFlowRoute.route() ~
         CangUserRoute.route() ~
         SessionDemoRoute.route()

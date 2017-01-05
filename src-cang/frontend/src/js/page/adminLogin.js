@@ -46,7 +46,7 @@ var login = function() {
                     console.log('表单全部通过');
 
                     userService.login({
-                        email : vm.user.email,
+                        username : vm.user.username,
                         password : vm.user.password
                     }).done(function( data, textStatus, jqXHR ) {
                         if (data.success){
