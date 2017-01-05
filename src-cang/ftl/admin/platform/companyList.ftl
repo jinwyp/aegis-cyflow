@@ -63,7 +63,7 @@
 
                                         <td>
                                             <span class="btn btn-default resetPassword" ms-click="@clickResetPassword">重置密码</span>
-                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/company/'+ company._id + '/edit'}">编辑</a>
+                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/company/'+ company.instanceId + '/edit'}">编辑</a>
                                             <span class="btn btn-default marginL" ms-click="@clickDelete">删除</span>
                                         </td>
                                     </tr>
