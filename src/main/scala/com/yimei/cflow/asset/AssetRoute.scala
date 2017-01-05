@@ -80,6 +80,7 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
             FileObj(url, originName, rootPath + url)
           }}
           complete(res)
+
         }
       }
     }
