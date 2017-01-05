@@ -50,7 +50,6 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     *
     * 算法:
     * 1. 保持文件到文件系统, 记录位置为uri   --->    uuid  $file_root/xxxx/xx/xxx/xxx.pdf
-    *
     * 2. 组织1, 2, 3, 4,5信息, 保存到数据库记录
     *
     * @return
