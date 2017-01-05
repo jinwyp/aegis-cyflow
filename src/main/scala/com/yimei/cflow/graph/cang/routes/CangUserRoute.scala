@@ -75,9 +75,10 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method   get
    */
   def adminGetAllCompanyRoute: Route = get {
-    (path("admin" / "company") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
-
-      complete(adminGetAllCompany(page, pageSize))
+    (path("companies") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('companyName.as[String].?)) { (p, ps, cn) =>
+      val page = if(!p.isDefined) 1 else p.get
+      val pageSize = if(!ps.isDefined) 10 else ps.get
+      complete(adminGetAllCompany(page, pageSize, cn))
     }
   }
 
