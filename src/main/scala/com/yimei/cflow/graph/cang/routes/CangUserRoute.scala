@@ -48,6 +48,17 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员添加公司
+   * url      http://localhost:9000/api/cang/users?page=2&pageSize=2
+   * method   get
+   */
+  def adminGetAllUserListRoute: Route = get {
+    (path("users") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+      complete(adminGetAllUser(page, pageSize))
+    }
+  }
+
+  /*
+   * 管理员添加公司
    * url      http://localhost:9001/admin/company
    * method   post application/json
    * body     {"companyName":"瑞茂通","partyClass":"trader"}
@@ -124,7 +135,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
       import scala.concurrent.ExecutionContext.Implicits.global
       onSuccess(getLoginUserInfo(user)) { s =>
         mySetSession(s) {
-          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true))
+          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party, companyId = "", companyName = ""))), success = true))
         }
       }
     }
@@ -165,7 +176,8 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
+    adminGetAllUserListRoute
 }
 
 object CangUserRoute {
