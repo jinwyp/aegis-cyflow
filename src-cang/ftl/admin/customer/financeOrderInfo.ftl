@@ -394,7 +394,7 @@
                             <table class="table table-hover">
                                 <tr ms-for="(index, file) in @uploadFileList">
                                     <td class="border0 text-center">{{file.name}} <a href=""></a></td>
-                                    <td class="border0 text-center"><span class="btn btn-primary">删除</span></td>
+                                    <td class="border0 text-center"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
                                 </tr>
                             </table>
                         </div>

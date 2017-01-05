@@ -242,6 +242,14 @@ var orderInfo = function () {
             event.preventDefault();
             orderService.getContractById(file._id);
         },
+        deleteFile : function (event, file) {
+            event.preventDefault();
+            var tempIndex = vm.uploadFileList.indexOf(file);
+            if (tempIndex > -1){
+                vm.uploadFileList.splice(tempIndex, 1)
+                uploadFileList.splice(tempIndex, 1)
+            }
+        },
 
         contractFilter : function (el, i, role) {
             // console.log(el, i,role)
