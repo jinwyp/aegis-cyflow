@@ -19,20 +19,22 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 import scala.concurrent.Future
 
 class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
+
   import driver.api._
 
-  val rootPath = coreConfig.getString("file.root")
+  val fileRootPath = coreConfig.getString("file.root")
 
   import java.io.File
 
   import scala.concurrent.duration._
+
   /**
     * GET asset/:asset_id  -- 下载asset_id资源
     */
   def downloadFile: Route = get {
     path("file" / Segment) { id =>
-        val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
-        getFromFile(new File(rootPath + url))
+      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+      getFromFile(new File(fileRootPath + url))
     }
   }
 
@@ -48,13 +50,13 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     *
     * 算法:
     * 1. 保持文件到文件系统, 记录位置为uri   --->    uuid  $file_root/xxxx/xx/xxx/xxx.pdf
-    *
     * 2. 组织1, 2, 3, 4,5信息, 保存到数据库记录
     *
     * @return
     */
-  import java.sql.Timestamp
+
   def uploadFile: Route = post {
+<<<<<<< HEAD
     pathPrefix("file" / "upload") {
       pathEnd {
         entity(as[Multipart.FormData]) { fileData =>
@@ -81,14 +83,54 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           }}
           complete(res)
 
+=======
+    path("file") {
+      entity(as[Multipart.FormData]) { fileData =>
+        // 多个文件
+        val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
+          case file:
+            BodyPart if file.name == "file" =>
+            val uuId = UUID.randomUUID().toString
+            val fileName = file.getFilename().get()
+            processFile(uuId, fileName, fileData)
+            Future("path" -> (uuId + fileName))
+          case data: BodyPart => data.toStrict(2.seconds)
+            .map(strict => data.name -> strict.entity.data.utf8String)
+        }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
+        val res = result.map { data => {
+          val path = data.get("path").get
+          val busi_type: Int = data.getOrElse("busi_type", "0").toInt
+          val description: String = data.getOrElse("description", "")
+          val uuId = path.substring(0, 36)
+          val originName = path.substring(36, path.length)
+          val url = uuId.replace("-", "/") + "/" + originName
+          val suffix = originName.substring(originName.lastIndexOf('.') + 1)
+          val fileType = getFileType(suffix)
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
+          assetClass.insertOrUpdate(assetEntity)
+          FileObj(url, originName, fileRootPath + url)
+>>>>>>> 55776d77b0ac882f3c266c5e56deb5aa3b4600cc
         }
+        }
+        complete(res)
       }
     }
   }
 
-  private def processFile(fileName: String, fileData: Multipart.FormData) {
-    val filePath = rootPath + fileName.replaceAll("-", "/")
-    val fileOutput = new FileOutputStream(rootPath + filePath)
+  def getFileType(suffix: String): Int = {
+    val imageArray = Array("jpg", "jpeg", "gif", "png", "bmp")
+    if (suffix.toLowerCase == "pdf") 1
+    else if (imageArray.contains(suffix.toLowerCase)) 2
+    else if (suffix.toLowerCase == "doc" || suffix.toLowerCase == "docx") 3
+    else if (suffix.toLowerCase == "xls" || suffix.toLowerCase == "xlsx") 4
+    else 0
+  }
+
+  private def processFile(uuId: String, fileOriginName: String, fileData: Multipart.FormData) {
+    val dirPath = uuId.replace("-", "/")
+    val newDir = new File(fileRootPath + dirPath)
+    newDir.mkdirs()
+    val fileOutput = new FileOutputStream(fileRootPath + "/" + dirPath + "/" + fileOriginName)
     fileData.parts.mapAsync(1) {
       bodyPart =>
         def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {

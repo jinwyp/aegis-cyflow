@@ -18,21 +18,23 @@ import com.yimei.cflow.api.util.DBUtils
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
-import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable}
+import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable, UserGroupTable}
 import DBUtils._
 import com.yimei.cflow.graph.cang.exception.BusinessException
+import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
 import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import slick.backend.DatabasePublisher
 import slick.dbio.Effect.Read
 import slick.lifted
 import slick.profile.FixedSqlStreamingAction
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Path("/user/:userId")
-class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with PartyInstanceTable with SessionProtocol{
+class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with UserGroupTable with PartyInstanceTable with SessionProtocol{
 
   implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
   import driver.api._
@@ -272,6 +274,56 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
+  def getAllUserInfo: Route = get {
+    path("alluser") {
+      (parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+        if(page <= 0 || pageSize <= 0) throw BusinessException("分页参数有误！")
+
+        val userInfoQuery = for {
+          (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if(pu.disable === 0)
+        } yield (pu.user_id, pu.username, pu.email.getOrElse(""), pu.phone.getOrElse(""), pi.instance_id, pi.party_name, pi.party_class)
+
+        val getUserInfo = dbrun(userInfoQuery.drop((page - 1) * pageSize).take(pageSize).result)
+
+        val getTotal = dbrun(userInfoQuery.length.result)
+
+        def getGroupInfo(userId: String, party: String): Future[String] = {
+          dbrun((for {
+            (pu, pi) <- partyUser join userGroup on (_.user_id === _.user_id) if(pu.user_id === userId)
+          } yield (pu.user_id, pi.gid)).result) map { info =>
+            if(info.isEmpty) party else {
+              if(info.head._2 == "2") party + "Accountant" else party
+            }
+          }
+        }
+
+        def getResult(userInfo: Seq[(String, String, String, String, String, String, String)]): Future[List[UserData]] = {
+          import scala.collection.mutable.MutableList
+          var result = MutableList[Future[UserData]]()
+          userInfo.toList.foreach{ info =>
+
+            val temp = for {
+              role <- getGroupInfo(info._1, info._7)
+            } yield {
+              UserData(userId = info._2, username = info._1, email = info._3, mobilePhone = info._4, role = role, companyId = info._5, companyName = info._6)
+            }
+
+            result += temp
+          }
+          Future.sequence(result.toList)
+        }
+
+        val result = for {
+          info <- getUserInfo
+          list <- getResult(info)
+          total <- getTotal
+        }yield UserInfoList(datas = list, total = total)
+
+        complete(result)
+      }
+    }
+  }
+
   def disAbleUser: Route = get {
     pathPrefix("disable" / Segment) { userId =>
       val pu = partyUser.filter(u =>
@@ -345,7 +397,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo
 }
 
 

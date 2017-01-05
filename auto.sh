@@ -25,7 +25,7 @@ curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/ugro
 init > /dev/null 2>&1
 
 # 4>  创建流程
-res=$(curl -X POST  -H "Content-Type: application/json" -d '{"basicInfo":{"applyUserName":"wangqi","coalIndex_NCV": 1, "coalIndex_ADV": 0.02, "financingDays": 30, "downstreamContractNo": "24678", "financeEndTime": "2016-12-29 15:49:24", "applyUserId": "f1id", "upstreamContractNo": "没合同", "applyCompanyId":"1", "coalAmount": 0.01, "financeCreateTime": "2016-12-29 15:49:24", "businessCode": "123", "coalIndex_RS": 0.01, "applyCompanyName": "阿里巴巴", "auditFileList": [{ "name": "文件1", "originName": "www.baidu.com", "url": "12345", "fileType": "default" }, { "name": "文件2", "originName": "www.baidu.com", "url": "23456", "fileType": "default" }], "applyUserPhone": "13000000001", "stockPort": "heheh", "interestRate": 0.5, "coalType": "不知道", "downstreamCompanyName": "企鹅", "financingAmount": 1000 }, "investigationInfo": { "finalConclusion": "asdsa", "transitPort": "123", "qualityInspectionUnit": "hhwh", "historicalCooperationDetail": "wawa", "downstreamContractCompany": "百度", "businessRiskPoint": "adas", "financingPeriod": 1, "transportParty": "hahah", "quantityInspectionUnit": "wwww", "applyCompanyName": "阿里巴巴", "terminalServer": "heheh ", "mainBusinessInfo": "sdasda", "upstreamContractCompany": "企鹅", "businessStartTime": "2016-12-29 15:49:24", "interestRate": 0.01, "businessTransferInfo": "11ss", "ourContractCompany": "阿里巴巴", "financingAmount": 1000, "performanceCreditAbilityEval": "qqqq" }, "supervisorInfo": { "finalConclusion": "没意见", "historicalCooperationDetail": "hehe", "operatingStorageDetail": "heihei", "storageProperty": "天空", "supervisionCooperateDetail": "Bukan", "supervisionScheme": "ssss", "storageLocation": "上海", "portStandardDegree": "haha", "storageAddress": "1000弄" }}' http://localhost:9000/cang/startflow) 2>/dev/null;
+res=$(curl -X POST  -H "Content-Type: application/json" -d '{"basicInfo":{"applyUserName":"wangqi","coalIndex_NCV": 1, "coalIndex_ADV": 0.02, "financingDays": 30, "downstreamContractNo": "24678", "financeEndTime": "2016-12-29 15:49:24", "applyUserId": "f1id", "upstreamContractNo": "没合同", "applyCompanyId":"1", "coalAmount": 0.01, "financeCreateTime": "2016-12-29 15:49:24", "businessCode": "123", "coalIndex_RS": 0.01, "applyCompanyName": "阿里巴巴", "auditFileList": [{ "name": "文件1", "originName": "www.baidu.com", "url": "12345", "fileType": "default" }, { "name": "文件2", "originName": "www.baidu.com", "url": "23456", "fileType": "default" }], "applyUserPhone": "13000000001", "stockPort": "heheh", "interestRate": 0.5, "coalType": "不知道", "downstreamCompanyName": "企鹅", "financingAmount": 1000 }, "investigationInfo": { "finalConclusion": "asdsa", "transitPort": "123", "qualityInspectionUnit": "hhwh", "historicalCooperationDetail": "wawa", "downstreamContractCompany": "百度", "businessRiskPoint": "adas", "financingPeriod": 1, "transportParty": "hahah", "quantityInspectionUnit": "wwww", "applyCompanyName": "阿里巴巴", "terminalServer": "heheh ", "mainBusinessInfo": "sdasda", "upstreamContractCompany": "企鹅", "businessStartTime": "2016-12-29 15:49:24", "interestRate": 0.01, "businessTransferInfo": "11ss", "ourContractCompany": "阿里巴巴", "financingAmount": 1000, "performanceCreditAbilityEval": "qqqq" }, "supervisorInfo": { "finalConclusion": "没意见", "historicalCooperationDetail": "hehe", "operatingStorageDetail": "heihei", "storageProperty": "天空", "supervisionCooperateDetail": "Bukan", "supervisionScheme": "ssss", "storageLocation": "上海", "portStandardDegree": "haha", "storageAddress": "1000弄" }}' http://localhost:9000/api/cang/startflow) 2>/dev/null;
 
 flow_id=$(echo $res | jq ".data.flow_id")
 echo "flow_id = $flow_id"
@@ -37,7 +37,7 @@ echo "task_id is $task_id"
 
 # 6> 贸易方指定四个参与方
 k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"1","fundProviderUserId":"zj1id","fundProviderAccountantUserId":"zj2id"}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
 # 7> 融资方上传文件
@@ -46,7 +46,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":["123","123"]}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a12FinishedUpload/f1id/financer/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a12FinishedUpload/f1id/financer/1 -d "$k")
 echo $res
 
 #8>监管方上传合同
@@ -55,7 +55,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":["123","123"]}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a14FinishedUpload/s1id/supervisor/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a14FinishedUpload/s1id/supervisor/1 -d "$k")
 echo $res
 
 #9>港口上传合同和确认吨数
@@ -64,7 +64,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"harborConfirmAmount":1000.12,"fileList":["123","123"]}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a13FinishedUpload/h1id/harbor/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a13FinishedUpload/h1id/harbor/1 -d "$k")
 echo $res
 
 #10>贸易方审核
@@ -73,7 +73,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"approvedStatus":1,"fundProviderInterestRate":1024.1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a15traderAudit/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a15traderAudit/77777/trader/88888888 -d "$k")
 echo $res
 
 #11>贸易商给出放款建议金额
@@ -82,7 +82,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"loanValue":1024.1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a16traderRecommendAmount/88888/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a16traderRecommendAmount/88888/trader/88888888 -d "$k")
 echo $res
 
 #12>资金方审核
@@ -91,7 +91,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"approvedStatus":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
 echo $res
 
 #13>资金方财务审核
@@ -100,20 +100,20 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/1 -d "$k")
 echo $res
 
 #sleep 5
 
 #14>资金方放款（自动任务）
-#k='http://localhost:9000/cang/fortest/'$flowId'/fundProviderPaySuccess/success'
+#k='http://localhost:9000/api/cang/fortest/'$flowId'/fundProviderPaySuccess/success'
 #echo $k
-res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
+res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
 echo $res
 
 #sleep 5
 #15>贸易方向融资方放款（自动任务）
-res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
+res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
 echo $res
 
 #16>融资方确认回款
@@ -122,12 +122,12 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":1024.1024}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
 #17>融资方回款自动任务
 #sleep 5
-res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
+res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
 echo $res
 
 #18>贸易方通知港口放款
@@ -136,7 +136,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"goodsFileList":[{"name":"文件1","originName":"www.baidu.com","url":"12345","fileType":"default"},{"name":"文件2","originName":"www.baidu.com","url":"23456","fileType":"default"}],"redemptionAmount":1024.1,"goodsReceiveCompanyName":"腾讯"}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
 echo $res
 
 #19>港口放货
@@ -145,7 +145,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a21harborRelease/h1id/harbor/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a21harborRelease/h1id/harbor/1 -d "$k")
 echo $res
 
 #20>贸易商确认回款完成
@@ -154,7 +154,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":0}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a22traderAuditIfComplete/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a22traderAuditIfComplete/77777/trader/88888888 -d "$k")
 echo $res
 
 #############################################################################循环##############
@@ -164,12 +164,12 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":2048}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
 #17>融资方回款自动任务
 #sleep 5
-res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
+res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
 echo $res
 
 #18>贸易方通知港口放款
@@ -178,7 +178,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":["123","123"],"redemptionAmount":2048.1,"goodsReceiveCompanyName":"腾讯"}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a20noticeHarborRelease/77777/trader/88888888 -d "$k")
 echo $res
 
 #19>港口放货
@@ -187,7 +187,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a21harborRelease/h1id/harbor/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a21harborRelease/h1id/harbor/1 -d "$k")
 echo $res
 
 #20>贸易商确认回款完成
@@ -196,7 +196,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a22traderAuditIfComplete/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a22traderAuditIfComplete/77777/trader/88888888 -d "$k")
 echo $res
 
 ##################################################################################################
@@ -207,7 +207,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a23ReturnMoney/77777/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a23ReturnMoney/77777/trader/88888888 -d "$k")
 echo $res
 
 #22>贸易商财务确认回款，流程结束
@@ -216,11 +216,11 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/cang/financeorders/action/a24AccountantReturnMoney/88888/trader/88888888 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a24AccountantReturnMoney/88888/trader/88888888 -d "$k")
 echo $res
 
 #23>贸易商回款自动任务
 sleep 5
-res=$(curl -X GET http://localhost:9000/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
+res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
 echo $res
 

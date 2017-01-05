@@ -45,7 +45,7 @@
                                     <!--</span>-->
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.role | rolename}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputParty_class')>-1">{{@errorMessage.inputParty_class}}</div>
+                                <div class="col-sm-5 lineH34" ms-visible="@errorInputName.indexOf('inputParty_class')>-1">{{@errorMessage.inputParty_class}}</div>
                             </div>
                         </fieldset>
 
@@ -57,7 +57,7 @@
                                            ms-duplex="@currentUser.party_name" ms-rules='{required:true}' data-required-message="请输入公司名称">
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.party_name}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputParty_name')>-1">{{@errorMessage.inputParty_name}}</div>
+                                <div class="col-sm-5 lineH34" ms-visible="@errorInputName.indexOf('inputParty_name')>-1">{{@errorMessage.inputParty_name}}</div>
                             </div>
                         </fieldset>
 

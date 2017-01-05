@@ -113,12 +113,20 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield Result(data = Some(re), success = true)
   }
 
+  //管理员获取用户列表
+  def adminGetAllUser(page: Int, pageSize: Int): Future[Result[List[UserData]]] = {
+    log.info(s"get into method adminGetAllUser")
+    for {
+      userList <- getAllUserList(page, pageSize)
+    } yield Result(data = Some(userList.datas), success = true, meta = Meta(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
+  }
+
   //管理员获取所有公司信息
-  def adminGetAllCompany(page: Int, pageSize: Int): Future[Result[Seq[PartyInstanceEntity]]] = {
-    log.info(s"get into method adminGetAllCompany")
+  def adminGetAllCompany(page: Int, pageSize: Int, companyName: Option[String]): Future[Result[Seq[PartyInstanceEntity]]] = {
+    log.info(s"get into method adminGetAllCompany: page:${page}, pageSize:${pageSize}, companyName:${companyName}")
 
     for {
-      pilist <- getAllPartyInstanceList(page, pageSize)
+      pilist <- getAllPartyInstanceList(page, pageSize, companyName)
     } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
@@ -137,7 +145,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party)), success = true, error = null, meta = null)
+        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -159,7 +167,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party)), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -197,7 +205,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     }
 
     def getResult(qur: QueryUserResult): UserData = {
-      UserData(qur.userInfo.user_id, qur.userInfo.username, qur.userInfo.email.getOrElse(""), qur.userInfo.phone.getOrElse(""), party)
+      UserData(qur.userInfo.user_id, qur.userInfo.username, qur.userInfo.email.getOrElse(""), qur.userInfo.phone.getOrElse(""), party, "", "")
     }
 
     (for {

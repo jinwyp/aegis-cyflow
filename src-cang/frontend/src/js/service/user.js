@@ -82,8 +82,6 @@ exports.getSessionUser = function (query){
             }
         }
     }
-
-
 };
 
 exports.getUserList = function (query){
