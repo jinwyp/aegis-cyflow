@@ -27,19 +27,19 @@
 
                 <form role="form" data-parsley-validate="" novalidate="" class="mb-lg" ms-validate="@loginValidate">
                     <div class="form-group has-feedback " ms-class="[@errorInputName.indexOf('inputUsername')>-1 && 'has-error',  @successInputName.indexOf('inputUsername')>-1 &&'has-success'] ">
-                        <input id="inputUsername" type="text" placeholder="用户名" class="form-control" ms-duplex="@user.username" ms-rules='{required:true,minlength:1,maxlength:20}'
-                               data-required-message="请输入用户名" data-minlength-message="用户名长度不能少于1位" data-maxlength-message="用户名长度不能大于20位">
+                        <input id="inputUsername" type="text" placeholder="用户名" class="form-control" ms-duplex="@user.username" ms-rules='{required:true, minlength:2, maxlength:20}'
+                               data-required-message="请输入用户名" data-minlength-message="用户名长度不能少于2位" data-maxlength-message="用户名长度不能大于20位">
                         <span class="fa fa-user form-control-feedback text-muted"></span>
                         <span class="help-block" ms-visible="@errorInputName.indexOf('inputUsername')>-1">{{@errorMessage.inputUsername}}</span>
 
                     </div>
 
-                    <#--<div class="form-group has-feedback " ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error',  @successInputName.indexOf('inputEmail')>-1 &&'has-success'] ">-->
-                        <#--<input id="inputEmail" type="email" placeholder="邮箱" class="form-control" ms-duplex="@user.email | change" ms-rules='{required:true, email:true}'-->
-                               <#--data-required-message="请输入邮箱" data-email-message="邮箱格式不正确">-->
-                        <#--<span class="fa fa-user form-control-feedback text-muted"></span>-->
-                        <#--<span class="help-block" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</span>-->
-                    <#--</div>-->
+                    <!--  <div class="form-group has-feedback " ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error',  @successInputName.indexOf('inputEmail')>-1 &&'has-success'] ">
+                        <input id="inputEmail" type="email" placeholder="邮箱" class="form-control" ms-duplex="@user.email | change" ms-rules='{required:true, email:true}'
+                               data-required-message="请输入邮箱" data-email-message="邮箱格式不正确">
+                        <span class="fa fa-user form-control-feedback text-muted"></span>
+                        <span class="help-block" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</span>
+                    </div> -->
 
                     <div class="form-group has-feedback" ms-class="[@errorInputName.indexOf('inputPassword')>-1 && 'has-error',  @successInputName.indexOf('inputPassword')>-1 &&'has-success'] ">
                         <input id="inputPassword" type="password" placeholder="密码" class="form-control" ms-duplex="@user.password | change" ms-rules='{required:true,minlength:6,maxlength:20}'
@@ -48,20 +48,9 @@
                         <span class="help-block" ms-visible="@errorInputName.indexOf('inputPassword')>-1">{{@errorMessage.inputPassword}}</span>
                     </div>
 
-                    <#--<div class="clearfix">-->
-                        <#--<div class="checkbox c-checkbox pull-left mt0">-->
-                            <#--<label>-->
-                                <#--<input type="checkbox" value="" name="remember">-->
-                                <#--<span class="fa fa-check"></span>Remember Me</label>-->
-                        <#--</div>-->
-                        <#--<div class="pull-right"><a href="recover.html" class="text-muted">Forgot your password?</a>-->
-                        <#--</div>-->
-                    <#--</div>-->
-
                     <span id="error" class="help-block">{{@errorMessage.ajax}}</span>
                     <button type="submit" class="btn btn-block btn-primary mt-lg">登录</button>
                 </form>
-                <#--<p class="pt-lg text-center">Need to Signup?</p><a href="register.html" class="btn btn-block btn-default">Register Now</a>-->
             </div>
         </div>
         <!-- END panel-->

@@ -89,7 +89,9 @@ libraryDependencies ++= {
 
     "org.apache.commons" % "commons-compress" % "1.12",
 
-    "org.freemarker" % "freemarker" % "2.3.23"
+    "org.freemarker" % "freemarker" % "2.3.23",
+
+    "org.thymeleaf" % "thymeleaf" % "3.0.2.RELEASE"
 
   )
 }

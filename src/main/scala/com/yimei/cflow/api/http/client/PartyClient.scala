@@ -32,12 +32,13 @@ trait PartyClient extends UserProtocol with PartyModelProtocal{
     }
   }
 
-  def getAllPartyInstanceList(page: Int, pageSize: Int): Future[PartyInstanceListEntity] = {
+  def getAllPartyInstanceList(page: Int, pageSize: Int, companyName: Option[String]): Future[PartyInstanceListEntity] = {
     //访问com.yimei.cflow.organ.routes.InstRoute中的getPartyInstanceList接口
     sendRequest(
       path = "api/inst/list",
       paramters = Map("page" -> page.toString, "pageSize" -> pageSize.toString),
-      method = "get"
+      method = "post",
+      bodyEntity = companyName
     ) map { result =>
       result.parseJson.convertTo[PartyInstanceListEntity]
     }

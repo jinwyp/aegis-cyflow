@@ -27,8 +27,11 @@ var header = function() {
         if (jqXHR.status === 401 || jqXHR.status === 403){
             window.location.href = '/warehouse/admin/login'
         }else{
-            var data = JSON.parse(jqXHR.responseText);
-            $.notify(data.error.message, 'error');
+            var data = jqXHR.responseText;
+            if (jqXHR.getResponseHeader('content-type').indexOf('json') > -1){
+                data = JSON.parse(jqXHR.responseText);
+            }
+            $.notify(data || data.error.message, 'error');
         }
     });
 

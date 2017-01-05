@@ -71,7 +71,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
       val tasks: Future[UserState] = for {
         p <- pi
         u <- getUser(p)
-        r <- ServiceProxy.userQuery(proxy, p.party_class + "-" + p.instance_id, u.user_id)
+        r <- ServiceProxy.userQuery(proxy, p.partyClass + "-" + p.instanceId, u.user_id)
       } yield {
         r
       }
@@ -105,7 +105,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
 
         def getTasks(p: PartyInstanceEntity, u: PartyUserEntity): Future[Seq[FlowTaskEntity]] = {
           dbrun(flowTask.filter(f =>
-            f.user_type === p.party_class + "-" + p.instance_id &&
+            f.user_type === p.partyClass + "-" + p.instanceId &&
               f.user_id === u.user_id
           ).result)
         }
@@ -166,7 +166,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           p <- pi
           u <- getUser(p)
           fw <- flow
-          s <- ServiceProxy.userSubmit(proxy, p.party_class + "-" + p.instance_id, u.user_id, task_id, entity.points)
+          s <- ServiceProxy.userSubmit(proxy, p.partyClass + "-" + p.instanceId, u.user_id, task_id, entity.points)
           f <- insertTask(s)
         } yield {
           s
@@ -225,7 +225,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           p <- pi
           u <- getUser(p)
           fw <- flow
-          s <- ServiceProxy.userSubmit(proxy, p.party_class + "-" + p.instance_id, u.user_id, task_id, entity.points)
+          s <- ServiceProxy.userSubmit(proxy, p.partyClass + "-" + p.instanceId, u.user_id, task_id, entity.points)
           f <- insertTask(s)
         } yield {
           s
@@ -274,7 +274,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         }
 
         def getTasks(ugs: Seq[UserGroupEntity], p: PartyInstanceEntity): Future[Seq[GroupState]] = {
-          Future.sequence(ugs.map(ug => ServiceProxy.groupQuery(proxy, p.party_class + "-" + p.instance_id, ug.gid)))
+          Future.sequence(ugs.map(ug => ServiceProxy.groupQuery(proxy, p.partyClass + "-" + p.instanceId, ug.gid)))
         }
 
         val r: Future[GroupTaskResult] = for {
@@ -332,7 +332,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         p <- pi
         u <- getUser(p)
         g <- getGroup(p, u)
-        r <- ServiceProxy.groupClaim(proxy, p.party_class + "-" + p.instance_id, g.gid, u.user_id, task_id)
+        r <- ServiceProxy.groupClaim(proxy, p.partyClass + "-" + p.instanceId, g.gid, u.user_id, task_id)
       } yield {
         r
       })
