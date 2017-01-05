@@ -59,20 +59,21 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员添加公司
-   * url      http://localhost:9001/admin/company
+   * url      http://localhost:8000/api/cang/companies
    * method   post application/json
    * body     {"companyName":"瑞茂通","partyClass":"trader"}
    */
   def adminAddCompanyRoute: Route = post {
-    (path("admin" / "company") & entity(as[AddCompany])) { company =>
+    (path("companies") & entity(as[AddCompany])) { company =>
       complete(adminAddCompany(company))
     }
   }
 
   /*
    * 管理员获取所有公司
-   * url      localhost:9000/cang/admin/company?page=x&pageSize=y
-   * method   get
+   * url         http://localhost:9000/api/cang/companies?page=1&count=3&companyName=%E6%98%93%E7%85%A4
+   * method      get
+   * attention   page/count/companyName都不是必填项
    */
   def adminGetAllCompanyRoute: Route = get {
     (path("companies") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('companyName.as[String].?)) { (p, ps, cn) =>
