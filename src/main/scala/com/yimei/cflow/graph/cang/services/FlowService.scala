@@ -486,8 +486,8 @@ object FlowService extends UserModelProtocol
         u.userInfo.phone,
         u.userInfo.email,
         u.userInfo.name,
-        c.party_name,
-        c.instance_id))
+        c.partyName,
+        c.instanceId))
     }
   }
 
