@@ -78,7 +78,7 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit val partyGroupFormat = jsonFormat5(PartyGroupEntity)
 
-  implicit val partyInstanceFormat = jsonFormat5(PartyInstanceEntity)
+  implicit val partyInstanceFormat = jsonFormat6(PartyInstanceEntity)
 
   implicit val flowInstanceEntityFormat = jsonFormat9(FlowInstanceEntity)
 

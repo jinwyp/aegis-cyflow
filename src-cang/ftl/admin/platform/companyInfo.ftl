@@ -32,34 +32,38 @@
                 <!--<div class="panel-heading">Form elements</div>-->
                 <div class="panel-body">
                     <form class="form-horizontal" data-parsley-validate="" novalidate="" ms-validate="@addValidate">
+
                         <fieldset>
-                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputParty_class')>-1 && 'has-error' ]">
-                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>用户类型:</label>
+                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
+                                <label for="inputCompanyName" class="col-sm-2 control-label"><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
-                                    <select name="account" class="form-control" id="inputParty_class" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentUser.party_class" ms-rules='{required:true}' data-required-message="请选择用户类型">
-                                        <option value="" > - </option>
-                                        <option ms-for="role in @party_class" ms-attr="{value: role.name}" >{{role.displayName}} </option>
-                                    </select>
-                                    <!--<span class="help-block m-b-none" ms-visible="@currentUser.role===@role.traderAccountant || @currentUser.role===@role.fundProviderAccountant">-->
-                                    <!--</span>-->
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.role | rolename}}</p>
+                                    <input id="inputCompanyName" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
+                                           ms-duplex="@currentCompany.companyName" ms-rules='{required:true}' data-required-message="请输入公司名称">
+
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.companyName}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputParty_class')>-1">{{@errorMessage.inputParty_class}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
                         </fieldset>
 
+
                         <fieldset>
-                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputParty_name')>-1 && 'has-error' ]">
-                                <label for="inputParty_name" class="col-sm-2 control-label"><span class=" marginR">*</span>公司名称:</label>
+                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputPartyClass')>-1 && 'has-error' ]">
+                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>类型:</label>
                                 <div class="col-sm-5">
-                                    <input id="inputParty_name" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                           ms-duplex="@currentUser.party_name" ms-rules='{required:true}' data-required-message="请输入公司名称">
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.party_name}}</p>
+                                    <select name="account" class="form-control" id="inputPartyClass" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
+                                            ms-duplex="@currentCompany.partyClass" ms-rules='{required:true}' data-required-message="请选择用户类型">
+                                        <option value="" > - </option>
+                                        <option ms-for="role in @roleList" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                    </select>
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.role | rolename}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputParty_name')>-1">{{@errorMessage.inputParty_name}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputPartyClass')>-1">{{@errorMessage.inputPartyClass}}</div>
+
                             </div>
                         </fieldset>
+
+
 
 
                         <div class="btn-edit text-center">

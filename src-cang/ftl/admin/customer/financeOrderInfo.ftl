@@ -357,7 +357,7 @@
                         <div class="panel-heading">合同信息</div>
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.financer || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider ">
                                     <tr>
                                         <th class="text-right ">融资用户合同及单据:</th>
                                         <td>
@@ -366,7 +366,7 @@
                                     </tr>
                                 </table>
 
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.harbor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider " >
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>
                                         <td>
@@ -374,7 +374,7 @@
                                         </td>
                                     </tr>
                                 </table>
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.supervisor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider ">
                                     <tr>
                                         <th class="text-right contract-table">监管方合同及单据:</th>
                                         <td>
@@ -382,10 +382,8 @@
                                         </td>
                                     </tr>
                                 </table>
-
                             </div>
                         </div>
-
                     </div>
 
 

@@ -70,6 +70,7 @@ create table  party_instance (
   party_class varchar(32) not null,    -- 参与方类别 -  zjf  rzf  myf,      三位编码
   instance_id varchar(32),            -- 比如融资方-1, 融资方-2     todo: 应该改为8位编码
   party_name varchar(256),            -- 参与方名称
+  disable tinyint not null DEFAULT 0,    -- 是否被禁用  0: 未禁用,  1: 禁用
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -81,7 +81,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
            val result: Future[UserState] = (for {
              p <- pi
              u <- insert(p)
-             r <- ServiceProxy.userCreate(proxy, p.party_class+"-"+p.instance_id, u.user_id)
+             r <- ServiceProxy.userCreate(proxy, p.partyClass+"-"+p.instanceId, u.user_id)
            } yield {
             r
            } )
@@ -138,7 +138,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         val result: Future[QueryUserResult] = for{
           p <- pi
           u <- getUser(p)
-          s <- ServiceProxy.userQuery(proxy, p.party_class+"-"+p.instance_id, u.user_id)
+          s <- ServiceProxy.userQuery(proxy, p.partyClass+"-"+p.instanceId, u.user_id)
         } yield {
           QueryUserResult(u,s)
         }
