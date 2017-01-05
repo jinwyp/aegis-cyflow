@@ -47,7 +47,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
-   * 管理员添加公司
+   * 管理员获取所有用户
    * url      http://localhost:9000/api/cang/users?page=2&pageSize=2
    * method   get
    */
@@ -70,7 +70,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
-   * 管理员获取所有公司
+   * 管理员获取所有公司信息
    * url         http://localhost:9000/api/cang/companies?page=1&count=3&companyName=%E6%98%93%E7%85%A4
    * method      get
    * attention   page/count/companyName都不是必填项
@@ -80,6 +80,17 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
       val page = if(!p.isDefined) 1 else p.get
       val pageSize = if(!ps.isDefined) 10 else ps.get
       complete(adminGetAllCompany(page, pageSize, cn))
+    }
+  }
+
+  /*
+   * 管理员获取特定公司信息
+   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId
+   * method      get
+   */
+  def adminGetSpecificCompanyRoute: Route = get {
+    path("company" / Segment / Segment) { (partyClass, instanceId) =>
+      complete(adminGetSpecificCompany(partyClass, instanceId))
     }
   }
 
@@ -178,7 +189,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
     adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
-    adminGetAllUserListRoute
+    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute
 }
 
 object CangUserRoute {

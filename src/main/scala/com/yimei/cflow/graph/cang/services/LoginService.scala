@@ -103,14 +103,22 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
     log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
-    val formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss")
-    def instanceId = formatter.format(new Date())  + new Random(3).nextInt()
+    val formatter = new SimpleDateFormat("yyMMddhh")
+    def instanceId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
     val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
 
     for {
       re <- createPartyInstance(partyInstanceInfo.toJson.toString)
     } yield Result(data = Some(re), success = true)
+  }
+
+  def adminGetSpecificCompany(partyClass: String, instanceId: String): Future[Result[PartyInstanceEntity]] = {
+    log.info(s"get into method adminGetSpecificCompany, partyClass:${partyClass}, instanceId:${instanceId}")
+
+    for {
+      pi <- queryPartyInstance(partyClass, instanceId)
+    } yield Result(data = Some(pi.head), success = true)
   }
 
   //管理员获取用户列表
