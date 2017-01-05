@@ -199,20 +199,30 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   implicit val spDataFormat = jsonFormat16(SPData)
 
   /**
+    *用户信息
+    */
+  case class UserInfo(userId:String,
+                      userName:String,
+                      phone:Option[String],
+                      email:Option[String],
+                      name:String,
+                      companyName:String,
+                      companyId:String
+                     )
+  implicit val userInfoFormat = jsonFormat7(UserInfo)
+
+  /**
     * 仓压用户信息
     */
-  case class CYPartyMember( harborUserId: Option[String],                       //港口业务人员 用户id
-                              harborCompanyId: Option[String],                    //港口公司id
-                              harborCompanyName:Option[String],                   //港口公司名称
-                              supervisorUserId: Option[String],                 //监管业务人员 用户id
-                              supervisorCompanyId: Option[String],              //监管公司id
-                              supervisorCompanyName:Option[String],             //监管公司名字
-                              fundProviderCompanyId: Option[String],           //资金方公司id
-                              fundProviderCompanyName:Option[String],           //资金方公司名称
-                              fundProviderUserId:Option[String],                //资金方业务Id
-                              fundProviderAccountantUserId:Option[String]       //资金方财务Id
+  case class CYPartyMember(   harbor: Option[UserInfo],                       //港口
+                              supervisor:Option[UserInfo],             //监管
+                              fundProvider: Option[UserInfo],           //资金方业务
+                              fundProviderAccountant:Option[UserInfo],      //资金方财务
+                              trader:Option[UserInfo],                  //贸易方业务
+                              traderAccountant:Option[UserInfo],        //贸易方财务
+                              financer:Option[UserInfo]               //融资方
                             )
-  implicit val cyPartyMemberFormat = jsonFormat10(CYPartyMember)
+  implicit val cyPartyMemberFormat = jsonFormat7(CYPartyMember)
 
 
   /**
