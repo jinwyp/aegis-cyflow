@@ -26,7 +26,7 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
   //POST /inst         创建参与方实例
   //body {party: String, instanceId: String, companyName: String}
   def createPartyInstance: Route = post {
-    pathPrefix("inst") {
+    path("inst") {
       entity(as[PartyInstanceInfo]) { info =>
 
         val getPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(
@@ -64,14 +64,31 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
     }
   }
 
-  //PUT  /inst/:id/:party/:instance_id/:party_name          更新参与方实例
+  //post  /inst/:party/:instance_id          更新参与方实例
+  //body  companyName
   def updatePartyInstance: Route = put {
-    pathPrefix("inst" / Segment / Segment / Segment / Segment) { (id, pc, ii, pn) =>
-      val update = partyInstance.filter(_.id === id.toLong).map(p => (p.party_class, p.instance_id, p.party_name)).update(pc, ii, pn)
-      val result = dbrun(update) map { count =>
-        if(count > 0) "success" else "fail"
+    path("inst" / Segment / Segment) { (party, ii) =>
+      entity(as[String]) { companyName =>
+
+        def getExistPartyInstance: Future[Seq[PartyInstanceEntity]] = dbrun(partyInstance.filter(p => p.instance_id === ii).result)
+
+        def updatePartyInstance(pilist: Seq[PartyInstanceEntity]): Future[String] = {
+          if(pilist.length == 1){
+            dbrun(partyInstance.filter(_.instance_id === ii).map(p => (p.party_class, p.party_name)).update(party, companyName)) map { count =>
+              if(count > 0) "success" else "fail"
+            }
+          }else{
+            throw BusinessException("不存在对应的公司！")
+          }
+        }
+
+        val result = for {
+          pilist <- getExistPartyInstance
+          re <- updatePartyInstance(pilist)
+        } yield re
+
+        complete(result)
       }
-      complete(result)
     }
   }
 

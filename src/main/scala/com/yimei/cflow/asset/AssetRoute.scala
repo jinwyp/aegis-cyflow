@@ -9,32 +9,32 @@ import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.ByteString
-import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
+import com.yimei.cflow.api.util.DBUtils.dbrun
+import com.yimei.cflow.asset.db.AssetTable
+import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport {
-  val rootPath = coreConfig.getString("file.root")
-  val localPath = s"${rootPath}/${bucket}/"
+class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
+
+  import driver.api._
+
+  val fileRootPath = coreConfig.getString("file.root")
+
+  import java.io.File
 
   import scala.concurrent.duration._
 
   /**
     * GET asset/:asset_id  -- 下载asset_id资源
-    *
-    * @return
     */
   def downloadFile: Route = get {
-    pathPrefix("file" / "download") {
-      pathEnd {
-        parameter("url") { url =>
-          if (url == null || !url.startsWith(rootPath)) {
-            complete("error")
-          }
-          complete("ok")
-        }
-      }
+    path("file" / Segment) { id =>
+      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+      getFromFile(new File(fileRootPath + url))
     }
   }
 
@@ -55,37 +55,54 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
     *
     * @return
     */
+
   def uploadFile: Route = post {
-    pathPrefix("file" / "upload") {
-      pathEnd {
-        entity(as[Multipart.FormData]) { fileData =>
-          // 多个文件
-          val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
-            case file:
-              BodyPart if file.name == "file" =>
-              val fileName = UUID.randomUUID().toString + "-" + file.getFilename().get()
-              val filePath = localPath + fileName
-              processFile(filePath, fileData)
-              Future("url" -> filePath)
-            case data: BodyPart => data.toStrict(2.seconds)
-              .map(strict => data.name -> strict.entity.data.utf8String)
-          }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
-
-          val ff = result.map { data => {
-            val url = data.get("url").get
-            val originName = data.get("name").get
-            FileObj(url.replace(localPath, ""), originName, url)
-          }}
-
-          complete(ff)
-
+    path("file") {
+      entity(as[Multipart.FormData]) { fileData =>
+        // 多个文件
+        val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
+          case file:
+            BodyPart if file.name == "file" =>
+            val uuId = UUID.randomUUID().toString
+            val fileName = file.getFilename().get()
+            processFile(uuId, fileName, fileData)
+            Future("path" -> (uuId + fileName))
+          case data: BodyPart => data.toStrict(2.seconds)
+            .map(strict => data.name -> strict.entity.data.utf8String)
+        }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
+        val res = result.map { data => {
+          val path = data.get("path").get
+          val busi_type: Int = data.getOrElse("busi_type", "0").toInt
+          val description: String = data.getOrElse("description", "")
+          val uuId = path.substring(0, 36)
+          val originName = path.substring(36, path.length)
+          val url = uuId.replace("-", "/") + "/" + originName
+          val suffix = originName.substring(originName.lastIndexOf('.') + 1)
+          val fileType = getFileType(suffix)
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
+          assetClass.insertOrUpdate(assetEntity)
+          FileObj(url, originName, fileRootPath + url)
         }
+        }
+        complete(res)
       }
     }
   }
 
-  private def processFile(filePath: String, fileData: Multipart.FormData) {
-    val fileOutput = new FileOutputStream(filePath)
+  def getFileType(suffix: String): Int = {
+    val imageArray = Array("jpg", "jpeg", "gif", "png", "bmp")
+    if (suffix.toLowerCase == "pdf") 1
+    else if (imageArray.contains(suffix.toLowerCase)) 2
+    else if (suffix.toLowerCase == "doc" || suffix.toLowerCase == "docx") 3
+    else if (suffix.toLowerCase == "xls" || suffix.toLowerCase == "xlsx") 4
+    else 0
+  }
+
+  private def processFile(uuId: String, fileOriginName: String, fileData: Multipart.FormData) {
+    val dirPath = uuId.replace("-", "/")
+    val newDir = new File(fileRootPath + dirPath)
+    newDir.mkdirs()
+    val fileOutput = new FileOutputStream(fileRootPath + "/" + dirPath + "/" + fileOriginName)
     fileData.parts.mapAsync(1) {
       bodyPart =>
         def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
@@ -103,7 +120,7 @@ class AssetRoute(bucket: String) extends ApplicationConfig with SprayJsonSupport
 
 object AssetRoute {
 
-  def route(bucket: String): Route = AssetRoute(bucket).route
+  def route: Route = AssetRoute().route
 
-  def apply(bucket: String): AssetRoute = new AssetRoute(bucket)
+  def apply(): AssetRoute = new AssetRoute()
 }

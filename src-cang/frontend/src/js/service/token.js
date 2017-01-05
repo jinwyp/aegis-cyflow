@@ -13,7 +13,7 @@ var headers = {
     "x-authorization-userid" : sessionUserId
 };
 
-var prefix = '/apimock';
+var prefix = '/api/cang';
 
 var url = {
     files : prefix + '/files',

@@ -21,9 +21,9 @@ trait AssetTable {
     def gid         = column[Option[String]]("gid")
     def description = column[Option[String]]("description")
     def url         = column[String]("url")
-    def ts_c        = column[Timestamp]("ts_c")
+    def ts_c        = column[Option[Timestamp]]("ts_c")
 
-    def * = (id, asset_id, file_type, busi_type, username, gid, description, url, ts_c) <> (AssetEntity.tupled,AssetEntity.unapply)
+    def * = (id, asset_id, file_type, busi_type, username, gid, description, url, ts_c) <> (AssetEntity.tupled, AssetEntity.unapply)
   }
 
   protected val assetClass = TableQuery[AssetClass]

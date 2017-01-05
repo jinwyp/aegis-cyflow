@@ -10,6 +10,9 @@ import akka.http.scaladsl.model.ContentTypes.`text/html(UTF-8)`
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives.complete
 import akka.util.ByteString
+import akka.stream.scaladsl.Source
+
+import scala.concurrent.Future
 
 /**
   * Created by hary on 17/1/3.
@@ -22,7 +25,7 @@ object FreemarkerConfig extends CoreConfig {
   ftlConfig.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
   ftlConfig.setLogTemplateExceptions(false);
 
-  val staticPathAdmin = "/static"
+  val staticPathAdmin = "/static/admin"
   val staticPath = "src-cang/frontend/src"
    // val staticEnv = coreConfig.getAnyRef("cang.env")
   val staticEnv = "fortest"
@@ -35,12 +38,16 @@ object FreemarkerConfig extends CoreConfig {
   //val comp = complete()
 
   def ftl(template:String,tdata:JMap[String, String] = new java.util.HashMap[String, String]()) ={
-    val os = new ByteArrayOutputStream()
-    val out = new OutputStreamWriter(os)
-    tdata.put("staticPathAdmin", staticPathAdmin)
-    tdata.put("env", "staging")
-    ftlConfig.getTemplate(template).process(tdata, out)
-    complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`,ByteString(os.toString))))
+
+    val src =Source.fromFuture(Future {
+      val os = new ByteArrayOutputStream()
+      val out = new OutputStreamWriter(os)
+      tdata.put("staticPathAdmin", staticPathAdmin)
+      tdata.put("env", "staging")
+      ftlConfig.getTemplate(template).process(tdata, out)
+      ByteString(os.toString)
+    })
+    complete(HttpResponse(status = StatusCodes.OK, entity = HttpEntity(`text/html(UTF-8)`, src)))
   }
 
 
