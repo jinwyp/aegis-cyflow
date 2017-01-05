@@ -89,7 +89,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method      get
    */
   def adminGetSpecificCompanyRoute: Route = get {
-    path("company" / Segment / Segment) { (partyClass, instanceId) =>
+    path("company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
       complete(adminGetSpecificCompany(partyClass, instanceId))
     }
   }

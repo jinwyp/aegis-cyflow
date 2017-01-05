@@ -130,12 +130,23 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员获取所有公司信息
-  def adminGetAllCompany(page: Int, pageSize: Int, companyName: Option[String]): Future[Result[Seq[PartyInstanceEntity]]] = {
+  def adminGetAllCompany(page: Int, pageSize: Int, companyName: Option[String]): Future[Result[List[PartyInstanceEntity]]] = {
     log.info(s"get into method adminGetAllCompany: page:${page}, pageSize:${pageSize}, companyName:${companyName}")
+
+    def getResult(list: Seq[PartyInstanceEntity]) = {
+      import scala.collection.mutable.MutableList
+      var result = MutableList[PartyInstanceEntity]()
+      list.toList.foreach { info =>
+        val temp = PartyInstanceEntity(id = info.id, partyClass = info.partyClass, instanceId = info.partyClass + "/" + info.instanceId, companyName = info.companyName, disable = info.disable, ts_c = info.ts_c)
+        result += temp
+      }
+      result.toList
+    }
 
     for {
       pilist <- getAllPartyInstanceList(page, pageSize, companyName)
-    } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
+      result = getResult(pilist.partyInstanceList)
+    } yield Result(data = Some(result), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改公司信息
