@@ -18,12 +18,14 @@ var userRoleAll = [
     { name:'financer', displayName : '融资方'},
     { name:'harbor', displayName : '港口'},
     { name:'supervisor', displayName : '监管'},
-    { name:'trader', displayName : ' 贸易商'},
+    { name:'trader', displayName : '贸易商'},
     { name:'traderAccountant', displayName : '贸易商财务'},
-    { name:'fundProvider', displayName : ' 资金方'},
+    { name:'fundProvider', displayName : '资金方'},
     { name:'fundProviderAccountant', displayName : '资金方财务'}
 ];
-var userRolePartial = userRoleAll.slice(2);
+var userRolePartial = userRoleAll.slice(2, 5);
+userRolePartial.push({ name:'fundProvider', displayName : '资金方'});
+
 
 var userRoleAllObject = {};
 var userRoleNameObject = {};

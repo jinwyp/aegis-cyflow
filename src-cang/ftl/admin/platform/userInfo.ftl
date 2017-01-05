@@ -41,7 +41,8 @@
                                            ms-duplex="@currentUser.username" ms-rules='{required:true}' data-required-message="请输入用户账号" >
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.username}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputUsername')>-1">{{@errorMessage.inputUsername}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUsername')>-1">{{@errorMessage.inputUsername}}</div>
+
                             </div>
                         </fieldset>
                         <fieldset>
@@ -57,7 +58,7 @@
                                     </span>
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.role | rolename}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputUserRole')>-1">{{@errorMessage.inputUserRole}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUserRole')>-1">{{@errorMessage.inputUserRole}}</div>
                             </div>
                         </fieldset>
                         <fieldset ms-visible="@currentUser.role === @role.traderAccountant">
@@ -71,7 +72,7 @@
                                     </select>
                                     <span class="help-block m-b-none">*&nbsp;如没有选择的贸易商，请先添加贸易商</span>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="!@isMYSCWValid">请选择贸易商</div>
+                                <div class="col-sm-5 help-block" ms-visible="!@isMYSCWValid">请选择贸易商</div>
                             </div>
                         </fieldset>
                         <fieldset ms-visible="@currentUser.role === @role.fundProviderAccountant">
@@ -85,7 +86,7 @@
                                     </select>
                                     <span class="help-block m-b-none">*&nbsp;如没有选择的资金方，请先添加资金方</span>
                                 </div>
-                                <div class="col-sm-5 "  ms-visible="!@isMYSCWValid">请选择资金方</div>
+                                <div class="col-sm-5 help-block"  ms-visible="!@isMYSCWValid">请选择资金方</div>
                             </div>
                         </fieldset>
                         <fieldset>
@@ -96,7 +97,7 @@
                                            ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请输入公司名称">
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.companyName}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
                         </fieldset>
                         <fieldset>
@@ -112,7 +113,7 @@
                                     <a href="/warehouse/admin/home/session/password" class="btn btn-primary">重置密码</a>
                                     <span class=" marginL">重置后，该密码将发送至该邮箱</span>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
+                                <div class="col-sm-5 lineH34" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
                             </div>
                         </fieldset>
                         <fieldset>
@@ -123,7 +124,7 @@
                                            ms-rules="{ required:true, pattern: /^1[358][0123456789]\d{8}$/ }" data-required-message="请输入手机号码" data-pattern-message="手机号码不正确">
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.mobilePhone}}</p>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputMobilePhone')>-1">{{@errorMessage.inputMobilePhone}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputMobilePhone')>-1">{{@errorMessage.inputMobilePhone}}</div>
                             </div>
                         </fieldset>
                         <fieldset class="last-child" ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">

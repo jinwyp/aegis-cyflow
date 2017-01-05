@@ -58,8 +58,8 @@
                                     </tr>
                                     <tr ms-for="(index, company) in @companyList">
 
-                                        <td>{{ company.party_name || '--'}}</td>
-                                        <td>{{ company.party_class | rolename}}</td>
+                                        <td>{{ company.companyName || '--'}}</td>
+                                        <td>{{ company.partyClass | rolename}}</td>
 
                                         <td>
                                             <span class="btn btn-default resetPassword" ms-click="@clickResetPassword">重置密码</span>
