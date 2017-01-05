@@ -112,7 +112,7 @@
                     <ul id="dashboard" class="nav sidebar-subnav collapse">
                         <li class="sidebar-subnav-header">Dashboard</li>
                         <li >
-                            <a href="/warehouse/admin//demo/dashboard" title="范例 - 搜索列表">
+                            <a href="/warehouse/admin/home/demo/dashboard" title="范例 - 搜索列表">
                                 <span>范例 - 搜索列表</span>
                             </a>
                         </li>

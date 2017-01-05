@@ -107,8 +107,8 @@ module.exports = {
         proxy: {
             "/warehouse": "http://localhost:9000",
             "/static": "http://localhost:9000",
-            "/api": "http://localhost:9000",
-            "/apimock": "http://192.168.1.54:3030"
+            "/apimock": "http://192.168.1.54:3030",
+            "/api/cang": "http://localhost:9000"
         }
     }
 };
