@@ -93,15 +93,15 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     val imageArray = Array("jpg", "jpeg", "gif", "png", "bmp")
     if (suffix.toLowerCase == "pdf") 1
     else if (imageArray.contains(suffix.toLowerCase)) 2
+    else if (suffix.toLowerCase == "doc" || suffix.toLowerCase == "docx") 3
+    else if (suffix.toLowerCase == "xls" || suffix.toLowerCase == "xlsx") 4
     else 0
   }
 
   private def processFile(uuId: String, fileOriginName: String, fileData: Multipart.FormData) {
     val dirPath = uuId.replace("-", "/")
-        val newDir = new File(fileRootPath + dirPath)
-        newDir.mkdirs()
-//        val newFile = new File(rootPath + "/" + dirPath + "/" + fileOriginName)
-//        newFile.createNewFile()
+    val newDir = new File(fileRootPath + dirPath)
+    newDir.mkdirs()
     val fileOutput = new FileOutputStream(fileRootPath + "/" + dirPath + "/" + fileOriginName)
     fileData.parts.mapAsync(1) {
       bodyPart =>
