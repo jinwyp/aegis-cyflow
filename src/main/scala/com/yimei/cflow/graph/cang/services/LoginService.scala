@@ -122,11 +122,11 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员获取所有公司信息
-  def adminGetAllCompany(page: Int, pageSize: Int): Future[Result[Seq[PartyInstanceEntity]]] = {
-    log.info(s"get into method adminGetAllCompany")
+  def adminGetAllCompany(page: Int, pageSize: Int, companyName: Option[String]): Future[Result[Seq[PartyInstanceEntity]]] = {
+    log.info(s"get into method adminGetAllCompany: page:${page}, pageSize:${pageSize}, companyName:${companyName}")
 
     for {
-      pilist <- getAllPartyInstanceList(page, pageSize)
+      pilist <- getAllPartyInstanceList(page, pageSize, companyName)
     } yield Result(data = Some(pilist.partyInstanceList), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 

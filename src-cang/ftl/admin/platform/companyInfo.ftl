@@ -59,6 +59,7 @@
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.role | rolename}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputPartyClass')>-1">{{@errorMessage.inputPartyClass}}</div>
+
                             </div>
                         </fieldset>
 

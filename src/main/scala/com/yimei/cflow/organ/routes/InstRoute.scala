@@ -92,21 +92,32 @@ class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProt
     }
   }
 
-  //GET /inst/list?page=x&pageSize=y
-  def getPartyInstanceList: Route = get {
+  //post /inst/list?page=x&pageSize=y
+  //body Option[companyName]
+  def getPartyInstanceList: Route = post {
     (path("inst" / "list") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
-      if(page <= 0 || pageSize <= 0)
-        throw BusinessException("分页参数错误")
+      entity(as[Option[String]]) { companyName =>
+        if(page <= 0 || pageSize <= 0)
+          throw BusinessException("分页参数错误")
 
-      def getPartyInstanceList: Future[Seq[PartyInstanceEntity]] = dbrun(partyInstance.drop((page - 1) * pageSize).take(pageSize).result)
-      def getAccount = dbrun(partyInstance.length.result)
+        val query = if(companyName.isDefined) {
+          partyInstance.filter{ pi =>
+            pi.party_name like "%" + companyName.get + "%"
+          }
+        } else {
+          partyInstance
+        }
 
-      val result = for {
-        list <- getPartyInstanceList
-        account <- getAccount
-      } yield PartyInstanceListEntity(list, account)
+        def getPartyInstanceList: Future[Seq[PartyInstanceEntity]] = dbrun(query.drop((page - 1) * pageSize).take(pageSize).result)
+        def getAccount = dbrun(query.length.result)
 
-      complete(result)
+        val result = for {
+          list <- getPartyInstanceList
+          account <- getAccount
+        } yield PartyInstanceListEntity(list, account)
+
+        complete(result)
+      }
     }
   }
 

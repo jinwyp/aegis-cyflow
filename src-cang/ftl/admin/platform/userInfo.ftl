@@ -42,6 +42,7 @@
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.username}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUsername')>-1">{{@errorMessage.inputUsername}}</div>
+
                             </div>
                         </fieldset>
                         <fieldset>
@@ -112,7 +113,7 @@
                                     <a href="/warehouse/admin/home/session/password" class="btn btn-primary">重置密码</a>
                                     <span class=" marginL">重置后，该密码将发送至该邮箱</span>
                                 </div>
-                                <div class="col-sm-5 " ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
+                                <div class="col-sm-5 lineH34" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
                             </div>
                         </fieldset>
                         <fieldset>
