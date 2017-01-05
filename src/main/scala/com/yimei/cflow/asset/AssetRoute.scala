@@ -56,34 +56,6 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     */
 
   def uploadFile: Route = post {
-<<<<<<< HEAD
-    pathPrefix("file" / "upload") {
-      pathEnd {
-        entity(as[Multipart.FormData]) { fileData =>
-          // 多个文件
-          val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
-            case file:
-              BodyPart if file.name == "file" =>
-              val uuId = UUID.randomUUID().toString
-              val fileName = uuId + "-" + file.getFilename().get()
-              processFile(fileName, fileData)
-              Future("url" -> fileName)
-            case data: BodyPart => data.toStrict(2.seconds)
-              .map(strict => data.name -> strict.entity.data.utf8String)
-          }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
-
-          val res = result.map { data => {
-            val url = data.get("url").get
-            val originName = data.get("name").get
-            val fileType = data.get("type").get
-            val assetId = url.substring(url.lastIndexOf("-"))
-            val assetEntity: AssetEntity = new AssetEntity(null, assetId, 0, 0, "username", Some("gid"), Some("description"), url, new Timestamp(new java.util.Date().getTime)) ;
-            assetClass.insertOrUpdate(assetEntity)
-            FileObj(url, originName, rootPath + url)
-          }}
-          complete(res)
-
-=======
     path("file") {
       entity(as[Multipart.FormData]) { fileData =>
         // 多个文件
@@ -97,7 +69,8 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           case data: BodyPart => data.toStrict(2.seconds)
             .map(strict => data.name -> strict.entity.data.utf8String)
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
-        val res = result.map { data => {
+
+        val res = result.map { data =>
           val path = data.get("path").get
           val busi_type: Int = data.getOrElse("busi_type", "0").toInt
           val description: String = data.getOrElse("description", "")
@@ -109,8 +82,6 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
           assetClass.insertOrUpdate(assetEntity)
           FileObj(url, originName, fileRootPath + url)
->>>>>>> 55776d77b0ac882f3c266c5e56deb5aa3b4600cc
-        }
         }
         complete(res)
       }
