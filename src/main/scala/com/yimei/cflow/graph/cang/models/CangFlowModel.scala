@@ -186,7 +186,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                     downstreamCompanyName:String,      //下游采购方
                     stockPort:String,                     //库存港口
                     coalAmount:String,             //质押总数量（吨）
-                    financingAmount : BigDecimal,       //融资金额（万元) ? todo 新杰确认一下
+                    financingAmount : BigDecimal,       //拟融资金额（万元) 拟融资金额 - 融资方想要融资金额,不是实际融资金额
                     financingDays : Int,                //融资期限（天）
                     interestRate : BigDecimal,          // 利率
                     coalType : String ,                 //煤种
