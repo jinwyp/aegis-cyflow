@@ -33,6 +33,7 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     */
   def downloadFile: Route = get {
     path("file" / Segment) { id =>
+      println(" ------ abc -------- ")
       val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
       getFromFile(new File(fileRootPath + url))
     }

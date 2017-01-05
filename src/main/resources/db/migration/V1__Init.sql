@@ -130,7 +130,7 @@ create table asset(
   username varchar(128) not null,          -- 上传用户
   gid varchar(32),                         -- 上传用户当时属于哪个组
   description varchar(512),                -- 可以为空
-  uri varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
+  url varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
