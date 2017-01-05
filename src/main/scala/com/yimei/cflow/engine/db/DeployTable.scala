@@ -17,7 +17,7 @@ trait DeployTable {
     def flow_type  = column[String]("flow_type")
     def jar        = column[Blob]("jar")
     def enable     = column[Boolean]("enable")
-    def ts_c       = column[Timestamp]("ts_c")
+    def ts_c       = column[Option[Timestamp]]("ts_c")
 
     def * = (id, flow_type, jar, enable, ts_c) <>(DeployEntity.tupled, DeployEntity.unapply)
   }

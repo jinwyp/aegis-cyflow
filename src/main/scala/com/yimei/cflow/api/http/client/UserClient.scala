@@ -4,6 +4,7 @@ import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, Use
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
+import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import spray.json._
 
@@ -86,5 +87,16 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       pathVariables = Array(userId),
       method = "get"
     )
+  }
+
+  def getAllUserList(page: Int, pageSize: Int): Future[UserInfoList] = {
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getAllUserInfo接口
+    sendRequest(
+      path = "api/alluser",
+      paramters = Map("page" -> page.toString, "pageSize" -> pageSize.toString),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[UserInfoList]
+    }
   }
 }
