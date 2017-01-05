@@ -17,7 +17,7 @@ trait DesignTable {
     def name      = column[String]("name")
     def json      = column[String]("json")
     def meta      = column[String]("meta")
-    def ts_c      = column[Timestamp]("ts_c")
+    def ts_c      = column[Option[Timestamp]]("ts_c")
 
     def * = (id, name, json, meta, ts_c) <> (DesignEntity.tupled, DesignEntity.unapply)
   }
