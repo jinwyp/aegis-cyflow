@@ -14,10 +14,11 @@ var login = function() {
         $id: "loginController",
         user : {
             username : '',
-            email : '',
+            // email : '',
             password : ''
         },
         errorMessage : {
+            inputUsername : '',
             inputEmail : '',
             inputPassword : '',
             ajax : ''
