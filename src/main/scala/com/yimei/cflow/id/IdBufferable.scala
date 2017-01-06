@@ -1,4 +1,4 @@
-package com.yimei.cflow.api.services
+package com.yimei.cflow.id
 
 import akka.actor.ActorRef
 import akka.pattern._
