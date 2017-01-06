@@ -8,60 +8,78 @@ object Resolvers {
 
 object Depenencies {
 
-  private val akkaV = "2.4.11"
-  private val scalaTestV = "3.0.0"
-  private val slickVersion = "3.1.1"
-  private val circeV = "0.5.1"
+  private val akka = "2.4.11"
+  private val scalaTest = "3.0.0"
+  private val slick = "3.1.1"
+  private val leveldb = "0.7"
+  private val leveldbjniAll = "1.8"
+  private val mysqlConnectorJava = "6.0.5"
+  private val akkaHttpSession = "0.3.0"
+  private val swaggerAkkaHttp = "0.7.2"
+  private val accordCore = "0.6"
+  private val flywayCore = "3.2.1"
+  private val freemarker = "2.3.23"
+  private val thymeleaf = "3.0.2.RELEAS"
+  private val scalazCore = "7.2.8"
+  private val commonsCompress = "1.2"
+  private val commonsIO = "2.5"
+  private val quicklens = "1.4.8"
+  private val akkaPersistenceRedis = "0.6.0"
+  private val hikaricp = "2.4.5"
+  private val camelJetty = "2.16.4"
+  private val camelQuartz = "2.16.4"
+  private val scalapbRuntime = "0.5.34"
 
   val appDependencies = Seq(
     // cluster
     "com.typesafe.akka" %% "akka-cluster" % akkaV,
-    "com.typesafe.akka" %% "akka-cluster-tools" % akkaV,
-    "com.typesafe.akka" %% "akka-cluster-sharding" % akkaV,
+    "com.typesafe.akka" %% "akka-cluster-tools" % akka,
+    "com.typesafe.akka" %% "akka-cluster-sharding" % akka,
+    "com.typesafe.akka" %% "akka-persistence" % akka,
+    "com.typesafe.akka" %% "akka-http-core" % akka,
+    "com.typesafe.akka" %% "akka-http-experimental" % akka,
+    "com.typesafe.akka" %% "akka-http-testkit" % akka % "test",
+    "com.typesafe.akka" %% "akka-slf4j" % akka,
+    "com.typesafe.akka" %% "akka-camel"   % akka,
+    "com.typesafe.akka" %  "akka-http-spray-json-experimental_2.11" %  akka,
 
     // compiler
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
 
     // persistence
-    "com.typesafe.akka" %% "akka-persistence" % akkaV,
-    "com.hootsuite" %% "akka-persistence-redis" % "0.6.0",
-    "org.iq80.leveldb"            % "leveldb"          % "0.7",
-    "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8",
+    "com.hootsuite" %% "akka-persistence-redis" %  akkaPersistenceRedis,
+    "org.iq80.leveldb"            % "leveldb"          %  leveldb,
+    "org.fusesource.leveldbjni"   % "leveldbjni-all"   % leveldbniAll,
 
     // akka-http
-    "com.typesafe.akka" %% "akka-http-core" % akkaV,
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
-    "com.typesafe.akka" %% "akka-http-testkit" % akkaV % "test",
-    "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % "2.4.11",
-    "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
-    "com.softwaremill.akka-http-session" %% "core" % "0.3.0",
+    "com.github.swagger-akka-http" %% "swagger-akka-http" % swaggerAkkaHttp,
+    "com.softwaremill.akka-http-session" %% "core" %  akkaHttpSession,
 
     // database: slick and flyway
-    "com.typesafe.slick" %% "slick" % slickVersion,
-    "org.flywaydb" % "flyway-core" % "3.2.1",
-    "com.zaxxer" % "HikariCP" % "2.4.5",
-
+    "com.typesafe.slick" %% "slick" % slick,
+    "org.flywaydb" % "flyway-core" % flywayCore,
+    "com.zaxxer" % "HikariCP" % hikaricp,
 
     // mysql
-    "mysql" % "mysql-connector-java" % "6.0.5",
+    "mysql" % "mysql-connector-java" % mysqlConnectorJava
 
-    "org.scalatest" %% "scalatest" % scalaTestV % "test",
-    "com.wix" %% "accord-core" % "0.6",
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.8",
+    // test
+    "org.scalatest" %% "scalatest" % scalaTest % "test",
+
+    // validation
+    "com.wix" %% "accord-core" % accordCore
+
+    // lens
+    "com.softwaremill.quicklens" %% "quicklens" % quicklens
 
     // camel integration
-    "com.typesafe.akka" %% "akka-camel"   % "2.4.11",
-    "org.apache.camel"  %  "camel-jetty"  % "2.16.4",
-    "org.apache.camel"  %  "camel-quartz" % "2.16.4",
+    "org.apache.camel"  %  "camel-jetty"  % camelJetty,
+    "org.apache.camel"  %  "camel-quartz" % camelQuartz,
 
     // logger
     "ch.qos.logback" % "logback-classic" % "1.1.3",
     "org.slf4j" % "slf4j-nop" % "1.6.4",
-    "com.typesafe.akka" %% "akka-slf4j" % akkaV,
-
-    // lens
-    "com.softwaremill.quicklens" % "quicklens_2.11" % "1.4.8",
 
     // neo4j-scala
     "eu.fakod"  %% "neo4j-scala" % "0.3.3",
@@ -70,19 +88,15 @@ object Depenencies {
     "com.trueaccord.scalapb"  %% "scalapb-runtime"  % "0.5.34"  % PB.protobufConfig,
 
     // scalaz
-    "org.scalaz" %% "scalaz-core" % "7.2.8",
+    "org.scalaz" %% "scalaz-core" % scalazCore
 
     //files tar.gz
-    "org.apache.commons" % "commons-compress" % "1.12",
+    "org.apache.commons" % "commons-compress" % commonsCompress
+    "commons-io" % "commons-io" % commonsIO
 
-    //http cors
-    //    "ch.megard" %% "akka-http-cors" % "0.1.10",
+    "org.freemarker" % "freemarker" % freemarker
 
-    "org.apache.commons" % "commons-compress" % "1.12",
-
-    "org.freemarker" % "freemarker" % "2.3.23",
-
-    "org.thymeleaf" % "thymeleaf" % "3.0.2.RELEASE"
+    "org.thymeleaf" % "thymeleaf" % thymeleaf
 
   )
 }
@@ -90,7 +104,7 @@ object Depenencies {
 object BuildSettings {
 
   val buildOrganization = "com.yimei"
-  val appName = "sbt-publish-example"
+  val appName = "aegis-zflow"
   val buildVersion = "0.0.1-SNAPSHOT"
   val buildScalaVersion = "2.11.8"
   val buildScalaOptions = Seq("-unchecked", "-deprecation", "-encoding", "utf8")
@@ -120,7 +134,7 @@ object PublishSettings {
   )
 
   lazy val pomXml = {
-    <url>https://github.com/epiphyllum/sbt-publish-example</url>
+    <url>https://github.com/epiphyllum/zflow</url>
       <licenses>
         <license>
           <name>Apache License 2.0</name>
@@ -129,8 +143,8 @@ object PublishSettings {
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:epiphyllum/sbt-publish-example.git</url>
-        <connection>scm:git:git@github.com:epiphyllum/sbt-publish-example.git</connection>
+        <url>git@github.com:epiphyllum/zflow.git</url>
+        <connection>scm:git:git@github.com:epiphyllum/zflow.git</connection>
       </scm>
       <developers>
         <developer>
@@ -147,11 +161,14 @@ object ApplicationBuild extends Build {
   import BuildSettings._
   import PublishSettings._
 
+  lazy val zflowApi     = Project("zflow-api",     file("zflow-api"),     settings = buildSettings ++ publishSettings)
+  lazy val zflowUtil    = Project("zflow-util",    file("zflow-util"),    settings = buildSettings ++ publishSettings)
+  lazy val zflowEngine  = Project("zflow-engine",  file("zflow-engine"),  settings = buildSettings ++ publishSettings).dependsOn(zflowUtil, zflowApi)
+
+  lazy val zflowCluster = Project("zflow-cluster", file("zflow-cluster"), settings = buildSettings ++ publishSettings).dependsOn(zflowEngine)
+  lazy val zflowSingle  = Project("zflow-single",  file("zflow-single"),  settings = buildSettings ++ publishSettings).dependsOn(zflowEngine)
+
   lazy val root = Project(
     appName,
-    file(".")).aggregate(engine, engineApi, organ, organApi)
-
-  lazy val engineApi  = Project("engine-api",  file("engine-api"),  settings = buildSettings ++ publishSettings)
-  lazy val egineUtil  = Project("engine-util", file("engine-util"), settings = buildSettings ++ publishSettings)
-  lazy val engineCore = Project("engine-core", file("engine-core"), settings = buildSettings ++ publishSettings).dependsOn(engineCore, engineUtil)
+    file(".")).aggregate(zflowApi, zflowCore, zflowUtil, zflowCluster, zflowSingle)
 }
