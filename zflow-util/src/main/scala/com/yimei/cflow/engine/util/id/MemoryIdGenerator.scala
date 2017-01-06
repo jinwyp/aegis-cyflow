@@ -1,4 +1,4 @@
-package com.yimei.cflow.id
+package com.yimei.cflow.engine.util.id
 
 import akka.actor.Props
 import com.yimei.cflow.id.models.{CommandGetId, EventIncrease, Id}

@@ -1,4 +1,4 @@
-package com.yimei.cflow.id
+package com.yimei.cflow.engine.util.id
 
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}

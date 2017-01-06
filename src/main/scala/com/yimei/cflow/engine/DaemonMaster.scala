@@ -21,11 +21,11 @@ object DaemonMaster {
     */
   def moduleProps(name: String, persistent: Boolean = true): Props = {
     name match {
-      case `module_flow` => FlowMaster.props(Array(module_user, module_auto, module_group, module_id)) // todo 依赖是确定的???
-      case `module_user` => UserMaster.props(Array(module_flow, module_auto, module_group, module_id))
+      case `module_flow`  => FlowMaster.props(Array(module_user, module_auto, module_group, module_id)) // todo 依赖是确定的???
+      case `module_user`  => UserMaster.props(Array(module_flow, module_auto, module_group, module_id))
       case `module_group` => GroupMaster.props(Array(module_user))
-      case `module_auto` => AutoMaster.props(Array(module_user, module_flow, module_id))
-      case `module_id` => IdGenerator.props(name, persistent)
+      case `module_auto`  => AutoMaster.props(Array(module_user, module_flow, module_id))
+      case `module_id`    => IdGenerator.props(name, 0, persistent)
     }
   }
 
