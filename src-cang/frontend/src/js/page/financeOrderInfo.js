@@ -59,37 +59,51 @@ var orderInfo = function () {
                         // 贸易商 返还货物 并给港口上传货物文件
 
                         vm.errorRedemptionAmount = false;
+                        vm.errorRedemptionReceiver = false;
+                        vm.errorRedemptionFileList = false;
 
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 || vm.inputRedemptionFileList.length === 0 ) {
+                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 ) {
                             vm.errorRedemptionAmount = true;
                             return ;
-                        } else {
-
-                            var tempDelivery = {
-                                uploadFiles : [],
-                                redemptionAmount : vm.inputRedemptionAmount,
-                                orderId      : orderId,
-                                orderNo      : vm.currentOrder.orderNo
-                            }
-
-                            additionalData.fileList = []
-                            additionalData.redemptionAmount = vm.inputRedemptionAmount
-
-                            vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                                tempDelivery.uploadFiles.push(file.fileId)
-                                additionalData.fileList.push(file.fileId)
-                            })
-
-
-                            orderService.addNewDelivery(tempDelivery).done(function (data) {
-                                if (data.success) {
-                                    getOrderInfo()
-                                    $.notify("保存成功!", 'success');
-                                } else {
-                                    console.log(data.error);
-                                }
-                            })
                         }
+                        if (!vm.inputRedemptionReceiver ||  vm.inputRedemptionReceiver.length < 2 ) {
+                            vm.errorRedemptionReceiver = true;
+                            return ;
+                        }
+                        if (vm.inputRedemptionFileList.length === 0 ) {
+                            vm.errorRedemptionFileList = true;
+                            return ;
+                        }
+
+
+                        var tempDelivery = {
+                            uploadFiles : [],
+                            redemptionAmount : vm.inputRedemptionAmount,
+                            receiver : vm.inputRedemptionReceiver,
+                            orderId      : orderId,
+                            orderNo      : vm.currentOrder.orderNo
+                        }
+
+                        additionalData.fileList = []
+                        additionalData.redemptionAmount = vm.inputRedemptionAmount
+                        additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
+
+                        vm.inputRedemptionFileList.forEach(function(file, fileIndex){
+                            tempDelivery.uploadFiles.push(file.fileId)
+                            additionalData.fileList.push(file.fileId)
+                        })
+
+
+
+                        orderService.addNewDelivery(tempDelivery).done(function (data) {
+                            if (data.success) {
+                                getOrderInfo()
+                                $.notify("保存成功!", 'success');
+                            } else {
+                                console.log(data.error);
+                            }
+                        })
+
 
                     }
 
