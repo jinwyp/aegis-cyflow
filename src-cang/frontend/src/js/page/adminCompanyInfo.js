@@ -11,7 +11,7 @@ var userService = require('../service/user.js') ;
 
 var url = window.location.href;
 var urlShowStatus = url.substring(url.lastIndexOf("\/") + 1, url.length);
-var companyId = url.match(/\/company\/[a-zA-Z_0-9]{24,24}/);
+var companyId = url.match(/\/company\/[a-zA-Z_0-9]{8,30}/);
 if (companyId){ companyId = companyId[0].split('/')[2] }
 
 console.log('companyID:', companyId, '页面状态:', urlShowStatus);
