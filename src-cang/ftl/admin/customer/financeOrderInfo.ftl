@@ -394,7 +394,7 @@
                             <table class="table table-hover">
                                 <tr ms-for="(index, file) in @uploadFileList">
                                     <td class="border0 text-center">{{file.name}} <a href=""></a></td>
-                                    <td class="border0 text-center"><span class="btn btn-primary">删除</span></td>
+                                    <td class="border0 text-center"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
                                 </tr>
                             </table>
                         </div>
@@ -571,7 +571,7 @@
                                         <input type="text" class="form-control" ms-duplex-number="@inputRedemptionAmount" >
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorRedemptionAmount">
-                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨!</span>
+                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨, 并且必须上传放货文件!</span>
                                     </div>
                                 </div>
 
