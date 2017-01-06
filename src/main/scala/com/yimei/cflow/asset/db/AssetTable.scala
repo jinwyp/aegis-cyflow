@@ -16,7 +16,7 @@ trait AssetTable {
     def id          = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def asset_id    = column[String]("asset_id")
     def file_type   = column[Int]("file_type")
-    def busi_type   = column[Int]("busi_type")
+    def busi_type   = column[String]("busi_type")
     def username    = column[String]("username")
     def gid         = column[Option[String]]("gid")
     def description = column[Option[String]]("description")

@@ -4,7 +4,7 @@ import java.io.FileOutputStream
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.Multipart
+import akka.http.scaladsl.model.{Multipart, StatusCodes}
 import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -14,6 +14,7 @@ import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
@@ -34,13 +35,16 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     */
   def downloadFile: Route = get {
     path("file" / Segment) { id =>
-      println(" ------ abc -------- " + id)
-      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url)
-      println(" ------ url -------- " + url)
+      val file: Future[AssetEntity] = dbrun(assetClass.filter(f => f.asset_id === id).result.head) recover {
+        case _ => throw new DatabaseException("该文件不存在")
+      }
+      val url = for {
+        f <- file
+      } yield f.url
       getFromFile(new File(fileRootPath + url))
+      complete(StatusCodes.OK)
     }
   }
-
 
   /**
     * POST asset/    -- 上传文件:
@@ -75,7 +79,7 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
 
         def insert(data:Map[String,String]): Future[FileObj] = {
           val path = data.get("path").get
-          val busi_type: Int = data.getOrElse("busi_type", "0").toInt
+          val busi_type = data.getOrElse("busi_type", "default")
           val description: String = data.getOrElse("description", "")
           val uuId = path.substring(0, 36)
           val originName = path.substring(36, path.length)

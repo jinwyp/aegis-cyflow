@@ -10,23 +10,22 @@ import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.engine.db.DesignTable
-import com.yimei.cflow.engine.routes.EditorModel.AddDesign
+import com.yimei.cflow.engine.routes.EditorObject.DesignDetail
 /**
   * Created by hary on 16/12/28.
   */
 
 class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with SprayJsonSupport {
 
+  import com.yimei.cflow.engine.routes.EditorObject.DesignList
   import driver.api._
-
-  implicit val designModelFormat = jsonFormat4(AddDesign)
-
-
   // 1> 用户列出所有流程设计  :   GET /design/graph
   def listDesign: Route =  get {
     pathPrefix("design" / "graph") {
       pathEnd {
-        complete(dbrun(designClass.map(d => (d.id, d.name)).result))
+        val designList = dbrun(designClass.sortBy(d => d.ts_c).map(d => (d.id, d.name, d.ts_c)).result)
+        val res = for (d <- designList) yield { d.map(d => DesignList(d._1.get, d._2, d._3.get))}
+        complete(res)
       }
     }
   }
@@ -34,11 +33,12 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with Spra
   // 2> 用户加载流程设计  :  GET /design/graph/:id  --> JSON
   def loadDesign: Route = get {
     path("design" / "graph" / LongNumber ) { id =>
-      //complete(dbrun(designClass.filter(d => d.id === id).pack(DesignModel.getClass).result))
-      complete("ok")
+      val design = dbrun(designClass.filter(d => d.id === id).result.head)
+      complete(design.map(d => DesignDetail(d.id.get, d.name, d.json, d.meta, d.ts_c.get)))
     }
   }
 
+  import com.yimei.cflow.engine.routes.EditorObject.AddDesign
   // 3> 保存流程设计:      POST /design/graph?id=:id  + JSON
   def saveDesign: Route =  post {
     path("design" / "graph" ) {
@@ -64,11 +64,6 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with Spra
   def route = listDesign ~ loadDesign ~ saveDesign ~ download
 
 }
-
-object EditorModel  {
-  case class AddDesign(id: Option[Long], name: String, json: Option[String], meta: Option[String])
-}
-
 
 object EditorRoute  {
   def apply(proxy: ActorRef) = new EditorRoute(proxy)
