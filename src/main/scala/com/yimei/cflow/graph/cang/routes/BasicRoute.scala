@@ -204,7 +204,21 @@ class BasicRoute {
   }
 
 
-  def route: Route = cangHtml ~ adminLogin ~ adminCurrentUserInfo ~
+  /////////////////////////////////////////////
+  def contractJindiao = get {
+    pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jindiao") { id =>
+      ftl("admin/customer/hello.ftl")
+    }
+  }
+
+  def contractJianguan = get {
+    pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jianguan") { id =>
+      ftl("admin/customer/hello.ftl")
+    }
+  }
+
+
+  def route: Route = contractJindiao ~ contractJianguan ~ cangHtml ~ adminLogin ~ adminCurrentUserInfo ~
     adminDemoDashboard ~ adminDemoEchart ~
     adminUserList ~ adminUserAdd ~ adminUserEdit ~ adminUserInfo ~
     adminCurrentUserModifyPassport ~ adminFinanceOrderDetails ~

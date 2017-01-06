@@ -253,7 +253,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   /**
     *港口记录
     */
-  case class Delivery(deliveryAmount:BigDecimal,                        //放货吨数
+  case class Delivery(redemptionAmount:BigDecimal,                        //放货吨数
                       deliveryTime:Timestamp ,                          //放货时间
                       fileList:List[FileObj],                           //放货文件
                       sender:String,                                    //放货方

@@ -2,6 +2,7 @@ package com.yimei.cflow.graph.cang.services
 
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitEntity}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProtocol}
+import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.flow.{DataPoint, Graph}
 import com.yimei.cflow.api.models.user.{State => UserState}
@@ -22,8 +23,8 @@ object FlowService extends UserModelProtocol
   with Config {
 
 
-  def genGuId(party_id: String, company_id: String, user_Id: String) = {
-    party_id + "-" + company_id + "!" + user_Id
+  def genGuId(party_class: String, company_id: String, user_Id: String) = {
+    party_class + "-" + company_id + "!" + user_Id
   }
 
 
@@ -587,6 +588,56 @@ object FlowService extends UserModelProtocol
       )
     }
   }
+
+
+  /**
+    *获得当前用户当前流程的任务
+    */
+  def getCurrentTasks(flowId:String,party_class: String, company_id: String, user_Id: String): Future[UserState] = {
+    request[String,UserState](path = "api/utask",pathVariables = Array(party_class,company_id,user_Id)) map{ (ts: UserState) =>
+      ts.copy(tasks = ts.tasks.filter(entry=>
+        entry._2.flowId == flowId
+      ))
+    }
+  }
+
+
+  /**
+    *还款记录（融资方任务历史）
+    */
+  def getRepayment(flowId:String, company_id: String, user_Id: String) = {
+    val tasks: Future[Seq[FlowTaskEntity]] = request[String,Seq[FlowTaskEntity]](path="api/utask",pathVariables = Array(rzf,company_id,user_Id),
+      paramters = Map("history"->"yes","flowId"->flowId,"taskname"->repaymentAmount))
+  }
+
+
+  /**
+    * 放货记录（港口方）
+    */
+  def getDeliverys(flowId:String, company_id: String, user_Id: String) = {
+    request[String,Seq[FlowTaskEntity]](path="api/utask",pathVariables = Array(gkf,company_id,user_Id),
+      paramters = Map("history"->"yes","flowId"->flowId,"taskname"->a20noticeHarborRelease)) map { (tasks: Seq[FlowTaskEntity]) =>
+      tasks.map { entity =>
+         entity.task_submit.parseJson.convertTo[Map[String,DataPoint]].get(traderNoticeHarborRelease) match {
+           case Some(data) =>
+             val delivery = data.value.parseJson.convertTo[TraffickerNoticePortReleaseGoods]
+            // Delivery(delivery.redemptionAmount,data.timestamp,)
+           case _          => throw BusinessException(s"flowId:$flowId, company_id:$company_id , user_id:$user_Id 港口放货记录有误")
+         }
+
+
+
+      }
+    }
+
+
+
+  }
+
+
+
+
+
 
 
 }
