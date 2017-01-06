@@ -50,9 +50,9 @@
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
                                     <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentUser.partyClass" ms-rules='{required:true}' data-required-message="请选择公司名称">
+                                            ms-duplex="@currentCompany" ms-rules='{required:true}' data-required-message="请选择公司名称" data-duplex-changed="@selectCompany">
                                         <option value="" > - </option>
-                                        <option ms-for="company in @companyList" ma-attr="{company.partyClass}">{{company.partyClass}}
+                                        <option ms-for="company in @companyList" ms-attr="{value : @jsonStringfy(company)}">{{company.companyName}}
                                         </option>
                                     </select>
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>

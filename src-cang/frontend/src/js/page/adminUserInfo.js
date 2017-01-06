@@ -32,6 +32,7 @@ var userInfo = function() {
             // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
         },
+        currentCompany : {},
 
         traderList : [],
         fundProviderList : [],
@@ -50,7 +51,17 @@ var userInfo = function() {
             inputUserRole:''
         },
 
+        selectCompany: function (e) {
+            var tempString2 = vm.currentCompany;
+            var tempCompany = JSON.parse(vm.currentCompany);
+            // console.log(tempCompany)
+            vm.currentUser.partyClass = tempCompany.partyClass;
+            vm.currentUser.companyName = tempCompany.companyName;
+        },
 
+        jsonStringfy : function(obj){
+            return JSON.stringify(obj)
+        },
         // isMYSCWValid : false,
         successInputName : [],
         errorInputName : [],
@@ -71,28 +82,35 @@ var userInfo = function() {
             onValidateAll: function (reasons) {
                 // console.log(vm.isMYSCWValid);
 
-                // var isValid = true;
-                // if(vm.currentUser.role === role.traderAccountant || vm.currentUser.role === role.fundProviderAccountant){
-                //     if (reasons.length || !vm.isMYSCWValid ) {
-                //         isValid = false;
-                //     }
-                // }else{
-                //     if (reasons.length ) {
-                //         isValid = false;
-                //     }
-                // }
+                var isValid = true;
 
-                if(reasons.length){
+                if(vm.currentUser.partyClass === 'trader' || vm.currentUser.partyClass === 'fundProvider'){
+                    if (reasons.length) {
+                        isValid = false;
+                    }
+                }else{
+                    if (reasons.length === 1 ) {
+
+                        reasons.splice('请选择用户类型');
+                        isValid = true;
+                    }else{
+                        isValid = false;
+                    }
+
+                }
+
+                if(!isValid){
                     console.log('表单项没有通过');
+                    console.log(reasons);
                     $("input").focus().blur();
-                    $("select").focus().blur()
+                    $("select").focus().blur();
                 } else{
                     var user = {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
                         mobilePhone : vm.currentUser.mobilePhone,
-                        companyName :  vm.selectedCompany.companyName,
-                        partyClass :  vm.selectedCompany.partyClass,
+                        companyName : vm.currentUser.companyName,
+                        partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
                     };
 
@@ -129,28 +147,12 @@ var userInfo = function() {
 
 
         addUser :function(){
-            console.log('-------'+vm.currentUser.companyName,vm.currentUser.role)
+            console.log(vm.currentUser.companyName)
         },
         // isValid : checkMYS
 
     });
 
-    // function checkMYS() {
-    //
-    //     if (vm.currentUser.role === role.traderAccountant){
-    //         if (vm.currentUser.belongToUser){
-    //             vm.isMYSCWValid = true;
-    //         }else{
-    //             vm.isMYSCWValid = false;
-    //         }
-    //     }else if (vm.currentUser.role === role.fundProviderAccountant){
-    //         if (vm.currentUser.belongToUser){
-    //             vm.isMYSCWValid = true;
-    //         }else{
-    //             vm.isMYSCWValid = false;
-    //         }
-    //     }
-    // }
 
     function getUserInfo() {
         userService.getUserInfoById(userId).done(function (data, textStatus, jqXHR) {
@@ -188,7 +190,6 @@ var userInfo = function() {
         userService.getCompanyList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){
                 vm.companyList = data.data;
-                vm.companyList.partyClass = vm.currentUser.partyClass
 
             }else{
                 console.log(data.error);
