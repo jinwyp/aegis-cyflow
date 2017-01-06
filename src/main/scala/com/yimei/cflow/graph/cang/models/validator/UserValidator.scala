@@ -22,8 +22,8 @@ object UserValidator {
         addUser.email as "邮箱" is notEmpty
         addUser.email.length as "邮箱字段长度" is between(1, 100)
         addUser.phone.length as "手机号字段长度" is between(11, 20)
-        addUser.companyName as "公司名称" is notEmpty
-        addUser.companyName.length as "公司名称字段长度" is between(1, 100)
+//        addUser.companyName as "公司名称" is notEmpty
+//        addUser.companyName.length as "公司名称字段长度" is between(1, 100)
     }
 
   /** 管理员修改用户信息 **/

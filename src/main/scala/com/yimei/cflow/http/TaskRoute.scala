@@ -111,7 +111,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
               flowId.map(f.flow_id === _),
               taskName.map(f.task_name === _)
             ).collect({ case Some(a) => a }).reduceLeftOption(_ && _).getOrElse(true: Rep[Boolean])
-          ).result)
+          ).sortBy(t => t.ts_c.desc).result)
         }
 
         val tasks: Future[Seq[FlowTaskEntity]] = for {

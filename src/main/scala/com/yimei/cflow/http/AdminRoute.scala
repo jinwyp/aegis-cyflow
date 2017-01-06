@@ -111,6 +111,26 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
 
 
   /**
+    * 根据flowId查询流程States
+    *
+    * @return
+    */
+  def getFlowStateById = get {
+    pathPrefix("flow"/ "state" / Segment) { flowId =>
+      val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
+        case _ => throw new DatabaseException("该流程不存在")
+      }
+      complete(for {
+        f <- flow
+        r <- ServiceProxy.flowState(proxy, f.flow_id)
+      } yield {
+        r
+      })
+    }
+  }
+
+
+  /**
     * hijack流程
     *
     * @return
@@ -248,7 +268,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
-  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
+  def route: Route = createFlow ~ getFlowStateById ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
 }
 
 

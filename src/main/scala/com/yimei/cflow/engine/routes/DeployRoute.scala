@@ -3,13 +3,13 @@ package com.yimei.cflow.engine.routes
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import com.mysql.cj.jdbc.Blob
-import com.yimei.cflow.api.models.database.FlowDBModel.DeployEntity
 import com.yimei.cflow.config.CoreConfig
-import com.yimei.cflow.engine.routes.DeployObject.SaveDeploy
 
 import scala.concurrent.Future
 
+/**
+  * Created by hary on 16/12/28.
+  */
 class DeployRoute (proxy: ActorRef) extends CoreConfig {
 
 
@@ -34,18 +34,7 @@ class DeployRoute (proxy: ActorRef) extends CoreConfig {
     }
   }
 
-  def saveDeploy = post {
-    path("deploy") {
-      parameter("id".as[Long].?) { id =>
-        entity(as[SaveDeploy]) { deploy =>
-          //val jar = deploy.jar.getBytes
-          complete("ok")
-        }
-      }
-    }
-  }
-
-  def route: Route = deploy ~ saveDeploy
+  def route: Route = ???
 }
 
 
