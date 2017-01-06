@@ -15,7 +15,13 @@ object AssetService extends AssetTable with CoreConfig {
   import driver.api._
 
   def getFiles(fileIds:List[String]): Future[Seq[AssetEntity]] = {
-    dbrun(assetClass.filter(t => fileIds.contains(t.asset_id)).result)
+
+    dbrun((for(
+      f <- assetClass if f.asset_id inSetBind(fileIds)
+    ) yield {
+      f
+    }).result)
+
   }
 
 }

@@ -1,7 +1,7 @@
-package com.yimei.cflow.api.serialization.json
+package com.yimei.cflow.id.serialization.json
 
 import akka.serialization.SerializerWithStringManifest
-import com.yimei.cflow.api.models.id._
+import com.yimei.cflow.id.models._
 import spray.json._
 
 

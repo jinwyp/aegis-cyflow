@@ -34,7 +34,9 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     */
   def downloadFile: Route = get {
     path("file" / Segment) { id =>
-      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+      println(" ------ abc -------- " + id)
+      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url)
+      println(" ------ url -------- " + url)
       getFromFile(new File(fileRootPath + url))
     }
   }
@@ -73,21 +75,19 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
 
         def insert(data:Map[String,String]): Future[FileObj] = {
           val path = data.get("path").get
-          val busi_type: Int = data.getOrElse("busi_type", "0").toInt
+          val busi_type = data.getOrElse("busi_type", "default")
           val description: String = data.getOrElse("description", "")
           val uuId = path.substring(0, 36)
           val originName = path.substring(36, path.length)
           val url = uuId.replace("-", "/") + "/" + originName
           val suffix = originName.substring(originName.lastIndexOf('.') + 1)
           val fileType = getFileType(suffix)
-          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, originName, None)
           val temp: Future[Int] = dbrun( assetClass.insertOrUpdate(assetEntity)) recover {
             case _ => throw BusinessException(s"$url 上传失败")
           }
-          temp.map(f=>FileObj(url, originName, fileRootPath + url))
+          temp.map(f=>FileObj(uuId, originName))
         }
-
-
         complete(for{
           r <- result
           i <- insert(r)

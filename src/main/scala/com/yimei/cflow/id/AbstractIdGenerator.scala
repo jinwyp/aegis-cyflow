@@ -1,7 +1,7 @@
-package com.yimei.cflow.engine.id
+package com.yimei.cflow.id
 
 import akka.actor.{Actor, ActorLogging}
-import com.yimei.cflow.api.models.id.{CommandQueryId, Event, EventIncrease, State}
+import com.yimei.cflow.id.models.{CommandQueryId, Event, EventIncrease, State}
 
 /**
   * Created by hary on 16/12/12.

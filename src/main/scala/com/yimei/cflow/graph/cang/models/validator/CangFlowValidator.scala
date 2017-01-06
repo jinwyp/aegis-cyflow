@@ -9,10 +9,7 @@ object CangFlowValidator {
   implicit val fileObjValidator: Validator[FileObj] =
     validator[FileObj] {
       fileObj =>
-        fileObj.name as "文件名称" is notEmpty
-        fileObj.url as "文件路径" is notEmpty
-        fileObj.name.length as "文件名称字段长度" is between(1, 100)
-        fileObj.url.length as "文件路径字段长度" is between(1, 200)
+        fileObj.id as "文件id" is notEmpty
     }
 
   /** 开始流程 - 基本信息 **/

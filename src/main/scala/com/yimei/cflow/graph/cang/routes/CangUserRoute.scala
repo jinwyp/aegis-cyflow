@@ -52,8 +52,11 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method   get
    */
   def adminGetAllUserListRoute: Route = get {
-    (path("users") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
-      complete(adminGetAllUser(page, pageSize))
+    (path("users") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('username.as[String].?) & parameter('companyName.as[String].?)) { (p, ps, un, cn) =>
+      val page = if(!p.isDefined) 1 else p.get
+      val pageSize = if(!ps.isDefined) 10 else ps.get
+      val dynamicquery = DynamicQueryUser(un, cn)
+      complete(adminGetAllUser(page, pageSize, dynamicquery))
     }
   }
 
