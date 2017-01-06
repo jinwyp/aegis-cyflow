@@ -1,4 +1,4 @@
-package com.yimei.cflow.engine.id
+package com.yimei.cflow.id
 
 import akka.actor.{Actor, ActorLogging}
 import com.yimei.cflow.api.models.id.{CommandQueryId, Event, EventIncrease, State}
