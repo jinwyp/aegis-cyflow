@@ -1,4 +1,4 @@
-package com.yimei.cflow.api.serialization.json
+package com.yimei.cflow.id.serialization.json
 
 import akka.serialization.SerializerWithStringManifest
 import com.yimei.cflow.id.models._

@@ -1,8 +1,9 @@
-package com.yimei.cflow.engine.routes
+package com.yimei.cflow.engine
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.asset.AssetRoute
+import com.yimei.cflow.engine.routes.AutoRoute
 import com.yimei.cflow.http.{AdminRoute, TaskRoute}
 
 /**

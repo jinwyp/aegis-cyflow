@@ -10,7 +10,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
-import com.yimei.cflow.api.http.models.ResultModel.{Error, Meta, Result}
+import com.yimei.cflow.api.http.models.ResultModel.{Error, PagerInfo, Result}
 import com.yimei.cflow.api.http.models.UserModel.{DynamicQueryUser, QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
@@ -28,7 +28,7 @@ import com.yimei.cflow.graph.cang.session.{MySession, Session}
 /**
   * Created by xl on 16/12/26.
   */
-object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal {
+object LoginService extends PartyClient with UserClient with Config with PartyModelProtocol {
 
   //融资方进入仓压
   def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {
@@ -126,7 +126,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     log.info(s"get into method adminGetAllUser")
     for {
       userList <- getAllUserList(page, pageSize, dynamicQuery.toJson.toString)
-    } yield Result(data = Some(userList.datas), success = true, meta = Meta(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
+    } yield Result(data = Some(userList.datas), success = true, meta = PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
   }
 
   //管理员获取所有公司信息
@@ -146,7 +146,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       pilist <- getAllPartyInstanceList(page, pageSize, companyName)
       result = getResult(pilist.partyInstanceList)
-    } yield Result(data = Some(result), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
+    } yield Result(data = Some(result), success = true, meta = PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改公司信息

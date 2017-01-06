@@ -9,14 +9,14 @@ import spray.json.{DefaultJsonProtocol, JsArray, JsNumber, JsObject, JsString, J
   */
 object ResultModel {
 
-  case class Result[T](data: Option[T], success: Boolean = true, error: Error  = null, meta:Meta = null)
-  case class Meta(total:Int, count:Int, offset:Int, page:Int)
+  case class Result[T](data: Option[T], success: Boolean = true, error: Error  = null, meta:PagerInfo = null)
+  case class PagerInfo(total:Int, count:Int, offset:Int, page:Int)
   case class Error(code:Int,message:String,field:String)
 
   trait ResultProtocol extends DefaultJsonProtocol {
 
-    implicit object MetaFormat extends RootJsonFormat[Meta] {
-      override def write(obj: Meta): JsValue = {
+    implicit object PagerInfoFormat extends RootJsonFormat[PagerInfo] {
+      override def write(obj: PagerInfo): JsValue = {
         if (obj==null){
           JsString("")
         } else {
@@ -24,9 +24,9 @@ object ResultModel {
         }
       }
 
-      override def read(json: JsValue): Meta = json match {
+      override def read(json: JsValue): PagerInfo = json match {
         case JsArray(Vector(JsNumber(total),JsNumber(count),JsNumber(offset),JsNumber(page))) =>
-          Meta(total.toInt,count.toInt,offset.toInt,page.toInt)
+          PagerInfo(total.toInt,count.toInt,offset.toInt,page.toInt)
         case _ =>throw new BusinessException("Meta 序列化错误")
       }
     }

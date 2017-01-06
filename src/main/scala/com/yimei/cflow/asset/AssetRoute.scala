@@ -82,14 +82,12 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           val url = uuId.replace("-", "/") + "/" + originName
           val suffix = originName.substring(originName.lastIndexOf('.') + 1)
           val fileType = getFileType(suffix)
-          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, originName, None)
           val temp: Future[Int] = dbrun( assetClass.insertOrUpdate(assetEntity)) recover {
             case _ => throw BusinessException(s"$url 上传失败")
           }
-          temp.map(f=>FileObj(url, originName, fileRootPath + url))
+          temp.map(f=>FileObj(uuId, originName))
         }
-
-
         complete(for{
           r <- result
           i <- insert(r)
