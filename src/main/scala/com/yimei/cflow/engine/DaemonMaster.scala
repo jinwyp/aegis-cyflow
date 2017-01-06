@@ -6,7 +6,7 @@ import com.yimei.cflow.api.models.user.{Command => UserCommand}
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.auto.AutoMaster
 import com.yimei.cflow.engine.flow.FlowMaster
-import com.yimei.cflow.engine.id.IdGenerator
+import com.yimei.cflow.id.IdGenerator
 import com.yimei.cflow.engine.group.GroupMaster
 import com.yimei.cflow.engine.user.UserMaster
 

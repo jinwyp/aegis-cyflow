@@ -1,9 +1,9 @@
-package com.yimei.cflow.api.services
+package com.yimei.cflow.id
 
 import akka.actor.ActorRef
 import akka.pattern._
 import akka.util.Timeout
-import com.yimei.cflow.api.models.id.{CommandGetId, Id}
+import com.yimei.cflow.id.models.{CommandGetId, Id}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
