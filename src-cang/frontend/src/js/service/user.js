@@ -23,6 +23,15 @@ var userRoleAll = [
     { name:'fundProvider', displayName : '资金方'},
     { name:'fundProviderAccountant', displayName : '资金方财务'}
 ];
+
+var userRoleTrader = [
+    { name:'trader', displayName : '贸易商'},
+    { name:'traderAccountant', displayName : '贸易商财务'}
+];
+var userRoleFundProvider = [
+    { name:'fundProvider', displayName : '资金方'},
+    { name:'fundProviderAccountant', displayName : '资金方财务'}
+];
 var userRolePartial = userRoleAll.slice(2, 5);
 userRolePartial.push({ name:'fundProvider', displayName : '资金方'});
 
@@ -35,6 +44,8 @@ userRoleAll.forEach(function (role, index){
     userRoleNameObject[role.name] = role.name;
 });
 
+exports.userRoleTrader = userRoleTrader;
+exports.userRoleFundProvider = userRoleFundProvider;
 exports.userRoleList = userRolePartial;
 exports.userRoleAllList = userRoleAll;
 exports.userRoleAllObject = userRoleAllObject;
