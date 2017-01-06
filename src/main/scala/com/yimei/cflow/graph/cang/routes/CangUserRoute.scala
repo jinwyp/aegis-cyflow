@@ -36,13 +36,15 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def addInvestorRoute: Route = post {
-    pathPrefix("user" / Segment / Segment ) { (instance_id, userId) =>
-      entity(as[AddUser]) { user =>
-//        val userInfo = UserInfo(user.password, Some(user.phone), Some(user.email), user.name)
-        complete(addInvestor(instance_id, userId, user))
-      }
-
+  /*
+   * 管理员添加用户
+   * url      localhost:9000/api/cang/user
+   * method   post
+   * body     {"username":"xl","password":"123456","name":"资金方业务","email":"asdf@qq.com","phone":"12345678912","instanceId":"66666666","className":"fundProvider"}
+   */
+  def adminAddUser: Route = post {
+    (path("user") & entity(as[AddUser])) { user =>
+        complete(addUser(user))
     }
   }
 
@@ -52,8 +54,11 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method   get
    */
   def adminGetAllUserListRoute: Route = get {
-    (path("users") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
-      complete(adminGetAllUser(page, pageSize))
+    (path("users") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('username.as[String].?) & parameter('companyName.as[String].?)) { (p, ps, un, cn) =>
+      val page = if(!p.isDefined) 1 else p.get
+      val pageSize = if(!ps.isDefined) 10 else ps.get
+      val dynamicquery = DynamicQueryUser(un, cn)
+      complete(adminGetAllUser(page, pageSize, dynamicquery))
     }
   }
 
@@ -187,7 +192,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
+  def route = financeSideEnterRoute ~ adminAddUser ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
     adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
     adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute
 }

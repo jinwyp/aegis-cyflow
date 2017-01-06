@@ -16,14 +16,15 @@ trait AssetTable {
     def id          = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def asset_id    = column[String]("asset_id")
     def file_type   = column[Int]("file_type")
-    def busi_type   = column[Int]("busi_type")
+    def busi_type   = column[String]("busi_type")
     def username    = column[String]("username")
     def gid         = column[Option[String]]("gid")
     def description = column[Option[String]]("description")
     def url         = column[String]("url")
+    def origin_name = column[String]("origin_name")
     def ts_c        = column[Option[Timestamp]]("ts_c")
 
-    def * = (id, asset_id, file_type, busi_type, username, gid, description, url, ts_c) <> (AssetEntity.tupled, AssetEntity.unapply)
+    def * = (id, asset_id, file_type, busi_type, username, gid, description, url, origin_name, ts_c) <> (AssetEntity.tupled, AssetEntity.unapply)
   }
 
   protected val assetClass = TableQuery[AssetClass]

@@ -10,8 +10,8 @@ import com.yimei.cflow.api.util.HttpUtil._
 import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
-import com.yimei.cflow.api.http.models.ResultModel.{Error, Meta, Result}
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
+import com.yimei.cflow.api.http.models.ResultModel.{Error, PagerInfo, Result}
+import com.yimei.cflow.api.http.models.UserModel.{DynamicQueryUser, QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -28,75 +28,117 @@ import com.yimei.cflow.graph.cang.session.{MySession, Session}
 /**
   * Created by xl on 16/12/26.
   */
-object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal {
+object LoginService extends PartyClient with UserClient with Config with PartyModelProtocol {
 
   //融资方进入仓压
-  def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {
-    log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${userInfo.companyName}")
+  def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): String = {
+//    log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${userInfo.companyName}")
+//
+//    val exist: Future[Boolean] = for {
+//      qpi <- queryPartyInstance(rzf, companyId)
+//      cu <- createPartyUser(zjf, qpi.ins, userId, userInfo.toJson.toString)
+//    } yield { qpi.toList.length > 0 }
+//
+//    val p = Promise[String]()
+//
+//    def add(exitst: Boolean): Future[String] = {
+//      if(!exitst){
+//        for {
+//          cpi <- createPartyInstance(PartyInstanceInfo(rzf, companyId, userInfo.companyName).toJson.toString)
+//          cu <- createPartyUser(rzf, cpi.instanceId, userId, userInfo.toJson.toString)
+//        } yield {
+//          "success"
+//        }
+//      }else{
+//        p.success("exist").future
+//      }
+//    }
+//
+//    for {
+//      e <- exist
+//      result <- add(e)
+//    } yield result
+    "hehe"
+  }
 
-    val exist: Future[Boolean] = for {
-      qpi <- queryPartyInstance(rzf, companyId)
-    } yield { qpi.toList.length > 0 }
+  //添加用户
+  def addUser(userInfo: AddUser): Future[Result[State]] = {
+    log.info(s"get into addInvestor method: userInfo: ${userInfo}")
 
-    val p = Promise[String]()
+    def getExistCompany(partyClass: String, instanceId: String): Future[PartyInstanceEntity] = {
+      for {
+        qpi <- queryPartyInstance(partyClass, instanceId)
+      } yield {
+        if(qpi.length > 0) qpi.head else throw BusinessException("没有对应的公司")
+      }
+    }
 
-    def add(exitst: Boolean): Future[String] = {
-      if(!exitst){
+    val formatter = new SimpleDateFormat("yyMMddhh")
+    def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
+
+    def isYimeiUser(): Future[Boolean] = {
+      //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
+      val queryYimei = Promise[Boolean].success(true).future //todo
+      for {
+        qym <- queryYimei
+      } yield {
+        if(qym == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
+      }
+    }
+
+    val result: Future[State] = userInfo.className match {
+      case e: String if(e == gkf) => {
         for {
-          cpi <- createPartyInstance(PartyInstanceInfo(rzf, companyId, userInfo.companyName).toJson.toString)
-          cu <- createPartyUser(rzf, cpi.instanceId, userId, userInfo.toJson.toString)
-        } yield {
-          "success"
-        }
-      }else{
-        p.success("exist").future
+          pie <- getExistCompany(gkf, userInfo.instanceId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString)
+        } yield cu
+      }
+      case e: String if(e == jgf) => {
+        for {
+          pie <- getExistCompany(jgf, userInfo.instanceId)
+          cu <- createPartyUser(jgf, pie.instanceId, userId, userInfo.toJson.toString)
+        } yield cu
+      }
+      case e: String if(e == zjfyw) => {
+        for {
+          iyu <- isYimeiUser()
+          pie <- getExistCompany(zjf, userInfo.instanceId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
+        } yield cu
+      }
+      case e: String if(e == zjfcw) => {
+        for {
+          iyu <- isYimeiUser
+          pie <- getExistCompany(zjf, userInfo.instanceId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
+        } yield cu
+      }
+      case e: String if(e == rzfyw) => {
+        for {
+          iyu <- isYimeiUser
+          pie <- getExistCompany(rzf, userInfo.instanceId)
+          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
+        } yield cu
+      }
+      case e: String if(e == rzfcw) => {
+        for {
+          iyu <- isYimeiUser
+          pie <- getExistCompany(rzf, userInfo.instanceId)
+          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
+        } yield cu
+      }
+      case _ => {
+        throw BusinessException("贸易商、管理员暂时不支持添加用户")
       }
     }
 
     for {
-      e <- exist
-      result <- add(e)
-    } yield result
-  }
-
-  //添加资金方
-  def addInvestor(userId: String, instance_id: String, userInfo: AddUser): Future[Result[State]] = {
-    log.info(s"get into addInvestor method: userId: ${userId}, instance_id: ${instance_id}, userInfo: ${userInfo}")
-
-    //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
-    val queryYimei = Promise[Boolean].success(true).future //todo
-
-    val gid: Int = if(userInfo.className == zjfyw) 1 else 2
-
-    def add(qym: Boolean): Future[State] = {
-      if(qym == true) {
-        for {
-          cp <- createPartyInstance(PartyInstanceInfo(zjf, instance_id, userInfo.companyName).toJson.toString)
-          cu <- createPartyUser(zjf, instance_id, userId, userInfo.toJson.toString)
-          cug <- createUserGroup(cp.id.get.toString, gid.toString, cu.userId)
-        } yield cu
-      }  else {
-        throw new BusinessException("资金方没有注册易煤网，或者没有开通资金账户")
-      }
-    }
-
-    val p = Promise[Result[State]]()
-
-    val s = (for {
-      qym <- queryYimei
-      res <- add(qym)
-    }
-    yield {
-      log.info("success insert data")
-      p success Result(data = Some(res), success = true, error = null, meta = null)
-    } ) recover {
-      case e: BusinessException => {
-        log.info(s"error happen, ${e.message}")
-        p success  Result(data = None, success = false, error = Error(code = 111, message = e.message, field =""), meta = null)
-      }
-    }
-
-    p.future
+      re <- result
+    } yield Result[State](data = Some(re), success = true)
   }
 
   //管理员添加公司
@@ -122,11 +164,11 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员获取用户列表
-  def adminGetAllUser(page: Int, pageSize: Int): Future[Result[List[UserData]]] = {
+  def adminGetAllUser(page: Int, pageSize: Int, dynamicQuery: DynamicQueryUser): Future[Result[List[UserData]]] = {
     log.info(s"get into method adminGetAllUser")
     for {
-      userList <- getAllUserList(page, pageSize)
-    } yield Result(data = Some(userList.datas), success = true, meta = Meta(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
+      userList <- getAllUserList(page, pageSize, dynamicQuery.toJson.toString)
+    } yield Result(data = Some(userList.datas), success = true, meta = PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
   }
 
   //管理员获取所有公司信息
@@ -146,7 +188,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       pilist <- getAllPartyInstanceList(page, pageSize, companyName)
       result = getResult(pilist.partyInstanceList)
-    } yield Result(data = Some(result), success = true, meta = Meta(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
+    } yield Result(data = Some(result), success = true, meta = PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改公司信息

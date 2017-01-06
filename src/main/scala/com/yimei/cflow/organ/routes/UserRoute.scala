@@ -26,7 +26,7 @@ import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import slick.backend.DatabasePublisher
 import slick.dbio.Effect.Read
 import slick.lifted
-import slick.profile.FixedSqlStreamingAction
+import slick.profile.{FixedSqlStreamingAction, SqlStreamingAction}
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -274,50 +274,52 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def getAllUserInfo: Route = get {
-    path("alluser") {
-      (parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+  def getAllUserInfo: Route = post {
+    (path("alluser") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+      entity(as[DynamicQueryUser]) { qi =>
+
         if(page <= 0 || pageSize <= 0) throw BusinessException("分页参数有误！")
 
-        val userInfoQuery = for {
-          (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if(pu.disable === 0)
-        } yield (pu.user_id, pu.username, pu.email.getOrElse(""), pu.phone.getOrElse(""), pi.instance_id, pi.party_name, pi.party_class)
-
-        val getUserInfo = dbrun(userInfoQuery.drop((page - 1) * pageSize).take(pageSize).result)
-
-        val getTotal = dbrun(userInfoQuery.length.result)
-
-        def getGroupInfo(userId: String, party: String): Future[String] = {
-          dbrun((for {
-            (pu, pi) <- partyUser join userGroup on (_.user_id === _.user_id) if(pu.user_id === userId)
-          } yield (pu.user_id, pi.gid)).result) map { info =>
-            if(info.isEmpty) party else {
-              if(info.head._2 == "2") party + "Accountant" else party
-            }
-          }
+        def getUserInfo(userName: String, companyName: String, l: Int, os: Int): Future[Vector[(String, String, String, String, String, String, String, String)]] = {
+          val query = sql"""
+             select pu.user_id, pu.username, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
+             from party_instance pi join party_user pu on pu.party_id = pi.id
+             left join user_group ug on pu.user_id = ug.user_id
+             where pi.party_name like $companyName and pu.username like $userName limit $l offset $os
+             """
+          dbrun(query.as[(String, String, String, String, String, String, String, String)])
         }
 
-        def getResult(userInfo: Seq[(String, String, String, String, String, String, String)]): Future[List[UserData]] = {
+        def getAccount(userName: String, companyName: String): Future[Int] = {
+         val query = sql"""
+             select count(1)
+             from party_instance pi join party_user pu on pu.party_id = pi.id
+             left join user_group ug on pu.user_id = ug.user_id
+             where pi.party_name like $companyName and pu.username like $userName
+             """
+          for {
+            account <- dbrun(query.as[Int])
+          } yield account.toList.head
+
+        }
+
+        def getResult(Info: Seq[(String, String, String, String, String, String, String, String)]): List[UserData] = {
           import scala.collection.mutable.MutableList
-          var result = MutableList[Future[UserData]]()
-          userInfo.toList.foreach{ info =>
-
-            val temp = for {
-              role <- getGroupInfo(info._1, info._7)
-            } yield {
-              UserData(userId = info._2, username = info._1, email = info._3, mobilePhone = info._4, role = role, companyId = info._5, companyName = info._6)
-            }
-
-            result += temp
+          var result = MutableList[UserData]()
+          Info.toList.foreach{ info =>
+            val role = if(info._6 == null || info._6 == "1") info._5 else info._5 + "Accountant"
+            result += UserData(info._1, info._2, info._3, info._4, role, info._7, info._8)
           }
-          Future.sequence(result.toList)
+          result.toList
         }
 
+        val userName = "%" + qi.userName.getOrElse("") + "%"
+        val companyName = "%" + qi.companyName.getOrElse("") + "%"
         val result = for {
-          info <- getUserInfo
-          list <- getResult(info)
-          total <- getTotal
-        }yield UserInfoList(datas = list, total = total)
+          info <- getUserInfo(userName, companyName, pageSize, (page - 1) * pageSize)
+          list = getResult(info)
+          total <- getAccount(userName, companyName)
+        } yield UserInfoList(datas = list, total = total)
 
         complete(result)
       }
@@ -339,61 +341,6 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
       } recover {
         case _ => "fail"
       })
-    }
-  }
-
-  def dynamicSearchOfUserList(): Route = post {
-    (pathPrefix("dynamicSearch") & entity(as[DynamicUserSearch])) { uls =>
-
-      //      val piq: FixedSqlStreamingAction[Seq[PartyInstanceEntity], PartyInstanceEntity, Read] = partyInstance.filter { p =>
-      //        List(
-      //          uls.partyClass.map(p.party_class === _),
-      //          uls.companyName.map(p.party_class === _)
-      //        ).collect({ case Some(criteria) => criteria }).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean])
-      //      }.result
-      //
-      //      val uiq: Future[Unit] = db.stream(piq).foreach(pi => {
-      //        dbrun(partyUser.filter( p =>
-      //          List(
-      //            uls.username.map(p.username === _),
-      //            uls.name.map(p.name === _)
-      //          ).collect({case Some(criteria) => criteria}).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean])
-      //        ).result)
-      //      }
-      //      )
-      //username: Option[String], name: Option[String], companyName: Option[String], partyClass: Option[String])
-
-      val username = if (uls.username.isDefined) uls.username.get
-
-
-
-//      val getInfo: Future[Seq[(String, String, String, String, String)]] = dbrun((for {
-//        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) //if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
-//        List(
-//          uls.username.map(pu.username === _),
-//          uls.name.map(pu.name === _),
-//          uls.partyClass.map(pi.party_class === _),
-//          uls.companyName.map(pi.party_name === _)
-//        ).collect({ case Some(criteria) => criteria }).reduceLeftOption(_ || _).getOrElse(true: Rep[Boolean]).result
-//      } yield (pu.username, pu.user_id, pi.party_class, pi.instance_id, pi.party_name)).result)
-
-
-      //      def getResult(info: Seq[(String, String, String, String, String)]): MySession = {
-      //        if(info.length == 0) {
-      //          throw BusinessException("登录信息有误！")
-      //        } else {
-      //          MySession(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5)
-      //        }
-      //      }
-      //
-      //      val result = for {
-      //        info <- getInfo
-      //      } yield getResult(info)
-      //
-      //      complete(result)
-
-
-      complete("")
     }
   }
 

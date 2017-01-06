@@ -86,7 +86,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
     */
   def getUTaskHistory = get {
     pathPrefix("utask" / Segment / Segment / Segment) { (party, instance_id, user_id) =>
-      parameter("history") { histor =>
+      parameters("history","flowId".?,"taskname".?) { (history,flowId,taskName) =>
         val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
           p.party_class === party &&
             p.instance_id === instance_id
@@ -106,8 +106,12 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
         def getTasks(p: PartyInstanceEntity, u: PartyUserEntity): Future[Seq[FlowTaskEntity]] = {
           dbrun(flowTask.filter(f =>
             f.user_type === p.partyClass + "-" + p.instanceId &&
-              f.user_id === u.user_id
-          ).result)
+              f.user_id === u.user_id &&
+            List(
+              flowId.map(f.flow_id === _),
+              taskName.map(f.task_name === _)
+            ).collect({ case Some(a) => a }).reduceLeftOption(_ && _).getOrElse(true: Rep[Boolean])
+          ).sortBy(t => t.ts_c.desc).result)
         }
 
         val tasks: Future[Seq[FlowTaskEntity]] = for {
@@ -136,7 +140,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           p.party_class === party &&
             p.instance_id === instance_id
         ).result.head) recover {
-          case _ => throw new DatabaseException("不存在该公司")
+          case _ => throw  DatabaseException("不存在该公司")
         }
         //查询用户信息
         def getUser(p: PartyInstanceEntity): Future[PartyUserEntity] = {
@@ -144,12 +148,12 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
             u.user_id === user_id &&
               u.party_id === p.id
           ).result.head) recover {
-            case _ => throw new DatabaseException("不存在该用户")
+            case _ => throw  DatabaseException("不存在该用户")
           }
         }
 
         val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === entity.flowId).result.head) recover {
-          case _ => throw new DatabaseException("该流程不存在")
+          case _ => throw  DatabaseException("该流程不存在")
         }
 
         //插入数据库
@@ -157,7 +161,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           dbrun(flowTask returning flowTask.map(_.id) into ((fl, id) => fl.copy(id = id)) +=
             FlowTaskEntity(None, entity.flowId, task_id, entity.taskName, entity.points.toJson.toString, s.userType, s.userId, Timestamp.from(Instant.now))
           ) recover {
-            case a: SQLIntegrityConstraintViolationException => throw new DatabaseException("当前任务已被提交")
+            case a: SQLIntegrityConstraintViolationException => throw DatabaseException("当前任务已被提交")
           }
         }
 
@@ -195,7 +199,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
           p.party_class === party &&
             p.instance_id === instance_id
         ).result.head) recover {
-          case _ => throw new DatabaseException("不存在该公司")
+          case _ => throw  DatabaseException("不存在该公司")
         }
         //查询用户信息
         def getUser(p: PartyInstanceEntity): Future[PartyUserEntity] = {
@@ -203,12 +207,12 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
             u.user_id === user_id &&
               u.party_id === p.id
           ).result.head) recover {
-            case _ => throw new DatabaseException("不存在该用户")
+            case _ => throw  DatabaseException("不存在该用户")
           }
         }
 
         val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === entity.flowId).result.head) recover {
-          case _ => throw new DatabaseException("该流程不存在")
+          case _ => throw  DatabaseException("该流程不存在")
         }
 
         //插入数据库
