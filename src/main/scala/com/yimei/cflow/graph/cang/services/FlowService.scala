@@ -611,7 +611,12 @@ object FlowService extends UserModelProtocol
   }
 
 
-  def getFileObjects = {
+
+  def getFileObjects(fileNames:List[String]): Future[Seq[FileObj]] = {
+    import com.yimei.cflow.asset.service.AssetService._
+    getFiles(fileNames).map { sq =>
+      sq.map(entity => FileObj(entity.url,entity.asset_id,entity.busi_type.toString))
+    }
 
   }
 

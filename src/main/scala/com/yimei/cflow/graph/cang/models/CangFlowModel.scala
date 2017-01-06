@@ -9,8 +9,8 @@ import com.yimei.cflow.graph.cang.config.Config
 
 object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
-  case class FileObj(name: String, originName: String, url: String, fileType:String = default )
-  implicit val fileObjFormat = jsonFormat4(FileObj)
+  case class FileObj(name:String, id:String, fileType:String = default )
+  implicit val fileObjFormat = jsonFormat3(FileObj)
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
