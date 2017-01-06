@@ -34,7 +34,8 @@ var userInfo = function() {
         traderList : [],
         fundProviderList : [],
 
-        roleList : userService.userRoleList,
+        userRoleTrader : userService.userRoleTrader,
+        userRoleFundProvider : userService.userRoleFundProvider,
         role : userService.userRoleKeyObject,
 
         pageShowStatus : 'add',
