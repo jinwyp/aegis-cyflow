@@ -37,7 +37,7 @@ object FlowClusterApp extends FlowClusterSupport
     // Id服务
     val idGenerator = system.actorOf(IdGenerator.props("id"))
 
-    // 自动
+    // 自动任务
     val auto = system.actorOf(AutoMaster.props(Array("abc")))
 
     // 流程管理 - 需要idGenerator
@@ -68,7 +68,7 @@ object FlowClusterApp extends FlowClusterSupport
     val all: Route = null;
 
     // 启动rest服务
-    // println(s"http is listening on ${config.getInt("rest.port")}")
     Http().bindAndHandle(all, "0.0.0.0", config.getInt("rest.port"))
+
   }
 }
