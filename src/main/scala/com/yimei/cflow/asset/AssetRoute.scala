@@ -14,6 +14,7 @@ import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
 import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
@@ -33,7 +34,9 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
     */
   def downloadFile: Route = get {
     path("file" / Segment) { id =>
-      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url).toString
+      println(" ------ abc -------- " + id)
+      val url = dbrun(assetClass.filter(f => f.asset_id === id).result.head).map(f => f.url)
+      println(" ------ url -------- " + url)
       getFromFile(new File(fileRootPath + url))
     }
   }
@@ -70,7 +73,7 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
             .map(strict => data.name -> strict.entity.data.utf8String)
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
 
-        val res = result.map { data =>
+        def insert(data:Map[String,String]): Future[FileObj] = {
           val path = data.get("path").get
           val busi_type: Int = data.getOrElse("busi_type", "0").toInt
           val description: String = data.getOrElse("description", "")
@@ -80,10 +83,19 @@ class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
           val suffix = originName.substring(originName.lastIndexOf('.') + 1)
           val fileType = getFileType(suffix)
           val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, None)
-          assetClass.insertOrUpdate(assetEntity)
-          FileObj(url, originName, fileRootPath + url)
+          val temp: Future[Int] = dbrun( assetClass.insertOrUpdate(assetEntity)) recover {
+            case _ => throw BusinessException(s"$url 上传失败")
+          }
+          temp.map(f=>FileObj(url, originName, fileRootPath + url))
         }
-        complete(res)
+
+
+        complete(for{
+          r <- result
+          i <- insert(r)
+        } yield {
+          i
+        })
       }
     }
   }

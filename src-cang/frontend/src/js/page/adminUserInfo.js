@@ -22,6 +22,7 @@ var userInfo = function() {
 
     var vm = avalon.define({
         $id : 'userAddController',
+        companyList:[],
         currentUser : {
             username : '',
             email : '',
@@ -33,7 +34,8 @@ var userInfo = function() {
         traderList : [],
         fundProviderList : [],
 
-        roleList : userService.userRoleList,
+        userRoleTrader : userService.userRoleTrader,
+        userRoleFundProvider : userService.userRoleFundProvider,
         role : userService.userRoleKeyObject,
 
         pageShowStatus : 'add',
@@ -172,6 +174,23 @@ var userInfo = function() {
             }
         })
     }
+
+
+    function getCompanies(query){
+        query = query || {};
+
+        userService.getCompanyList(query).done(function(data, textStatus, jqXHR) {
+            if (data.success){
+                vm.companyList = data.data;
+
+            }else{
+                console.log(data.error);
+            }
+        })
+    }
+
+
+    getCompanies();
 
 
     if (urlShowStatus === 'add'){
