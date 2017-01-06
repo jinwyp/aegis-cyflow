@@ -611,6 +611,10 @@ object FlowService extends UserModelProtocol
   }
 
 
+  def getFileObjects = {
+
+  }
+
   /**
     * 放货记录（港口方）
     */
@@ -621,7 +625,7 @@ object FlowService extends UserModelProtocol
          entity.task_submit.parseJson.convertTo[Map[String,DataPoint]].get(traderNoticeHarborRelease) match {
            case Some(data) =>
              val delivery = data.value.parseJson.convertTo[TraffickerNoticePortReleaseGoods]
-            // Delivery(delivery.redemptionAmount,data.timestamp,)
+            // Delivery(delivery.redemptionAmount,data.timestamp,delivery.)
            case _          => throw BusinessException(s"flowId:$flowId, company_id:$company_id , user_id:$user_Id 港口放货记录有误")
          }
 
