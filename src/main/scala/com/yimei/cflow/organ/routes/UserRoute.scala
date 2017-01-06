@@ -307,7 +307,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
           import scala.collection.mutable.MutableList
           var result = MutableList[UserData]()
           Info.toList.foreach{ info =>
-            val role = if(info._6 == "null" || info._6 == "1") info._5 else info._5 + "Accountant"
+            val role = if(info._6 == null || info._6 == "1") info._5 else info._5 + "Accountant"
             result += UserData(info._1, info._2, info._3, info._4, role, info._7, info._8)
           }
           result.toList
@@ -319,11 +319,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
           info <- getUserInfo(userName, companyName, pageSize, (page - 1) * pageSize)
           list = getResult(info)
           total <- getAccount(userName, companyName)
-        } yield {
-          println(info.toList)
-          println("total " + total)
-          UserInfoList(datas = list, total = total)
-        }
+        } yield UserInfoList(datas = list, total = total)
 
         complete(result)
       }
