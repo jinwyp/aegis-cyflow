@@ -28,7 +28,7 @@ import com.yimei.cflow.graph.cang.session.{MySession, Session}
 /**
   * Created by xl on 16/12/26.
   */
-object LoginService extends PartyClient with UserClient with Config with PartyModelProtocal {
+object LoginService extends PartyClient with UserClient with Config with PartyModelProtocol {
 
   //融资方进入仓压
   def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): Future[String] = {

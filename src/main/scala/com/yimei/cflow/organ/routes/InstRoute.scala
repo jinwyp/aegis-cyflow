@@ -20,7 +20,7 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
 
-class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocal with SprayJsonSupport{
+class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocol with SprayJsonSupport{
   import driver.api._
 
   //POST /inst         创建参与方实例
