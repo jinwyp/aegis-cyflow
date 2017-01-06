@@ -38,12 +38,12 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with Spra
     }
   }
 
-  import com.yimei.cflow.engine.routes.EditorObject.AddDesign
+  import com.yimei.cflow.engine.routes.EditorObject.SaveDesign
   // 3> 保存流程设计:      POST /design/graph?id=:id  + JSON
   def saveDesign: Route =  post {
     path("design" / "graph" ) {
       parameter("id".as[Long].?) { id =>
-        entity(as[AddDesign]) { design =>
+        entity(as[SaveDesign]) { design =>
           val designEntity = DesignEntity(id, design.name, design.json, design.meta, None)
           designClass.insertOrUpdate(designEntity)
           complete(StatusCodes.OK)
