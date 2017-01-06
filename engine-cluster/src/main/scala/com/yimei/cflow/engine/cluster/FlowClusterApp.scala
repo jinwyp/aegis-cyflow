@@ -1,4 +1,4 @@
-package com.yimei.cflow.driver
+package com.yimei.cflow.engine.cluster
 
 import akka.actor.{ActorIdentity, ActorPath, ActorSystem, Identify, Props}
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
@@ -6,17 +6,16 @@ import akka.pattern._
 import akka.persistence.journal.leveldb.{SharedLeveldbJournal, SharedLeveldbStore}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
-import com.yimei.cflow.cluster.{FlowClusterSupport, GroupClusterSupport, UserClusterSupport}
 import com.yimei.cflow.engine.graph.FlowGraph
-//import com.yimei.cflow.group.{Group, GroupClusterSupport}
-import com.yimei.cflow.api.models.group._
-
 import scala.concurrent.duration._
 
 /**
   * Created by hary on 16/12/16.
   */
-object FlowClusterApp extends App {
+object FlowClusterApp extends App
+with FlowClusterSupport
+with GroupClusterSupport
+with UserClusterSupport {
 
   def startup(port: Int, graph: FlowGraph): Unit = {
     // Override the configuration of the port
@@ -31,27 +30,27 @@ object FlowClusterApp extends App {
 
     // 流程
     val flowRegion = ClusterSharding(system).start(
-      typeName = FlowClusterSupport.shardName,
+      typeName = flowShardName,
       entityProps = null, // PersistentFlow.props(),
       settings = ClusterShardingSettings(system),
-      extractEntityId = FlowClusterSupport.extractEntityId,
-      extractShardId = FlowClusterSupport.extractShardId)
+      extractEntityId = flowExtractEntityId,
+      extractShardId = flowExtractShardId)
 
     // 组管理
     val groupRegion = ClusterSharding(system).start(
-      typeName = GroupClusterSupport.shardName,
+      typeName = groupShardName,
       entityProps = null,
       settings = ClusterShardingSettings(system),
-      extractEntityId = GroupClusterSupport.extractEntityId,
-      extractShardId = GroupClusterSupport.extractShardId)
+      extractEntityId = groupExtractEntityId,
+      extractShardId = groupExtractShardId)
 
     // 用户
     val userRegion = ClusterSharding(system).start(
-      typeName = UserClusterSupport.shardName,
+      typeName = userShardName,
       entityProps = null,
       settings = ClusterShardingSettings(system),
-      extractEntityId = UserClusterSupport.extractEntityId,
-      extractShardId = UserClusterSupport.extractShardId)
+      extractEntityId = userExtractEntityId,
+      extractShardId = userExtractShardId)
 
   }
 
