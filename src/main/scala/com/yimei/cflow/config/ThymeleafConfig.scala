@@ -15,7 +15,7 @@ import scala.concurrent.Future
 /**
   * Created by hary on 17/1/5.
   */
-object ThymeleafConfig {
+object ThymeleafConfig extends CoreConfig{
 
   val templateResolver = new FileTemplateResolver();
   val prefix = "src/main/resources/templates"

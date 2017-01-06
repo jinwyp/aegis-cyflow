@@ -1,11 +1,13 @@
 package com.yimei.cflow.graph.cang.models
 
 import java.sql.Timestamp
+
 import spray.json.DefaultJsonProtocol
 import BaseFormatter._
+import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.graph.cang.config.Config
 
-object CangFlowModel extends DefaultJsonProtocol with Config {
+object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
   case class FileObj(name: String, originName: String, url: String, fileType:String = default )
   implicit val fileObjFormat = jsonFormat4(FileObj)
@@ -21,7 +23,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                                 financeCreateTime: Timestamp,      //审批开始时间
                                 financeEndTime: Timestamp,         //审批结束时间
                                 downstreamCompanyName: String,     //下游签约公司-公司名称
-                                financingAmount: BigDecimal,       //拟融资金额
+                                financingAmount: BigDecimal,       //拟融资金额 - 融资方想要融资金额
                                 financingDays: Int,                //融资天数
                                 interestRate: BigDecimal,          //利率
                                 coalType: String,                  //煤炭种类,品种
@@ -185,7 +187,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                     businessCode:String,                    //审批号
                     downstreamCompanyName:String,      //下游采购方
                     stockPort:String,                     //库存港口
-                    coalAmount:String,             //质押总数量（吨）
+                    coalAmount:BigDecimal,             //质押总数量（吨）
                     financingAmount : BigDecimal,       //拟融资金额（万元) 拟融资金额 - 融资方想要融资金额,不是实际融资金额
                     financingDays : Int,                //融资期限（天）
                     interestRate : BigDecimal,          // 利率
@@ -220,7 +222,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                               fundProviderAccountant:Option[UserInfo],      //资金方财务
                               trader:Option[UserInfo],                  //贸易方业务
                               traderAccountant:Option[UserInfo],        //贸易方财务
-                              financer:Option[UserInfo]               //融资方
+                              financer:UserInfo               //融资方
                             )
   implicit val cyPartyMemberFormat = jsonFormat7(CYPartyMember)
 
@@ -263,7 +265,9 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   /**
     *流程数据
     */
-  case class FlowData(cargoOwner:Option[String],                            //货权（贸易商审核通过前为融资方，然后为贸易方）
+  case class FlowData(
+                    currentTask:Option[UserState],
+                    cargoOwner:Option[String],                          //货权（贸易商审核通过前为融资方，然后为贸易方）
                     status:String,                                        //当前所在vertices
                     loanValue:Option[BigDecimal],                         //实际放款金额
                     depositValue:Option[BigDecimal],                      //保证金金额
@@ -275,10 +279,10 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                     repaymentValue:Option[BigDecimal],                    //待还款
                     depositList:Option[List[Deposit]],                    //保证金记录
                     repaymentList:Option[List[Repayment]],                //还款交易记录
-                    deliveryList:Option[List[Delivery]],                   //放货记录
+                    deliveryList:Option[List[Delivery]],                  //放货记录
                     fileList:Option[List[FileObj]]                        //该流程对应全部文件
                    )
-  implicit val flowDataFormat = jsonFormat14(FlowData)
+  implicit val flowDataFormat = jsonFormat15(FlowData)
 
 
   /**

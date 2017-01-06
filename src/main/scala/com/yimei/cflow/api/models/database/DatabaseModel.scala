@@ -12,8 +12,8 @@ object FlowDBModel extends DefaultJsonProtocol {
   case class FlowTaskEntity(id: Option[Long], flow_id: String, task_id: String, task_name: String, task_submit: String, user_type: String, user_id: String, ts_c: Timestamp)
 
   case class DesignEntity(id: Option[Long], name: String, json: String, meta: String, ts_c: Option[Timestamp])
-  case class DeployEntity(id: Option[Long], flow_type: String, jar: Blob, enable: Boolean, ts_c: Option[Timestamp])
 
+  case class DeployEntity(id: Option[Long], flow_type: String, jar: Blob, enable: Boolean, ts_c: Option[Timestamp])
   //
 }
 
@@ -21,7 +21,7 @@ object FlowDBModel extends DefaultJsonProtocol {
 object UserOrganizationDBModel {
   case class PartyClassEntity(id:Option[Long],class_name:String,description:String)
   case class PartyGroupEntity(id:Option[Long],party_class:String,gid:String,description:String,ts_c:Timestamp)
-  case class PartyInstanceEntity(id:Option[Long], partyClass:String, instanceId:String, partyName:String, disable: Int, ts_c:Timestamp)
+  case class PartyInstanceEntity(id:Option[Long], partyClass:String, instanceId:String, companyName:String, disable: Int, ts_c:Timestamp)
   case class PartyUserEntity(id:Option[Long], party_id:Long, user_id:String, password:String, phone:Option[String], email:Option[String], name:String, username:String, disable: Int, ts_c:Timestamp)
   case class UserGroupEntity(id: Option[Long], party_id: Long, gid: String, user_id: String, ts_c: Timestamp)
 }

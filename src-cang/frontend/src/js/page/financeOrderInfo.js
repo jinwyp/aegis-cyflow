@@ -60,7 +60,7 @@ var orderInfo = function () {
 
                         vm.errorRedemptionAmount = false;
 
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10) {
+                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 || vm.inputRedemptionFileList.length === 0 ) {
                             vm.errorRedemptionAmount = true;
                             return ;
                         } else {
@@ -241,6 +241,14 @@ var orderInfo = function () {
         getFile : function (event, file) {
             event.preventDefault();
             orderService.getContractById(file._id);
+        },
+        deleteFile : function (event, file) {
+            event.preventDefault();
+            var tempIndex = vm.uploadFileList.indexOf(file);
+            if (tempIndex > -1){
+                vm.uploadFileList.splice(tempIndex, 1)
+                uploadFileList.splice(tempIndex, 1)
+            }
         },
 
         contractFilter : function (el, i, role) {

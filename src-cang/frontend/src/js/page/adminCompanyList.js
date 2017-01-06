@@ -18,7 +18,7 @@ var companyList = function() {
         $id : 'companyListController',
         companyList : [],
         searchQuery : {
-            party_name : ''
+            companyName : ''
         },
 
         configPagination : {
@@ -28,8 +28,8 @@ var companyList = function() {
             countPerPage : 10,
             changePageNo : function(currentPageNo, skip, countPerPage){
                 var query = {
-                    $limit: countPerPage,
-                    $skip : skip
+                    count: countPerPage,
+                    offset : skip
                 };
 
                 getCompanies(query)
@@ -56,8 +56,8 @@ var companyList = function() {
     function getCompanies(query){
         query = query || {};
 
-        if (vm.searchQuery.party_name){
-            query.party_name = vm.searchQuery.party_name;
+        if (vm.searchQuery.companyName){
+            query.companyName = vm.searchQuery.companyName;
         }
         userService.getCompanyList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){

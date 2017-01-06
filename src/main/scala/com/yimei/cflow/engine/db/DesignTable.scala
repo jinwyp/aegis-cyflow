@@ -12,7 +12,7 @@ trait DesignTable {
 
   import driver.api._
 
-  class Design(tag: Tag) extends Table[DesignEntity](tag, "design") {
+  class DesignClass(tag: Tag) extends Table[DesignEntity](tag, "design") {
     def id        = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def name      = column[String]("name")
     def json      = column[String]("json")
@@ -22,6 +22,6 @@ trait DesignTable {
     def * = (id, name, json, meta, ts_c) <> (DesignEntity.tupled, DesignEntity.unapply)
   }
 
-  protected val design = TableQuery[Design]
+  protected val designClass = TableQuery[DesignClass]
 
 }
