@@ -12,16 +12,16 @@ trait DeployTable {
 
   import driver.api._
 
-  class Deploy(tag: Tag) extends Table[DeployEntity](tag, "design") {
+  class DeployClass(tag: Tag) extends Table[DeployEntity](tag, "deploy") {
     def id         = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def flow_type  = column[String]("flow_type")
     def jar        = column[Blob]("jar")
     def enable     = column[Boolean]("enable")
-    def ts_c       = column[Timestamp]("ts_c")
+    def ts_c       = column[Option[Timestamp]]("ts_c")
 
     def * = (id, flow_type, jar, enable, ts_c) <>(DeployEntity.tupled, DeployEntity.unapply)
   }
 
-  protected val deply = TableQuery[Deploy]
+  protected val deployClass = TableQuery[DeployClass]
 
 }

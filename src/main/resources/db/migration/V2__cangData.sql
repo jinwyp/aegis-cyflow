@@ -22,7 +22,9 @@ INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `e
 
 INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('1','88888', '123456', '13800000001', '12345@12345.com', 'ymFinance', 'u2');
 
-INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00000', '123456', '13800000001', '12345@12345.com', 'admin', 'u3');
+INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00000', '123456', '13800000001', '12345@12345.com', 'admin', 'className');
+
+INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00001', '123456', '13800000002', 'systemAdmin@163.com', 'systemAdmin', 'systemAdmin');
 
 --添加贸易方财务，贸易商业务组和成员映射关系
 INSERT INTO `cyflow`.`user_group` (`party_id`, `gid`, `user_id`) VALUES ('1', '1', '77777');

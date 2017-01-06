@@ -357,7 +357,7 @@
                         <div class="panel-heading">合同信息</div>
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.financer || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider ">
                                     <tr>
                                         <th class="text-right ">融资用户合同及单据:</th>
                                         <td>
@@ -366,7 +366,7 @@
                                     </tr>
                                 </table>
 
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.harbor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider " >
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>
                                         <td>
@@ -374,7 +374,7 @@
                                         </td>
                                     </tr>
                                 </table>
-                                <table class="table table-hover contract-table">
+                                <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.supervisor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider ">
                                     <tr>
                                         <th class="text-right contract-table">监管方合同及单据:</th>
                                         <td>
@@ -382,10 +382,8 @@
                                         </td>
                                     </tr>
                                 </table>
-
                             </div>
                         </div>
-
                     </div>
 
 
@@ -396,7 +394,7 @@
                             <table class="table table-hover">
                                 <tr ms-for="(index, file) in @uploadFileList">
                                     <td class="border0 text-center">{{file.name}} <a href=""></a></td>
-                                    <td class="border0 text-center"><span class="btn btn-primary">删除</span></td>
+                                    <td class="border0 text-center"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
                                 </tr>
                             </table>
                         </div>
@@ -573,7 +571,7 @@
                                         <input type="text" class="form-control" ms-duplex-number="@inputRedemptionAmount" >
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorRedemptionAmount">
-                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨!</span>
+                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨, 并且必须上传放货文件!</span>
                                     </div>
                                 </div>
 

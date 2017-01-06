@@ -60,7 +60,7 @@ var orderInfo = function () {
 
                         vm.errorRedemptionAmount = false;
 
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10) {
+                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 || vm.inputRedemptionFileList.length === 0 ) {
                             vm.errorRedemptionAmount = true;
                             return ;
                         } else {
@@ -190,35 +190,40 @@ var orderInfo = function () {
 
                 // 融资方 还款金额
 
-                vm.errorRepaymentValue = false;
+                // 融资方 还款金额
+                if (vm.currentOrder.status === 'financingStep12'){
 
-                if (!vm.inputRepaymentValue || vm.inputRepaymentValue < 10) {
-                    vm.errorRepaymentValue = true;
-                    return ;
+                }else{
+                    vm.errorRepaymentValue = false;
 
-                } else {
-                    var tempLeftValue = vm.currentOrder.loanValue;
+                    if (!vm.inputRepaymentValue || vm.inputRepaymentValue < 10) {
+                        vm.errorRepaymentValue = true;
+                        return ;
 
-                    vm.repaymentList.forEach(function(pay){
-                        tempLeftValue = tempLeftValue - pay.redemptionValue;
-                    })
+                    } else {
+                        var tempLeftValue = vm.currentOrder.loanValue;
 
-                    var tempPaymentOrder = {
-                        redemptionValue : vm.inputRepaymentValue,
-                        leftPrincipalValue : tempLeftValue - vm.inputRepaymentValue,
-                        paymentType  : orderService.paymentTypeKey.repayment,
-                        orderId      : orderId,
-                        orderNo      : vm.currentOrder.orderNo
-                    }
+                        vm.repaymentList.forEach(function(pay){
+                            tempLeftValue = tempLeftValue - pay.redemptionValue;
+                        })
 
-                    additionalData.repaymentValue = vm.inputRepaymentValue
-
-                    orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
-                        if (data.success) {
-                        } else {
-                            console.log(data.error);
+                        var tempPaymentOrder = {
+                            redemptionValue : vm.inputRepaymentValue,
+                            leftPrincipalValue : tempLeftValue - vm.inputRepaymentValue,
+                            paymentType  : orderService.paymentTypeKey.repayment,
+                            orderId      : orderId,
+                            orderNo      : vm.currentOrder.orderNo
                         }
-                    })
+
+                        additionalData.repaymentValue = vm.inputRepaymentValue
+
+                        orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
+                            if (data.success) {
+                            } else {
+                                console.log(data.error);
+                            }
+                        })
+                    }
                 }
 
             }
@@ -236,6 +241,14 @@ var orderInfo = function () {
         getFile : function (event, file) {
             event.preventDefault();
             orderService.getContractById(file._id);
+        },
+        deleteFile : function (event, file) {
+            event.preventDefault();
+            var tempIndex = vm.uploadFileList.indexOf(file);
+            if (tempIndex > -1){
+                vm.uploadFileList.splice(tempIndex, 1)
+                uploadFileList.splice(tempIndex, 1)
+            }
         },
 
         contractFilter : function (el, i, role) {

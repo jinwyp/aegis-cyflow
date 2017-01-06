@@ -1,11 +1,13 @@
 package com.yimei.cflow.graph.cang.models
 
 import java.sql.Timestamp
+
 import spray.json.DefaultJsonProtocol
 import BaseFormatter._
+import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.graph.cang.config.Config
 
-object CangFlowModel extends DefaultJsonProtocol with Config {
+object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
   case class FileObj(name: String, originName: String, url: String, fileType:String = default )
   implicit val fileObjFormat = jsonFormat4(FileObj)
@@ -21,7 +23,7 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
                                 financeCreateTime: Timestamp,      //审批开始时间
                                 financeEndTime: Timestamp,         //审批结束时间
                                 downstreamCompanyName: String,     //下游签约公司-公司名称
-                                financingAmount: BigDecimal,       //拟融资金额
+                                financingAmount: BigDecimal,       //拟融资金额 - 融资方想要融资金额
                                 financingDays: Int,                //融资天数
                                 interestRate: BigDecimal,          //利率
                                 coalType: String,                  //煤炭种类,品种
@@ -175,5 +177,122 @@ object CangFlowModel extends DefaultJsonProtocol with Config {
   implicit val traffickerFinancePayToFundProviderFormat = jsonFormat3(TraffickerFinancePayToFundProvider)
 
 
+  //####################
+  /**
+    * 审批带来的信息
+    */
+  case class SPData(financeCreateTime: Timestamp,      //审批开始时间
+                    financeEndTime: Timestamp,         //审批结束时间(仓压开始时间）
+                    orderType:String,                  //审批类型
+                    businessCode:String,                    //审批号
+                    downstreamCompanyName:String,      //下游采购方
+                    stockPort:String,                     //库存港口
+                    coalAmount:BigDecimal,             //质押总数量（吨）
+                    financingAmount : BigDecimal,       //拟融资金额（万元) 拟融资金额 - 融资方想要融资金额,不是实际融资金额
+                    financingDays : Int,                //融资期限（天）
+                    interestRate : BigDecimal,          // 利率
+                    coalType : String ,                 //煤种
+                    coalIndex_NCV: Int,
+                    coalIndex_RS: BigDecimal,
+                    coalIndex_ADV: BigDecimal,         //煤炭 热值,硫分,空干基挥发分
+                    investigationInfo:StartFlowInvestigationInfo,    //尽调报告信息
+                    supervisorInfo:StartFlowSupervisorInfo          //监管报告信息
+                   )
+  implicit val spDataFormat = jsonFormat16(SPData)
+
+  /**
+    *用户信息
+    */
+  case class UserInfo(userId:String,
+                      userName:String,
+                      phone:Option[String],
+                      email:Option[String],
+                      name:String,
+                      companyName:String,
+                      companyId:String
+                     )
+  implicit val userInfoFormat = jsonFormat7(UserInfo)
+
+  /**
+    * 仓压用户信息
+    */
+  case class CYPartyMember(   harbor: Option[UserInfo],                       //港口
+                              supervisor:Option[UserInfo],             //监管
+                              fundProvider: Option[UserInfo],           //资金方业务
+                              fundProviderAccountant:Option[UserInfo],      //资金方财务
+                              trader:Option[UserInfo],                  //贸易方业务
+                              traderAccountant:Option[UserInfo],        //贸易方财务
+                              financer:UserInfo               //融资方
+                            )
+  implicit val cyPartyMemberFormat = jsonFormat7(CYPartyMember)
+
+
+  /**
+    *保证金记录
+    */
+  case class Deposit(amount:BigDecimal,                                 //保证金金额
+                     transactionNo:String,                                   //流水号
+                     status:String,                                     //保证金状态
+                     ts_c: Timestamp                                    //创建时间
+                    )
+  implicit val depositFormat = jsonFormat4(Deposit)
+
+  /**
+    * 还款交易记录
+    */
+  case class Repayment(repaymentAmount:BigDecimal,                      //还款金额(万元？）todo 确认
+                       interestBearingCapital:BigDecimal,               //本次还款计息本金
+                       nextInterestBearingCapital:BigDecimal,           //下次计息本金
+                       days:Int,                                        //计息天数
+                       interest:BigDecimal,                             //利息
+                       payer:String,                                    //付款方
+                       receiver:String                                  //收款方
+                      )
+  implicit val repaymentFormat = jsonFormat7(Repayment)
+
+  /**
+    *港口记录
+    */
+  case class Delivery(deliveryAmount:BigDecimal,                        //放货吨数
+                      deliveryTime:Timestamp ,                          //放货时间
+                      fileList:List[FileObj],                           //放货文件
+                      sender:String,                                    //放货方
+                      goodsReceiveCompanyName:String                    //收货方
+                     )
+  implicit val deliveryFormat = jsonFormat5(Delivery)
+
+
+  /**
+    *流程数据
+    */
+  case class FlowData(
+                    currentTask:Option[UserState],
+                    cargoOwner:Option[String],                          //货权（贸易商审核通过前为融资方，然后为贸易方）
+                    status:String,                                        //当前所在vertices
+                    loanValue:Option[BigDecimal],                         //实际放款金额
+                    depositValue:Option[BigDecimal],                      //保证金金额
+                    loanFundProviderInterestRate:Option[BigDecimal],      //资金方借款的利率
+                    harborConfirmAmount:Option[BigDecimal],               //港口确认金额
+                    redemptionAmount:Option[BigDecimal],                  //已赎回吨数
+                    returnValue:Option[BigDecimal],                       //已归还金额
+                    redemptionAmountLeft:Option[BigDecimal],              //待赎回吨数
+                    repaymentValue:Option[BigDecimal],                    //待还款
+                    depositList:Option[List[Deposit]],                    //保证金记录
+                    repaymentList:Option[List[Repayment]],                //还款交易记录
+                    deliveryList:Option[List[Delivery]],                  //放货记录
+                    fileList:Option[List[FileObj]]                        //该流程对应全部文件
+                   )
+  implicit val flowDataFormat = jsonFormat15(FlowData)
+
+
+  /**
+    * 仓压数据
+    */
+  case class CYData( spData:SPData,                           //审核带来的数据
+                     cyPartyMember:CYPartyMember,             //仓压用户信息
+                     flowData:FlowData                        //流程数据
+                   )
+
+  implicit val cyDataFormat = jsonFormat3(CYData)
 
 }

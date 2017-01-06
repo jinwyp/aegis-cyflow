@@ -47,44 +47,67 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
+   * 管理员获取所有用户
+   * url      http://localhost:9000/api/cang/users?page=2&pageSize=2
+   * method   get
+   */
+  def adminGetAllUserListRoute: Route = get {
+    (path("users") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
+      complete(adminGetAllUser(page, pageSize))
+    }
+  }
+
+  /*
    * 管理员添加公司
-   * url      http://localhost:9001/admin/company
+   * url      http://localhost:8000/api/cang/companies
    * method   post application/json
    * body     {"companyName":"瑞茂通","partyClass":"trader"}
    */
   def adminAddCompanyRoute: Route = post {
-    (path("admin" / "company") & entity(as[AddCompany])) { company =>
+    (path("companies") & entity(as[AddCompany])) { company =>
       complete(adminAddCompany(company))
     }
   }
 
   /*
-   * 管理员获取所有公司
-   * url      localhost:9000/cang/admin/company?page=x&pageSize=y
-   * method   get
+   * 管理员获取所有公司信息
+   * url         http://localhost:9000/api/cang/companies?page=1&count=3&companyName=%E6%98%93%E7%85%A4
+   * method      get
+   * attention   page/count/companyName都不是必填项
    */
   def adminGetAllCompanyRoute: Route = get {
-    (path("admin" / "company") & parameter('page.as[Int]) & parameter('pageSize.as[Int])) { (page, pageSize) =>
-
-      complete(adminGetAllCompany(page, pageSize))
+    (path("companies") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('companyName.as[String].?)) { (p, ps, cn) =>
+      val page = if(!p.isDefined) 1 else p.get
+      val pageSize = if(!ps.isDefined) 10 else ps.get
+      complete(adminGetAllCompany(page, pageSize, cn))
     }
   }
 
   /*
-   * 管理员获取所有公司
-   * url      localhost:9000/cang/admin/:partyclass/:instance_id
+   * 管理员获取特定公司信息
+   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId
+   * method      get
+   */
+  def adminGetSpecificCompanyRoute: Route = get {
+    path("company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
+      complete(adminGetSpecificCompany(partyClass, instanceId))
+    }
+  }
+
+  /*
+   * 管理员修改公司信息
+   * url      localhost:9000/cang/admin/partyClass/:partyclass/instanceId/:instance_id
    * method   put
    * body     瑞茂通
    */
   def adminUpdateCompanyRoute: Route = put {
-    path("admin" / Segment / Segment) { (party, instanceId) =>
+    path("admin" / "partyClass" / Segment/ "instanceId" / Segment) { (party, instanceId) =>
       entity(as[String]) { companyName =>
-        println(companyName + "----------" + party + "---------" + instanceId)
         complete(adminUpdateCompany(party, instanceId, companyName))
       }
     }
   }
-  
+
   /*
    * 管理员修改邮箱、电话
    * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
@@ -124,7 +147,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
       import scala.concurrent.ExecutionContext.Implicits.global
       onSuccess(getLoginUserInfo(user)) { s =>
         mySetSession(s) {
-          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party))), success = true))
+          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party, companyId = "", companyName = ""))), success = true))
         }
       }
     }
@@ -165,7 +188,8 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute
+    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
+    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute
 }
 
 object CangUserRoute {

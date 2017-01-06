@@ -47,10 +47,12 @@ object UserModel extends DefaultJsonProtocol {
 
   //-------------------------------------返回model----------------------------------
   //登录返回信息
-  case class UserData(userId: String, username: String, email: String, mobilePhone: String, role: String)
-  implicit val dataFormat = jsonFormat5(UserData)
+  case class UserData(userId: String, username: String, email: String, mobilePhone: String, role: String, companyId: String, companyName: String)
+  implicit val dataFormat = jsonFormat7(UserData)
   case class LoginRespModel(token: String, data: UserData)
   implicit val loginRespModelFormat = jsonFormat2(LoginRespModel)
+  case class UserInfoList(datas: List[UserData], total: Int)
+  implicit val UserInfoListFormat = jsonFormat2(UserInfoList)
 
 }
 
