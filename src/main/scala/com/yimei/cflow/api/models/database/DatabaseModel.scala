@@ -25,5 +25,5 @@ object UserOrganizationDBModel {
 }
 
 object AssetDBModel {
-  case class AssetEntity(id:Option[Long], asset_id: String, file_type: Int, busi_type: Int, username: String, gid: Option[String], description: Option[String], url: String, ts_c: Option[Timestamp])
+  case class AssetEntity(id:Option[Long], asset_id: String, file_type: Int, busi_type: String, username: String, gid: Option[String], description: Option[String], url: String, origin_name: String, ts_c: Option[Timestamp])
 }

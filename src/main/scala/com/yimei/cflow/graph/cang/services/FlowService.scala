@@ -12,7 +12,7 @@ import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.models.CangFlowModel.{FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 import spray.json._
-
+import com.yimei.cflow.asset.service.AssetService._
 import scala.concurrent.Future
 
 /**
@@ -611,7 +611,11 @@ object FlowService extends UserModelProtocol
   }
 
 
-  def getFileObjects = {
+
+  def getFileObjects(fileNames:List[String]): Future[Seq[FileObj]] = {
+    getFiles(fileNames).map { sq =>
+      sq.map(entity => FileObj(entity.url,entity.asset_id,entity.busi_type))
+    }
 
   }
 

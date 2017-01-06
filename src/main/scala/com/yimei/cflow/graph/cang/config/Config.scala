@@ -17,7 +17,8 @@ trait Config {
   val port = config.getInt("client.port")
 
   //文件类型
-  val default = "default"   //默认类型
+  //val fileType = Map(0->"default",1->"contract",2->"finance",3-> "business")  //默认类型
+  val default = "default"
   val contract = "contract" //合同
   val financeFile  = "financeFile" //财务文件
   val businessFile = "businessFile" //业务文件
