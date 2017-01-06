@@ -28,9 +28,11 @@ var userInfo = function() {
             email : '',
             mobilePhone : '',
             companyName : '',
-            belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
+            partyClass:'',
+            // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
         },
+
         traderList : [],
         fundProviderList : [],
 
@@ -47,7 +49,9 @@ var userInfo = function() {
             inputCompanyName : '',
             inputUserRole:''
         },
-        isMYSCWValid : false,
+
+
+        // isMYSCWValid : false,
         successInputName : [],
         errorInputName : [],
         addValidate : {
@@ -65,20 +69,20 @@ var userInfo = function() {
 
             },
             onValidateAll: function (reasons) {
-                console.log(vm.isMYSCWValid);
+                // console.log(vm.isMYSCWValid);
 
-                var isValid = true;
-                if(vm.currentUser.role === role.traderAccountant || vm.currentUser.role === role.fundProviderAccountant){
-                    if (reasons.length || !vm.isMYSCWValid ) {
-                        isValid = false;
-                    }
-                }else{
-                    if (reasons.length ) {
-                        isValid = false;
-                    }
-                }
+                // var isValid = true;
+                // if(vm.currentUser.role === role.traderAccountant || vm.currentUser.role === role.fundProviderAccountant){
+                //     if (reasons.length || !vm.isMYSCWValid ) {
+                //         isValid = false;
+                //     }
+                // }else{
+                //     if (reasons.length ) {
+                //         isValid = false;
+                //     }
+                // }
 
-                if(!isValid){
+                if(reasons.length){
                     console.log('表单项没有通过');
                     $("input").focus().blur();
                     $("select").focus().blur()
@@ -87,13 +91,14 @@ var userInfo = function() {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
                         mobilePhone : vm.currentUser.mobilePhone,
-                        companyName : vm.currentUser.companyName,
+                        companyName :  vm.selectedCompany.companyName,
+                        partyClass :  vm.selectedCompany.partyClass,
                         role : vm.currentUser.role
                     };
 
-                    if (vm.currentUser.belongToUser) {
-                        user.belongToUser = vm.currentUser.belongToUser
-                    }
+                    // if (vm.currentUser.belongToUser) {
+                    //     user.belongToUser = vm.currentUser.belongToUser
+                    // }
 
                     if (vm.pageShowStatus === 'add') {
                         userService.addNewUser(user).done(function( data, textStatus, jqXHR ) {
@@ -122,29 +127,30 @@ var userInfo = function() {
             }
         },
 
+
         addUser :function(){
-            console.log(vm.currentUser.role, vm.currentUser.belongToUser)
+            console.log('-------'+vm.currentUser.companyName,vm.currentUser.role)
         },
-        isValid : checkMYS
+        // isValid : checkMYS
 
     });
 
-    function checkMYS() {
-
-        if (vm.currentUser.role === role.traderAccountant){
-            if (vm.currentUser.belongToUser){
-                vm.isMYSCWValid = true;
-            }else{
-                vm.isMYSCWValid = false;
-            }
-        }else if (vm.currentUser.role === role.fundProviderAccountant){
-            if (vm.currentUser.belongToUser){
-                vm.isMYSCWValid = true;
-            }else{
-                vm.isMYSCWValid = false;
-            }
-        }
-    }
+    // function checkMYS() {
+    //
+    //     if (vm.currentUser.role === role.traderAccountant){
+    //         if (vm.currentUser.belongToUser){
+    //             vm.isMYSCWValid = true;
+    //         }else{
+    //             vm.isMYSCWValid = false;
+    //         }
+    //     }else if (vm.currentUser.role === role.fundProviderAccountant){
+    //         if (vm.currentUser.belongToUser){
+    //             vm.isMYSCWValid = true;
+    //         }else{
+    //             vm.isMYSCWValid = false;
+    //         }
+    //     }
+    // }
 
     function getUserInfo() {
         userService.getUserInfoById(userId).done(function (data, textStatus, jqXHR) {
@@ -182,6 +188,7 @@ var userInfo = function() {
         userService.getCompanyList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){
                 vm.companyList = data.data;
+                vm.companyList.partyClass = vm.currentUser.partyClass
 
             }else{
                 console.log(data.error);

@@ -49,31 +49,26 @@
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
-                                    <!--<input id="inputCompanyName" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"-->
-                                           <!--ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请选择公司名称">-->
-                                    <!--<select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"-->
-                                            <!--ms-duplex="@companyList.party_name" ms-rules='{required:true}' data-required-message="请选择公司名称">-->
-                                        <!--<option value="" > - </option>-->
-                                        <!--<option ms-for="companyName in @companyList" ms-attr="{value: @companyName.party_name}" >{{companyName.companyName}} </option>-->
-                                    <!--</select>-->
                                     <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请选择公司名称">
+                                            ms-duplex="@currentUser.partyClass" ms-rules='{required:true}' data-required-message="请选择公司名称">
                                         <option value="" > - </option>
-                                        <option ms-for="name in @companyList" ms-attr="{value: role.name}" >{{name.companyName}} </option>
+                                        <option ms-for="company in @companyList" ma-attr="{company.partyClass}">{{company.partyClass}}
+                                        </option>
                                     </select>
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset ms-visible="@currentUser.partyClass === 'trader' || @currentUser.partyClass === 'fundProvider'">
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputUserRole')>-1 && 'has-error' ]">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>用户类型:</label>
                                 <div class="col-sm-5">
                                     <select name="account" class="form-control" id="inputUserRole" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
                                             ms-duplex="@currentUser.role" ms-rules='{required:true}' data-required-message="请选择用户类型">
                                         <option value="" > - </option>
-                                        <option ms-for="role in @roleList" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                        <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                        <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" >{{role.displayName}} </option>
                                     </select>
                                     <span class="help-block m-b-none" ms-visible="@currentUser.role===@role.traderAccountant || @currentUser.role===@role.fundProviderAccountant">
                                     </span>
@@ -124,7 +119,7 @@
                                     <a href="/warehouse/admin/home/session/password" class="btn btn-primary">重置密码</a>
                                     <span class=" marginL">重置后，该密码将发送至该邮箱</span>
                                 </div>
-                                <div class="col-sm-5 lineH34" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
                             </div>
                         </fieldset>
                         <fieldset>
