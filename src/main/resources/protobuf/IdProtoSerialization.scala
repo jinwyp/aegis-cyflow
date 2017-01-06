@@ -2,6 +2,7 @@ package com.yimei.cflow.api.serialization.protobuf
 
 import akka.serialization.SerializerWithStringManifest
 import com.yimei.cflow.api.models.id._
+import com.yimei.cflow.id.models.{CommandGetId, EventIncrease, Id, State}
 
 
 /**
