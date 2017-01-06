@@ -11,7 +11,10 @@ object EditorObject extends DefaultJsonProtocol {
   case class AddDesign(id: Option[Long], name: String, json: Option[String], meta: Option[String])
   implicit val addDesignFormat = jsonFormat4(AddDesign)
 
-  case class DesignDetail(id: Option[Long], name: String, json: Option[String], meta: Option[String], ts_c: Timestamp)
+  case class DesignDetail(id: Long, name: String, json: Option[String], meta: Option[String], ts_c: Timestamp)
   implicit val designDetailFormat = jsonFormat5(DesignDetail)
+
+  case class DesignList(id: Long, name: String, ts_c: Timestamp)
+  implicit val designListFormat = jsonFormat3(DesignList)
 
 }

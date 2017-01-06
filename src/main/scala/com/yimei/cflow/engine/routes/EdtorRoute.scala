@@ -17,14 +17,15 @@ import com.yimei.cflow.engine.routes.EditorObject.DesignDetail
 
 class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with SprayJsonSupport {
 
+  import com.yimei.cflow.engine.routes.EditorObject.DesignList
   import driver.api._
-
-
   // 1> 用户列出所有流程设计  :   GET /design/graph
   def listDesign: Route =  get {
     pathPrefix("design" / "graph") {
       pathEnd {
-        complete(dbrun(designClass.sortBy(d => d.ts_c).map(d => (d.id, d.name)).result))
+        val designList = dbrun(designClass.sortBy(d => d.ts_c).map(d => (d.id, d.name, d.ts_c)).result)
+        val res = for (d <- designList) yield { d.map(d => DesignList(d._1.get, d._2, d._3.get))}
+        complete(res)
       }
     }
   }
@@ -33,7 +34,7 @@ class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with Spra
   def loadDesign: Route = get {
     path("design" / "graph" / LongNumber ) { id =>
       val design = dbrun(designClass.filter(d => d.id === id).result.head)
-      complete(design.map(d => DesignDetail(d.id, d.name, d.json, d.meta, d.ts_c.get)))
+      complete(design.map(d => DesignDetail(d.id.get, d.name, d.json, d.meta, d.ts_c.get)))
     }
   }
 
