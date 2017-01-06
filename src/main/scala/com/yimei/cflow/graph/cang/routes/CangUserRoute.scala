@@ -36,13 +36,15 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def addInvestorRoute: Route = post {
-    pathPrefix("user" / Segment / Segment ) { (instance_id, userId) =>
-      entity(as[AddUser]) { user =>
-//        val userInfo = UserInfo(user.password, Some(user.phone), Some(user.email), user.name)
-        complete(addInvestor(instance_id, userId, user))
-      }
-
+  /*
+   * 管理员添加用户
+   * url      localhost:9000/api/cang/user
+   * method   post
+   * body     {"username":"xl","password":"123456","name":"资金方业务","email":"asdf@qq.com","phone":"12345678912","instanceId":"66666666","className":"fundProvider"}
+   */
+  def adminAddUser: Route = post {
+    (path("user") & entity(as[AddUser])) { user =>
+        complete(addUser(user))
     }
   }
 
@@ -190,7 +192,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def route = financeSideEnterRoute ~ addInvestorRoute ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
+  def route = financeSideEnterRoute ~ adminAddUser ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
     adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
     adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute
 }

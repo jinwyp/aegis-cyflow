@@ -39,7 +39,9 @@ trait Config {
   val adminId = "systemAdmin-00000000!00000"
 
   val zjfyw = "fundProvider"
-  val zjfcw = "fundProviderAccountant"
+  val zjfcw = "fundProviderAccount"
+  val rzfyw = "financer"
+  val rzfcw = "financerAccount"
   
   //资金方业务组ID和财务组Id
   val fundGid = "1"
