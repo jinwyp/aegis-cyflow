@@ -1,6 +1,6 @@
 package com.yimei.cflow.api.http.client
 
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
+import com.yimei.cflow.api.http.models.UserModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
@@ -89,12 +89,13 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     )
   }
 
-  def getAllUserList(page: Int, pageSize: Int): Future[UserInfoList] = {
+  def getAllUserList(page: Int, pageSize: Int, dynamicQuery: String): Future[UserInfoList] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getAllUserInfo接口
     sendRequest(
       path = "api/alluser",
       paramters = Map("page" -> page.toString, "pageSize" -> pageSize.toString),
-      method = "get"
+      method = "post",
+      bodyEntity = Some(dynamicQuery)
     ) map { result =>
       result.parseJson.convertTo[UserInfoList]
     }

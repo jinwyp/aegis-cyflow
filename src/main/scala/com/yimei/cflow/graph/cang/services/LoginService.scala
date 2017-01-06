@@ -11,7 +11,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Meta, Result}
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity}
+import com.yimei.cflow.api.http.models.UserModel.{DynamicQueryUser, QueryUserResult, UserInfo, UserListEntity}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -122,10 +122,10 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员获取用户列表
-  def adminGetAllUser(page: Int, pageSize: Int): Future[Result[List[UserData]]] = {
+  def adminGetAllUser(page: Int, pageSize: Int, dynamicQuery: DynamicQueryUser): Future[Result[List[UserData]]] = {
     log.info(s"get into method adminGetAllUser")
     for {
-      userList <- getAllUserList(page, pageSize)
+      userList <- getAllUserList(page, pageSize, dynamicQuery.toJson.toString)
     } yield Result(data = Some(userList.datas), success = true, meta = Meta(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
   }
 
