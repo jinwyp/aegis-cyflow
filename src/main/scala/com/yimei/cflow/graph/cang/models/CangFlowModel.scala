@@ -2,15 +2,14 @@ package com.yimei.cflow.graph.cang.models
 
 import java.sql.Timestamp
 
-import spray.json.DefaultJsonProtocol
-import BaseFormatter._
 import com.yimei.cflow.api.models.user.{UserProtocol, State => UserState}
 import com.yimei.cflow.graph.cang.config.Config
+import spray.json.DefaultJsonProtocol
 
 object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
-  case class FileObj(name: String, originName: String, url: String, fileType:String = default )
-  implicit val fileObjFormat = jsonFormat4(FileObj)
+  case class FileObj(id: String, originName: String, fileType:String = default )
+  implicit val fileObjFormat = jsonFormat3(FileObj)
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
