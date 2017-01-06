@@ -39,8 +39,7 @@ class DeployRoute (proxy: ActorRef) extends CoreConfig {
       parameter("id".as[Long].?) { id =>
         entity(as[SaveDeploy]) { deploy =>
           //val jar = deploy.jar.getBytes
-          val deployEntity = DeployEntity(id, deploy.flow_type, jar, true, None)
-
+          complete("ok")
         }
       }
     }
