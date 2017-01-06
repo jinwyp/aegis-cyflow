@@ -50,13 +50,18 @@
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
                                     <!--<input id="inputCompanyName" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"-->
-                                           <!--ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请输入公司名称">-->
+                                           <!--ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请选择公司名称">-->
+                                    <!--<select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"-->
+                                            <!--ms-duplex="@companyList.party_name" ms-rules='{required:true}' data-required-message="请选择公司名称">-->
+                                        <!--<option value="" > - </option>-->
+                                        <!--<option ms-for="companyName in @companyList" ms-attr="{value: @companyName.party_name}" >{{companyName.companyName}} </option>-->
+                                    <!--</select>-->
                                     <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@companyList.party_name" ms-rules='{required:true}' data-required-message="请输入公司名称">
+                                            ms-duplex="@currentUser.companyName" ms-rules='{required:true}' data-required-message="请选择公司名称">
                                         <option value="" > - </option>
-                                        <option ms-for="companyName in @companyList" ms-attr="{value: @companyName.party_name}" >{{companyName.party_name}} </option>
+                                        <option ms-for="name in @companyList" ms-attr="{value: role.name}" >{{name.companyName}} </option>
                                     </select>
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.party_name}}</p>
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
