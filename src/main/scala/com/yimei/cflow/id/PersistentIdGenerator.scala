@@ -2,7 +2,7 @@ package com.yimei.cflow.id
 
 import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted, SaveSnapshotSuccess, SnapshotOffer}
-import com.yimei.cflow.api.models.id._
+import com.yimei.cflow.id.models._
 
 object PersistentIdGenerator {
   def props(name: String): Props = Props(new PersistentIdGenerator(name))
