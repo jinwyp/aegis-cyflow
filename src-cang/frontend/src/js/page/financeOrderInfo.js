@@ -181,22 +181,23 @@ var orderInfo = function () {
             // 贸易商财务 给出具体放款金额
             if (sessionUserRole === vm.role.traderAccountant){
 
-                vm.errorActualLoanValue = false;
+                if (vm.currentOrder.status === 'financingStep18'){
+                    vm.errorActualLoanValue = false;
 
-                if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
-                    vm.errorActualLoanValue = true;
-                    return ;
-                } else {
-                    additionalData.loanValue = vm.inputActualLoanValue
+                    if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
+                        vm.errorActualLoanValue = true;
+                        return ;
+                    } else {
+                        additionalData.loanValue = vm.inputActualLoanValue
 
-                    orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
-                        if (data.success) {
-                        } else {
-                            console.log(data.error);
-                        }
-                    })
+                        orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
+                            if (data.success) {
+                            } else {
+                                console.log(data.error);
+                            }
+                        })
+                    }
                 }
-
             }
 
 
