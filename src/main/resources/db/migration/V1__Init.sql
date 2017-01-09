@@ -137,3 +137,18 @@ create table asset(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE UNIQUE INDEX asset_index ON asset(asset_id);
 
+
+-- 保证金
+create table deposit (
+  id             BIGINT(20)  NOT NULL AUTO_INCREMENT,
+  flowId         VARCHAR(64) NOT NULL,
+  expectedAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  actuallyAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  state          VARCHAR(30) NOT NULL DEFAULT 'init',
+  memo           VARCHAR(1024)        DEFAULT NULL,
+  ts_c           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+
+
