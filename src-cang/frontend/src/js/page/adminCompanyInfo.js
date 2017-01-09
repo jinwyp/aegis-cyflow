@@ -95,6 +95,10 @@ var companyInfo = function() {
 
         addCompany :function(){
 
+        },
+
+        editCompany :function(){
+
         }
 
     });
