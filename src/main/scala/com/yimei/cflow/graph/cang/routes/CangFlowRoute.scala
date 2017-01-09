@@ -156,8 +156,7 @@ class CangFlowRoute extends AdminClient
   def flowDetail = get {
     pathPrefix("financeorders"/ Segment / Segment / Segment / Segment /Segment) { (action,user_id,party_class,instance_id,flowId) =>
     //获得流程信息
-
-      complete("success")
+      complete(cyDataCollection(flowId,party_class,instance_id,user_id))
     }
   }
 

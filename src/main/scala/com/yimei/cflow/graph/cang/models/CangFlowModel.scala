@@ -239,15 +239,13 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   /**
     * 还款交易记录
     */
-  case class Repayment(repaymentAmount:BigDecimal,                      //还款金额(万元？）todo 确认
+  case class Repayment(repaymentValue:BigDecimal,                      //还款金额(万元？）todo 确认
                        interestBearingCapital:BigDecimal,               //本次还款计息本金
                        nextInterestBearingCapital:BigDecimal,           //下次计息本金
-                       days:Int,                                        //计息天数
-                       interest:BigDecimal,                             //利息
-                       payer:String,                                    //付款方
-                       receiver:String                                  //收款方
+                       days:Long,                                        //计息天数
+                       interest:BigDecimal                             //利息
                       )
-  implicit val repaymentFormat = jsonFormat7(Repayment)
+  implicit val repaymentFormat = jsonFormat5(Repayment)
 
   /**
     *港口记录
@@ -255,7 +253,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   case class Delivery(redemptionAmount:BigDecimal,                        //放货吨数
                       deliveryTime:Timestamp ,                          //放货时间
                       fileList:List[FileObj],                           //放货文件
-                      sender:String,                                    //放货方
+                      sender:Option[String],                                    //放货方
                       goodsReceiveCompanyName:String                    //收货方
                      )
   implicit val deliveryFormat = jsonFormat5(Delivery)
@@ -265,13 +263,13 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
     *流程数据
     */
   case class FlowData(
-                    currentTask:Option[UserState],
-                    cargoOwner:Option[String],                          //货权（贸易商审核通过前为融资方，然后为贸易方）
-                    status:String,                                        //当前所在vertices
+                    currentTask:UserState,
+                    cargoOwner:String,                          //货权（贸易商审核通过前为融资方，然后为贸易方）
+                    status:List[String],                                        //当前所在vertices
                     loanValue:Option[BigDecimal],                         //实际放款金额
                     depositValue:Option[BigDecimal],                      //保证金金额
                     loanFundProviderInterestRate:Option[BigDecimal],      //资金方借款的利率
-                    harborConfirmAmount:Option[BigDecimal],               //港口确认金额
+                    harborConfirmAmount:Option[BigDecimal],               //港口确认吨数
                     redemptionAmount:Option[BigDecimal],                  //已赎回吨数
                     returnValue:Option[BigDecimal],                       //已归还金额
                     redemptionAmountLeft:Option[BigDecimal],              //待赎回吨数
@@ -279,7 +277,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                     depositList:Option[List[Deposit]],                    //保证金记录
                     repaymentList:Option[List[Repayment]],                //还款交易记录
                     deliveryList:Option[List[Delivery]],                  //放货记录
-                    fileList:Option[List[FileObj]]                        //该流程对应全部文件
+                    fileList:List[FileObj]                        //该流程对应全部文件
                    )
   implicit val flowDataFormat = jsonFormat15(FlowData)
 

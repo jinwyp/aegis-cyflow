@@ -30,7 +30,7 @@ var url = {
 
 var saveSessionInLocalStorage = function (jwt, user) {
     localStorage.setItem('feathers-jwt', jwt);
-    localStorage.setItem('sessionUserId', user._id);
+    localStorage.setItem('sessionUserId', user.userId);
     localStorage.setItem('sessionUserRole', user.role);
 }
 

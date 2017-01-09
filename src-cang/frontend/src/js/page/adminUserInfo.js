@@ -28,9 +28,12 @@ var userInfo = function() {
             email : '',
             mobilePhone : '',
             companyName : '',
-            belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
+            partyClass:'',
+            // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
         },
+        currentCompany : {},
+
         traderList : [],
         fundProviderList : [],
 
@@ -47,7 +50,20 @@ var userInfo = function() {
             inputCompanyName : '',
             inputUserRole:''
         },
-        isMYSCWValid : false,
+
+        selectCompany: function (e) {
+            var tempString2 = vm.currentCompany;
+            var tempCompany = JSON.parse(vm.currentCompany);
+            // console.log(tempCompany)
+            vm.currentUser.partyClass = tempCompany.partyClass;
+            vm.currentUser.companyName = tempCompany.companyName;
+            companyErr();
+        },
+
+        jsonStringfy : function(obj){
+            return JSON.stringify(obj)
+        },
+        // isMYSCWValid : false,
         successInputName : [],
         errorInputName : [],
         addValidate : {
@@ -65,35 +81,46 @@ var userInfo = function() {
 
             },
             onValidateAll: function (reasons) {
-                console.log(vm.isMYSCWValid);
+                // console.log(vm.isMYSCWValid);
 
                 var isValid = true;
-                if(vm.currentUser.role === role.traderAccountant || vm.currentUser.role === role.fundProviderAccountant){
-                    if (reasons.length || !vm.isMYSCWValid ) {
+
+                if(vm.currentUser.partyClass === 'trader' || vm.currentUser.partyClass === 'fundProvider'){
+                    if (reasons.length) {
                         isValid = false;
                     }
                 }else{
-                    if (reasons.length ) {
+                    if (reasons.length === 1 ) {
+
+                        reasons.splice('请选择用户类型');
+                        isValid = true;
+                    }else{
                         isValid = false;
                     }
+
                 }
 
                 if(!isValid){
                     console.log('表单项没有通过');
+                    console.log(reasons);
                     $("input").focus().blur();
-                    $("select").focus().blur()
+                    $("select").focus().blur();
+                    companyErr();
                 } else{
                     var user = {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
                         mobilePhone : vm.currentUser.mobilePhone,
                         companyName : vm.currentUser.companyName,
+                        partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
                     };
 
-                    if (vm.currentUser.belongToUser) {
-                        user.belongToUser = vm.currentUser.belongToUser
-                    }
+                    console.log(user);
+
+                    // if (vm.currentUser.belongToUser) {
+                    //     user.belongToUser = vm.currentUser.belongToUser
+                    // }
 
                     if (vm.pageShowStatus === 'add') {
                         userService.addNewUser(user).done(function( data, textStatus, jqXHR ) {
@@ -122,29 +149,14 @@ var userInfo = function() {
             }
         },
 
+
         addUser :function(){
-            console.log(vm.currentUser.role, vm.currentUser.belongToUser)
+            console.log(vm.currentUser.companyName)
         },
-        isValid : checkMYS
+        // isValid : checkMYS
 
     });
 
-    function checkMYS() {
-
-        if (vm.currentUser.role === role.traderAccountant){
-            if (vm.currentUser.belongToUser){
-                vm.isMYSCWValid = true;
-            }else{
-                vm.isMYSCWValid = false;
-            }
-        }else if (vm.currentUser.role === role.fundProviderAccountant){
-            if (vm.currentUser.belongToUser){
-                vm.isMYSCWValid = true;
-            }else{
-                vm.isMYSCWValid = false;
-            }
-        }
-    }
 
     function getUserInfo() {
         userService.getUserInfoById(userId).done(function (data, textStatus, jqXHR) {
@@ -193,12 +205,26 @@ var userInfo = function() {
     getCompanies();
 
 
+    function companyErr() {
+        if(vm.currentUser.companyName === ''){
+            $('.addCompanyNameErr').addClass('has-error');
+            $('.addCompanyNameErrMess').css('display','block');
+            vm.errorMessage.inputCompanyName = "请选择公司名称"
+        }else{
+            $('.addCompanyNameErr').removeClass('has-error');
+            $('.addCompanyNameErrMess').css('display','none');
+            vm.errorMessage.inputCompanyName = ""
+        }
+    }
+
+
+
     if (urlShowStatus === 'add'){
         vm.pageShowStatus = 'add';
         getUsersOfRoles()
     }else if (urlShowStatus === 'edit'){
         vm.pageShowStatus = 'edit';
-        getUserInfo()
+        getUserInfo();
         getUsersOfRoles()
     }else {
         vm.pageShowStatus = 'info';

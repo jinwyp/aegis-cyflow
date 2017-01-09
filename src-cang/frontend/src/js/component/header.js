@@ -19,13 +19,13 @@ var userService = require('../service/user.js') ;
 var header = function() {
 
     if (!rawToken || !sessionUserId){
-        window.location.href = '/warehouse/admin/login'
+        // window.location.href = '/warehouse/admin/login'
     }
 
     // 全局AJAX错误处理
     $( document ).ajaxError(function(event, jqXHR, settings, thrownError) {
         if (jqXHR.status === 401 || jqXHR.status === 403){
-            window.location.href = '/warehouse/admin/login'
+            // window.location.href = '/warehouse/admin/login'
         }else{
             var data = jqXHR.responseText;
             if (jqXHR.getResponseHeader('content-type').indexOf('json') > -1){
@@ -38,12 +38,11 @@ var header = function() {
     $( document ).ajaxSuccess(function( event, jqXHR, settings, data ) {
         if (!data.success) {
             if (data.error.code === 401 || data.error.code === 403){
-                window.location.href = '/warehouse/admin/login'
+                // window.location.href = '/warehouse/admin/login'
             }else {
                 $.notify(data.error.message, 'error');
             }
         }
-
     });
 
 
