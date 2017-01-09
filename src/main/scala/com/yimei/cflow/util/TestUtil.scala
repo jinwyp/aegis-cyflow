@@ -6,22 +6,22 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Cancellable}
 import com.yimei.cflow.ServiceTest._
 import com.yimei.cflow.api.models.flow.CommandFlowGraph
 import com.yimei.cflow.api.models.group.{CommandClaimTask, CommandQueryGroup, State}
-import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.api.models.flow._
 import com.yimei.cflow.graph.ying.YingConfig._
-import com.yimei.cflow.api.services.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
+import com.yimei.cflow.config.CoreConfig._
+//import com.yimei.cflow.api.services.ServiceProxy.{coreExecutor => _, coreSystem => _, coreTimeout => _, _}
+import com.yimei.cflow.api.services.ServiceProxy._
 import com.yimei.cflow.api.models.user.{CommandQueryUser, CommandTaskSubmit, CommandUserTask, State => UserState}
-import com.yimei.cflow.api.services.ServiceProxy
 
 import scala.concurrent.duration._
 
 /**
   * Created by hary on 16/12/7.
   */
-object TestUtil extends CoreConfig {
+object TestUtil{
 
-  implicit val testTimeout = coreTimeout
-  implicit val testEc = coreExecutor
+//  implicit val testTimeout = coreTimeout
+//  implicit val testEc = coreExecutor
 
   def test(flowType: String, proxy: ActorRef, testClient: ActorRef, userType: String, userId: String,
            pUserType: String, pUserId: String, pGroupType: String, pGroupId: String) = {

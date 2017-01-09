@@ -6,7 +6,7 @@ import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, CommandFlowState, CommandHijack, CommandUpdatePoints, DataPoint, Graph, Command => FlowCommand, State => FlowState}
 import com.yimei.cflow.api.models.group.{Command => GroupCommand, State => GroupState, _}
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, Command => UserCommand, State => UserState}
-import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.id.models._
 
@@ -16,11 +16,11 @@ import scala.concurrent.Future
   * Created by hary on 16/12/6.
   */
 
-object ServiceProxy extends CoreConfig {
+object ServiceProxy {
 
 
-  implicit val testTimeout = coreTimeout
-  implicit val testEc = coreExecutor
+//  implicit val testTimeout = coreTimeout
+//  implicit val testEc = coreExecutor
 
   /**
     *

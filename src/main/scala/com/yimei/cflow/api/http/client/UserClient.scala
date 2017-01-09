@@ -7,6 +7,7 @@ import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 

@@ -10,13 +10,14 @@ import com.yimei.cflow.api.http.models.ResultModel._
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by wangqi on 16/12/27.
   */
 trait MyExceptionHandler extends ResultProtocol with SprayJsonSupport {
 
-  this: {val coreSystem:ActorSystem} =>
+//  this: {val coreSystem:ActorSystem} =>
 
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)

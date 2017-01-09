@@ -21,6 +21,7 @@ import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+import com.yimei.cflow.config.CoreConfig._
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global

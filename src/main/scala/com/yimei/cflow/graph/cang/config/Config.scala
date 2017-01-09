@@ -8,9 +8,9 @@ import com.typesafe.config.ConfigFactory
   * Created by wangqi on 16/12/26.
   */
 trait Config {
-  implicit val coreSystem = ActorSystem("ClientSystem")
-  implicit val coreExecutor = coreSystem.dispatcher
-  implicit val coreMaterializer = ActorMaterializer()
+//  implicit val coreSystem = ActorSystem("FlowSystem")
+//  implicit val coreExecutor = coreSystem.dispatcher
+//  implicit val coreMaterializer = ActorMaterializer()
 
   private val config = ConfigFactory.load()
   val url = config.getString("server.url")

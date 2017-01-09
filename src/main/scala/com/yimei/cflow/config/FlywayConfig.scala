@@ -1,12 +1,13 @@
 package com.yimei.cflow.config
 
 import org.flywaydb.core.Flyway
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 16/12/2.
   */
 
-trait FlywayConfig extends CoreConfig {
+trait FlywayConfig {
 
   private val flyway = new Flyway()
   flyway.setDataSource(

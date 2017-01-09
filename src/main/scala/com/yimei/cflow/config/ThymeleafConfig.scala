@@ -11,11 +11,12 @@ import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.FileTemplateResolver
 
 import scala.concurrent.Future
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 17/1/5.
   */
-object ThymeleafConfig extends CoreConfig{
+object ThymeleafConfig {
 
   val templateResolver = new FileTemplateResolver();
   val prefix = "src/main/resources/templates"

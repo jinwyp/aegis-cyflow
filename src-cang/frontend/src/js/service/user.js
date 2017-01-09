@@ -248,7 +248,6 @@ exports.getCompanyList = function (query){
 
 };
 
-
 exports.addNewCompany = function (company){
 
     var params = jQuery.extend({
@@ -269,21 +268,6 @@ exports.addNewCompany = function (company){
 
 };
 
-exports.updateCompanyInfoById = function (companyId, company){
-
-    var params = jQuery.extend({}, company);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.companyList + '/' + companyId,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
 exports.getCompanyInfoById = function (companyId, query){
 
     var params = jQuery.extend({}, query);
@@ -299,3 +283,19 @@ exports.getCompanyInfoById = function (companyId, query){
     });
 
 };
+exports.updateCompanyInfoById = function (companyId, company){
+
+    var params = jQuery.extend({}, company);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList + '/' + companyId,
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+
+    });
+
+};
+

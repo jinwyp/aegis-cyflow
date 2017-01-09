@@ -13,6 +13,7 @@ import com.yimei.cflow.graph.ying.YingConfig._
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http.{ResourceRoute, _}
 import com.yimei.cflow.organ.routes.{GroupRoute, UserRoute}
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 
 
@@ -40,6 +41,6 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes)
 
-  implicit val mysystem = coreSystem // @todo fixme
+//  implicit val mysystem = coreSystem // @todo fixme
   Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
 }

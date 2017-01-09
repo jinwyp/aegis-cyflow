@@ -10,6 +10,7 @@ import akka.http.scaladsl.model.ContentTypes.`text/html(UTF-8)`
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Directives.complete
 import akka.util.ByteString
+import com.yimei.cflow.config.CoreConfig._
 import akka.stream.scaladsl.Source
 
 import scala.concurrent.Future
@@ -17,7 +18,7 @@ import scala.concurrent.Future
 /**
   * Created by hary on 17/1/3.
   */
-object FreemarkerConfig extends CoreConfig {
+object FreemarkerConfig {
 
   val ftlConfig = new Configuration(Configuration.VERSION_2_3_23);
   ftlConfig.setDirectoryForTemplateLoading(new File("src-cang/ftl"));
