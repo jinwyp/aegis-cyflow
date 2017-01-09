@@ -44,7 +44,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * body     {"username":"xl","password":"123456","name":"资金方业务","email":"asdf@qq.com","phone":"12345678912","instanceId":"66666666","className":"fundProvider"}
    */
   def adminAddUser: Route = post {
-    (path("user") & entity(as[AddUser])) { user =>
+    (path("users") & entity(as[AddUser])) { user =>
       myRequiredSession { s =>
         complete(addUser(user))
       }

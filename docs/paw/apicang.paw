@@ -222,7 +222,7 @@
     <object type="LMREQUEST" id="z119">
         <attribute name="body" type="string">[{"data":{"json":"{\\"username\\":\\"test\\",\\"password\\":\\"123456\\",\\"name\\":\\"\\\\u8d44\\\\u91d1\\\\u65b9\\\\u4e1a\\\\u52a1\\",\\"email\\":\\"asdf@qq.com\\",\\"phone\\":\\"12345678912\\",\\"instanceId\\":\\"66666666\\",\\"className\\":\\"fundProvider\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">7FE7A497-C92F-4EB5-9FA9-97F03EB97D35</attribute>
-        <attribute name="url" type="string">localhost:9000/api/cang/user</attribute>
+        <attribute name="url" type="string">localhost:9000/api/cang/users</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -296,7 +296,7 @@
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z123"></relationship>
     </object>
     <object type="LMREQUEST" id="z125">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"newPassword\\":\\"654321\\",\\"oldPassword\\":\\"123456\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"newPassword\\":\\"1234567\\",\\"oldPassword\\":\\"123456\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">4D103691-3593-4506-AD8A-96A0A60FF525</attribute>
         <attribute name="url" type="string">http://localhost:9000/api/cang/sessionuser/password</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
