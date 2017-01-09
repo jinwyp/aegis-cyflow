@@ -23,11 +23,12 @@ trait Session {
       "instanceId" -> ms.instanceId,
       "companyName" -> ms.companyName),
     (msm: Map[String, String]) => Try {
+      val gid = if(msm.get("gid").get == "") None else Some(msm.get("gid").get)
       MySession(
         msm.get("name").get,
         msm.get("id").get,
         msm.get("party").get,
-        Some(msm.get("gid").get),
+        gid,
         msm.get("instanceId").get,
         msm.get("companyName").get)}
   )

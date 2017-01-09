@@ -185,7 +185,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     path("sessionuser") {
       myRequiredSession { s =>
         import scala.concurrent.ExecutionContext.Implicits.global
-        val role = if(!s.gid.isDefined || s.gid.get == "1") s.party else s.party + "Accountant"
+        val role = if(!s.gid.isDefined  || s.gid.get == "null" || s.gid.get == "1") s.party else s.party + "Accountant"
         val result = for {
           info <- getUserInfo(s.party, s.instanceId, s.userId)
         } yield Result[UserData](data = Some(UserData(userId = s.userId, username = s.userName, email = info.userInfo.email.getOrElse(""), mobilePhone = info.userInfo.phone.getOrElse(""), role = role, companyId = s.instanceId, companyName = s.companyName)))
@@ -204,10 +204,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def userModifyPasswordRoute: Route = put {
     (path("sessionuser" / "password") & entity(as[UserChangePwd])) { user =>
       myRequiredSession { session =>
-        userModifyPassword(session.party, session.instanceId, session.userId, user)
-        myInvalidateSession {
-          complete(Result(data = Some("success")))
-        }
+        complete(userModifyPassword(session.party, session.instanceId, session.userId, user))
       }
     }
   }
