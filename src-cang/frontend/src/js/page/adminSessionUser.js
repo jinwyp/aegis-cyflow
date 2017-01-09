@@ -80,7 +80,7 @@ var sessionUser = function() {
                         })
                     }
                     if (vm.pageShowStatus === 'password') {
-                        userService.modifyPassword(vm.currentUser._id, vm.modifyPassword.oldPwd, vm.modifyPassword.newPwd).done(function (data, textStatus, jqXHR) {
+                        userService.updateSessionUserPassword(vm.modifyPassword.oldPwd, vm.modifyPassword.newPwd).done(function (data, textStatus, jqXHR) {
                             if (data.success) {
                                 $.notify("密码修改成功!", 'success');
                             }

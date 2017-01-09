@@ -25,7 +25,7 @@ var header = function() {
     // 全局AJAX错误处理
     $( document ).ajaxError(function(event, jqXHR, settings, thrownError) {
         if (jqXHR.status === 401 || jqXHR.status === 403){
-            // window.location.href = '/warehouse/admin/login'
+            window.location.href = '/warehouse/admin/login'
         }else{
             var data = jqXHR.responseText;
             if (jqXHR.getResponseHeader('content-type').indexOf('json') > -1){
