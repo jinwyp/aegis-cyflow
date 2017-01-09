@@ -98,6 +98,22 @@ exports.getSessionUser = function (query){
     }
 };
 
+exports.updateSessionUserInfo = function (user){
+
+    var params = jQuery.extend({}, user);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session,
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
+
 exports.getUserList = function (query){
 
     var params = jQuery.extend({}, query);
