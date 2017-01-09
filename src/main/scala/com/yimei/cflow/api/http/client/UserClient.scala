@@ -58,14 +58,14 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     }
   }
 
-  def getLoginUserInfo(userInfo: String): Future[MySession] = {
+  def getLoginUserInfo(userInfo: String): Future[UserGroupInfo] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getLoginUserInfo接口
     sendRequest(
       path = "api/login",
       method = "post",
       bodyEntity = Some(userInfo)
     ) map { result =>
-      result.parseJson.convertTo[MySession]
+      result.parseJson.convertTo[UserGroupInfo]
     }
   }
 

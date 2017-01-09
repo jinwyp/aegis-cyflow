@@ -61,6 +61,7 @@ var companyInfo = function() {
                     $("input").focus().blur();
                     $("select").focus().blur()
                 } else{
+
                     var user = {
                         companyName : vm.currentCompany.companyName,
                         partyClass : vm.currentCompany.partyClass
@@ -72,7 +73,7 @@ var companyInfo = function() {
                             if (data.success){
                                 vm.successInputName = [];
                                 vm.errorInputName = [];
-                                $.notify("创建用户成功!", 'success');
+                                $.notify("创建成功!", 'success');
                             }
                         })
                     }
@@ -82,7 +83,7 @@ var companyInfo = function() {
                             if (data.success){
                                 vm.successInputName = [];
                                 vm.errorInputName = [];
-                                $.notify("用户修改信息成功!", 'success');
+                                $.notify("修改信息成功!", 'success');
                             }
                         })
                     }
@@ -92,8 +93,7 @@ var companyInfo = function() {
         },
 
         addCompany :function(){
-            console.log(vm.currentCompany.partyClass)
-            console.log(vm.currentCompany.companyName)
+
         }
 
     });

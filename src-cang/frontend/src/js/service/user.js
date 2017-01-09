@@ -74,6 +74,7 @@ exports.logout = function (user){
     window.location.href = '/warehouse/admin/login'
 };
 
+
 exports.getSessionUser = function (query){
 
     if (sessionUserId){
@@ -83,7 +84,7 @@ exports.getSessionUser = function (query){
             headers : headers,
             contentType : 'application/json',
             dataType : 'json',
-            url      : url.userList + '/' + sessionUserId,
+            url      : url.session ,
             method   : 'GET',
             data     : params
 
@@ -96,6 +97,40 @@ exports.getSessionUser = function (query){
         }
     }
 };
+
+exports.updateSessionUserInfo = function (user){
+
+    var params = jQuery.extend({}, user);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session,
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
+exports.updateSessionUserPassword = function (oldPassword, newPassword){
+
+    var params = jQuery.extend({}, {
+        oldPassword : oldPassword,
+        newPassword : newPassword
+    });
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session + '/password',
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
 
 exports.getUserList = function (query){
 
@@ -196,6 +231,8 @@ exports.modifyPassword = function (userId, oldPassword, newPassword){
 
 
 
+
+
 exports.getCompanyList = function (query){
 
     var params = jQuery.extend({}, query);
@@ -215,8 +252,8 @@ exports.getCompanyList = function (query){
 exports.addNewCompany = function (company){
 
     var params = jQuery.extend({
-        party_name : '',
-        party_class : ''
+        companyName : '',
+        partyClass : ''
     }, company);
 
 

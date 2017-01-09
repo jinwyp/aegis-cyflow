@@ -11,7 +11,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, PagerInfo, Result}
-import com.yimei.cflow.api.http.models.UserModel.{DynamicQueryUser, QueryUserResult, UserInfo, UserListEntity}
+import com.yimei.cflow.api.http.models.UserModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -207,7 +207,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, phone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -242,7 +242,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //用户登录
-  def getLoginUserInfo(userLogin: UserLogin): Future[MySession] = {
+  def getLoginUserInfo(userLogin: UserLogin): Future[UserGroupInfo] = {
     log.info(s"get into method getLoginUserInfo, username:${userLogin.username}")
     getLoginUserInfo(userLogin.toJson.toString)
   }
@@ -295,6 +295,10 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       qur <- getPartyUser
       ur <- update(qur)
     } yield { Result(data = Some(ur), success = true)}
+  }
+
+  def getUserInfo(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
+    getSpecificPartyUser(party, instance_id, userId)
   }
 
   //管理员查询用户列表

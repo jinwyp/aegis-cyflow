@@ -53,7 +53,7 @@ var login = function() {
                         if (data.success){
                             console.log('登录成功', data);
 
-                            tokenService.saveSessionInLocalStorage(data.data.token, data.data.data)
+                            tokenService.saveSessionInLocalStorage('', data.data)
                             window.location.href = '/warehouse/admin/home/finance'
                         }else{
                             vm.errorMessage.ajax = data.error.message;
