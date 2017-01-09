@@ -518,7 +518,7 @@ object FlowService extends UserModelProtocol
           startFlow.basicInfo.applyUserPhone,
           Some(startFlow.basicInfo.applyUserPhone),
           None,
-          startFlow.basicInfo.applyUserName,
+          startFlow.basicInfo.applyUserName.get,
           startFlow.basicInfo.applyCompanyName,
           startFlow.basicInfo.applyCompanyId
         )
