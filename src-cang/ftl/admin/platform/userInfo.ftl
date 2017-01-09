@@ -46,7 +46,7 @@
                             </div>
                         </fieldset>
                         <fieldset>
-                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
+                            <div class="form-group addCompanyNameErr" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
                                     <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
@@ -57,7 +57,7 @@
                                     </select>
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>
                                 </div>
-                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
+                                <div class="col-sm-5 help-block addCompanyNameErrMess" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
                         </fieldset>
                         <fieldset ms-visible="@currentUser.partyClass === 'trader' || @currentUser.partyClass === 'fundProvider'">
