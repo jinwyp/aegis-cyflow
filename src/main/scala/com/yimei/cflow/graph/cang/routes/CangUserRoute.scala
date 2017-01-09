@@ -12,6 +12,7 @@ import com.yimei.cflow.api.util.DBUtils
 import DBUtils._
 import akka.http.scaladsl.model.headers.HttpOriginRange.*
 import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
+import com.yimei.cflow.graph.cang.models.UserModel.UserData
 
 import scala.concurrent.Future
 import com.yimei.cflow.graph.cang.services.LoginService._
@@ -135,8 +136,8 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def userModifySelfRoute: Route = post {
     (path("user" / "info") & entity(as[UpdateSelf])) { user =>
-      myRequiredSession { session =>
-        complete(userModifySelf(session.party, session.instanceId, session.userId, user))
+      myRequiredSession { s =>
+        complete(userModifySelf(s.party, s.instanceId, s.userId, user))
       }
     }
   }
@@ -149,11 +150,45 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def loginRoute: Route = post {
     (path("auth" / "login") & entity(as[UserLogin])) { user =>
-      import scala.concurrent.ExecutionContext.Implicits.global
-      onSuccess(getLoginUserInfo(user)) { s =>
-        mySetSession(s) {
-          complete(Result[LoginRespModel](data = Some(LoginRespModel(token = s.token, data = UserData(userId = s.userId, username = s.userName, email = s.email, mobilePhone = s.phone, role = s.party, companyId = "", companyName = ""))), success = true))
+
+      onSuccess(getLoginUserInfo(user)) { info =>
+        val role = if(!info.gid.isDefined || info.gid.get == "1") info.party else info.party + "Accountant"
+        val session = MySession(userName = info.userName, userId = info.userId, party = info.party, gid = info.gid, instanceId = info.instanceId, companyName = info.companyName)
+        mySetSession(session) {
+          complete(Result[UserData](data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, mobilePhone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName))))
         }
+      }
+    }
+  }
+
+  /*
+   * 用户退出登录
+   * url      http://localhost:9000/api/cang/auth/logout
+   * method   get
+   */
+  def logoutRoute: Route = get {
+    path("auth" / "logout") {
+      myInvalidateSession {
+        complete(Result(data = Some("success")))
+      }
+    }
+  }
+
+  /*
+   * 获取用户信息
+   * url      http://localhost:9000/api/cang/info
+   * method   get
+   */
+  def getInfoRoute: Route = get {
+    path("info") {
+      myRequiredSession { s =>
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val role = if(!s.gid.isDefined || s.gid.get == "1") s.party else s.party + "Accountant"
+        val result = for {
+          info <- getUserInfo(s.party, s.instanceId, s.userId)
+        } yield Result[UserData](data = Some(UserData(userId = s.userId, username = s.userName, email = info.userInfo.email.getOrElse(""), mobilePhone = info.userInfo.phone.getOrElse(""), role = role, companyId = s.instanceId, companyName = s.companyName)))
+
+        complete(result)
       }
     }
   }
@@ -167,7 +202,10 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def userModifyPasswordRoute: Route = post {
     (path("user" / "password") & entity(as[UserChangePwd])) { user =>
       myRequiredSession { session =>
-        complete(userModifyPassword(session.party, session.instanceId, session.userId, user))
+        userModifyPassword(session.party, session.instanceId, session.userId, user)
+        myInvalidateSession {
+          complete(Result(data = Some("success")))
+        }
       }
     }
   }
@@ -194,7 +232,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   def route = financeSideEnterRoute ~ adminAddUser ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
     adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
-    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute
+    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute ~ getInfoRoute ~ logoutRoute
 }
 
 object CangUserRoute {

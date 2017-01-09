@@ -9,29 +9,25 @@ import com.softwaremill.session.SessionOptions._
 import spray.json.DefaultJsonProtocol
 import scala.util.Try
 
-case class MySession(token: String, userName: String, userId: String, email: String, phone: String, party: String, instanceId: String, companyName: String)
+case class MySession(userName: String, userId: String, party: String, gid: Option[String], instanceId: String, companyName: String)
 
 trait Session {
   val sessionConfig = SessionConfig.fromConfig()
   implicit val sessionManager = new SessionManager[MySession](sessionConfig)
   implicit def serializer: SessionSerializer[MySession, String] = new MultiValueSessionSerializer(
     (ms: MySession) => Map(
-      "token" -> ms.token,
       "name" -> ms.userName,
       "id" -> ms.userId,
-      "email" -> ms.email,
-      "phone" -> ms.phone,
       "party" -> ms.party,
+      "gid" -> ms.gid.getOrElse(""),
       "instanceId" -> ms.instanceId,
       "companyName" -> ms.companyName),
     (msm: Map[String, String]) => Try {
       MySession(
-        msm.get("token").get,
         msm.get("name").get,
         msm.get("id").get,
-        msm.get("email").get,
-        msm.get("phone").get,
         msm.get("party").get,
+        Some(msm.get("gid").get),
         msm.get("instanceId").get,
         msm.get("companyName").get)}
   )
@@ -42,5 +38,5 @@ trait Session {
 }
 
 trait SessionProtocol extends DefaultJsonProtocol {
-  implicit val mySessionFormat = jsonFormat8(MySession)
+  implicit val mySessionFormat = jsonFormat6(MySession)
 }
