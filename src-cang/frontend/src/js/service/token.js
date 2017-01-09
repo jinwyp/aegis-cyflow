@@ -24,6 +24,7 @@ var url = {
     userList : prefix + '/users',
     companyList : prefix + '/companies',
     login : prefix + '/auth/login',
+    session : prefix + '/sessionuser',
     password : prefix + '/user/password'
 };
 

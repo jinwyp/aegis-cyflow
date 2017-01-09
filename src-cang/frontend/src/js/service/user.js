@@ -74,6 +74,7 @@ exports.logout = function (user){
     window.location.href = '/warehouse/admin/login'
 };
 
+
 exports.getSessionUser = function (query){
 
     if (sessionUserId){
@@ -83,7 +84,7 @@ exports.getSessionUser = function (query){
             headers : headers,
             contentType : 'application/json',
             dataType : 'json',
-            url      : url.userList + '/' + sessionUserId,
+            url      : url.session ,
             method   : 'GET',
             data     : params
 
