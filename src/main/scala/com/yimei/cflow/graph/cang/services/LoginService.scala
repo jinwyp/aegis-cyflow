@@ -158,8 +158,16 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   def adminGetSpecificCompany(partyClass: String, instanceId: String): Future[Result[PartyInstanceEntity]] = {
     log.info(s"get into method adminGetSpecificCompany, partyClass:${partyClass}, instanceId:${instanceId}")
 
+    def deal(entity: PartyInstanceEntity) = {
+      PartyInstanceEntity(entity.id, entity.partyClass, entity.partyClass + "/" + entity.instanceId, entity.companyName, entity.disable, entity.ts_c)
+    }
+
+    val result: Future[List[PartyInstanceEntity]] = queryPartyInstance(partyClass, instanceId) map { (sq: List[PartyInstanceEntity]) =>
+      sq.map(deal(_))
+    }
+
     for {
-      pi <- queryPartyInstance(partyClass, instanceId)
+      pi <- result
     } yield Result(data = Some(pi.head), success = true)
   }
 
