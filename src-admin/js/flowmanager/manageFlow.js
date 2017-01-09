@@ -112,10 +112,7 @@
         };
 
         vm.points = [];
-
         vm.groups = [];
-        vm.v2g = [];
-        vm.g2v = [];
         vm.edges = [];
         vm.vertices = [];
 
@@ -264,10 +261,9 @@
         }
 
 
-        vm.formatterArrayToObject = function (){
-
+        vm.convertData = function () {
+            vm.ouputData = formatter.cyArrayToRawArray(vm.node)
         }
-
 
 
 

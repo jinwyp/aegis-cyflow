@@ -76,4 +76,6 @@ var point = {
 
        }
    }
+
+   window.formatter = formatter;
 })();
