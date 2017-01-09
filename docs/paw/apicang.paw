@@ -322,7 +322,7 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z125"></relationship>
     </object>
     <object type="LMREQUEST" id="z127">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"email\\":\\"asdfasdf@qq.com\\",\\"phone\\":\\"98765432111\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"email\\":\\"asdfasdf@qq.com\\",\\"mobilePhone\\":\\"98765432111\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">2AF37053-65FD-4645-87FD-E63AF475AC7D</attribute>
         <attribute name="url" type="string">http://localhost:9000/api/cang/sessionuser</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
