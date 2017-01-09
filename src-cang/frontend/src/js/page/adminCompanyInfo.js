@@ -61,6 +61,7 @@ var companyInfo = function() {
                     $("input").focus().blur();
                     $("select").focus().blur()
                 } else{
+
                     var user = {
                         companyName : vm.currentCompany.companyName,
                         partyClass : vm.currentCompany.partyClass
@@ -92,8 +93,7 @@ var companyInfo = function() {
         },
 
         addCompany :function(){
-            console.log(vm.currentCompany.partyClass)
-            console.log(vm.currentCompany.companyName)
+
         }
 
     });
