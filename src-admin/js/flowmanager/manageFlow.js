@@ -3,43 +3,52 @@
  */
 
 
-(function(window, $, cytoscape, angular){
+(function(window, jQuery, cytoscape, angular){
+    'use strict';
 
-    $.ajaxSettings.async = false;
+    jQuery.ajaxSettings.async = false;
+
+
+
+
 
 
     var testData1 = {
-        "initial": "V0",
-        "graphJar": "com.yimei.cflow.graph.money.MoneyGraphJar",
-        "timeout": 100,
-        "persistent": true,
+        "initial"    : "START",
+        "graphJar"   : "com.yimei.cflow.graph.money.MoneyGraphJar",
+        "timeout"    : 100,
+        "persistent" : true,
 
-        "vertices": {
-            "V0": { "description":"发起申请","program": "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"}
+        "vertices" : {
+            "START" : {
+                "description" : "发起申请",
+                "program"     : "import com.yimei.cflow.api.models.flow._; (state: State) => Seq(Arrow(\"V1\", Some(\"E1\")))"
+            }
         },
-        "edges": {
-            "E1": {
-                "name": "E1",
-                "begin": "V0",
-                "end": "V1",
-                "userTasks": [],
-                "partGTasks": [],
-                "partUTasks": [],
-                "autoTasks": []
-            } }
+        "edges"    : {
+            "E1" : {
+                "name"       : "E1",
+                "begin"      : "V0",
+                "end"        : "V1",
+                "userTasks"  : [],
+                "partGTasks" : [],
+                "partUTasks" : [],
+                "autoTasks"  : []
+            }
+        }
     };
 
 
 
 
 
-    angular.module('chartApp', []);
+    angular.module('flowApp', []);
 
-    angular.module('chartApp').controller('formController', formController);
+    angular.module('flowApp').controller('vertexController', vertexController);
 
 
-    function formController ($scope){
-        vm = this;
+    function vertexController ($scope){
+        var vm = this;
 
         var cytoscapeChart;
         var formattedData;
@@ -337,7 +346,7 @@
 
         var app = {
             init : function(){
-                $.getJSON('./json/data99.json', function(resultData){
+                jQuery.getJSON('./json/data99.json', function(resultData){
                     formattedData = resultData;
                     
                 })
