@@ -29,8 +29,9 @@ var userList = function() {
             countPerPage : 10,
             changePageNo : function(currentPageNo, skip, countPerPage){
                 var query = {
-                    $limit: countPerPage,
-                    $skip : skip
+                    count: countPerPage,
+                    offset : skip,
+                    page : currentPageNo
                 };
 
                 getUsers(query)
@@ -56,6 +57,10 @@ var userList = function() {
 
     function getUsers(query){
         query = query || {};
+
+        if (vm.searchQuery.username) query.username = vm.searchQuery.username;
+        if (vm.searchQuery.companyName) query.companyName = vm.searchQuery.companyName;
+
 
         userService.getUserList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){
