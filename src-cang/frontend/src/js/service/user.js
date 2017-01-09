@@ -113,6 +113,24 @@ exports.updateSessionUserInfo = function (user){
 
 };
 
+exports.updateSessionUserPassword = function (oldPassword, newPassword){
+
+    var params = jQuery.extend({}, {
+        oldPassword : oldPassword,
+        newPassword : newPassword
+    });
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session + '/password',
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
 
 exports.getUserList = function (query){
 
