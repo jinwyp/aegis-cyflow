@@ -5,12 +5,13 @@ import akka.stream.ActorMaterializer
 import com.github.swagger.akka._
 import com.yimei.cflow.config.CoreConfig
 import io.swagger.models.auth.BasicAuthDefinition
+import com.yimei.cflow.config.CoreConfig._
 import io.swagger.models.{ExternalDocs, Tag}
 import com.github.swagger.akka.model.`package`.Info
 
 import scala.reflect.runtime.{universe => ru}
 
-class SwaggerDocService(system: ActorSystem) extends SwaggerHttpService with HasActorSystem with CoreConfig {
+class SwaggerDocService(system: ActorSystem) extends SwaggerHttpService with HasActorSystem  {
 
   override implicit val actorSystem: ActorSystem = system
   override implicit val materializer: ActorMaterializer = coreMaterializer

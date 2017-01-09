@@ -4,6 +4,7 @@ import com.yimei.cflow.api.models.database.FlowDBModel.FlowInstanceEntity
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.util.HttpUtil._
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 

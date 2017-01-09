@@ -3,14 +3,14 @@ package com.yimei.cflow.engine.routes
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
 /**
   * Created by hary on 16/12/28.
   */
-class DeployRoute (proxy: ActorRef) extends CoreConfig {
+class DeployRoute (proxy: ActorRef) {
 
 
   // POST /deploy/:flowType  + fileupload

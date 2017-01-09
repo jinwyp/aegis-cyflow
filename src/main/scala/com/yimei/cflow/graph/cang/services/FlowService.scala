@@ -17,6 +17,7 @@ import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
@@ -58,7 +59,7 @@ object FlowService extends UserModelProtocol
         val jgUser = request[String, QueryUserResult](path = "api/user", pathVariables = Array(jgf, tass.supervisorCompanyId, tass.supervisorUserId))
 
         val zjUser: Future[UserGroupEntity] = request[String, Seq[UserGroupEntity]](path = "api/validateugroup", pathVariables = Array(zjf, tass.fundProviderCompanyId, tass.fundProviderUserId, fundGid)) map { uq =>
-          log.info("{}", uq.length)
+          log.info("!!!!!!!!!!!{}", uq)
           uq.length match {
             case 1 => uq(0)
             case _ => throw BusinessException("CompanyId:" + tass.fundProviderCompanyId + "，userId:" + tass.fundProviderUserId + " 有多个资金方业务人员")
@@ -502,7 +503,7 @@ object FlowService extends UserModelProtocol
   def fillCYPartyMember(state: FlowState): Future[CYPartyMember] = {
     //根据guid获取用户信息
     def splitGUID(guid: String): (String, String, String) = {
-      val regex = "([^-]+)-([^!])!(.*)".r
+      val regex = "([^-]+)-([^!]+)!(.*)".r
       guid match {
         case regex(party_class, instant_id, user_id) => (party_class, instant_id, user_id)
         case _ => throw BusinessException(s"$guid 有误，无法获得用户信息")
@@ -620,7 +621,7 @@ object FlowService extends UserModelProtocol
   def getFileObjects(fileNames: List[String]): Future[Seq[FileObj]] = {
 
     getFiles(fileNames).map { sq =>
-      sq.map(entity => FileObj(entity.url, entity.asset_id, entity.busi_type))
+      sq.map(entity => FileObj(entity.asset_id, entity.origin_name, entity.busi_type))
     }
 
   }
@@ -630,9 +631,9 @@ object FlowService extends UserModelProtocol
     */
   def getDeliverys(flowId: String, cyPartyMember: CYPartyMember): Future[(Option[List[Delivery]], Option[BigDecimal])] = {
 
-    cyPartyMember.harbor match {
-      case Some(habor) =>
-        request[String, Seq[FlowTaskEntity]](path = "api/utask", pathVariables = Array(gkf, habor.companyId, habor.userId),
+    cyPartyMember.trader match {
+      case Some(trader) =>
+        request[String, Seq[FlowTaskEntity]](path = "api/utask", pathVariables = Array(myf, trader.companyId, trader.userId),
           paramters = Map("history" -> "yes", "flowId" -> flowId, "taskname" -> a20noticeHarborRelease)) flatMap { (tasks: Seq[FlowTaskEntity]) =>
           tasks.length match {
             case 0 => Future {
@@ -648,7 +649,7 @@ object FlowService extends UserModelProtocol
                       totalRedemptionAmount = totalRedemptionAmount + delivery.redemptionAmount
                       Delivery(delivery.redemptionAmount, new Timestamp(data.timestamp), fs.toList, data.operator, delivery.goodsReceiveCompanyName)
                     }
-                  case _ => throw BusinessException(s"flowId:$flowId, company_id:${habor.companyId} , user_id:${habor.userId} 港口放货记录有误")
+                  case _ => throw BusinessException(s"flowId:$flowId, company_id:${trader.companyId} , user_id:${trader.userId} 港口放货记录有误")
                 }
               }) map { sq =>
                 (Some(sq.toList), Some(totalRedemptionAmount))
@@ -676,7 +677,7 @@ object FlowService extends UserModelProtocol
       }
     }
 
-    getList(state.points.get(financerContractFiles)) ::: getList(state.points.get(harborContractFiles))
+    getList(state.points.get(financerContractFiles)) ::: getList(state.points.get(harborContractFiles)) ::: getList(state.points.get(supervisorContractFiles))
   }
 
 
@@ -723,7 +724,7 @@ object FlowService extends UserModelProtocol
                   case Some(data) =>
                     //本次还款金额
                     val repaymentValue = BigDecimal(data.value.toDouble)
-                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate)
+                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate)+1
                     val result = Repayment(
                       repaymentValue,
                       curMoney,
@@ -842,7 +843,7 @@ object FlowService extends UserModelProtocol
       //融资方还款记录
       repayments <- calculateInterest(flowId,cyPartyMember,spData.interestRate,flowState)
     } yield {
-      setFlowData(flowState,currentTask,fileList,deliverys,repayments)
+      CYData(spData,cyPartyMember,setFlowData(flowState,currentTask,fileList,deliverys,repayments))
     }
 
 

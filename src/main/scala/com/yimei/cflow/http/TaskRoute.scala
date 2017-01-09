@@ -22,7 +22,7 @@ import com.yimei.cflow.engine.db.{FlowInstanceTable, FlowTaskTable}
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.organ.db._
 import spray.json._
-
+import com.yimei.cflow.config.CoreConfig._
 import scala.concurrent.Future
 
 /**
@@ -40,8 +40,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
   with FlowTaskTable
   with UserGroupTable
   with FlowInstanceTable
-  with TaskProtocol
-  with CoreConfig {
+  with TaskProtocol {
 
   import driver.api._
 

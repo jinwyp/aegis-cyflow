@@ -11,7 +11,8 @@ import com.yimei.cflow.api.models.database.UserOrganizationDBModel._
 import com.yimei.cflow.api.models.group.GroupProtocol
 import com.yimei.cflow.api.models.user.UserProtocol
 import com.yimei.cflow.api.util.DBUtils._
-import com.yimei.cflow.config.DatabaseConfig.{coreExecutor => _, _}
+import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.organ.db._
 import spray.json.DefaultJsonProtocol
 
@@ -99,6 +100,19 @@ class GroupRoute extends UserProtocol
     */
   def userInGroup = get {
     pathPrefix("validateugroup"/Segment/Segment/Segment/Segment){ (party_class,instant_id,user_id,gid) =>
+
+
+//      println(((for{
+//        (pi,ug) <- partyInstance.filter(p=>
+//          p.party_class === party_class &&
+//            p.instance_id === instant_id
+//        ) join userGroup.filter( u=>
+//          u.user_id === user_id &&
+//            u.gid     === gid
+//        ) on(_.id === _.party_id)
+//      } yield {
+//        ug
+//      }).result).statements.toString)
 
       val exist: Future[Seq[UserGroupEntity]] = dbrun((for{
         (pi,ug) <- partyInstance.filter(p=>

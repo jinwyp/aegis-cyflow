@@ -7,6 +7,7 @@ import com.yimei.cflow.api.http.models.PartyModel.{PartyInstanceListEntity, Part
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.UserProtocol
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 16/12/23.

@@ -8,7 +8,7 @@ import com.yimei.cflow.engine.DaemonMaster
 import com.yimei.cflow.engine.graph.GraphLoader
 import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
-
+import com.yimei.cflow.config.CoreConfig._
 import scala.sys.process._
 
 /**

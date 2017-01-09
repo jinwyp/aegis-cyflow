@@ -1,6 +1,7 @@
 package com.yimei.cflow.asset
 
 import java.io.FileOutputStream
+import com.yimei.cflow.config.CoreConfig._
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -20,7 +21,7 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
 
 import scala.concurrent.Future
 
-class AssetRoute extends CoreConfig with AssetTable with SprayJsonSupport {
+class AssetRoute extends AssetTable with SprayJsonSupport {
 
   import driver.api._
 

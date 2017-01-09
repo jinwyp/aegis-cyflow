@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.util.Timeout
 import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.duration._
 

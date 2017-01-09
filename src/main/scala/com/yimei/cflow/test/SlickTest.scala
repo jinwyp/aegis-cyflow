@@ -9,6 +9,7 @@ import com.yimei.cflow.api.models.database.FlowDBModel._
 import com.yimei.cflow.api.util.DBUtils
 import com.yimei.cflow.engine.db.FlowInstanceTable
 import DBUtils._
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by wangqi on 16/12/16.

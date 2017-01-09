@@ -8,7 +8,7 @@ import akka.http.scaladsl.server.Directives.{complete, extractUri}
 import akka.http.scaladsl.server.ExceptionHandler
 import com.yimei.cflow.api.http.models.ResultModel.{Error, Result, ResultProtocol}
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.config.Config
+import com.yimei.cflow.config.CoreConfig._
 import spray.json._
 
 /**
