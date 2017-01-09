@@ -12,9 +12,10 @@ import com.yimei.cflow.api.models.user.{State => UserState}
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.asset.service.AssetService._
+import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 import spray.json._
 
 import scala.concurrent.Future
@@ -616,7 +617,6 @@ object FlowService extends UserModelProtocol
   }
 
 
-
   def getFileObjects(fileNames: List[String]): Future[Seq[FileObj]] = {
 
     getFiles(fileNames).map { sq =>
@@ -628,26 +628,40 @@ object FlowService extends UserModelProtocol
   /**
     * 放货记录（港口方）
     */
-  def getDeliverys(flowId: String, company_id: String, user_Id: String): Future[(Seq[Delivery],BigDecimal)] = {
+  def getDeliverys(flowId: String, cyPartyMember: CYPartyMember): Future[(Option[List[Delivery]], Option[BigDecimal])] = {
 
-    var totalRedemptionAmount = BigDecimal(0)
-
-    request[String, Seq[FlowTaskEntity]](path = "api/utask", pathVariables = Array(gkf, company_id, user_Id),
-      paramters = Map("history" -> "yes", "flowId" -> flowId, "taskname" -> a20noticeHarborRelease)) flatMap { (tasks: Seq[FlowTaskEntity]) =>
-      Future.sequence(tasks.map { entity =>
-        entity.task_submit.parseJson.convertTo[Map[String, DataPoint]].get(traderNoticeHarborRelease) match {
-          case Some(data) =>
-            val delivery = data.value.parseJson.convertTo[TraffickerNoticePortReleaseGoods]
-            getFileObjects(delivery.fileList) map { (fs: Seq[FileObj]) =>
-              totalRedemptionAmount = totalRedemptionAmount + delivery.redemptionAmount
-              Delivery(delivery.redemptionAmount, new Timestamp(data.timestamp), fs.toList, data.operator, delivery.goodsReceiveCompanyName)
+    cyPartyMember.harbor match {
+      case Some(habor) =>
+        request[String, Seq[FlowTaskEntity]](path = "api/utask", pathVariables = Array(gkf, habor.companyId, habor.userId),
+          paramters = Map("history" -> "yes", "flowId" -> flowId, "taskname" -> a20noticeHarborRelease)) flatMap { (tasks: Seq[FlowTaskEntity]) =>
+          tasks.length match {
+            case 0 => Future {
+              (None, None)
             }
-          case _ => throw BusinessException(s"flowId:$flowId, company_id:$company_id , user_id:$user_Id 港口放货记录有误")
+            case _ =>
+              var totalRedemptionAmount = BigDecimal(0)
+              Future.sequence(tasks.map { entity =>
+                entity.task_submit.parseJson.convertTo[Map[String, DataPoint]].get(traderNoticeHarborRelease) match {
+                  case Some(data) =>
+                    val delivery = data.value.parseJson.convertTo[TraffickerNoticePortReleaseGoods]
+                    getFileObjects(delivery.fileList) map { (fs: Seq[FileObj]) =>
+                      totalRedemptionAmount = totalRedemptionAmount + delivery.redemptionAmount
+                      Delivery(delivery.redemptionAmount, new Timestamp(data.timestamp), fs.toList, data.operator, delivery.goodsReceiveCompanyName)
+                    }
+                  case _ => throw BusinessException(s"flowId:$flowId, company_id:${habor.companyId} , user_id:${habor.userId} 港口放货记录有误")
+                }
+              }) map { sq =>
+                (Some(sq.toList), Some(totalRedemptionAmount))
+              }
+          }
         }
-      }) map { sq =>
-        (sq,totalRedemptionAmount)
-      }
+      case _ =>
+        Future {
+          (None, None)
+        }
     }
+
+
   }
 
 
@@ -655,13 +669,14 @@ object FlowService extends UserModelProtocol
     * 获取流程中全部文件记录
     */
   def getFileList(state: FlowState): List[String] = {
-    def getList(names:Option[DataPoint]): List[String] = {
+    def getList(names: Option[DataPoint]): List[String] = {
       names match {
-        case Some(d)=> d.value.parseJson.convertTo[List[String]]
-        case _      => List[String]()
+        case Some(d) => d.value.parseJson.convertTo[List[String]]
+        case _ => List[String]()
       }
     }
-    getList(state.points.get(financerContractFiles)):::getList(state.points.get(harborContractFiles))
+
+    getList(state.points.get(financerContractFiles)) ::: getList(state.points.get(harborContractFiles))
   }
 
 
@@ -674,7 +689,8 @@ object FlowService extends UserModelProtocol
   }
 
   /**
-    *还款记录 (差融资方的记录)
+    * 还款记录 (差融资方的记录)
+    *
     * @param flowId
     * @param company_id
     * @param user_Id
@@ -682,9 +698,12 @@ object FlowService extends UserModelProtocol
     * @param state
     * @return (实际放款金额，已还款金额，未还款金额，还款记录)
     */
-  def calculateInterest(flowId: String, company_id: String, user_Id: String,interest:BigDecimal,state: FlowState):Future[(Option[BigDecimal],Option[BigDecimal],Option[BigDecimal],Option[List[Repayment]])] = {
+  def calculateInterest(flowId: String, cyPartyMember: CYPartyMember, interest: BigDecimal, state: FlowState): Future[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]])] = {
+
+    val financer = cyPartyMember.financer
+
     state.points.get(recommendAmount) match {
-        //说明贸易方已经审核通过了。已经有了借款金额
+      //说明贸易方已经审核通过了。已经有了借款金额
       case Some(total) =>
         state.points.get(financerPaySuccess) match {
           //说明融资方至少有一笔还款了
@@ -693,13 +712,13 @@ object FlowService extends UserModelProtocol
             //这个地方肯定是有了，因为已经有还款了
             val startDate: Long = state.points(traderPaySuccess).timestamp
             //拿到全部的还款的task
-            val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId, company_id, user_Id)
+            val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId,financer.companyId, financer.userId)
             val tt: BigDecimal = BigDecimal(total.value.toDouble)
             var curMoney = tt
 
             //获得还款记录表
-            def getRepaymentList(tasks:Seq[FlowTaskEntity]): Seq[Repayment] = {
-              tasks.map{ t=>
+            def getRepaymentList(tasks: Seq[FlowTaskEntity]): Seq[Repayment] = {
+              tasks.map { t =>
                 t.task_submit.parseJson.convertTo[Map[String, DataPoint]].get(repaymentAmount) match {
                   case Some(data) =>
                     //本次还款金额
@@ -708,34 +727,126 @@ object FlowService extends UserModelProtocol
                     val result = Repayment(
                       repaymentValue,
                       curMoney,
-                      curMoney-repaymentValue,
+                      curMoney - repaymentValue,
                       days,
-                      curMoney*days*interest/365
+                      curMoney * days * interest / 365
                     )
                     curMoney = curMoney - repaymentValue
                     result
-                  case _          => throw BusinessException(s"$flowId 交易流水异常")
+                  case _ => throw BusinessException(s"$flowId 交易流水异常")
                 }
               }
             }
 
-            for{
-              ts <- getRepayment(flowId,company_id,user_Id)
+            for {
+              ts <- getRepayment(flowId, financer.companyId,financer.userId)
               repayments = getRepaymentList(ts)
             } yield {
-              (Some(tt),Some(tt - curMoney),Some(curMoney),Some(repayments.toList))
+              (Some(tt), Some(tt - curMoney), Some(curMoney), Some(repayments.toList))
             }
-          case _       =>Future{(Some(BigDecimal(total.value.toDouble)),None,None,None)}
+          case _ => Future {
+            (Some(BigDecimal(total.value.toDouble)), None, None, None)
+          }
         }
-      case _ => Future{(None,None,None,None)}
+      case _ => Future {
+        (None, None, None, None)
+      }
     }
   }
 
 
+  //帮助函数
+  private def extractValue(key: String, state: FlowState): Option[BigDecimal] = {
+    state.points.get(key) match {
+      case Some(data) => Some(BigDecimal(data.value))
+      case _ => None
+    }
+  }
 
 
+  /**
+    * 组装flow数据
+    *
+    * @param state         当前流程状态
+    * @param currentTask   当前用户在该流程的任务
+    * @param Filelist      流程对应全部的文件
+    * @param deliveryInfo  港口放货信息（放货清单，放货总量）
+    * @param repaymentInfo 还款记录（实际放款金额，已还款金额，未还款金额，还款清单）
+    */
+  def setFlowData(state: FlowState,
+                  currentTask: UserState,
+                  Filelist: Seq[FileObj],
+                  deliveryInfo: (Option[List[Delivery]], Option[BigDecimal]),
+                  repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]])): FlowData = {
+
+    //货权（贸易商审核通过前为融资方，然后为贸易方
+    val cargoOwner = state.histories.contains(E3) match {
+      case true => myf
+      case false => rzf
+    }
+
+    val graph = FlowRegistry.flowGraph(flowType)
+
+    //港口确认金额
+    val harborCA: Option[BigDecimal] = extractValue(harborConfirmAmount, state)
 
 
+    //待赎回吨数
+    val redemptionAmountLeft: Option[BigDecimal] = (harborCA, deliveryInfo._2) match {
+      case (Some(ca), Some(da)) => Some(ca - da) //港口确认吨数 - 实际赎回吨数
+      case (Some(ca), _) => Some(ca) //港口确认吨数（此时还没有还款赎回）
+      case _ => None //港口还没有确认金额的时候
+    }
+
+    FlowData(
+      currentTask, //当前任务
+      cargoOwner, //货权（贸易商审核通过前为融资方，然后为贸易方）
+      state.edges.map(entry =>
+        graph.edges(entry._1).begin
+      ).toList, //当前所在vertices
+      repaymentInfo._1, // 实际放款金额
+      None, //todo 保证金金额
+      extractValue(fundProviderInterestRate, state), //资金方借款的利率
+      harborCA, //港口确认吨数
+      deliveryInfo._2, //已赎回吨数
+      repaymentInfo._2, //已归还金额
+      redemptionAmountLeft, //待赎回吨数
+      repaymentInfo._3, //待还款
+      None, //todo 保证金记录
+      repaymentInfo._4, //还款交易记录
+      deliveryInfo._1, //放货记录
+      Filelist.toList //该流程对应全部文件
+    )
+  }
+
+
+  /**
+    * 组装流程数据
+    */
+  def cyDataCollection(flowId: String, party_class: String, company_id: String, user_Id: String) = {
+
+
+    for {
+    //获取流程数据
+      flowState <- getFlowData(flowId)
+      //审批带来的数据
+      spData = fillSPData(flowState)
+      //流程中文件列表
+      fileList <- getFileObjects(getFileList(flowState))
+      //仓压成员记录
+      cyPartyMember <- fillCYPartyMember(flowState)
+      //港口放货记录
+      deliverys <- getDeliverys(flowId,cyPartyMember)
+      //用户当前任务
+      currentTask <- getCurrentTasks(flowId, party_class, company_id, user_Id)
+      //融资方还款记录
+      repayments <- calculateInterest(flowId,cyPartyMember,spData.interestRate,flowState)
+    } yield {
+      setFlowData(flowState,currentTask,fileList,deliverys,repayments)
+    }
+
+
+  }
 
 
 }
