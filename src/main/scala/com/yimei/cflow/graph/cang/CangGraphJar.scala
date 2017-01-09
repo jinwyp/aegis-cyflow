@@ -6,6 +6,7 @@ import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 

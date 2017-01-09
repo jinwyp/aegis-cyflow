@@ -21,6 +21,7 @@ import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+import com.yimei.cflow.config.CoreConfig._
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -206,7 +207,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, phone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }
@@ -223,12 +224,12 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
     def update(qur: QueryUserResult): Future[String] = {
-      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.mobilePhone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
     }
 
     def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.mobilePhone, party, "", "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true, error = null, meta = null)
       }else {
         Result(data = None, success = false, meta = null)
       }

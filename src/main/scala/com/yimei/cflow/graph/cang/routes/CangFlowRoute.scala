@@ -14,6 +14,7 @@ import com.yimei.cflow.api.models.flow.State
 import com.yimei.cflow.api.util.HttpUtil.request
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.services.FlowService._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
@@ -154,14 +155,14 @@ class CangFlowRoute extends AdminClient
     * @return
     */
   def flowDetail = get {
-    pathPrefix("financeorders"/ Segment / Segment / Segment / Segment /Segment) { (action,user_id,party_class,instance_id,flowId) =>
+    pathPrefix("financeorders" / Segment / Segment / Segment /Segment) { (user_id,party_class,instance_id,flowId) =>
     //获得流程信息
       complete(cyDataCollection(flowId,party_class,instance_id,user_id))
     }
   }
 
 
-  def route = startFlow ~ submitTask ~ test
+  def route = startFlow ~ submitTask ~ test ~ flowDetail
 }
 
 

@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Route
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.config.ExceptionHandle
 import com.yimei.cflow.graph.cang.routes.{CangFlowRoute, CangUserRoute, SessionDemoRoute}
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by wangqi on 16/12/26.

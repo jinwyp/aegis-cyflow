@@ -16,7 +16,7 @@ object UserModel extends DefaultJsonProtocol {
   implicit val updateUserFormat = jsonFormat6(UpdateUser)
 
   /** 用户修改自己信息 **/
-  case class UpdateSelf(email: String, mobilePhone: String)
+  case class UpdateSelf(email: String, phone: String)
   implicit val updateSelfFormat = jsonFormat2(UpdateSelf)
 
   /** 用户登陆 **/
@@ -47,7 +47,7 @@ object UserModel extends DefaultJsonProtocol {
 
   //-------------------------------------返回model----------------------------------
   //登录返回信息
-  case class UserData(userId: String, username: String, email: String, mobilePhone: String, role: String, companyId: String, companyName: String)
+  case class UserData(userId: String, username: String, email: String, phone: String, role: String, companyId: String, companyName: String)
   implicit val dataFormat = jsonFormat7(UserData)
   case class UserInfoList(datas: List[UserData], total: Int)
   implicit val UserInfoListFormat = jsonFormat2(UserInfoList)

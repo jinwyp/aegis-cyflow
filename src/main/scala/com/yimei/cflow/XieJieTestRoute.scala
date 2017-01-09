@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.ApplicationConfig
 
 import scala.concurrent.Future

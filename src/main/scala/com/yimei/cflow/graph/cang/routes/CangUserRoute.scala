@@ -37,6 +37,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  //---------------------------------------管理员 用户操作-----------------------------------
   /*
    * 管理员添加用户
    * url      localhost:9000/api/cang/user
@@ -44,7 +45,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * body     {"username":"xl","password":"123456","name":"资金方业务","email":"asdf@qq.com","phone":"12345678912","instanceId":"66666666","className":"fundProvider"}
    */
   def adminAddUser: Route = post {
-    (path("user") & entity(as[AddUser])) { user =>
+    (path("users") & entity(as[AddUser])) { user =>
       myRequiredSession { s =>
         complete(addUser(user))
       }
@@ -53,7 +54,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员获取所有用户
-   * url      http://localhost:9000/api/cang/users?page=2&pageSize=2
+   * url      http://localhost:9000/api/cang/users?page=2&count=2
    * method   get
    */
   def adminGetAllUserListRoute: Route = get {
@@ -67,6 +68,39 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  /*
+   * 管理员获取特定用户
+   * url      http://localhost:9000/api/cang/users/partyclass/instanceId/userId/edit
+   * method   get
+   */
+  def adminGetSpecificUserRoute: Route = get {
+    path("users" / Segment / Segment/ Segment / "edit") { (party, instanceId, userId) =>
+      import scala.concurrent.ExecutionContext.Implicits.global
+      val result = for {
+        info <- getUserInfo(party, instanceId, userId)
+      } yield Result(data = Some(info))
+      complete(result)
+    }
+  }
+
+  /*
+   * 管理员修改邮箱、电话
+   * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
+   * method   put application/json
+   * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
+   */
+  def adminModifyUserRoute: Route = put {
+    path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
+      entity(as[UpdateUser]) { user =>
+        myRequiredSession { s =>
+          complete(adminModifyUser(party, instance_id, user))
+        }
+      }
+    }
+  }
+
+
+  //---------------------------------------管理员 公司操作-----------------------------------
   /*
    * 管理员添加公司
    * url      http://localhost:8000/api/cang/companies
@@ -99,7 +133,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员获取特定公司信息
-   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId
+   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId/edit
    * method      get
    */
   def adminGetSpecificCompanyRoute: Route = get {
@@ -126,22 +160,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  /*
-   * 管理员修改邮箱、电话
-   * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
-   * method   put application/json
-   * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
-   */
-  def adminModifyUserRoute: Route = put {
-    path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
-      entity(as[UpdateUser]) { user =>
-        myRequiredSession { s =>
-          complete(adminModifyUser(party, instance_id, user))
-        }
-      }
-    }
-  }
-
+  //---------------------------------------用户 操作-----------------------------------
   /*
    * 用户登录
    * url      http://localhost:9000/cang/auth/login
@@ -155,7 +174,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
         val role = if(!info.gid.isDefined || info.gid.get == "1") info.party else info.party + "Accountant"
         val session = MySession(userName = info.userName, userId = info.userId, party = info.party, gid = info.gid, instanceId = info.instanceId, companyName = info.companyName)
         mySetSession(session) {
-          complete(Result[UserData](data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, mobilePhone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName))))
+          complete(Result[UserData](data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, phone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName))))
         }
       }
     }
@@ -185,10 +204,10 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     path("sessionuser") {
       myRequiredSession { s =>
         import scala.concurrent.ExecutionContext.Implicits.global
-        val role = if(!s.gid.isDefined || s.gid.get == "1") s.party else s.party + "Accountant"
+        val role = if(!s.gid.isDefined  || s.gid.get == "null" || s.gid.get == "1") s.party else s.party + "Accountant"
         val result = for {
           info <- getUserInfo(s.party, s.instanceId, s.userId)
-        } yield Result[UserData](data = Some(UserData(userId = s.userId, username = s.userName, email = info.userInfo.email.getOrElse(""), mobilePhone = info.userInfo.phone.getOrElse(""), role = role, companyId = s.instanceId, companyName = s.companyName)))
+        } yield Result[UserData](data = Some(UserData(userId = s.userId, username = s.userName, email = info.userInfo.email.getOrElse(""), phone = info.userInfo.phone.getOrElse(""), role = role, companyId = s.instanceId, companyName = s.companyName)))
 
         complete(result)
       }
@@ -204,10 +223,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def userModifyPasswordRoute: Route = put {
     (path("sessionuser" / "password") & entity(as[UserChangePwd])) { user =>
       myRequiredSession { session =>
-        userModifyPassword(session.party, session.instanceId, session.userId, user)
-        myInvalidateSession {
-          complete(Result(data = Some("success")))
-        }
+        complete(userModifyPassword(session.party, session.instanceId, session.userId, user))
       }
     }
   }
@@ -248,7 +264,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   def route = financeSideEnterRoute ~ adminAddUser ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
     adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
-    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute ~ getInfoRoute ~ logoutRoute
+    adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute ~ getInfoRoute ~ logoutRoute ~ adminGetSpecificUserRoute
 }
 
 object CangUserRoute {

@@ -10,13 +10,14 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import spray.json.DefaultJsonProtocol._
+import com.yimei.cflow.config.CoreConfig._
 
 
 /**
   * Created by wangqi on 16/12/26.
   */
 
-object HttpUtil extends CoreConfig with ApplicationConfig{
+object HttpUtil extends ApplicationConfig{
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
 

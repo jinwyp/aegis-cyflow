@@ -12,13 +12,14 @@ import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http.{ResourceRoute, _}
 import com.yimei.cflow.organ.routes._
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by wangqi on 16/12/21.
   */
 object HttpTest extends App with ApplicationConfig with FlywayConfig {
-  implicit val testTimeout = coreTimeout
-  implicit val testEc = coreExecutor
+//  implicit val testTimeout = coreTimeout
+//  implicit val testEc = coreExecutor
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
   migrate
 
