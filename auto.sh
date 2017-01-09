@@ -44,7 +44,7 @@ k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompan
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
-#read a
+read a
 
 # 7> 融资方上传文件
 res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
