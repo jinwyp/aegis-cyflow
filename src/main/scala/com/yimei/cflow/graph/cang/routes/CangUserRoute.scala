@@ -69,8 +69,8 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   }
 
   /*
-   * 管理员获取所有用户
-   * url      http://localhost:9000/api/cang/users/username/edit
+   * 管理员获取特定用户
+   * url      http://localhost:9000/api/cang/users/partyclass/instanceId/userId/edit
    * method   get
    */
   def adminGetSpecificUserRoute: Route = get {
