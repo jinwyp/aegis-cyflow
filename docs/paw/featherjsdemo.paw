@@ -947,10 +947,10 @@
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"data":{"json":"{\\"userId\\":\\"583cf19dcd6d97c13186ca2b\\",\\"oldPassword\\":\\"123456\\",\\"newPassword\\":\\"123456\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">2</attribute>
-        <attribute name="name" type="string">changePassword</attribute>
+        <attribute name="name" type="string">ChangePassword</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z186"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z188 z193"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z193 z188"></relationship>
     </object>
     <object type="LMKEYVALUE" id="z188">
         <attribute name="value" type="string">[{"data":{"environmentVariable":"F4A0BE75-BC00-41D9-BC32-C141F6106A59"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"}]</attribute>
