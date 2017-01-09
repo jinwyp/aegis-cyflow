@@ -57,6 +57,7 @@ var userInfo = function() {
             // console.log(tempCompany)
             vm.currentUser.partyClass = tempCompany.partyClass;
             vm.currentUser.companyName = tempCompany.companyName;
+            companyErr();
         },
 
         jsonStringfy : function(obj){
@@ -104,6 +105,7 @@ var userInfo = function() {
                     console.log(reasons);
                     $("input").focus().blur();
                     $("select").focus().blur();
+                    companyErr();
                 } else{
                     var user = {
                         username : vm.currentUser.username,
@@ -113,6 +115,8 @@ var userInfo = function() {
                         partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
                     };
+
+                    console.log(user);
 
                     // if (vm.currentUser.belongToUser) {
                     //     user.belongToUser = vm.currentUser.belongToUser
@@ -201,12 +205,26 @@ var userInfo = function() {
     getCompanies();
 
 
+    function companyErr() {
+        if(vm.currentUser.companyName === ''){
+            $('.addCompanyNameErr').addClass('has-error');
+            $('.addCompanyNameErrMess').css('display','block');
+            vm.errorMessage.inputCompanyName = "请选择公司名称"
+        }else{
+            $('.addCompanyNameErr').removeClass('has-error');
+            $('.addCompanyNameErrMess').css('display','none');
+            vm.errorMessage.inputCompanyName = ""
+        }
+    }
+
+
+
     if (urlShowStatus === 'add'){
         vm.pageShowStatus = 'add';
         getUsersOfRoles()
     }else if (urlShowStatus === 'edit'){
         vm.pageShowStatus = 'edit';
-        getUserInfo()
+        getUserInfo();
         getUsersOfRoles()
     }else {
         vm.pageShowStatus = 'info';
