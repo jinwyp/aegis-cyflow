@@ -1,5 +1,5 @@
 <!DOCTYPE html>  <!-- HTML5 document type -->
-<html ng-app="chartApp">
+<html ng-app="flowApp">
 <head>
     <link rel="stylesheet" href="lib/angletheme/bootstrap.css">
     <link rel="stylesheet" href="lib/angletheme/app.css">
@@ -25,7 +25,7 @@
                     <div class="panel-body">
                         <div id="chart"></div>
 
-                        <div id="panel-settings" ng-cloak ng-controller="formController as vm">
+                        <div id="panel-settings" ng-cloak ng-controller="vertexController as vm">
 
                             <div class="panel panel-default" ng-show="vm.selectType === 'node' && vm.currentVertex.id">
                                 <div class="panel-heading"> <h4>已选中节点: {{vm.currentVertex.id || '未选择'}} {{vm.newVertex.id}}</h4> </div>
@@ -228,8 +228,9 @@
 <script src="lib/cytoscape/dagre.js"></script>
 <script src="lib/cytoscape/cytoscape-dagre.js"></script>
 
-<script src='js/manageFlowChartClass.js'></script>
-<script src='js/manageFlow.js'></script>
+<script src='js/flowmanager/manageFlowChartClass.js'></script>
+<script src='js/flowmanager/manageFlow.js'></script>
+<script src='js/flowmanager/formatter.js'></script>
 
 
 
