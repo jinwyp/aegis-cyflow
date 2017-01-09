@@ -35,7 +35,7 @@
                             <form role="form" class="form-inline">
 
                                 <div class="form-group marginL">
-                                    <label for="input-password" class="">公司名称:&nbsp;&nbsp;</label>
+                                    <label for="input-password" >公司名称:&nbsp;&nbsp;</label>
                                     <input id="input-password"  class="form-control" type="text" placeholder="公司名称" ms-duplex="@searchQuery.companyName">
                                 </div>
                                 <div class="form-group marginL">

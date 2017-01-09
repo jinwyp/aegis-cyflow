@@ -29,7 +29,8 @@ var companyList = function() {
             changePageNo : function(currentPageNo, skip, countPerPage){
                 var query = {
                     count: countPerPage,
-                    offset : skip
+                    offset : skip,
+                    page : currentPageNo
                 };
 
                 getCompanies(query)

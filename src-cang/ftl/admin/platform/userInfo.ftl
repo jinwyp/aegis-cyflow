@@ -108,7 +108,7 @@
 
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error']">
-                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>公司邮箱:</label>
+                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>邮箱:</label>
                                 <div class="col-sm-5">
                                     <input type="text" id="inputEmail" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.email"
                                            ms-rules='{required:true, email:true}' data-required-message="请输入公司邮箱" data-email-message="邮箱格式不正确">
