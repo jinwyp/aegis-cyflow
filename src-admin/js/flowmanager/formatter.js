@@ -68,7 +68,11 @@ var point = {
 
    var formatter = {
 
-       arrayToObj : function(){
+       cyArrayToRawArray : function(){
+
+       },
+
+       rawArrayToObj : function () {
 
        }
    }
