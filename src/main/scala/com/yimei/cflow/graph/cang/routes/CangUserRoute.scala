@@ -117,27 +117,13 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   /*
    * 管理员修改邮箱、电话
    * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
-   * method   post application/json
+   * method   put application/json
    * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
    */
-  def adminModifyUserRoute: Route = post {
+  def adminModifyUserRoute: Route = put {
     path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
       entity(as[UpdateUser]) { user =>
         complete(adminModifyUser(party, instance_id, user))
-      }
-    }
-  }
-
-  /*
-   * 用户修改邮箱、电话
-   * url      http://localhost:9000/cang/user/info
-   * method   post application/json
-   * body     {"email":"6789@6789.com","phone":"13800000002"}
-   */
-  def userModifySelfRoute: Route = post {
-    (path("user" / "info") & entity(as[UpdateSelf])) { user =>
-      myRequiredSession { s =>
-        complete(userModifySelf(s.party, s.instanceId, s.userId, user))
       }
     }
   }
@@ -169,7 +155,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def logoutRoute: Route = get {
     path("auth" / "logout") {
       myInvalidateSession {
-        complete(Result(data = Some("success")))
+        complete(Result(data = Some("")))
       }
     }
   }
@@ -180,7 +166,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    * method   get
    */
   def getInfoRoute: Route = get {
-    path("info") {
+    path("sessionuser") {
       myRequiredSession { s =>
         import scala.concurrent.ExecutionContext.Implicits.global
         val role = if(!s.gid.isDefined || s.gid.get == "1") s.party else s.party + "Accountant"
@@ -195,17 +181,31 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 用户修改密码
-   * url      http://localhost:9000/cang/user/password
-   * method   post application/json
+   * url      http://localhost:9000/api/cang/sessionuser/password
+   * method   put application/json
    * body     {"newPassword":"654321","oldPassword":"123456"}
    */
-  def userModifyPasswordRoute: Route = post {
-    (path("user" / "password") & entity(as[UserChangePwd])) { user =>
+  def userModifyPasswordRoute: Route = put {
+    (path("sessionuser" / "password") & entity(as[UserChangePwd])) { user =>
       myRequiredSession { session =>
         userModifyPassword(session.party, session.instanceId, session.userId, user)
         myInvalidateSession {
           complete(Result(data = Some("success")))
         }
+      }
+    }
+  }
+
+  /*
+   * 用户修改邮箱、电话
+   * url      http://localhost:9000/api/cang/sessionuser
+   * method   put application/json
+   * body     {"email":"6789@6789.com","phone":"13800000002"}
+   */
+  def userModifySelfRoute: Route = put {
+    (path("sessionuser") & entity(as[UpdateSelf])) { user =>
+      myRequiredSession { s =>
+        complete(userModifySelf(s.party, s.instanceId, s.userId, user))
       }
     }
   }
