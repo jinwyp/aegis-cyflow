@@ -45,7 +45,9 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminAddUser: Route = post {
     (path("user") & entity(as[AddUser])) { user =>
+      myRequiredSession { s =>
         complete(addUser(user))
+      }
     }
   }
 
@@ -56,10 +58,12 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminGetAllUserListRoute: Route = get {
     (path("users") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('username.as[String].?) & parameter('companyName.as[String].?)) { (p, ps, un, cn) =>
-      val page = if(!p.isDefined) 1 else p.get
-      val pageSize = if(!ps.isDefined) 10 else ps.get
-      val dynamicquery = DynamicQueryUser(un, cn)
-      complete(adminGetAllUser(page, pageSize, dynamicquery))
+      myRequiredSession { s =>
+        val page = if (!p.isDefined) 1 else p.get
+        val pageSize = if (!ps.isDefined) 10 else ps.get
+        val dynamicquery = DynamicQueryUser(un, cn)
+        complete(adminGetAllUser(page, pageSize, dynamicquery))
+      }
     }
   }
 
@@ -71,7 +75,9 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminAddCompanyRoute: Route = post {
     (path("companies") & entity(as[AddCompany])) { company =>
-      complete(adminAddCompany(company))
+      myRequiredSession { s =>
+        complete(adminAddCompany(company))
+      }
     }
   }
 
@@ -83,9 +89,11 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminGetAllCompanyRoute: Route = get {
     (path("companies") & parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('companyName.as[String].?)) { (p, ps, cn) =>
-      val page = if(!p.isDefined) 1 else p.get
-      val pageSize = if(!ps.isDefined) 10 else ps.get
-      complete(adminGetAllCompany(page, pageSize, cn))
+      myRequiredSession { s =>
+        val page = if (!p.isDefined) 1 else p.get
+        val pageSize = if (!ps.isDefined) 10 else ps.get
+        complete(adminGetAllCompany(page, pageSize, cn))
+      }
     }
   }
 
@@ -96,7 +104,9 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def adminGetSpecificCompanyRoute: Route = get {
     path("company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
-      complete(adminGetSpecificCompany(partyClass, instanceId))
+      myRequiredSession { s =>
+        complete(adminGetSpecificCompany(partyClass, instanceId))
+      }
     }
   }
 
@@ -109,7 +119,9 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def adminUpdateCompanyRoute: Route = put {
     path("admin" / "partyClass" / Segment/ "instanceId" / Segment) { (party, instanceId) =>
       entity(as[String]) { companyName =>
-        complete(adminUpdateCompany(party, instanceId, companyName))
+        myRequiredSession { s =>
+          complete(adminUpdateCompany(party, instanceId, companyName))
+        }
       }
     }
   }
@@ -123,7 +135,9 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def adminModifyUserRoute: Route = put {
     path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
       entity(as[UpdateUser]) { user =>
-        complete(adminModifyUser(party, instance_id, user))
+        myRequiredSession { s =>
+          complete(adminModifyUser(party, instance_id, user))
+        }
       }
     }
   }
@@ -154,8 +168,10 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
    */
   def logoutRoute: Route = get {
     path("auth" / "logout") {
-      myInvalidateSession {
-        complete(Result(data = Some("")))
+      myRequiredSession { s =>
+        myInvalidateSession {
+          complete(Result(data = Some("")))
+        }
       }
     }
   }
