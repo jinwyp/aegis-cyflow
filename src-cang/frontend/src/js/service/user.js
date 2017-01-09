@@ -196,6 +196,8 @@ exports.modifyPassword = function (userId, oldPassword, newPassword){
 
 
 
+
+
 exports.getCompanyList = function (query){
 
     var params = jQuery.extend({}, query);
@@ -215,8 +217,8 @@ exports.getCompanyList = function (query){
 exports.addNewCompany = function (company){
 
     var params = jQuery.extend({
-        party_name : '',
-        party_class : ''
+        companyName : '',
+        partyClass : ''
     }, company);
 
 
