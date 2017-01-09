@@ -289,9 +289,12 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
     */
   case class CYData( spData:SPData,                           //审核带来的数据
                      cyPartyMember:CYPartyMember,             //仓压用户信息
-                     flowData:FlowData                        //流程数据
+                     flowData:FlowData,                       //流程数据
+                     flowId:String,                            //流程Id
+                     currentSessionUserTaskId:String,
+                     currentSessionUserTaskTaskName:String
                    )
 
-  implicit val cyDataFormat = jsonFormat3(CYData)
+  implicit val cyDataFormat = jsonFormat6(CYData)
 
 }

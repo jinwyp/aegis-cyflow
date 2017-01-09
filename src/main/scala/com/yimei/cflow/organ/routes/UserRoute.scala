@@ -291,7 +291,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              select pu.user_id, pu.username, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
              from party_instance pi join party_user pu on pu.party_id = pi.id
              left join user_group ug on pu.user_id = ug.user_id
-             where pi.party_name like $companyName and pu.username like $userName limit $l offset $os
+             where pu.disable = 0 and pi.party_name like $companyName and pu.username like $userName limit $l offset $os
              """
           dbrun(query.as[(String, String, String, String, String, String, String, String)])
         }
@@ -301,7 +301,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              select count(1)
              from party_instance pi join party_user pu on pu.party_id = pi.id
              left join user_group ug on pu.user_id = ug.user_id
-             where pi.party_name like $companyName and pu.username like $userName
+             where pu.disable = 0 and pi.party_name like $companyName and pu.username like $userName
              """
           for {
             account <- dbrun(query.as[Int])

@@ -8,7 +8,7 @@ import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProt
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.flow.{DataPoint, Graph, State => FlowState}
-import com.yimei.cflow.api.models.user.{State => UserState}
+import com.yimei.cflow.api.models.user.{CommandUserTask, State => UserState}
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.api.util.PointUtil._
 import com.yimei.cflow.asset.service.AssetService._
@@ -820,6 +820,14 @@ object FlowService extends UserModelProtocol
     )
   }
 
+  private def getTaskInfo(us:UserState): (String, String) = {
+    val taskList: List[(String, CommandUserTask)] = us.tasks.toList
+    taskList.length match {
+      case 1 => (taskList(0)._1,taskList(0)._2.taskName)
+      case 0 => ("","")
+      case _ => throw BusinessException(s"userType:${us.userType}, userId:${us.userId}有误")
+    }
+  }
 
   /**
     * 组装流程数据
@@ -842,8 +850,15 @@ object FlowService extends UserModelProtocol
       currentTask <- getCurrentTasks(flowId, party_class, company_id, user_Id)
       //融资方还款记录
       repayments <- calculateInterest(flowId,cyPartyMember,spData.interestRate,flowState)
+      taskInfo  = getTaskInfo(currentTask)
     } yield {
-      CYData(spData,cyPartyMember,setFlowData(flowState,currentTask,fileList,deliverys,repayments))
+      CYData(spData,
+        cyPartyMember,
+        setFlowData(flowState,currentTask,fileList,deliverys,repayments),
+        flowId,
+        taskInfo._1,
+        taskInfo._2
+      )
     }
 
 
