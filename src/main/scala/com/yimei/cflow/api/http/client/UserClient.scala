@@ -47,6 +47,15 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     )
   }
 
+  def updatePartyUserEmailAndPhone(username: String, email: String, phone: String): Future[String] = {
+    //访问com.yimei.cflow.organ.routes.UserRoute中的modifyEmailAndPhone接口
+    sendRequest(
+      path = "api/user",
+      pathVariables = Array(username, email, phone, "emailAndPhone"),
+      method = "put"
+    )
+  }
+
   def getSpecificPartyUser(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getUser接口
     sendRequest(

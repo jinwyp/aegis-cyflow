@@ -198,7 +198,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
   def loginRoute: Route = post {
     (path("auth" / "login") & entity(as[UserLogin])) { user =>
 
-      onSuccess(getLoginUserInfo(user)) { info =>
+      onSuccess(getLoginUserInfo(user)) { (info: UserGroupInfo) =>
         val role = if(!info.gid.isDefined || info.gid.get == "1") info.party else info.party + "Accountant"
         val session = MySession(userName = info.userName, userId = info.userId, party = info.party, gid = info.gid, instanceId = info.instanceId, companyName = info.companyName)
         mySetSession(session) {

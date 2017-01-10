@@ -49,13 +49,13 @@
                             <div class="form-group addCompanyNameErr" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
-                                    <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentCompany" ms-rules='{required:true}' data-required-message="请选择公司名称" data-duplex-changed="@selectCompany">
+                                    <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' "
+                                            ms-duplex="@currentCompanyJSON" ms-rules='{required:true}' data-required-message="请选择公司名称" data-duplex-changed="@selectCompany">
                                         <option value="" > - </option>
                                         <option ms-for="company in @companyList" ms-attr="{value : @jsonStringfy(company)}">{{company.companyName}}
                                         </option>
                                     </select>
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.companyName}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block addCompanyNameErrMess" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
@@ -67,8 +67,8 @@
                                     <select name="account" class="form-control" id="inputUserRole" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
                                             ms-duplex="@currentUser.role" ms-rules='{required:true}' data-required-message="请选择用户类型">
                                         <option value="" > - </option>
-                                        <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" >{{role.displayName}} </option>
-                                        <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                        <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" ms-visible="@currentUser.partyClass === 'trader'">{{role.displayName}} </option>
+                                        <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" ms-visible="@currentUser.partyClass === 'fundProvider'">{{role.displayName}} </option>
                                     </select>
                                     <span class="help-block m-b-none" ms-visible="@currentUser.role===@role.traderAccountant || @currentUser.role===@role.fundProviderAccountant">
                                     </span>
