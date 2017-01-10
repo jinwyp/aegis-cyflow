@@ -29,12 +29,13 @@ var userInfo = function() {
             phone : '',
             companyId : '',
             companyName : '',
-            partyClass:'',
             // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
         },
         currentCompanyJSON : {},
-        currentCompany : {},
+        currentCompany : {
+            partyClass : ''
+        },
 
         traderList : [],
         fundProviderList : [],
@@ -49,16 +50,25 @@ var userInfo = function() {
             inputUsername : '',
             inputEmail : '',
             inputMobilePhone : '',
-            inputCompanyName : '',
+            inputCompanyName : '请选择公司名称',
             inputUserRole:''
         },
 
         selectCompany: function (e) {
-            vm.currentCompany = JSON.parse(vm.currentCompanyJSON);
-            vm.currentUser.partyClass = vm.currentCompany.partyClass;
-            vm.currentUser.companyId = vm.currentCompany.instanceId;
-            vm.currentUser.companyName = vm.currentCompany.companyName;
-            companyErr();
+            if (vm.currentCompanyJSON){
+                vm.currentCompany = JSON.parse(vm.currentCompanyJSON);
+                vm.currentUser.role = vm.currentCompany.partyClass;
+                vm.currentUser.companyId = vm.currentCompany.instanceId.substring(vm.currentCompany.instanceId.lastIndexOf("\/") + 1, vm.currentCompany.instanceId.length);
+                vm.currentUser.companyName = vm.currentCompany.companyName;
+            }else{
+                vm.currentUser.role = '';
+                vm.currentUser.companyId = '';
+                vm.currentUser.companyName = '';
+
+                vm.currentCompany.partyClass = '';
+            }
+
+            checkCompanyNameError();
         },
 
         jsonStringfy : function(obj){
@@ -74,7 +84,7 @@ var userInfo = function() {
                 if (vm.errorInputName.indexOf(this.id) > -1) vm.errorInputName.splice(vm.errorInputName.indexOf(this.id),1);
             },
             onError: function (reasons) {
-                console.log(reasons[0].getMessage());
+                console.log("单个字段错误信息: ",reasons[0].getMessage());
                 vm.errorMessage[this.id.toString()] = reasons[0].getMessage();
 
                 if (vm.successInputName.indexOf(this.id) > -1) vm.successInputName.splice(vm.successInputName.indexOf(this.id),1);
@@ -86,36 +96,31 @@ var userInfo = function() {
 
                 var isValid = true;
 
-                if(vm.currentUser.partyClass === 'trader' || vm.currentUser.partyClass === 'fundProvider'){
-                    if (reasons.length) {
-                        isValid = false;
-                    }
-                }else{
-                    if (reasons.length === 1 ) {
-
-                        reasons.splice('请选择用户类型');
-                        isValid = true;
-                    }else{
-                        isValid = false;
-                    }
-
+                if (reasons.length) {
+                    isValid = false;
                 }
+
+                if(!vm.currentUser.companyName){
+                    isValid = false;
+                    checkCompanyNameError();
+                }
+
+
 
                 if(!isValid){
                     console.log('表单项没有通过');
                     console.log(reasons);
                     $("input").focus().blur();
                     $("select").focus().blur();
-                    companyErr();
                 } else{
                     var user = {
+                        password : '123456',
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
                         phone : vm.currentUser.phone,
                         companyName : vm.currentUser.companyName,
-                        companyId : vm.currentUser.companyName,
-                        partyClass : vm.currentUser.partyClass,
-                        role : vm.currentUser.role
+                        companyId : vm.currentUser.companyId,
+                        className : vm.currentUser.role
                     };
 
                     console.log(user);
@@ -170,6 +175,19 @@ var userInfo = function() {
     });
 
 
+    function checkCompanyNameError() {
+        if(vm.currentUser.companyName === ''){
+            vm.errorInputName.push('inputCompanyName');
+        }else{
+            var tempIndex = vm.errorInputName.indexOf('inputCompanyName')
+            if (tempIndex > -1){
+                vm.errorInputName.splice(tempIndex, 1);
+            }
+        }
+
+    }
+
+
     function getUserInfo() {
         userService.getUserInfoById(userId).done(function (data, textStatus, jqXHR) {
             if (data.success) {
@@ -216,17 +234,7 @@ var userInfo = function() {
     getCompanies();
 
 
-    function companyErr() {
-        if(vm.currentUser.companyName === ''){
-            $('.addCompanyNameErr').addClass('has-error');
-            $('.addCompanyNameErrMess').css('display','block');
-            vm.errorMessage.inputCompanyName = "请选择公司名称"
-        }else{
-            $('.addCompanyNameErr').removeClass('has-error');
-            $('.addCompanyNameErrMess').css('display','none');
-            vm.errorMessage.inputCompanyName = ""
-        }
-    }
+
 
 
 
