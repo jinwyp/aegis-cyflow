@@ -30,7 +30,7 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
 
 
-  val sf = StartFlowBasicInfo("1111", Some("wangqi"), "13000000001","11111111","阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
+  val sf = StartFlowBasicInfo("f1id", Some("wangqi"), "13000000001","1","阿里巴巴","123",Timestamp.from(Instant.now),Timestamp.from(Instant.now),"企鹅",BigDecimal(1000),30,
     BigDecimal(0.5),"不知道",1,BigDecimal(0.01),BigDecimal(0.02),"heheh",BigDecimal(0.01),"没合同","24678")
 
 
@@ -41,7 +41,7 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
   val sflow = StartFlow(sf,sfi,sfs)
 
- // println(sflow.toJson.prettyPrint)
+  println(sflow.toJson.toString)
 
 
   val a = "hello"
@@ -60,6 +60,6 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
   //println(t3.toJson.toString)
 
   val t4 = TraffickerNoticePortReleaseGoods("123","123",1024.1,"腾讯",List("123","123"))
-  println(t4.toJson.toString)
+//  println(t4.toJson.toString)
 
 }
