@@ -4,11 +4,12 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.config.FreemarkerConfig._
+import com.yimei.cflow.graph.cang.session.{Session, SessionProtocol}
 
 /**
   * Created by hary on 17/1/3.
   */
-class BasicRoute {
+class BasicRoute extends Session with SessionProtocol{
 
 
   def cangHtml: Route = get {
@@ -34,7 +35,9 @@ class BasicRoute {
     */
   def adminCurrentUserInfo = get {
     path("warehouse" / "admin" / "home" / "session" / "info") {
-      ftl("admin/platform/sessionInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/sessionInfo.ftl")
+      }
     }
   }
 
@@ -58,7 +61,9 @@ class BasicRoute {
     */
   def adminDemoDashboard = get {
     path("warehouse" / "admin" / "home" / "demo" / "dashboard") {
-      ftl("admin/platform/demoDashboard.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/demoDashboard.ftl")
+      }
     }
   }
 
@@ -69,7 +74,9 @@ class BasicRoute {
     */
   def adminDemoEchart = get {
     path("warehouse" / "admin" / "home" / "demo" / "echart") {
-      ftl("admin/platform/demoEchart.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/demoEchart.ftl")
+      }
     }
   }
 
@@ -81,7 +88,9 @@ class BasicRoute {
     */
   def adminUserList = get {
     path("warehouse" / "admin" / "home" / "userlist") {
-      ftl("admin/platform/userList.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/userList.ftl")
+      }
     }
   }
 
@@ -93,7 +102,9 @@ class BasicRoute {
     */
   def adminUserAdd = get {
     path("warehouse" / "admin" / "home" / "user" / "add") {
-      ftl("admin/platform/userInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/userInfo.ftl")
+      }
     }
   }
 
@@ -105,7 +116,9 @@ class BasicRoute {
     */
   def adminUserEdit = get {
     path("warehouse" / "admin" / "home" / "user" / Segment / "edit") { userId =>
-      ftl("admin/platform/userInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/userInfo.ftl")
+      }
     }
   }
 
@@ -116,7 +129,9 @@ class BasicRoute {
     */
   def adminUserInfo = get {
     path("warehouse" / "admin" / "home" / "user" / Segment) { userId =>
-      ftl("admin/platform/userInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/userInfo.ftl")
+      }
     }
   }
 
@@ -128,7 +143,9 @@ class BasicRoute {
     */
   def adminCurrentUserModifyPassport = get {
     path("warehouse" / "admin" / "home" / "session" / "password") {
-      ftl("admin/platform/sessionModifyPassword.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/sessionModifyPassword.ftl")
+      }
     }
   }
 
@@ -140,7 +157,9 @@ class BasicRoute {
     */
   def adminFinanceOrderDetails = get {
     path("warehouse" / "admin" / "home" / "finance") {
-      ftl("admin/customer/financeOrderList.ftl")
+      myRequiredSession { s =>
+        ftl("admin/customer/financeOrderList.ftl")
+      }
     }
   }
 
@@ -152,7 +171,9 @@ class BasicRoute {
     */
   def adminCompanyList = get {
     path("warehouse" / "admin" / "home" / "companylist") {
-      ftl("admin/platform/companyList.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/companyList.ftl")
+      }
     }
   }
 
@@ -164,7 +185,9 @@ class BasicRoute {
     */
   def adminCompanyAdd = get {
     path("warehouse" / "admin" / "home" / "company" / "add") {
-      ftl("admin/platform/companyInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/companyInfo.ftl")
+      }
     }
   }
 
@@ -175,8 +198,10 @@ class BasicRoute {
     * @return
     */
   def adminCompanyEdit = get {
-    path("warehouse" / "admin" / "home" / "company" / Segment / "edit") { companyId =>
-      ftl("admin/platform/companyInfo.ftl")
+    path("warehouse" / "admin" / "home" / "company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
+      myRequiredSession { s =>
+        ftl("admin/platform/companyInfo.ftl")
+      }
     }
   }
 
@@ -187,7 +212,9 @@ class BasicRoute {
     */
   def adminCompanyInfo = get {
     path("warehouse" / "admin" / "home" / "company" / Segment) { companyId =>
-      ftl("admin/platform/companyInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/platform/companyInfo.ftl")
+      }
     }
   }
 
@@ -199,7 +226,9 @@ class BasicRoute {
     */
   def adminHome = get {
     pathPrefix("warehouse" / "admin" / "home") {
-      redirect("/warehouse/admin/home/session/info", StatusCodes.PermanentRedirect)
+      myRequiredSession { s =>
+        redirect("/warehouse/admin/home/session/info", StatusCodes.PermanentRedirect)
+      }
     }
   }
 
@@ -207,13 +236,17 @@ class BasicRoute {
   /////////////////////////////////////////////
   def contractJindiao = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jindiao") { id =>
-      ftl("admin/customer/investigatorInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/customer/investigatorInfo.ftl")
+      }
     }
   }
 
   def contractJianguan = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jianguan") { id =>
-      ftl("admin/customer/supervisorInfo.ftl")
+      myRequiredSession { s =>
+        ftl("admin/customer/supervisorInfo.ftl")
+      }
     }
   }
 

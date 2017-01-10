@@ -3,15 +3,16 @@ package com.yimei.cflow.api.http.client
 import scala.concurrent.Future
 import com.yimei.cflow.api.util.HttpUtil._
 import akka.event.{Logging, LoggingAdapter}
-import com.yimei.cflow.api.http.models.PartyModel.{PartyInstanceListEntity, PartyModelProtocal}
+import com.yimei.cflow.api.http.models.PartyModel.{PartyInstanceListEntity, PartyModelProtocol}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.UserProtocol
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 16/12/23.
   */
-trait PartyClient extends UserProtocol with PartyModelProtocal{
+trait PartyClient extends UserProtocol with PartyModelProtocol{
   def createPartyInstance(partyInfo: String): Future[PartyInstanceEntity] = {
     //访问com.yimei.cflow.organ.routes.InstRoute中的createPartyInstance接口
     sendRequest(

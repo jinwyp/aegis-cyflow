@@ -12,7 +12,7 @@ object PartyModel {
 
   case class PartyInstanceListEntity(partyInstanceList: Seq[PartyInstanceEntity], total: Int)
 
-  trait PartyModelProtocal extends DefaultJsonProtocol with UserProtocol{
+  trait PartyModelProtocol extends DefaultJsonProtocol with UserProtocol{
     implicit val PartyInstanceInfoFormat = jsonFormat3(PartyInstanceInfo)
     implicit val partyInstanceListEntityFormat = jsonFormat2(PartyInstanceListEntity)
   }

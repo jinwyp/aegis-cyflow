@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 /**
   * Created by hary on 16/12/6.
   */
-trait ApplicationConfig extends FlywayConfig with CoreConfig {
+trait ApplicationConfig extends FlywayConfig  {
   private val config = ConfigFactory.load()
   val url = config.getString("server.url")
 }

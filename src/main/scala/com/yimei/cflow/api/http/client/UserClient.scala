@@ -1,12 +1,13 @@
 package com.yimei.cflow.api.http.client
 
-import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserInfo, UserListEntity, UserModelProtocol}
+import com.yimei.cflow.api.http.models.UserModel._
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
 import com.yimei.cflow.graph.cang.session.{MySession, SessionProtocol}
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
@@ -46,6 +47,15 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     )
   }
 
+  def updatePartyUserEmailAndPhone(username: String, email: String, phone: String): Future[String] = {
+    //访问com.yimei.cflow.organ.routes.UserRoute中的modifyEmailAndPhone接口
+    sendRequest(
+      path = "api/user",
+      pathVariables = Array(username, email, phone, "emailAndPhone"),
+      method = "put"
+    )
+  }
+
   def getSpecificPartyUser(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getUser接口
     sendRequest(
@@ -57,14 +67,14 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     }
   }
 
-  def getLoginUserInfo(userInfo: String): Future[MySession] = {
+  def getLoginUserInfo(userInfo: String): Future[UserGroupInfo] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getLoginUserInfo接口
     sendRequest(
       path = "api/login",
       method = "post",
       bodyEntity = Some(userInfo)
     ) map { result =>
-      result.parseJson.convertTo[MySession]
+      result.parseJson.convertTo[UserGroupInfo]
     }
   }
 
@@ -80,23 +90,35 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     }
   }
 
-  def disableUser(userId: String): Future[String] = {
+  def disableUser(username: String): Future[String] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的disAbleUser接口
     sendRequest(
       path = "api/disable",
-      pathVariables = Array(userId),
+      pathVariables = Array(username),
       method = "get"
     )
   }
 
-  def getAllUserList(page: Int, pageSize: Int): Future[UserInfoList] = {
+  def getAllUserList(page: Int, pageSize: Int, dynamicQuery: String): Future[UserInfoList] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的getAllUserInfo接口
     sendRequest(
       path = "api/alluser",
       paramters = Map("page" -> page.toString, "pageSize" -> pageSize.toString),
-      method = "get"
+      method = "post",
+      bodyEntity = Some(dynamicQuery)
     ) map { result =>
       result.parseJson.convertTo[UserInfoList]
+    }
+  }
+
+  def getSpecificUserInfoByUsername(username: String): Future[UserGroupInfo] = {
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getUserInfoByUserName接口
+    sendRequest(
+      path = "api/specificUser",
+      pathVariables = Array(username),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[UserGroupInfo]
     }
   }
 }

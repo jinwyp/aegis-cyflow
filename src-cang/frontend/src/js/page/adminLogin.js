@@ -29,7 +29,7 @@ var login = function() {
             onSuccess : function (reasons){
                 if (vm.successInputName.indexOf(this.id) === -1) vm.successInputName.push(this.id.toString());
                 if (vm.errorInputName.indexOf(this.id) > -1) vm.errorInputName.splice(vm.errorInputName.indexOf(this.id),1);
-                console.log('有表单项通过')
+                // console.log('有单个表单项通过')
             },
             onError: function (reasons) {
 
@@ -37,14 +37,14 @@ var login = function() {
 
                 if (vm.successInputName.indexOf(this.id) > -1) vm.successInputName.splice(vm.successInputName.indexOf(this.id),1);
                 if (vm.errorInputName.indexOf(this.id.toString()) === -1) vm.errorInputName.push(this.id.toString());
-                console.log(vm.errorInputName)
+                // console.log(vm.errorInputName)
 
             },
             onValidateAll: function (reasons) {
                 if (reasons.length) {
                     console.log('有表单项没有通过')
                 } else {
-                    console.log('表单全部通过');
+                    // console.log('表单全部通过');
 
                     userService.login({
                         username : vm.user.username,
@@ -53,7 +53,7 @@ var login = function() {
                         if (data.success){
                             console.log('登录成功', data);
 
-                            tokenService.saveSessionInLocalStorage(data.data.token, data.data.data)
+                            tokenService.saveSessionInLocalStorage('', data.data)
                             window.location.href = '/warehouse/admin/home/finance'
                         }else{
                             vm.errorMessage.ajax = data.error.message;

@@ -10,6 +10,8 @@ INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name
 
 INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('systemAdmin', '00000000', '管理员');
 
+INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('fundProvider', '66666666', '有钱人');
+
 --添加组（贸易商业务，贸易商财务，资金方业务，资金方财务）
 INSERT INTO `cyflow`.`party_group` (`party_class`, `gid`, `description`) VALUES ('trader', '1', '贸易方业务');
 INSERT INTO `cyflow`.`party_group` (`party_class`, `gid`, `description`) VALUES ('trader', '2', '贸易方财务');
@@ -22,7 +24,7 @@ INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `e
 
 INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('1','88888', '123456', '13800000001', '12345@12345.com', 'ymFinance', 'u2');
 
-INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00000', '123456', '13800000001', '12345@12345.com', 'admin', 'className');
+INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00000', '123456', '13800000001', '12345@12345.com', 'admin', 'u3');
 
 INSERT INTO `cyflow`.`party_user` (`party_id`,`user_id`, `password`, `phone`, `email`, `name`,`username`) VALUES ('2','00001', '123456', '13800000002', 'systemAdmin@163.com', 'systemAdmin', 'systemAdmin');
 

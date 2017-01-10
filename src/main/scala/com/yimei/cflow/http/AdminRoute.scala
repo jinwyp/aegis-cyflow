@@ -21,6 +21,7 @@ import com.yimei.cflow.engine.db.FlowInstanceTable
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.organ.db._
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
@@ -28,8 +29,8 @@ import scala.concurrent.Future
 /**
   * Created by wangqi on 16/12/20.
   */
-class AdminRoute(proxy: ActorRef) extends CoreConfig
-  with PartyUserTable
+class AdminRoute(proxy: ActorRef)
+  extends PartyUserTable
   with PartyInstanceTable
   with FlowInstanceTable
   with AdminProtocol
@@ -103,6 +104,26 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
       complete(for {
         f <- flow
         r <- ServiceProxy.flowGraph(proxy, f.flow_id)
+      } yield {
+        r
+      })
+    }
+  }
+
+
+  /**
+    * 根据flowId查询流程States
+    *
+    * @return
+    */
+  def getFlowStateById = get {
+    pathPrefix("flow"/ "state" / Segment) { flowId =>
+      val flow: Future[FlowInstanceEntity] = dbrun(flowInstance.filter(_.flow_id === flowId).result.head) recover {
+        case _ => throw new DatabaseException("该流程不存在")
+      }
+      complete(for {
+        f <- flow
+        r <- ServiceProxy.flowState(proxy, f.flow_id)
       } yield {
         r
       })
@@ -248,7 +269,7 @@ class AdminRoute(proxy: ActorRef) extends CoreConfig
   }
 
 
-  def route: Route = createFlow ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
+  def route: Route = createFlow ~ getFlowStateById ~ getFlowById ~ hijack ~ getFLows ~ getFlowByUser ~ getGraph
 }
 
 

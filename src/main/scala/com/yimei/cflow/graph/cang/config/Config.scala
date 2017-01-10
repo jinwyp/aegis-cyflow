@@ -8,16 +8,17 @@ import com.typesafe.config.ConfigFactory
   * Created by wangqi on 16/12/26.
   */
 trait Config {
-  implicit val coreSystem = ActorSystem("ClientSystem")
-  implicit val coreExecutor = coreSystem.dispatcher
-  implicit val coreMaterializer = ActorMaterializer()
+//  implicit val coreSystem = ActorSystem("FlowSystem")
+//  implicit val coreExecutor = coreSystem.dispatcher
+//  implicit val coreMaterializer = ActorMaterializer()
 
   private val config = ConfigFactory.load()
   val url = config.getString("server.url")
   val port = config.getInt("client.port")
 
   //文件类型
-  val default = "default"   //默认类型
+  //val fileType = Map(0->"default",1->"contract",2->"finance",3-> "business")  //默认类型
+  val default = "default"
   val contract = "contract" //合同
   val financeFile  = "financeFile" //财务文件
   val businessFile = "businessFile" //业务文件
@@ -39,7 +40,9 @@ trait Config {
   val adminId = "systemAdmin-00000000!00000"
 
   val zjfyw = "fundProvider"
-  val zjfcw = "fundProviderAccountant"
+  val zjfcw = "fundProviderAccount"
+  val rzfyw = "financer"
+  val rzfcw = "financerAccount"
   
   //资金方业务组ID和财务组Id
   val fundGid = "1"

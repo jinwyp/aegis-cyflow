@@ -8,21 +8,22 @@ import com.yimei.cflow.api.services.ServiceProxy
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.engine.graph.GraphLoader
-import com.yimei.cflow.engine.routes.{EditorRoute, EngineRoute}
-import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
+import com.yimei.cflow.engine.routes.EditorRoute
+import com.yimei.cflow.engine.{DaemonMaster, EngineRoute, FlowRegistry}
 import com.yimei.cflow.graph.cang.routes._
 import com.yimei.cflow.http._
 import com.yimei.cflow.organ.routes._
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.TestClient
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 16/12/3.
   */
 object ServiceTest extends App with ApplicationConfig with CorsSupport with MyExceptionHandler {
 
-  implicit val testTimeout = coreTimeout
-  implicit val testEc = coreExecutor
+//  implicit val testTimeout = coreTimeout
+//  implicit val testEc = coreExecutor
 
   drop
   migrate
@@ -79,7 +80,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     base ~ flowRoute
   }
 
-  implicit val mySystem = coreSystem // @todo fixme
+//  implicit val mySystem = coreSystem // @todo fixme
 
   println(s"http is listening on ${coreConfig.getInt("http.port")}")
   Http().bindAndHandle(all, "0.0.0.0", coreConfig.getInt("http.port"))

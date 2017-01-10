@@ -17,10 +17,11 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.organ.db._
 import DBUtils._
 import com.yimei.cflow.graph.cang.exception.BusinessException
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
-class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocal with SprayJsonSupport{
+class InstRoute extends PartyInstanceTable with UserProtocol with PartyModelProtocol with SprayJsonSupport{
   import driver.api._
 
   //POST /inst         创建参与方实例

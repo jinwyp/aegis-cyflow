@@ -126,13 +126,29 @@ create table asset(
   id BIGINT not null auto_increment,       -- 非业务主键
   asset_id varchar(36) not null,           -- 资源id
   file_type tinyint not null DEFAULT 0,    -- 文件类型  0: 未知,  1: pdf, 2: image
-  busi_type tinyint not null DEFAULT 0,    -- 业务类别  0: 未知,  1:   todo
+  busi_type varchar(30) not null DEFAULT 0,-- 业务类别
   username varchar(128) not null,          -- 上传用户
   gid varchar(32),                         -- 上传用户当时属于哪个组
   description varchar(512),                -- 可以为空
-  uri varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
+  url varchar(256) not null,               -- 文件位置信息, 可能为aliyun, filesystem  etc
+  origin_name varchar(256) not null,       -- 文件原始名字
   ts_c timestamp default current_timestamp,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE UNIQUE INDEX asset_index ON asset(asset_id);
+
+
+-- 保证金
+create table deposit (
+  id             BIGINT(20)  NOT NULL AUTO_INCREMENT,
+  flowId         VARCHAR(64) NOT NULL,
+  expectedAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  actuallyAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  state          VARCHAR(30) NOT NULL DEFAULT 'init',
+  memo           VARCHAR(1024)        DEFAULT NULL,
+  ts_c           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+
 

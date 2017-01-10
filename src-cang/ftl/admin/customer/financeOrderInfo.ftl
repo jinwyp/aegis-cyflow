@@ -221,7 +221,7 @@
 
 
                     <!-- 贸易商通知融资方缴纳保证金-->
-                    <div class="panel panel-default" ms-if="@currentUser.role === @role.trader" >
+                    <div class="panel panel-default" ms-if="@currentUser.role === @role.trader && @currentOrder.status !== 'repaymentStep37'" >
                         <div class="panel-heading">通知融资方缴纳保证金 </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -307,8 +307,8 @@
                                         <td>{{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}}  </td>
                                         <td> 第 3 天 </td>
                                         <td> {{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}} x 3 x 0.1 / 360 </td>
-                                        <td> - </td>
-                                        <td> - </td>
+                                        <td> {{ @currentOrder.financerUser.username}} </td>
+                                        <td> {{ @currentOrder.traderUser.username}}  </td>
                                     </tr>
                                 </table>
 
@@ -324,7 +324,7 @@
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped table-bordered">
                                     <tr>
-                                        <th>交易日期</th>
+                                        <th>申请时间</th>
                                         <th>放货数量（吨）</th>
                                         <th>放货方</th>
                                         <th>收货方</th>
@@ -335,8 +335,8 @@
                                     <tr ms-for="(index, delivery) in @deliveryList">
                                         <td>{{ delivery.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
                                         <td>{{ delivery.redemptionAmount}}</td>
-                                        <td> - </td>
-                                        <td> - </td>
+                                        <td> {{ @currentOrder.traderUser.username}} </td>
+                                        <td> {{ delivery.receiver || '' }}  </td>
                                         <td> <span ms-visible="delivery.confirmDate"> {{ delivery.confirmDate | date("yyyy-MM-dd:HH:mm:ss ")}}  </span> </td>
                                         <td>
                                             <a class="" ms-for="(index, file) in delivery.fileList" ms-click="@getFile($event, file)">{{file.originalFileName}}<br> </a>
@@ -571,13 +571,23 @@
                                         <input type="text" class="form-control" ms-duplex-number="@inputRedemptionAmount" >
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorRedemptionAmount">
-                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨, 并且必须上传放货文件!</span>
+                                        <span class="help-block">*&nbsp;数量不正确, 最少10吨!</span>
                                     </div>
                                 </div>
 
-                                <div class="form-group" >
+                                <div class="form-group" ms-class="[@errorRedemptionReceiver && 'has-error']">
+                                    <label class="col-sm-3 control-label">收货方公司名称:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex="@inputRedemptionReceiver" >
+                                    </div>
+                                    <div class="col-sm-5" ms-visible="@errorRedemptionReceiver">
+                                        <span class="help-block">*&nbsp;请填入收货方!</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ms-class="[@errorRedemptionFileList && 'has-error']">
                                     <label class="col-sm-3 control-label">上传放货文件</label>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <table class="table table-hover">
                                             <tr>
                                                 <td><div id="uploadPickerRedemptionFile" class="btn ">选择放货文件并上传</div></td>
@@ -587,6 +597,9 @@
                                                 <td class="border0 text-center"><span class="btn btn-primary">删除</span></td>
                                             </tr>
                                         </table>
+                                    </div>
+                                    <div class="col-sm-5" ms-visible="@errorRedemptionFileList">
+                                        <span class="help-block">*&nbsp;必须上传放货文件!</span>
                                     </div>
                                 </div>
 

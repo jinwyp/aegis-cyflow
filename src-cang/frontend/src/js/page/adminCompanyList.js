@@ -29,7 +29,8 @@ var companyList = function() {
             changePageNo : function(currentPageNo, skip, countPerPage){
                 var query = {
                     count: countPerPage,
-                    offset : skip
+                    offset : skip,
+                    page : currentPageNo
                 };
 
                 getCompanies(query)
@@ -40,14 +41,6 @@ var companyList = function() {
         clickSearchButton : function (event) {
             event.preventDefault();
             getCompanies();
-        },
-
-        clickResetPassword:function () {
-            $(".modal_1").modal();
-        },
-
-        clickDelete:function () {
-            $(".modal_2").modal();
         }
 
     });

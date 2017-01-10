@@ -8,8 +8,8 @@ import concurrent.duration._
 /**
   * Created by hary on 16/12/2.
   */
-trait CoreConfig {
-  implicit val coreSystem = ActorSystem("RiskSystem")
+object CoreConfig {
+  implicit val coreSystem = ActorSystem("FlowSystem")
   implicit val coreTimeout = Timeout(5 seconds)
   implicit val coreExecutor = coreSystem.dispatcher
   implicit val coreMaterializer = ActorMaterializer()

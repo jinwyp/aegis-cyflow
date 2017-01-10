@@ -8,7 +8,7 @@ import spray.json.{DeserializationException, JsString, JsValue, RootJsonFormat}
 /**
   * Created by hary on 16/12/23.
   */
-object CommonJsonFormat {
+trait CommonJsonFormat {
 
   implicit object SqlTimestampFormat extends RootJsonFormat[Timestamp] {
     val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

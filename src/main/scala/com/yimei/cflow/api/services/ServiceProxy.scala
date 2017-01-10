@@ -5,10 +5,10 @@ import akka.pattern._
 import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{CommandCreateFlow, CommandFlowGraph, CommandFlowState, CommandHijack, CommandUpdatePoints, DataPoint, Graph, Command => FlowCommand, State => FlowState}
 import com.yimei.cflow.api.models.group.{Command => GroupCommand, State => GroupState, _}
-import com.yimei.cflow.api.models.id.{CommandGetId, CommandQueryId, Id, Command => IdGeneratorCommand, State => IdGeneratorState}
 import com.yimei.cflow.api.models.user.{CommandCreateUser, CommandQueryUser, CommandTaskSubmit, Command => UserCommand, State => UserState}
-import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.GlobalConfig._
+import com.yimei.cflow.id.models._
 
 import scala.concurrent.Future
 
@@ -16,11 +16,11 @@ import scala.concurrent.Future
   * Created by hary on 16/12/6.
   */
 
-object ServiceProxy extends CoreConfig {
+object ServiceProxy {
 
 
-  implicit val testTimeout = coreTimeout
-  implicit val testEc = coreExecutor
+//  implicit val testTimeout = coreTimeout
+//  implicit val testEc = coreExecutor
 
   /**
     *
@@ -66,7 +66,7 @@ object ServiceProxy extends CoreConfig {
   // 2> query IdGenerator state
   def idGet(proxy: ActorRef, key: String, buffer: Int = 1) = (proxy ? CommandGetId(key, buffer)).mapTo[Id]
 
-  def idState(proxy: ActorRef) = (proxy ? CommandQueryId).mapTo[IdGeneratorState]
+  def idState(proxy: ActorRef) = (proxy ? CommandQueryId).mapTo[State]
 
   // Group模块  todo 王琦
   // 1> 创建group
@@ -125,7 +125,7 @@ class ServiceProxy(daemon: ActorRef, dependOn: Array[String]) extends ModuleMast
       modules.get(module_group).foreach(_ forward cmd)
 
     // 与Id模块交互
-    case cmd: IdGeneratorCommand =>
+    case cmd: Command =>
       log.debug(s"收到 ${cmd}")
       modules.get(module_id).foreach(_ forward cmd)
   }
