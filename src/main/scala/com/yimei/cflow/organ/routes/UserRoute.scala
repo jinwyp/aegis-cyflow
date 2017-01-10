@@ -262,6 +262,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
       }
 
       def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
+       println("-------------" + info.length)
         if(info.length == 0) {
           throw BusinessException("登录信息有误！")
         } else {

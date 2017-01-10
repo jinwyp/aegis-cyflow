@@ -177,7 +177,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     log.info(s"get into method adminGetAllUser")
     for {
       userList <- getAllUserList(page, pageSize, dynamicQuery.toJson.toString)
-    } yield Result(data = Some(userList.datas), success = true, meta = PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
+    } yield Result(data = Some(userList.datas), success = true, meta = Some(PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page)))
   }
 
   //管理员获取所有公司信息
@@ -197,7 +197,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       pilist <- getAllPartyInstanceList(page, pageSize, companyName)
       result = getResult(pilist.partyInstanceList)
-    } yield Result(data = Some(result), success = true, meta = PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
+    } yield Result(data = Some(result), success = true, meta = Some(PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page)))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改公司信息
@@ -276,7 +276,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       ur <- update(qur)
       re = getResult(qur)
     } yield { Result(data = Some(re), success = true)}) recover {
-      case e: BusinessException => Result[UserData](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+      case e: BusinessException => Result[UserData](data = None, success = false, error = Some(Error(code = 111, message = e.message, field = "")))
     }
   }
 
@@ -304,8 +304,12 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     getSpecificPartyUser(party, instance_id, userId)
   }
 
-  def getUserInfoByUsername(username: String): Future[UserGroupInfo] = {
-    getSpecificUserInfoByUsername(username)
+  def getUserInfoByUsername(username: String): Future[UserData] = {
+    def deal(ugi: UserGroupInfo): UserData = {
+      val role = if(ugi.gid.isDefined && ugi.gid.get == "2") ugi.party + "Accountant" else ugi.party
+      UserData(userId = ugi.userId, username = ugi.userName, email = ugi.email, phone = ugi.phone, role = role, companyId = ugi.instanceId, companyName = ugi.companyName)
+    }
+    getSpecificUserInfoByUsername(username) map { deal(_)}
   }
 
   //管理员查询用户列表
