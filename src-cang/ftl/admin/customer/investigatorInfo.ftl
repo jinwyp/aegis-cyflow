@@ -35,112 +35,112 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-right ">业务类型:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.orderType}}</td>
 
                                 <th class="text-right">业务编号:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.businessCode}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">融资方:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
 
                                 <th class="text-right">我方签约单位全称:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.ourContractCompany}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">融资金额(万元):</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.financingAmount}}</td>
 
                                 <th class="text-right">融资期限:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.financingPeriod}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">利率:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.interestRate}}</td>
 
                                 <th class="text-right">业务开展时间:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.businessStartTime}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">上游签约单位:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.upstreamContractCompany}}</td>
 
                                 <th class="text-right">下游签约单位:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.downstreamContractCompany}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">运输方:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.transportParty}}</td>
 
                                 <th class="text-right">中转港口全称:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.transitPort}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">质量检验单位:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.qualityInspectionUnit}}</td>
 
                                 <th class="text-right">数量检验单位:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.quantityInspectionUnit}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">历史合作情况:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.historicalCooperationDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务主要信息:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.mainBusinessInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">货物流转:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.businessTransferInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务风险点:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.businessRiskPoint}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">履约信用及能力评估:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.performanceCreditAbilityEval}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">综合意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.finalConclusion}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">附件上传:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">是否需要补充材料说明:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">审核意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                         </table>
