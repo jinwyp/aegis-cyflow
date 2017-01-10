@@ -27,11 +27,13 @@ var userInfo = function() {
             username : '',
             email : '',
             phone : '',
+            companyId : '',
             companyName : '',
             partyClass:'',
             // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
         },
+        currentCompanyJSON : {},
         currentCompany : {},
 
         traderList : [],
@@ -52,11 +54,10 @@ var userInfo = function() {
         },
 
         selectCompany: function (e) {
-            var tempString2 = vm.currentCompany;
-            var tempCompany = JSON.parse(vm.currentCompany);
-            // console.log(tempCompany)
-            vm.currentUser.partyClass = tempCompany.partyClass;
-            vm.currentUser.companyName = tempCompany.companyName;
+            vm.currentCompany = JSON.parse(vm.currentCompanyJSON);
+            vm.currentUser.partyClass = vm.currentCompany.partyClass;
+            vm.currentUser.companyId = vm.currentCompany.instanceId;
+            vm.currentUser.companyName = vm.currentCompany.companyName;
             companyErr();
         },
 
@@ -112,6 +113,7 @@ var userInfo = function() {
                         email : vm.currentUser.email,
                         phone : vm.currentUser.phone,
                         companyName : vm.currentUser.companyName,
+                        companyId : vm.currentUser.companyName,
                         partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
                     };
@@ -179,7 +181,6 @@ var userInfo = function() {
         });
     }
     function getUsersOfRoles(){
-
         userService.getUserList({role : role.trader, $limit : 500}).done(function(data, textStatus, jqXHR) {
             if (data.success){
                 vm.traderList = data.data;
@@ -231,11 +232,9 @@ var userInfo = function() {
 
     if (urlShowStatus === 'add'){
         vm.pageShowStatus = 'add';
-        getUsersOfRoles()
     }else if (urlShowStatus === 'edit'){
         vm.pageShowStatus = 'edit';
         getUserInfo();
-        getUsersOfRoles()
     }else {
         vm.pageShowStatus = 'info';
         getUserInfo()
