@@ -210,6 +210,7 @@
             }
         }
 
+
         for (var property in source.edges){
 
             var currentEdge = source.edges[property];
@@ -225,16 +226,16 @@
                     id : property,
                     source : currentEdge.begin,
                     target : currentEdge.end,
-                    sourceData : {
-                        id : currentEdge.name,
-                        source : currentEdge.begin,
-                        target : currentEdge.end,
-                        userTasks : currentEdge.userTasks,
-                        autoTasks : currentEdge.autoTasks,
-                        partGTasks : currentEdge.partGTasks,
-                        partUTasks : currentEdge.partUTasks,
-                        allTask : []
-                    }
+                },
+                sourceData : {
+                    id : currentEdge.name,
+                    source : currentEdge.begin,
+                    target : currentEdge.end,
+                    userTasks : currentEdge.userTasks,
+                    autoTasks : currentEdge.autoTasks,
+                    partGTasks : currentEdge.partGTasks,
+                    partUTasks : currentEdge.partUTasks,
+                    allTask : []
                 }
             };
 
@@ -255,18 +256,17 @@
                     }else {
                         tempNodeBegin = source.vertices[currentEdge.begin]
                     }
-
                 }
 
                 tempNode = {
                     classes : 'node',
                     data : {
+                        id : currentEdge.begin
+                    },
+                    sourceData : {
                         id : currentEdge.begin,
-                        sourceData : {
-                            id : currentEdge.begin,
-                            description : tempNodeBegin.description,
-                            program : tempNodeBegin.program
-                        }
+                        description : tempNodeBegin.description,
+                        program : tempNodeBegin.program
                     }
                 };
 

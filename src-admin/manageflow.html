@@ -69,8 +69,10 @@
 
                                         <div class="form-group" ng-if="!vm.isNewNode">
                                             <div class="col-lg-10">
-                                                <select class="form-control m-b"
-                                                        ng-options="item.data.id as item.data.id for item in vm.vertices track by item.data.id" ng-model="vm.newVertex.id" ></select>
+                                                <select class="form-control m-b" ng-model="vm.newVertex.id"
+                                                        ng-options="item.data.id as item.data.id for item in vm.vertices track by item.data.id" >
+                                                    <option value=""> --- 请选择已有节点 --- </option>
+                                                </select>
                                             </div>
                                         </div>
 
