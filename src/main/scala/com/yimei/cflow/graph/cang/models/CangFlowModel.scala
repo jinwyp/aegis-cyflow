@@ -11,16 +11,19 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   case class FileObj(id: String, originName: String, fileType:String = default )
   implicit val fileObjFormat = jsonFormat3(FileObj)
 
+  case class StartFlowResult(success: Boolean)
+  implicit val startFlowResultFormat = jsonFormat1(StartFlowResult)
+
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
   case class StartFlowBasicInfo(applyUserId: String,                 //申请人-融资方 信息
-                                applyUserName: String,
+                                applyUserName: Option[String],
                                 applyUserPhone: String,
                                 applyCompanyId: String,
                                 applyCompanyName: String,
                                 businessCode: String,              //业务编号
                                 financeCreateTime: Timestamp,      //审批开始时间
-                                financeEndTime: Timestamp,         //审批结束时间
+                                financeEndTime: Timestamp,         //审批完成时间
                                 downstreamCompanyName: String,     //下游签约公司-公司名称
                                 financingAmount: BigDecimal,       //拟融资金额 - 融资方想要融资金额
                                 financingDays: Int,                //融资天数
@@ -32,42 +35,41 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                                 stockPort: String,                 //库存港口
                                 coalAmount: BigDecimal,            //总质押吨数
                                 upstreamContractNo: String,        //上游合同编号
-                                downstreamContractNo: String,      //下游合同编号
-                                auditFileList: List[FileObj])      //审批文件列表
-  implicit val startFlowBasicInfoFormat = jsonFormat21(StartFlowBasicInfo)
+                                downstreamContractNo: String)      //下游合同编号
+  implicit val startFlowBasicInfoFormat = jsonFormat20(StartFlowBasicInfo)
 
   /** 尽调报告信息 **/
-  case class StartFlowInvestigationInfo(applyCompanyName: String,             //申请公司/融资方
-                                        ourContractCompany: String,           //我方签约公司
-                                        upstreamContractCompany:String,       //上游签约单位
-                                        downstreamContractCompany: String,    //下游签约单位
-                                        terminalServer:String,                //终端用户
-                                        transportParty: String,               //运输方
-                                        transitPort: String,                  //中转港口
-                                        qualityInspectionUnit: String,        //质量检验单位
-                                        quantityInspectionUnit: String,       //数量检验单位
-                                        financingAmount: BigDecimal,          //融资金额
-                                        financingPeriod: Int,                 //融资期限
-                                        interestRate: BigDecimal,             //利率
-                                        businessStartTime: Timestamp,         //业务开始时间
-                                        historicalCooperationDetail: String,  //历史合作情况
-                                        mainBusinessInfo: String,             //业务主要信息
-                                        businessTransferInfo: String,         //业务流转信息
-                                        businessRiskPoint: String,            //业务风险点
-                                        performanceCreditAbilityEval: String, //履约信用及能力评估
-                                        finalConclusion: String)              //综合意见/最终结论
+  case class StartFlowInvestigationInfo(applyCompanyName: String,                         //申请公司/融资方
+                                        ourContractCompany: String,                       //我方签约公司
+                                        upstreamContractCompany:String,                   //上游签约单位
+                                        downstreamContractCompany: String,                //下游签约单位
+                                        terminalServer: Option[String],                   //终端用户
+                                        transportParty: Option[String],                   //运输方
+                                        transitPort: Option[String],                      //中转港口
+                                        qualityInspectionUnit: Option[String],            //质量检验单位
+                                        quantityInspectionUnit: Option[String],           //数量检验单位
+                                        financingAmount: BigDecimal,                      //融资金额
+                                        financingPeriod: Int,                             //融资期限
+                                        interestRate: BigDecimal,                         //利率
+                                        businessStartTime: Option[Timestamp],             //业务开始时间
+                                        historicalCooperationDetail: Option[String],      //历史合作情况
+                                        mainBusinessInfo: Option[String],                 //业务主要信息
+                                        businessTransferInfo: Option[String],             //业务流转信息
+                                        businessRiskPoint: Option[String],                //业务风险点
+                                        performanceCreditAbilityEval: Option[String],     //履约信用及能力评估
+                                        finalConclusion: Option[String])                  //综合意见/最终结论
   implicit val startFlowInvestigationInfoFormat = jsonFormat19(StartFlowInvestigationInfo)
 
   /** 监管报告信息 **/
-  case class StartFlowSupervisorInfo(storageLocation: String,             //煤炭仓储地
-                                     storageProperty: String,             //仓储性质
-                                     storageAddress: String,              //仓储地地址
-                                     historicalCooperationDetail: String, //历史合作情况
-                                     operatingStorageDetail: String,      //经营及堆存情况
-                                     portStandardDegree: String,          //保管及进出口流程规范程度
-                                     supervisionCooperateDetail: String,  //监管配合情况
-                                     supervisionScheme: String,           //监管方案
-                                     finalConclusion: String)             //最终结论/综合意见
+  case class StartFlowSupervisorInfo(storageLocation: Option[String],             //煤炭仓储地
+                                     storageProperty: Option[String],             //仓储性质
+                                     storageAddress: Option[String],              //仓储地地址
+                                     historicalCooperationDetail: Option[String], //历史合作情况
+                                     operatingStorageDetail: Option[String],      //经营及堆存情况
+                                     portStandardDegree: Option[String],          //保管及进出口流程规范程度
+                                     supervisionCooperateDetail: Option[String],  //监管配合情况
+                                     supervisionScheme: Option[String],           //监管方案
+                                     finalConclusion: Option[String])             //最终结论/综合意见
   implicit val startFlowSupervisorInfoFormat = jsonFormat9(StartFlowSupervisorInfo)
 
   case class StartFlow(basicInfo: StartFlowBasicInfo,

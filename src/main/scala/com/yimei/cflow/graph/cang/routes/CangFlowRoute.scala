@@ -5,6 +5,7 @@ import akka.http.scaladsl.server.Directives._
 import com.yimei.cflow.api.http.client.AdminClient
 import com.yimei.cflow.graph.cang.models.CangFlowModel._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.StatusCodes
 import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.graph.cang.config.Config
 import spray.json._
@@ -35,18 +36,23 @@ class CangFlowRoute extends AdminClient
     */
   def startFlow = post {
     pathPrefix("startflow") {
+      println(" 11111111111 ")
+      println(" 11111111111 ")
       entity(as[StartFlow]) { startFlow =>
+        println(" 22222222222 ")
+        println(" 22222222222 ")
+        println(startFlow)
         //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
 
-        val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
-          Map(startPoint -> startFlow.toJson.toString,
-              orderId    -> startFlow.basicInfo.businessCode,
-              traderUserId -> myfUserId,
-              traderAccountantUserId -> myfFinanceId)
-        ) map { c =>
-          Result(Some(c))
-        }
-        complete(create)
+//        val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
+//          Map(startPoint -> startFlow.toJson.toString,
+//              orderId    -> startFlow.basicInfo.businessCode,
+//              traderUserId -> myfUserId,
+//              traderAccountantUserId -> myfFinanceId)
+//        ) map { c =>
+//          Result(Some(c))
+//        }
+        complete(StartFlowResult(true))
       }
     }
   }
