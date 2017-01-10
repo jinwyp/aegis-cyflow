@@ -401,7 +401,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">PUT</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"userid\\":\\"00000\\",\\"username\\":\\"u3\\",\\"password\\":\\"654321\\",\\"name\\":\\"admins\\",\\"email\\":\\"654321@12345.com\\",\\"phone\\":\\"13800000003\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"email\\":\\"654321@12345.com\\",\\"phone\\":\\"13800000003\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">admin modify user info</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>

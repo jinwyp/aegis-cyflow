@@ -33,10 +33,10 @@ object UserValidator {
 //        updateUser.id as "用户id" is notEmpty
 //        updateUser.className as "用户类型" is notEmpty
 //        updateUser.className.length as "用户类型字段长度" is between(1, 10)
-        updateUser.username as "登录名" is notEmpty
-        updateUser.username.length as "登录名字段长度" is between(2, 20)
-        updateUser.name as "姓名" is notEmpty
-        updateUser.name.length as "姓名字段长度" is between(1, 10)
+//        updateUser.username as "登录名" is notEmpty
+//        updateUser.username.length as "登录名字段长度" is between(2, 20)
+//        updateUser.name as "姓名" is notEmpty
+//        updateUser.name.length as "姓名字段长度" is between(1, 10)
         updateUser.email as "邮箱" is notEmpty
         updateUser.email.length as "邮箱字段长度" is between(1, 100)
         updateUser.phone.length as "手机号字段长度" is between(11, 20)

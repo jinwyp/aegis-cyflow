@@ -11,7 +11,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, PagerInfo, Result}
-import com.yimei.cflow.api.http.models.UserModel._
+import com.yimei.cflow.api.http.models.UserModel.{UserGroupInfo, _}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -209,28 +209,13 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员修改用户
-  def adminModifyUser(username: String, userInfo: UpdateUser): Future[Result[UserData]] = {
+  def adminModifyUser(username: String, userInfo: UpdateUser): Future[Result[String]] = {
     log.info(s"get into method adminModifyUser, username=${username}, userInfo=${userInfo.toString}")
-
-    val getInfo = getSpecificUserInfoByUsername(username)
-
-    def update(partyclass: String, instanceId: String, userInfo: UpdateUser) = {
-      updatePartyUser(partyclass, instanceId, userInfo.userid, userInfo.toJson.toString)
-    }
-
-    def getResult(result: String, info: UserGroupInfo): Result[UserData] = {
-      if(result == "success"){
-        val role = if(info.gid.isDefined && info.gid.get == "2") info.party + "Accountant" else info.party
-        Result(data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, phone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName)))
-      }else {
-        Result(data = None, success = false)
-      }
-    }
-
     for {
-      info <- getInfo
-      ur <- update(info.party, info.instanceId, userInfo)
-    } yield getResult(ur, info)
+      re <- updatePartyUserEmailAndPhone(username, userInfo.email, userInfo.phone)
+    } yield {
+      if(re == "success") Result(data = Some("")) else Result(data = Some(""), success = false)
+    }
   }
 
   //用户修改自己信息

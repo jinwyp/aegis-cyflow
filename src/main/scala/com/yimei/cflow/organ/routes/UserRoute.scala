@@ -366,7 +366,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
           throw BusinessException("不存在该用户名对应的用户信息！")
         } else {
           val gid = if(info.head._6 == null) None else Some(info.head._6)
-          UserGroupInfo(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5, gid, info.head._7, info.head._8)
+          UserGroupInfo(info.head._1, info.head._2, info.head._4, info.head._3, info.head._5, gid, info.head._7, info.head._8)
         }
       }
 
@@ -379,7 +379,27 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo ~ getUserInfoByUserName
+  def modifyEmailAndPhone: Route = put {
+    path("user" / Segment / Segment / Segment / "emailAndPhone") {(username, email, phone) =>
+      val pu = partyUser.filter(u=>
+        u.username === username &&
+        u.disable === 0
+      ).map(t => (t.phone, t.email)).update(Some(phone), Some(email))
+
+
+      complete(dbrun(pu) map { i =>
+        i match {
+          case 1 => "success"
+          case _ => throw BusinessException("不存在该用户")
+        }
+      } recover {
+        case _ => throw BusinessException("不存在该用户")
+      })
+    }
+  }
+
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo ~ getUserInfoByUserName ~
+    modifyEmailAndPhone
 }
 
 
