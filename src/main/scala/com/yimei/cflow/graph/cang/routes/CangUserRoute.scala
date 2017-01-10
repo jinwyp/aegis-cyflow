@@ -99,6 +99,28 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
+  /*
+   * 管理员重置用户密码
+   * url      http://localhost:9000/api/cang/users/:userId/company/:partyclass/:instanceId
+   * method   put
+   */
+  def adminResetUserPasswordRoute: Route = put {
+    pathPrefix("users" / Segment / "company" / Segment / Segment) { (userId, party, instance_id) =>
+      complete(adminResetUserPassword(party, instance_id, userId))
+    }
+  }
+
+  /*
+   * 管理员删除用户
+   * url      http://localhost:9000/api/cang/users/:userId/company/:partyclass/:instanceId
+   * method   get
+   */
+  def adminDisableUserRoute: Route = get {
+    pathPrefix("users" / Segment / "company" / Segment / Segment) { (userId, party, instance_id) =>
+      complete(adminDisableUser(userId))
+    }
+  }
+
 
   //---------------------------------------管理员 公司操作-----------------------------------
   /*
@@ -133,11 +155,11 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员获取特定公司信息
-   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId/edit
+   * url         http://localhost:9000/api/cang/company/:partyClass/:instanceId
    * method      get
    */
   def adminGetSpecificCompanyRoute: Route = get {
-    path("company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
+    path("companies" / Segment / Segment) { (partyClass, instanceId) =>
       myRequiredSession { s =>
         complete(adminGetSpecificCompany(partyClass, instanceId))
       }
@@ -146,15 +168,15 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员修改公司信息
-   * url      localhost:9000/cang/admin/partyClass/:partyclass/instanceId/:instance_id
+   * url      localhost:9000/cang/companies/:partyclass/:instanceId
    * method   put
    * body     瑞茂通
    */
   def adminUpdateCompanyRoute: Route = put {
-    path("admin" / "partyClass" / Segment/ "instanceId" / Segment) { (party, instanceId) =>
-      entity(as[String]) { companyName =>
+    path("companies" / Segment / Segment) { (party, instanceId) =>
+      entity(as[UpdateCompany]) { uc =>
         myRequiredSession { s =>
-          complete(adminUpdateCompany(party, instanceId, companyName))
+          complete(adminUpdateCompany(party, instanceId, uc.companyName))
         }
       }
     }
@@ -242,28 +264,8 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     }
   }
 
-  def adminResetUserPasswordRoute: Route = put {
-    pathPrefix("rup" / Segment / Segment / Segment) { (party, instance_id, userId) =>
-      complete(adminResetUserPassword(party, instance_id, userId))
-    }
-  }
-
-  def adminGetUserListRoute: Route = get {
-    pathPrefix("gul" / Segment / Segment) { (party, instance_id) =>
-      (parameter('limit.as[Int]) & parameter('offset.as[Int])) { (limit, offset) =>
-        complete(adminGetUserList(party, instance_id, limit, offset))
-      }
-    }
-  }
-
-  def adminDisableUserRoute: Route = get {
-    pathPrefix("adu" / Segment) { userId =>
-      complete(adminDisableUser(userId))
-    }
-  }
-
   def route = financeSideEnterRoute ~ adminAddUser ~ adminModifyUserRoute ~ userModifySelfRoute ~ loginRoute ~ userModifyPasswordRoute ~
-    adminResetUserPasswordRoute ~ adminGetUserListRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
+    adminResetUserPasswordRoute ~ adminDisableUserRoute ~ adminAddCompanyRoute ~ adminGetAllCompanyRoute ~ adminUpdateCompanyRoute ~
     adminGetAllUserListRoute ~ adminGetSpecificCompanyRoute ~ getInfoRoute ~ logoutRoute ~ adminGetSpecificUserRoute
 }
 

@@ -11,8 +11,9 @@ var userService = require('../service/user.js') ;
 
 var url = window.location.href;
 var urlShowStatus = url.substring(url.lastIndexOf("\/") + 1, url.length);
-var companyId = url.match(/\/company\/[a-zA-Z_0-9]{8,30}/);
-if (companyId){ companyId = companyId[0].split('/')[2] }
+var companyId = url.match(/\/company\/[a-zA-Z_0-9]{5,13}\/[a-zA-Z_0-9]{8,30}/);
+console.log(companyId)
+if (companyId){ companyId = companyId[0].split('/')[2] + '/' + companyId[0].split('/')[3] }
 
 console.log('companyID:', companyId, '页面状态:', urlShowStatus);
 
@@ -79,7 +80,7 @@ var companyInfo = function() {
                     }
 
                     if (vm.pageShowStatus === 'edit'){
-                        userService.updateCompanyInfoById(vm.currentCompany._id, user).done(function( data, textStatus, jqXHR ) {
+                        userService.updateCompanyInfoById(vm.currentCompany.instanceId, user).done(function( data, textStatus, jqXHR ) {
                             if (data.success){
                                 vm.successInputName = [];
                                 vm.errorInputName = [];
@@ -93,6 +94,10 @@ var companyInfo = function() {
         },
 
         addCompany :function(){
+
+        },
+
+        editCompany :function(){
 
         }
 

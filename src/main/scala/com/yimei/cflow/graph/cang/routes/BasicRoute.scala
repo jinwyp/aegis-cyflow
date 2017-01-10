@@ -175,7 +175,7 @@ class BasicRoute {
     * @return
     */
   def adminCompanyEdit = get {
-    path("warehouse" / "admin" / "home" / "company" / Segment / "edit") { companyId =>
+    path("warehouse" / "admin" / "home" / "company" / Segment / Segment / "edit") { (partyClass, instanceId) =>
       ftl("admin/platform/companyInfo.ftl")
     }
   }
