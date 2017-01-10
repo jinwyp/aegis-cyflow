@@ -77,6 +77,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     val formatter = new SimpleDateFormat("yyMMddhh")
     def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
+    val password = "111111"
+    def deal(info: AddUser) = {
+      UserAddModel(info.username, password, info.name, info.email, info.phone, info.companyId, info.className)
+    }
+
+    val info = deal(userInfo)
+    //邮件通知用户密码  //todo
+
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
       val queryYimei = Promise[Boolean].success(true).future //todo
@@ -87,24 +95,25 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
+
     val result: Future[State] = userInfo.className match {
       case e: String if(e == gkf) => {
         for {
           pie <- getExistCompany(gkf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == jgf) => {
         for {
           pie <- getExistCompany(jgf, userInfo.companyId)
-          cu <- createPartyUser(jgf, pie.instanceId, userId, userInfo.toJson.toString)
+          cu <- createPartyUser(jgf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == zjfyw) => {
         for {
           iyu <- isYimeiUser()
           pie <- getExistCompany(zjf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -112,7 +121,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(zjf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -120,7 +129,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -128,7 +137,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -222,23 +231,32 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UserData]] = {
     log.info(s"get into method userModifySelf, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
 
-    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
-    def update(qur: QueryUserResult): Future[String] = {
-      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    def getEmail(qur: QueryUserResult): String = {
+      if(userInfo.email.isDefined) userInfo.email.get else qur.userInfo.email.getOrElse("")
+    }
+    def getPhone(qur: QueryUserResult): String = {
+      if(userInfo.phone.isDefined) userInfo.phone.get else qur.userInfo.phone.getOrElse("")
     }
 
-    def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+    def update(qur: QueryUserResult, email: String, phone: String): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(phone), Some(email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    def getResult(result: String, qur: QueryUserResult, email: String, phone: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, email, phone, party, "", "")), success = true)
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
       qur <- getPartyUser
-      re <- update(qur)
-    } yield getResult(re, qur)
+      e = getEmail(qur)
+      p = getPhone(qur)
+      re <- update(qur, e, p)
+    } yield getResult(re, qur, e, p)
   }
 
   //用户登录
@@ -326,14 +344,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String): Result[String] = {
       if(result == "success"){
-        Result(data = Some(result), success = true, error = null, meta = null)
+        Result(data = Some(result))
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
-      re <- disableUser(username)
+      re: String <- disableUser(username)
     } yield getResult(re)
   }
 }

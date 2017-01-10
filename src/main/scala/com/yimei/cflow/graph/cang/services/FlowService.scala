@@ -3,6 +3,9 @@ package com.yimei.cflow.graph.cang.services
 import java.sql.Timestamp
 import java.util.concurrent.TimeUnit
 
+import akka.stream.ThrottleMode
+import akka.stream.scaladsl.Source
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitEntity}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
@@ -20,12 +23,21 @@ import spray.json._
 import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
+import com.yimei.cflow.config.DatabaseConfig._
+import com.yimei.cflow.api.util.DBUtils._
+import com.yimei.cflow.graph.cang.db.CangPayTransactionTable
+import com.yimei.cflow.graph.cang.db.Entities.CangPayTransactionEntity
+import slick.backend.DatabasePublisher
+
+import scala.concurrent.duration._
 
 /**
   * Created by wangqi on 16/12/28.
   */
 object FlowService extends UserModelProtocol
   with TaskProtocol
+  with AdminProtocol
+  with CangPayTransactionTable
   with Config {
 
 
@@ -59,7 +71,6 @@ object FlowService extends UserModelProtocol
         val jgUser = request[String, QueryUserResult](path = "api/user", pathVariables = Array(jgf, tass.supervisorCompanyId, tass.supervisorUserId))
 
         val zjUser: Future[UserGroupEntity] = request[String, Seq[UserGroupEntity]](path = "api/validateugroup", pathVariables = Array(zjf, tass.fundProviderCompanyId, tass.fundProviderUserId, fundGid)) map { uq =>
-          log.info("!!!!!!!!!!!{}", uq)
           uq.length match {
             case 1 => uq(0)
             case _ => throw BusinessException("CompanyId:" + tass.fundProviderCompanyId + "，userId:" + tass.fundProviderUserId + " 有多个资金方业务人员")
@@ -497,19 +508,20 @@ object FlowService extends UserModelProtocol
   }
 
 
+  //根据guid获取用户信息
+  private def splitGUID(guid: String): (String, String, String) = {
+    val regex = "([^-]+)-([^!]+)!(.*)".r
+    guid match {
+      case regex(party_class, instant_id, user_id) => (party_class, instant_id, user_id)
+      case _ => throw BusinessException(s"$guid 有误，无法获得用户信息")
+    }
+  }
+
+
   /**
     * 填充用户信息
     */
   def fillCYPartyMember(state: FlowState): Future[CYPartyMember] = {
-    //根据guid获取用户信息
-    def splitGUID(guid: String): (String, String, String) = {
-      val regex = "([^-]+)-([^!]+)!(.*)".r
-      guid match {
-        case regex(party_class, instant_id, user_id) => (party_class, instant_id, user_id)
-        case _ => throw BusinessException(s"$guid 有误，无法获得用户信息")
-      }
-    }
-
     //financer 数据
     val financerUser: UserInfo = state.points.get(startPoint) match {
       case Some(data) =>
@@ -869,6 +881,110 @@ object FlowService extends UserModelProtocol
 
 
   }
+
+  import driver.api._
+
+  /**
+    * 插入交易记录
+    * @param srcGuid
+    * @param targetGuid
+    * @param amount
+    * @param flowId
+    * @param pointName
+    * @return
+    */
+  def insertIntoCangPay(srcGuid:String,targetGuid:String,amount:BigDecimal,flowId:String,pointName:String) = {
+
+    val src = splitGUID(srcGuid)
+    val target = splitGUID(targetGuid)
+    val cpt = CangPayTransactionEntity(
+      None,
+      flowId,
+      pointName,
+      src._1,
+      src._2,
+      src._3,
+      target._1,
+      target._2,
+      target._3,
+      amount,
+      None,
+      1,
+      None
+    )
+
+    val cp: Future[CangPayTransactionEntity] = dbrun(
+      cangPayTransaction returning cangPayTransaction.map(_.id) into ( (cp,id) => cp.copy(id=id) ) += cpt
+    )
+
+    def req(cp:CangPayTransactionEntity): Future[PayResponse] = request[PayRequest,PayResponse](
+      path = "aa/aaa",
+      model = Some(PayRequest(
+        cp.srcUserType,
+        cp.srcCompanyId,
+        cp.targetUserType,
+        cp.targetCompanyId,
+        cp.amount)),
+      method="post"
+    )
+
+    def update(resp:PayResponse,id:Option[Long]): Future[Int] = {
+      dbrun(cangPayTransaction.filter(_.id===id)
+        .map(c => (c.status,c.transactionId,c.message))
+        .update((resp.status,resp.transactionId,resp.message)))
+    }
+
+    for{
+      p <- cp                                       //插入一条打款记录
+      r <- req(p)                                   //发起打款
+      i <- update(r,p.id)                           //根据返回更新数据
+    } yield {
+      i
+    }
+  }
+
+
+  /**
+    * 跑批查询
+    * @return
+    */
+  def queryPayResult() = {
+    val queryList: DatabasePublisher[CangPayTransactionEntity] = db.stream(
+      cangPayTransaction.filter(c=>c.status===process).result
+    )
+
+    Source.fromPublisher(queryList).throttle(1, 5 seconds, 1, ThrottleMode.shaping)
+      .runForeach(b => {
+        val res = request[String,PayQueryResponse](path="bb/bb",pathVariables = Array(b.transactionId.getOrElse("error")))
+
+        res.map{ re =>
+          re.status match {
+            case 2 =>
+              //成功
+              dbrun(cangPayTransaction.filter(_.transactionId === b.transactionId)
+                .map(c => (c.status,c.message))
+                .update((re.status,re.message))) map { i =>
+                //填充point
+                val point = Map(b.pointName -> "success".wrap())
+                val hijackEntity = HijackEntity(updatePoints = point, trigger = true, decision = None)
+                request[HijackEntity, FlowState](path = "api/flow/admin/hijack", pathVariables = Array(b.flowId), model = Some(hijackEntity), method = "put")
+              }
+            case 0 =>
+              //失败
+              dbrun(cangPayTransaction.filter(_.transactionId === b.transactionId)
+                .map(c => (c.status,c.message))
+                .update((re.status,re.message)))
+            case _ =>
+          }
+
+        }
+
+      })
+
+
+
+  }
+
 
 
 }

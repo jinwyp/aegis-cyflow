@@ -301,22 +301,20 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
   case class PayRequest( srcUserType:String,
                          srcCompanyId:String,
-                         srcUserId:String,
                          targetUserType:String,
                          targetCompanyId:String,
-                         targetUserId:String,
                          amount:BigDecimal
                        )
 
-  implicit val payRequestFormat = jsonFormat7(PayRequest)
+  implicit val payRequestFormat = jsonFormat5(PayRequest)
 
-  case class PayResponse(transactionId:String,
+  case class PayResponse(transactionId:Option[String],
                          status:Int,               // 0:失败，1：处理中， 2：成功
-                         message:String
+                         message:Option[String]
                         )
   implicit val payResponseFormat = jsonFormat3(PayResponse)
 
-  case class PayQueryResponse(status:Int, message:String) // 0:失败，1：处理中， 2：成功
+  case class PayQueryResponse(status:Int, message:Option[String]) // 0:失败，1：处理中， 2：成功
   implicit val payQueryResponseFormat = jsonFormat2(PayQueryResponse)
 
 }

@@ -16,6 +16,8 @@ trait Config {
   val url = config.getString("server.url")
   val port = config.getInt("client.port")
 
+  val process = 1
+
   //文件类型
   //val fileType = Map(0->"default",1->"contract",2->"finance",3-> "business")  //默认类型
   val default = "default"

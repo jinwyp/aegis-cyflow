@@ -15,8 +15,8 @@ object UserValidator {
         addUser.className.length as "用户类型字段长度" is between(1, 10)
         addUser.username as "登录名" is notEmpty
         addUser.username.length as "登录名字段长度" is between(2, 20)
-        addUser.password as "密码" is notEmpty
-        addUser.password.length as "密码字段长度" is between(6, 16)
+//        addUser.password as "密码" is notEmpty
+//        addUser.password.length as "密码字段长度" is between(6, 16)
         addUser.name as "姓名" is notEmpty
         addUser.name.length as "姓名字段长度" is between(1, 10)
         addUser.email as "邮箱" is notEmpty
@@ -48,9 +48,9 @@ object UserValidator {
   implicit val updateSelfValidator: Validator[UpdateSelf] =
     validator[UpdateSelf] {
       updateSelf =>
-        updateSelf.email as "邮箱" is notEmpty
-        updateSelf.email.length as "邮箱字段长度" is between(1, 100)
-        updateSelf.phone.length as "手机号字段长度" is between(11, 20)
+//        updateSelf.email as "邮箱" is notEmpty
+//        updateSelf.email.length as "邮箱字段长度" is between(1, 100)
+//        updateSelf.phone.length as "手机号字段长度" is between(11, 20)
     }
 
   /** 用户登陆 **/
