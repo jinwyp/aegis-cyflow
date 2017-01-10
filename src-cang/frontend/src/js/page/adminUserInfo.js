@@ -26,7 +26,7 @@ var userInfo = function() {
         currentUser : {
             username : '',
             email : '',
-            mobilePhone : '',
+            phone : '',
             companyName : '',
             partyClass:'',
             // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
@@ -110,7 +110,7 @@ var userInfo = function() {
                     var user = {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
-                        mobilePhone : vm.currentUser.mobilePhone,
+                        phone : vm.currentUser.phone,
                         companyName : vm.currentUser.companyName,
                         partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
@@ -133,7 +133,7 @@ var userInfo = function() {
                     }
 
                     if (vm.pageShowStatus === 'edit'){
-                        userService.updateUserInfoById(vm.currentUser._id, user).done(function( data, textStatus, jqXHR ) {
+                        userService.updateUserInfoById(vm.currentUser.username, user).done(function( data, textStatus, jqXHR ) {
                             if (data.success){
                                 vm.successInputName = [];
                                 vm.errorInputName = [];
