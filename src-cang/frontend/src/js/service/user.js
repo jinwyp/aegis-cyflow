@@ -132,6 +132,9 @@ exports.updateSessionUserPassword = function (oldPassword, newPassword){
 };
 
 
+
+
+
 exports.getUserList = function (query){
 
     var params = jQuery.extend({}, query);
@@ -199,27 +202,26 @@ exports.updateUserInfoById = function (userId, user){
         contentType : 'application/json',
         dataType : 'json',
         url      : url.userList + '/' + userId,
-        method   : 'PATCH',
+        method   : 'PUT',
         data     : JSON.stringify(params)
 
     });
-
 };
 
-exports.modifyPassword = function (userId, oldPassword, newPassword){
+exports.resetPasswordByUserId = function (userId, oldPassword, newPassword){
 
     var params = jQuery.extend({}, {
         userId : userId,
-        oldPassword : oldPassword,
-        newPassword : newPassword
+        oldPassword : oldPassword || '',
+        newPassword : newPassword || ''
     });
 
     return jQuery.ajax({
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.password,
-        method   : 'POST',
+        url      : url.userList + '/' + userId + '/password',
+        method   : 'PUT',
         data     : JSON.stringify(params)
 
     });

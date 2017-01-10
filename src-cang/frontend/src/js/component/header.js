@@ -18,6 +18,7 @@ var userService = require('../service/user.js') ;
 
 var header = function() {
 
+    // 前端检查是否登录
     if (!rawToken || !sessionUserId){
         // window.location.href = '/warehouse/admin/login'
     }
@@ -32,6 +33,7 @@ var header = function() {
                 data = JSON.parse(jqXHR.responseText);
             }
             $.notify(data || data.error.message, 'error');
+            console.log(data.error);
         }
     });
 
@@ -41,6 +43,7 @@ var header = function() {
                 // window.location.href = '/warehouse/admin/login'
             }else {
                 $.notify(data.error.message, 'error');
+                console.log(data.error);
             }
         }
     });
