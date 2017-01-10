@@ -541,7 +541,7 @@
     </object>
     <object type="LMREQUEST" id="z145">
         <attribute name="uuid" type="string">86D287F0-F3CB-454C-922F-B17E7164EF07</attribute>
-        <attribute name="url" type="string">http://127.0.0.1:9000/api/cang/deposits/123456?page=1\u2600count=10</attribute>
+        <attribute name="url" type="string">http://127.0.0.1:9000/api/cang/deposits/123456?page=1\u2600count=10\u2600state=notified</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>

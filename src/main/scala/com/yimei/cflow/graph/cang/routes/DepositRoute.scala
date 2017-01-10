@@ -55,12 +55,13 @@ class DepositRoute extends DepositTable with DepositEntityProtocal with ResultPr
 
   def getDeposit: Route = get {
     path("deposits" / Segment) { flowId =>
-      (parameter('page.as[Int].?) & parameter('count.as[Int].?)) { (p, ps) =>
+      (parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('state.as[String].?)) { (p, ps, s) =>
         val page = if(p.isDefined) p.get else 1
         val pageSize = if(ps.isDefined) ps.get else 10
+        val state = if(s.isDefined) s.get else NOTIFIED
 
         val dplist = dbrun(
-          deposit.filter(dp => dp.flowId === flowId).drop((page - 1) * pageSize).take(pageSize).result
+          deposit.filter(dp => dp.flowId === flowId && dp.state === state).drop((page - 1) * pageSize).take(pageSize).result
         )
 
         val total = dbrun(
