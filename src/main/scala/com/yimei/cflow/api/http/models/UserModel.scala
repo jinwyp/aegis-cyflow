@@ -11,6 +11,8 @@ object UserModel {
 
   case class UserInfo(password:String, phone:Option[String],email:Option[String], name:String, username: String)
 
+  case class UserAddModel(username: String, password: String, name: String, email: String, phone: String, companyId: String, className: String)
+
   case class QueryUserResult(userInfo:PartyUserEntity,status:State)
 
   case class UserListEntity(userList:Seq[PartyUserEntity],total:Int)
@@ -26,6 +28,7 @@ object UserModel {
   trait UserModelProtocol extends DefaultJsonProtocol with UserProtocol {
 
     implicit val addUserModelFormat = jsonFormat5(UserInfo)
+    implicit val UserInfoFormat = jsonFormat7(UserAddModel)
     implicit val queryUserResult = jsonFormat2(QueryUserResult)
     implicit val userlistFormat = jsonFormat2(UserListEntity)
     implicit val dynamicUserSearchFormat = jsonFormat4(DynamicUserSearch)
