@@ -38,6 +38,10 @@ var orderInfo = function () {
         repaymentList        : [],
         depositList          : [],
         deliveryList         : [],
+        contractInvestigationInfo      : [],
+        contractSupervisorInfo     : [],
+
+
         currentUser          : {
             id   : sessionUserId,
             role : sessionUserRole

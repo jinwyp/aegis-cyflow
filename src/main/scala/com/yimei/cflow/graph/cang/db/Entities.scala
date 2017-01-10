@@ -21,7 +21,7 @@ object Entities {
                                       targetUserId:String,
                                       targetCompanyId:String,
                                       amount:BigDecimal,
-                                      transaction_id:Option[String],
+                                      transactionId:Option[String],
                                       status:Int,
                                       message:Option[String]
                                       )
