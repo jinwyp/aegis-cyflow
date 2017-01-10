@@ -209,21 +209,28 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员修改用户
-  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
-    log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
-    val result = updatePartyUser(party, instance_id, userInfo.userid, userInfo.toJson.toString)
+  def adminModifyUser(username: String, userInfo: UpdateUser): Future[Result[UserData]] = {
+    log.info(s"get into method adminModifyUser, username=${username}, userInfo=${userInfo.toString}")
 
-    def getResult(result: String): Result[UserData] = {
+    val getInfo = getSpecificUserInfoByUsername(username)
+
+    def update(partyclass: String, instanceId: String, userInfo: UpdateUser) = {
+      updatePartyUser(partyclass, instanceId, userInfo.userid, userInfo.toJson.toString)
+    }
+
+    def getResult(result: String, info: UserGroupInfo): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, phone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
+        val role = if(info.gid.isDefined && info.gid.get == "2") info.party + "Accountant" else info.party
+        Result(data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, phone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName)))
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
-      re <- result
-    } yield getResult(re)
+      info <- getInfo
+      ur <- update(info.party, info.instanceId, userInfo)
+    } yield getResult(ur, info)
   }
 
   //用户修改自己信息
@@ -289,24 +296,31 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员重置用户密码
-  def adminResetUserPassword(party: String, instance_id: String, userId: String): Future[Result[String]] = {
-    log.info(s"get into method adminResetUserPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+  def adminResetUserPassword(username: String): Future[Result[String]] = {
+    log.info(s"get into method adminResetUserPassword, username:${username}")
 
-    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+    val getInfo = getSpecificUserInfoByUsername(username)
+
+    def getPartyUser(party: String, instanceId: String, userId: String): Future[QueryUserResult] = getSpecificPartyUser(party, instanceId, userId)
 
     val newPassword = "111111"
-    def update(qur: QueryUserResult): Future[String] = {
-      updatePartyUser(party, instance_id, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    def update(party: String, instanceId: String, userId: String, qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instanceId, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
     }
 
     for {
-      qur <- getPartyUser
-      ur <- update(qur)
+      info <- getInfo
+      qur <- getPartyUser(info.party, info.instanceId, info.userId)
+      ur <- update(info.party, info.instanceId, info.userId, qur)
     } yield { Result(data = Some(ur), success = true)}
   }
 
   def getUserInfo(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
     getSpecificPartyUser(party, instance_id, userId)
+  }
+
+  def getUserInfoByUsername(username: String): Future[UserGroupInfo] = {
+    getSpecificUserInfoByUsername(username)
   }
 
   //管理员查询用户列表
@@ -318,8 +332,8 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员禁用用户
-  def adminDisableUser(userId: String): Future[Result[String]] = {
-    log.info(s"get into method adminDisableUser, userId:${userId}")
+  def adminDisableUser(username: String): Future[Result[String]] = {
+    log.info(s"get into method adminDisableUser, username:${username}")
 
     def getResult(result: String): Result[String] = {
       if(result == "success"){
@@ -330,7 +344,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     }
 
     for {
-      re <- disableUser(userId)
+      re <- disableUser(username)
     } yield getResult(re)
   }
 }

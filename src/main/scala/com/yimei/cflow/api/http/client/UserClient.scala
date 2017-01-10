@@ -81,11 +81,11 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     }
   }
 
-  def disableUser(userId: String): Future[String] = {
+  def disableUser(username: String): Future[String] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的disAbleUser接口
     sendRequest(
       path = "api/disable",
-      pathVariables = Array(userId),
+      pathVariables = Array(username),
       method = "get"
     )
   }
@@ -99,6 +99,17 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       bodyEntity = Some(dynamicQuery)
     ) map { result =>
       result.parseJson.convertTo[UserInfoList]
+    }
+  }
+
+  def getSpecificUserInfoByUsername(username: String): Future[UserGroupInfo] = {
+    //访问com.yimei.cflow.organ.routes.UserRoute中的getUserInfoByUserName接口
+    sendRequest(
+      path = "api/specificUser",
+      pathVariables = Array(username),
+      method = "get"
+    ) map { result =>
+      result.parseJson.convertTo[UserGroupInfo]
     }
   }
 }

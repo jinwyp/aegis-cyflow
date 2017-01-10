@@ -70,30 +70,32 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员获取特定用户
-   * url      http://localhost:9000/api/cang/users/partyclass/instanceId/userId/edit
+   * url      http://localhost:9000/api/cang/users/:username
    * method   get
    */
   def adminGetSpecificUserRoute: Route = get {
-    path("users" / Segment / Segment/ Segment / "edit") { (party, instanceId, userId) =>
-      import scala.concurrent.ExecutionContext.Implicits.global
-      val result = for {
-        info <- getUserInfo(party, instanceId, userId)
-      } yield Result(data = Some(info))
-      complete(result)
+    path("users" / Segment) { (username) =>
+      myRequiredSession { s =>
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val result = for {
+          info <- getUserInfoByUsername(username)
+        } yield Result(data = Some(info))
+        complete(result)
+      }
     }
   }
 
   /*
    * 管理员修改邮箱、电话
-   * url      http://localhost:9000/cang/admin/userinfo/:party/:instance_id
+   * url      http://localhost:9000/cang/users/:username
    * method   put application/json
    * body     {"userid":"00000","username":"u3","password":"654321","name":"admins","email":"654321@12345.com","phone":"13800000003"}
    */
   def adminModifyUserRoute: Route = put {
-    path("admin" / "userinfo" / Segment / Segment) { (party, instance_id) =>
+    path("users" / Segment) { username =>
       entity(as[UpdateUser]) { user =>
         myRequiredSession { s =>
-          complete(adminModifyUser(party, instance_id, user))
+          complete(adminModifyUser(username, user))
         }
       }
     }
@@ -101,23 +103,27 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 管理员重置用户密码
-   * url      http://localhost:9000/api/cang/users/:userId/company/:partyclass/:instanceId
+   * url      http://localhost:9000/api/cang/users/:username/password
    * method   put
    */
   def adminResetUserPasswordRoute: Route = put {
-    pathPrefix("users" / Segment / "company" / Segment / Segment) { (userId, party, instance_id) =>
-      complete(adminResetUserPassword(party, instance_id, userId))
+    pathPrefix("users" / Segment / "password") { username =>
+      myRequiredSession { s =>
+        complete(adminResetUserPassword(username))
+      }
     }
   }
 
   /*
    * 管理员删除用户
-   * url      http://localhost:9000/api/cang/users/:userId/company/:partyclass/:instanceId
-   * method   get
+   * url      http://localhost:9000/api/cang/users/:username
+   * method   delete
    */
-  def adminDisableUserRoute: Route = get {
-    pathPrefix("users" / Segment / "company" / Segment / Segment) { (userId, party, instance_id) =>
-      complete(adminDisableUser(userId))
+  def adminDisableUserRoute: Route = delete {
+    pathPrefix("users" / Segment) { username =>
+      myRequiredSession { s =>
+        complete(adminDisableUser(username))
+      }
     }
   }
 
