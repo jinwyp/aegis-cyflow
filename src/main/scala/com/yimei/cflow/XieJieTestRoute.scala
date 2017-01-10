@@ -12,6 +12,8 @@ import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.ApplicationConfig
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{PayRequest, PayResponse}
+import com.yimei.cflow.graph.cang.models.CangFlowModel._
 
 import scala.concurrent.Future
 
@@ -66,8 +68,25 @@ class XieJieTestRoute extends ApplicationConfig with SprayJsonSupport {
     }
   }
 
+  def test1 = post {
+    path("pay"/"transfer"/"account") {
+      entity(as[PayRequest]) { t =>
+        complete(PayResponse(Some("11223344"),1,Some("我在处理")))
+      }
+    }
+  }
 
-  def route: Route = hello ~ hello1 ~ hello2 ~ hello3 ~ addUser
+  def test2 = get {
+    path("pay"/"transaction"/"query") {
+      parameter('transactionId){ t =>
+        println(t)
+        complete(PayQueryResponse(2,None))
+      }
+    }
+  }
+
+
+  def route: Route = hello ~ hello1 ~ hello2 ~ hello3 ~ addUser ~ test1 ~ test2
 
 
 }

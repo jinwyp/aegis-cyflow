@@ -9,8 +9,8 @@ import com.yimei.cflow.graph.cang.services.FlowService._
   */
 object ScheduleTask {
 
-    class CiticSchedule extends Consumer with ActorLogging {
-      def endpointUri = "quartz://schedule-citic?cron=1+0+*+*+*+?"
+    class CangSchedule extends Consumer with ActorLogging {
+      def endpointUri = "quartz://schedule-cang?cron=0/30+*+*+*+*+?"
 
       def receive = {
         case msg =>
