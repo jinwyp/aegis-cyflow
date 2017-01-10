@@ -8,8 +8,8 @@ import BaseFormatter._;
 object UserModel extends DefaultJsonProtocol {
 
   /** 添加用户 **/
-  case class AddUser(username: String, password: String, name: String, email: String, phone: String, companyId: String, className: String)
-  implicit val addUserFormat = jsonFormat7(AddUser)
+  case class AddUser(username: String, name: String, email: String, phone: String, companyId: String, className: String)
+  implicit val addUserFormat = jsonFormat6(AddUser)
 
   /** 管理员修改用户 **/
   case class UpdateUser(email: String, phone: String)

@@ -56,6 +56,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
     pathPrefix("api"/"cang") {
       CangFlowRoute.route() ~
         CangUserRoute.route() ~
+        DepositRoute.route() ~
         SessionDemoRoute.route()
     } ~
     CangStatic.route() ~

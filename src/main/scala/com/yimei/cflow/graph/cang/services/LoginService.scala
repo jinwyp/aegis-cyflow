@@ -77,6 +77,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     val formatter = new SimpleDateFormat("yyMMddhh")
     def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
+    val password = "111111"
+    def deal(info: AddUser) = {
+      UserAddModel(info.username, password, info.name, info.email, info.phone, info.companyId, info.className)
+    }
+
+    val info = deal(userInfo)
+    //邮件通知用户密码  //todo
+
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
       val queryYimei = Promise[Boolean].success(true).future //todo
@@ -87,24 +95,25 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
+
     val result: Future[State] = userInfo.className match {
       case e: String if(e == gkf) => {
         for {
           pie <- getExistCompany(gkf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == jgf) => {
         for {
           pie <- getExistCompany(jgf, userInfo.companyId)
-          cu <- createPartyUser(jgf, pie.instanceId, userId, userInfo.toJson.toString)
+          cu <- createPartyUser(jgf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == zjfyw) => {
         for {
           iyu <- isYimeiUser()
           pie <- getExistCompany(zjf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -112,7 +121,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(zjf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -120,7 +129,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -128,7 +137,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
