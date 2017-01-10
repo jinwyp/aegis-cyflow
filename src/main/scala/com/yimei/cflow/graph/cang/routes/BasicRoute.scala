@@ -237,7 +237,7 @@ class BasicRoute extends Session with SessionProtocol{
   def contractJindiao = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jindiao") { id =>
       myRequiredSession { s =>
-        ftl("admin/customer/hello.ftl")
+        ftl("admin/customer/investigatorInfo.ftl")
       }
     }
   }
@@ -245,7 +245,7 @@ class BasicRoute extends Session with SessionProtocol{
   def contractJianguan = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jianguan") { id =>
       myRequiredSession { s =>
-        ftl("admin/customer/hello.ftl")
+        ftl("admin/customer/supervisorInfo.ftl")
       }
     }
   }
