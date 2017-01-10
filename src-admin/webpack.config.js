@@ -21,7 +21,7 @@ module.exports = {
         contentBase: path.join(__dirname), //制定静态文件目录
         publicPath: "/static/admin/js/",
         compress: true,
-        port: 8080,  //默认8080
+        port: 8020,  //默认8080
         proxy: {
             "/api": "http://192.168.1.118:9000"
         }

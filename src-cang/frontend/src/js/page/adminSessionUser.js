@@ -70,7 +70,7 @@ var sessionUser = function() {
                             // role : vm.currentUser.role,
                             // companyName : vm.currentUser.companyName,
                             email : vm.currentUser.email,
-                            mobilePhone : vm.currentUser.mobilePhone
+                            phone : vm.currentUser.phone
                         };
 
                         userService.updateSessionUserInfo(user).done(function (data, textStatus, jqXHR) {

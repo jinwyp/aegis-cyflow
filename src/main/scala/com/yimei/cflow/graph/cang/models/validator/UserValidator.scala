@@ -48,9 +48,9 @@ object UserValidator {
   implicit val updateSelfValidator: Validator[UpdateSelf] =
     validator[UpdateSelf] {
       updateSelf =>
-        updateSelf.email as "邮箱" is notEmpty
-        updateSelf.email.length as "邮箱字段长度" is between(1, 100)
-        updateSelf.phone.length as "手机号字段长度" is between(11, 20)
+//        updateSelf.email as "邮箱" is notEmpty
+//        updateSelf.email.length as "邮箱字段长度" is between(1, 100)
+//        updateSelf.phone.length as "手机号字段长度" is between(11, 20)
     }
 
   /** 用户登陆 **/
