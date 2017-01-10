@@ -262,7 +262,6 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
       }
 
       def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
-       println("-------------" + info.length)
         if(info.length == 0) {
           throw BusinessException("登录信息有误！")
         } else {
@@ -334,10 +333,12 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
   def disAbleUser: Route = get {
     pathPrefix("disable" / Segment) { username =>
+
+      log.info("get inside " + username)
       val pu = partyUser.filter(u =>
         u.username === username &&
         u.disable === 0
-      ).map(t => (t.disable)).update(1)
+      ).map(t => t.disable).update(1)
 
       complete(dbrun(pu) map { i =>
         i match {

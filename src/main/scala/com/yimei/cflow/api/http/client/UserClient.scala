@@ -92,11 +92,13 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
 
   def disableUser(username: String): Future[String] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的disAbleUser接口
-    sendRequest(
+     sendRequest(
       path = "api/disable",
       pathVariables = Array(username),
       method = "get"
     )
+   // res.map( s => println(s))
+   // res
   }
 
   def getAllUserList(page: Int, pageSize: Int, dynamicQuery: String): Future[UserInfoList] = {

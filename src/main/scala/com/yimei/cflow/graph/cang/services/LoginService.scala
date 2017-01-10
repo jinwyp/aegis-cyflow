@@ -238,9 +238,9 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true)
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
@@ -335,14 +335,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def getResult(result: String): Result[String] = {
       if(result == "success"){
-        Result(data = Some(result), success = true, error = null, meta = null)
+        Result(data = Some(result))
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
-      re <- disableUser(username)
+      re: String <- disableUser(username)
     } yield getResult(re)
   }
 }
