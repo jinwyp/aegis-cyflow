@@ -207,13 +207,13 @@ class BasicRoute {
   /////////////////////////////////////////////
   def contractJindiao = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jindiao") { id =>
-      ftl("admin/customer/hello.ftl")
+      ftl("admin/customer/investigatorInfo.ftl")
     }
   }
 
   def contractJianguan = get {
     pathPrefix("warehouse" / "admin" / "home" / "finance" / "contract" /Segment / "jianguan") { id =>
-      ftl("admin/customer/hello.ftl")
+      ftl("admin/customer/supervisorInfo.ftl")
     }
   }
 
