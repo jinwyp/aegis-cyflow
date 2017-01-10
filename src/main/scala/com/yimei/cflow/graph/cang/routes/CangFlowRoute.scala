@@ -38,7 +38,6 @@ class CangFlowRoute extends AdminClient
     pathPrefix("startflow") {
       entity(as[StartFlow]) { startFlow =>
         //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
-
         complete(createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
           Map(startPoint -> startFlow.toJson.toString,
             orderId -> startFlow.basicInfo.businessCode,

@@ -145,7 +145,6 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         complete(result)
         }
       }
-
   }
 
 
@@ -257,7 +256,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              select pu.username, pu.user_id, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
              from party_instance pi join party_user pu on pu.party_id = pi.id
              left join user_group ug on pu.user_id = ug.user_id
-             where pu.username = $username  and pu.password = $password
+             where pu.username = $username  and pu.password = $password and pu.disable = 0
              """
         dbrun(query.as[(String, String, String, String, String, String, String, String)])
       }
@@ -333,9 +332,9 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
   }
 
   def disAbleUser: Route = get {
-    pathPrefix("disable" / Segment) { userId =>
+    pathPrefix("disable" / Segment) { username =>
       val pu = partyUser.filter(u =>
-        u.user_id === userId &&
+        u.username === username &&
         u.disable === 0
       ).map(t => (t.disable)).update(1)
 
@@ -350,7 +349,37 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo
+  def getUserInfoByUserName: Route = {
+    path("specificUser" / Segment) { username =>
+      def getUserInfo(username: String): Future[Vector[(String, String, String, String, String, String, String, String)]] = {
+        val query = sql"""
+             select pu.username, pu.user_id, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
+             from party_instance pi join party_user pu on pu.party_id = pi.id
+             left join user_group ug on pu.user_id = ug.user_id
+             where pu.username = $username
+             """
+        dbrun(query.as[(String, String, String, String, String, String, String, String)])
+      }
+
+      def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
+        if(info.length == 0) {
+          throw BusinessException("不存在该用户名对应的用户信息！")
+        } else {
+          val gid = if(info.head._6 == null) None else Some(info.head._6)
+          UserGroupInfo(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5, gid, info.head._7, info.head._8)
+        }
+      }
+
+      val result = for {
+        info <- getUserInfo(username)
+        re = getResult(info)
+      } yield re
+
+      complete(result)
+    }
+  }
+
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo ~ getUserInfoByUserName
 }
 
 
