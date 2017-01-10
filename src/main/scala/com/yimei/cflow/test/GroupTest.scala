@@ -1,7 +1,7 @@
 package com.yimei.cflow.test
 
 import com.yimei.cflow.api.services.ServiceProxy
-import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.DaemonMaster
 import com.yimei.cflow.graph.ying.YingConfig._
@@ -9,7 +9,7 @@ import com.yimei.cflow.graph.ying.YingConfig._
 /**
   * Created by hary on 16/12/16.
   */
-object GroupTest extends App with CoreConfig {
+object GroupTest extends App {
 
   val names = Array(module_auto, module_user, module_group, module_flow, module_id)
 

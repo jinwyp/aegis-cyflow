@@ -33,43 +33,37 @@
                 <div class="panel-body">
                     <form class="form-horizontal" data-parsley-validate="" novalidate="" ms-validate="@addValidate">
 
-                        <fieldset>
-                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
-                                <label for="inputCompanyName" class="col-sm-2 control-label"><span class=" marginR">*</span>公司名称:</label>
-                                <div class="col-sm-5">
-                                    <input id="inputCompanyName" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                           ms-duplex="@currentCompany.companyName" ms-rules='{required:true}' data-required-message="请输入公司名称">
+                        <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
+                            <label for="inputCompanyName" class="col-sm-2 control-label"><span class=" marginR">*</span>公司名称:</label>
+                            <div class="col-sm-5">
+                                <input id="inputCompanyName" type="text" class="form-control" placeholder="请输入公司名称" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
+                                       ms-duplex="@currentCompany.companyName" ms-rules='{required:true}' data-required-message="请输入公司名称">
 
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.companyName}}</p>
-                                </div>
-                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
+                                <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.companyName}}</p>
                             </div>
-                        </fieldset>
+                            <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
+                        </div>
 
-
-                        <fieldset>
-                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputPartyClass')>-1 && 'has-error' ]">
-                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>类型:</label>
-                                <div class="col-sm-5">
-                                    <select name="account" class="form-control" id="inputPartyClass" ms-visible="@pageShowStatus === 'add' "
-                                            ms-duplex="@currentCompany.partyClass" ms-rules='{required:true}' data-required-message="请选择用户类型">
-                                        <option value="" > - </option>
-                                        <option ms-for="role in @roleList" ms-attr="{value: role.name}" >{{role.displayName}} </option>
-                                    </select>
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.role | rolename}}</p>
-                                </div>
-                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputPartyClass')>-1">{{@errorMessage.inputPartyClass}}</div>
-
+                        <div class="form-group" ms-class="[@errorInputName.indexOf('inputPartyClass')>-1 && 'has-error' ]">
+                            <label class="col-sm-2 control-label "><span class=" marginR">*</span>类型:</label>
+                            <div class="col-sm-5">
+                                <select name="account" class="form-control" id="inputPartyClass" ms-visible="@pageShowStatus === 'add' "
+                                        ms-duplex="@currentCompany.partyClass" ms-rules='{required:true}' data-required-message="请选择用户类型">
+                                    <option value="" > - </option>
+                                    <option ms-for="role in @roleList" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                </select>
+                                <p class="form-control-static " ms-visible="@pageShowStatus === 'edit'">{{@currentCompany.partyClass | rolename}}</p>
                             </div>
-                        </fieldset>
+                            <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputPartyClass')>-1">{{@errorMessage.inputPartyClass}}</div>
+                        </div>
 
 
-
-
-                        <div class="btn-edit text-center">
-                            <button class="btn btn-default btn-lg btn-primary" type="submit" ms-click="@addCompany()" ms-visible="@pageShowStatus === 'add'">保存</button>
-                            <button class="btn btn-default btn-lg btn-primary" type="submit" ms-click="@editCompany()" ms-visible="@pageShowStatus ===  'edit'">保存</button>
-                            <a class="btn btn-default btn-lg marginL" href="/warehouse/admin/home/companylist">返回</a>
+                        <div class="form-group">
+                            <div class="col-sm-offset-4 col-sm-4">
+                                <button class="btn btn-default btn-lg btn-primary" type="submit" ms-click="@addCompany()" ms-visible="@pageShowStatus === 'add'">保存</button>
+                                <button class="btn btn-default btn-lg btn-primary" type="submit" ms-click="@editCompany()" ms-visible="@pageShowStatus ===  'edit'">保存</button>
+                                <a class="btn btn-default btn-lg marginL" href="/warehouse/admin/home/companylist">返回</a>
+                            </div>
                         </div>
                     </form>
                 </div>

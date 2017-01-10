@@ -21,6 +21,7 @@ import com.yimei.cflow.engine.db.FlowInstanceTable
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.organ.db._
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
@@ -28,8 +29,8 @@ import scala.concurrent.Future
 /**
   * Created by wangqi on 16/12/20.
   */
-class AdminRoute(proxy: ActorRef) extends CoreConfig
-  with PartyUserTable
+class AdminRoute(proxy: ActorRef)
+  extends PartyUserTable
   with PartyInstanceTable
   with FlowInstanceTable
   with AdminProtocol

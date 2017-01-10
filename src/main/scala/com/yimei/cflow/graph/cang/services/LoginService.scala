@@ -11,7 +11,7 @@ import spray.json._
 import DefaultJsonProtocol._
 import com.yimei.cflow.api.http.models.PartyModel._
 import com.yimei.cflow.api.http.models.ResultModel.{Error, PagerInfo, Result}
-import com.yimei.cflow.api.http.models.UserModel.{DynamicQueryUser, QueryUserResult, UserInfo, UserListEntity}
+import com.yimei.cflow.api.http.models.UserModel.{UserGroupInfo, _}
 import com.yimei.cflow.api.models.database.UserOrganizationDBModel.PartyInstanceEntity
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -21,6 +21,7 @@ import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
+import com.yimei.cflow.config.CoreConfig._
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -76,6 +77,14 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     val formatter = new SimpleDateFormat("yyMMddhh")
     def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
+    val password = "111111"
+    def deal(info: AddUser) = {
+      UserAddModel(info.username, password, info.name, info.email, info.phone, info.companyId, info.className)
+    }
+
+    val info = deal(userInfo)
+    //邮件通知用户密码  //todo
+
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
       val queryYimei = Promise[Boolean].success(true).future //todo
@@ -86,48 +95,49 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
     }
 
+
     val result: Future[State] = userInfo.className match {
       case e: String if(e == gkf) => {
         for {
-          pie <- getExistCompany(gkf, userInfo.instanceId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString)
+          pie <- getExistCompany(gkf, userInfo.companyId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == jgf) => {
         for {
-          pie <- getExistCompany(jgf, userInfo.instanceId)
-          cu <- createPartyUser(jgf, pie.instanceId, userId, userInfo.toJson.toString)
+          pie <- getExistCompany(jgf, userInfo.companyId)
+          cu <- createPartyUser(jgf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == zjfyw) => {
         for {
           iyu <- isYimeiUser()
-          pie <- getExistCompany(zjf, userInfo.instanceId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          pie <- getExistCompany(zjf, userInfo.companyId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
       case e: String if(e == zjfcw) => {
         for {
           iyu <- isYimeiUser
-          pie <- getExistCompany(zjf, userInfo.instanceId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          pie <- getExistCompany(zjf, userInfo.companyId)
+          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
       case e: String if(e == rzfyw) => {
         for {
           iyu <- isYimeiUser
-          pie <- getExistCompany(rzf, userInfo.instanceId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          pie <- getExistCompany(rzf, userInfo.companyId)
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
         } yield cu
       }
       case e: String if(e == rzfcw) => {
         for {
           iyu <- isYimeiUser
-          pie <- getExistCompany(rzf, userInfo.instanceId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, userInfo.toJson.toString) if iyu == true
+          pie <- getExistCompany(rzf, userInfo.companyId)
+          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
@@ -158,8 +168,16 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   def adminGetSpecificCompany(partyClass: String, instanceId: String): Future[Result[PartyInstanceEntity]] = {
     log.info(s"get into method adminGetSpecificCompany, partyClass:${partyClass}, instanceId:${instanceId}")
 
+    def deal(entity: PartyInstanceEntity) = {
+      PartyInstanceEntity(entity.id, entity.partyClass, entity.partyClass + "/" + entity.instanceId, entity.companyName, entity.disable, entity.ts_c)
+    }
+
+    val result: Future[List[PartyInstanceEntity]] = queryPartyInstance(partyClass, instanceId) map { (sq: List[PartyInstanceEntity]) =>
+      sq.map(deal(_))
+    }
+
     for {
-      pi <- queryPartyInstance(partyClass, instanceId)
+      pi <- result
     } yield Result(data = Some(pi.head), success = true)
   }
 
@@ -168,7 +186,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     log.info(s"get into method adminGetAllUser")
     for {
       userList <- getAllUserList(page, pageSize, dynamicQuery.toJson.toString)
-    } yield Result(data = Some(userList.datas), success = true, meta = PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page))
+    } yield Result(data = Some(userList.datas), success = true, meta = Some(PagerInfo(total = userList.total, count = pageSize, offset = (page - 1) * pageSize, page)))
   }
 
   //管理员获取所有公司信息
@@ -188,7 +206,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     for {
       pilist <- getAllPartyInstanceList(page, pageSize, companyName)
       result = getResult(pilist.partyInstanceList)
-    } yield Result(data = Some(result), success = true, meta = PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page))//total:Int, count:Int, offset:Int, page:Int)
+    } yield Result(data = Some(result), success = true, meta = Some(PagerInfo(total = pilist.total, count = pageSize, offset = (page - 1) * pageSize, page)))//total:Int, count:Int, offset:Int, page:Int)
   }
 
   //管理员修改公司信息
@@ -200,48 +218,49 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员修改用户
-  def adminModifyUser(party: String, instance_id: String, userInfo: UpdateUser): Future[Result[UserData]] = {
-    log.info(s"get into method adminModifyUser, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
-    val result = updatePartyUser(party, instance_id, userInfo.userid, userInfo.toJson.toString)
-
-    def getResult(result: String): Result[UserData] = {
-      if(result == "success"){
-        Result(data = Some(UserData(userId = userInfo.userid, username = userInfo.username, email = userInfo.email, mobilePhone = userInfo.phone, role = party, companyId = "", companyName = "")), success = true, error = null, meta = null)
-      }else {
-        Result(data = None, success = false, meta = null)
-      }
-    }
-
+  def adminModifyUser(username: String, userInfo: UpdateUser): Future[Result[String]] = {
+    log.info(s"get into method adminModifyUser, username=${username}, userInfo=${userInfo.toString}")
     for {
-      re <- result
-    } yield getResult(re)
+      re <- updatePartyUserEmailAndPhone(username, userInfo.email, userInfo.phone)
+    } yield {
+      if(re == "success") Result(data = Some("")) else Result(data = Some(""), success = false)
+    }
   }
 
   //用户修改自己信息
   def userModifySelf(party: String, instance_id: String, userId: String, userInfo: UpdateSelf): Future[Result[UserData]] = {
     log.info(s"get into method userModifySelf, party=${party}, instance_id=${instance_id}, userInfo=${userInfo.toString}")
 
-    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
-    def update(qur: QueryUserResult): Future[String] = {
-      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(userInfo.phone), Some(userInfo.email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    def getEmail(qur: QueryUserResult): String = {
+      if(userInfo.email.isDefined) userInfo.email.get else qur.userInfo.email.getOrElse("")
+    }
+    def getPhone(qur: QueryUserResult): String = {
+      if(userInfo.phone.isDefined) userInfo.phone.get else qur.userInfo.phone.getOrElse("")
     }
 
-    def getResult(result: String, qur: QueryUserResult): Result[UserData] = {
+    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+    def update(qur: QueryUserResult, email: String, phone: String): Future[String] = {
+      updatePartyUser(party, instance_id, userId, UserInfo(qur.userInfo.password, Some(phone), Some(email), qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    }
+
+    def getResult(result: String, qur: QueryUserResult, email: String, phone: String): Result[UserData] = {
       if(result == "success"){
-        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, userInfo.email, userInfo.phone, party, "", "")), success = true, error = null, meta = null)
+        Result(data = Some(UserData(qur.userInfo.user_id, qur.userInfo.username, email, phone, party, "", "")), success = true)
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
       qur <- getPartyUser
-      re <- update(qur)
-    } yield getResult(re, qur)
+      e = getEmail(qur)
+      p = getPhone(qur)
+      re <- update(qur, e, p)
+    } yield getResult(re, qur, e, p)
   }
 
   //用户登录
-  def getLoginUserInfo(userLogin: UserLogin): Future[MySession] = {
+  def getLoginUserInfo(userLogin: UserLogin): Future[UserGroupInfo] = {
     log.info(s"get into method getLoginUserInfo, username:${userLogin.username}")
     getLoginUserInfo(userLogin.toJson.toString)
   }
@@ -275,25 +294,40 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       ur <- update(qur)
       re = getResult(qur)
     } yield { Result(data = Some(re), success = true)}) recover {
-      case e: BusinessException => Result[UserData](data = None, success = false, error = Error(code = 111, message = e.message, field = ""))
+      case e: BusinessException => Result[UserData](data = None, success = false, error = Some(Error(code = 111, message = e.message, field = "")))
     }
   }
 
   //管理员重置用户密码
-  def adminResetUserPassword(party: String, instance_id: String, userId: String): Future[Result[String]] = {
-    log.info(s"get into method adminResetUserPassword, userId:${userId}, party:${party}, instance_id:${instance_id}")
+  def adminResetUserPassword(username: String): Future[Result[String]] = {
+    log.info(s"get into method adminResetUserPassword, username:${username}")
 
-    val getPartyUser: Future[QueryUserResult] = getSpecificPartyUser(party, instance_id, userId)
+    val getInfo = getSpecificUserInfoByUsername(username)
+
+    def getPartyUser(party: String, instanceId: String, userId: String): Future[QueryUserResult] = getSpecificPartyUser(party, instanceId, userId)
 
     val newPassword = "111111"
-    def update(qur: QueryUserResult): Future[String] = {
-      updatePartyUser(party, instance_id, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
+    def update(party: String, instanceId: String, userId: String, qur: QueryUserResult): Future[String] = {
+      updatePartyUser(party, instanceId, userId, UserInfo(newPassword, qur.userInfo.phone, qur.userInfo.email, qur.userInfo.name, qur.userInfo.username).toJson.toString)
     }
 
     for {
-      qur <- getPartyUser
-      ur <- update(qur)
+      info <- getInfo
+      qur <- getPartyUser(info.party, info.instanceId, info.userId)
+      ur <- update(info.party, info.instanceId, info.userId, qur)
     } yield { Result(data = Some(ur), success = true)}
+  }
+
+  def getUserInfo(party: String, instance_id: String, userId: String): Future[QueryUserResult] = {
+    getSpecificPartyUser(party, instance_id, userId)
+  }
+
+  def getUserInfoByUsername(username: String): Future[UserData] = {
+    def deal(ugi: UserGroupInfo): UserData = {
+      val role = if(ugi.gid.isDefined && ugi.gid.get == "2") ugi.party + "Accountant" else ugi.party
+      UserData(userId = ugi.userId, username = ugi.userName, email = ugi.email, phone = ugi.phone, role = role, companyId = ugi.instanceId, companyName = ugi.companyName)
+    }
+    getSpecificUserInfoByUsername(username) map { deal(_)}
   }
 
   //管理员查询用户列表
@@ -305,19 +339,19 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   //管理员禁用用户
-  def adminDisableUser(userId: String): Future[Result[String]] = {
-    log.info(s"get into method adminDisableUser, userId:${userId}")
+  def adminDisableUser(username: String): Future[Result[String]] = {
+    log.info(s"get into method adminDisableUser, username:${username}")
 
     def getResult(result: String): Result[String] = {
       if(result == "success"){
-        Result(data = Some(result), success = true, error = null, meta = null)
+        Result(data = Some(result))
       }else {
-        Result(data = None, success = false, meta = null)
+        Result(data = None, success = false)
       }
     }
 
     for {
-      re <- disableUser(userId)
+      re: String <- disableUser(username)
     } yield getResult(re)
   }
 }

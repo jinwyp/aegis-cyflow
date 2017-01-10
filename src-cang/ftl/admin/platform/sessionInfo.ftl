@@ -75,7 +75,7 @@
                                     <div class="form-group" ms-class="[@errorInputName.indexOf('inputPhone')>-1 && 'has-error']">
                                         <label class="col-sm-2 control-label">手机号码</label>
                                         <div class="col-sm-5">
-                                            <input type="text" id="inputPhone" class="form-control" placeholder="请输入手机号码" ms-duplex="@currentUser.mobilePhone" ms-rules="{required:true, pattern: /^1[358][0123456789]\d{8}$/ }"
+                                            <input type="text" id="inputPhone" class="form-control" placeholder="请输入手机号码" ms-duplex="@currentUser.phone" ms-rules="{required:true, pattern: /^1[358][0123456789]\d{8}$/ }"
                                                    data-required-message="请输入手机号码" data-pattern-message="手机号码格式错误">
                                         </div>
                                         <div class="col-sm-5 text-danger" ms-visible="@errorInputName.indexOf('inputPhone')>-1">{{@errorMessage.inputPhone}}</div>

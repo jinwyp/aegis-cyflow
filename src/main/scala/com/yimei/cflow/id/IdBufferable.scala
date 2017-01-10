@@ -7,6 +7,7 @@ import com.yimei.cflow.id.models.{CommandGetId, Id}
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext}
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by hary on 16/12/16.
@@ -19,8 +20,8 @@ trait IdBufferable {
   var curId: Long =  0
   var max:Long  = 0;
 
-  implicit val myEc: ExecutionContext
-  implicit val myTimeout: Timeout
+//  implicit val myEc: ExecutionContext
+//  implicit val myTimeout: Timeout
   def myIdGenerator: ActorRef
 
   def nextId = {

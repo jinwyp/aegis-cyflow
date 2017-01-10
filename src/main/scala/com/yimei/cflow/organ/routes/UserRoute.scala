@@ -145,7 +145,6 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         complete(result)
         }
       }
-
   }
 
 
@@ -252,23 +251,29 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
   def getLoginUserInfo: Route = post {
     (pathPrefix("login") & entity(as[UserLoginInfo])) { user =>
-      val getInfo: Future[Seq[(String, String, String, String, String, String, String)]] = dbrun((for {
-        (pu, pi) <- partyUser join partyInstance on (_.party_id === _.id) if (pu.username === user.username && pu.password === user.password && pu.disable === 0)
-      } yield (pu.username, pu.user_id, pu.email.getOrElse(""), pu.phone.getOrElse(""), pi.party_class, pi.instance_id, pi.party_name)).result)
+      def getUserInfo(username: String, password: String): Future[Vector[(String, String, String, String, String, String, String, String)]] = {
+        val query = sql"""
+             select pu.username, pu.user_id, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
+             from party_instance pi join party_user pu on pu.party_id = pi.id
+             left join user_group ug on pu.user_id = ug.user_id
+             where pu.username = $username  and pu.password = $password and pu.disable = 0
+             """
+        dbrun(query.as[(String, String, String, String, String, String, String, String)])
+      }
 
-      def uuid() = UUID.randomUUID().toString
-
-      def getResult(info: Seq[(String, String, String, String, String, String, String)]): MySession = {
+      def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
         if(info.length == 0) {
           throw BusinessException("登录信息有误！")
         } else {
-          MySession(uuid, info.head._1, info.head._2, info.head._3, info.head._4, info.head._5, info.head._6, info.head._7)
+          val gid = if(info.head._6 == null) None else Some(info.head._6)
+          UserGroupInfo(info.head._1, info.head._2, info.head._3, info.head._4, info.head._5, gid, info.head._7, info.head._8)
         }
       }
 
       val result = for {
-        info <- getInfo
-      } yield getResult(info)
+        info <- getUserInfo(user.username, user.password)
+        re = getResult(info)
+      } yield re
 
       complete(result)
     }
@@ -285,7 +290,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              select pu.user_id, pu.username, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
              from party_instance pi join party_user pu on pu.party_id = pi.id
              left join user_group ug on pu.user_id = ug.user_id
-             where pi.party_name like $companyName and pu.username like $userName limit $l offset $os
+             where pu.disable = 0 and pi.party_name like $companyName and pu.username like $userName limit $l offset $os
              """
           dbrun(query.as[(String, String, String, String, String, String, String, String)])
         }
@@ -295,7 +300,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              select count(1)
              from party_instance pi join party_user pu on pu.party_id = pi.id
              left join user_group ug on pu.user_id = ug.user_id
-             where pi.party_name like $companyName and pu.username like $userName
+             where pu.disable = 0 and pi.party_name like $companyName and pu.username like $userName
              """
           for {
             account <- dbrun(query.as[Int])
@@ -327,11 +332,13 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
   }
 
   def disAbleUser: Route = get {
-    pathPrefix("disable" / Segment) { userId =>
+    pathPrefix("disable" / Segment) { username =>
+
+      log.info("get inside " + username)
       val pu = partyUser.filter(u =>
-        u.user_id === userId &&
+        u.username === username &&
         u.disable === 0
-      ).map(t => (t.disable)).update(1)
+      ).map(t => t.disable).update(1)
 
       complete(dbrun(pu) map { i =>
         i match {
@@ -344,7 +351,57 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     }
   }
 
-  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo
+  def getUserInfoByUserName: Route = {
+    path("specificUser" / Segment) { username =>
+      def getUserInfo(username: String): Future[Vector[(String, String, String, String, String, String, String, String)]] = {
+        val query = sql"""
+             select pu.username, pu.user_id, pu.email, pu.phone, pi.party_class, ug.gid, pi.instance_id, pi.party_name
+             from party_instance pi join party_user pu on pu.party_id = pi.id
+             left join user_group ug on pu.user_id = ug.user_id
+             where pu.username = $username
+             """
+        dbrun(query.as[(String, String, String, String, String, String, String, String)])
+      }
+
+      def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
+        if(info.length == 0) {
+          throw BusinessException("不存在该用户名对应的用户信息！")
+        } else {
+          val gid = if(info.head._6 == null) None else Some(info.head._6)
+          UserGroupInfo(info.head._1, info.head._2, info.head._4, info.head._3, info.head._5, gid, info.head._7, info.head._8)
+        }
+      }
+
+      val result = for {
+        info <- getUserInfo(username)
+        re = getResult(info)
+      } yield re
+
+      complete(result)
+    }
+  }
+
+  def modifyEmailAndPhone: Route = put {
+    path("user" / Segment / Segment / Segment / "emailAndPhone") {(username, email, phone) =>
+      val pu = partyUser.filter(u=>
+        u.username === username &&
+        u.disable === 0
+      ).map(t => (t.phone, t.email)).update(Some(phone), Some(email))
+
+
+      complete(dbrun(pu) map { i =>
+        i match {
+          case 1 => "success"
+          case _ => throw BusinessException("不存在该用户")
+        }
+      } recover {
+        case _ => throw BusinessException("不存在该用户")
+      })
+    }
+  }
+
+  def route: Route = postUser ~ getUser ~ putUser ~ getUserList ~ getLoginUserInfo ~ disAbleUser ~ getAllUserInfo ~ getUserInfoByUserName ~
+    modifyEmailAndPhone
 }
 
 

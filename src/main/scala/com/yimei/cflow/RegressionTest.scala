@@ -8,6 +8,7 @@ import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.sys.process._
 

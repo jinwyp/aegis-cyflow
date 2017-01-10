@@ -66,21 +66,21 @@ var sessionUser = function() {
                     if (vm.pageShowStatus === 'info') {
 
                         var user = {
-                            username : vm.currentUser.username,
+                            // username : vm.currentUser.username,
+                            // role : vm.currentUser.role,
+                            // companyName : vm.currentUser.companyName,
                             email : vm.currentUser.email,
-                            mobilePhone : vm.currentUser.mobilePhone,
-                            companyName : vm.currentUser.companyName,
-                            role : vm.currentUser.role
+                            phone : vm.currentUser.phone
                         };
 
-                        userService.updateUserInfoById(vm.currentUser._id, user).done(function (data, textStatus, jqXHR) {
+                        userService.updateSessionUserInfo(user).done(function (data, textStatus, jqXHR) {
                             if (data.success) {
                                 $.notify("用户修改信息成功!", 'success');
                             }
                         })
                     }
                     if (vm.pageShowStatus === 'password') {
-                        userService.modifyPassword(vm.currentUser._id, vm.modifyPassword.oldPwd, vm.modifyPassword.newPwd).done(function (data, textStatus, jqXHR) {
+                        userService.updateSessionUserPassword(vm.modifyPassword.oldPwd, vm.modifyPassword.newPwd).done(function (data, textStatus, jqXHR) {
                             if (data.success) {
                                 $.notify("密码修改成功!", 'success');
                             }

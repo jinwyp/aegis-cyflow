@@ -24,13 +24,13 @@ var url = {
     userList : prefix + '/users',
     companyList : prefix + '/companies',
     login : prefix + '/auth/login',
-    password : prefix + '/user/password'
+    session : prefix + '/sessionuser'
 };
 
 
 var saveSessionInLocalStorage = function (jwt, user) {
     localStorage.setItem('feathers-jwt', jwt);
-    localStorage.setItem('sessionUserId', user._id);
+    localStorage.setItem('sessionUserId', user.userId);
     localStorage.setItem('sessionUserRole', user.role);
 }
 

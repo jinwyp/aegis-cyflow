@@ -9,34 +9,17 @@
     var pageSize=10;
     var container = $("#panel-pagination");
 
-    var newDataList = {'flows' : []};
-
-    // var dataTest;
-    // $.getJSON('./json/dataList.json', function(res){
-    //     dataTest = res.dataList;
-    // });
-    //
-    // var sources = function () {
-    //     var result = [];
-    //     for (var i = 1; i < 110; i++) {
-    //         result.push(i);
-    //     }
-    //     return result;
-    // }();
-
     var PAGE = function() {
         return {
             init :       function () {
                 console.log('------init------');
-                getData();
-
                 container.pagination({
-                    dataSource : function () {
+                    dataSource : function (done) {
                         var result = [];
-                        for (var i = 1; i < newDataList.length; i++) {
+                        for (var i = 1; i < 110; i++) {
                             result.push(i);
                         }
-                        return result;
+                        done(result);
                     },
                     pageNumber : currentPage,
                     pageSize :   pageSize,
@@ -44,11 +27,7 @@
                         currentPage = pagination.pageNumber;
                         pageSize = pagination.pageSize;
                         console.log('------callback------' + currentPage);
-
-                        // formatData(dataTest[0]);
-                        // var history = ejs.compile($('#tmpl_table').html())(dataTest[0]);
-
-                        var history = ejs.compile($('#tmpl_table').html())(newDataList);
+                        var history = ejs.compile($('#tmpl_table').html())(getData(currentPage));
                         $('#table-list').html(history);
                     }
                 });
@@ -56,20 +35,23 @@
         }
     };
 
-    function formatData (data) {
-        newDataList.flows = newDataList.flows.splice(0, newDataList.length);
-        data.flows.forEach(function (item) {
-            item.company_type = item.user_type.split('-')[0];
-            item.company_id = item.user_type.split('-')[1];
-            newDataList.flows.push(item);
-        });
-    }
-
     window.PAGE = PAGE;
 
     new PAGE().init();
 
-    function getData (){
+    function formatData (data) {
+        console.log('------formatData------');
+        var newData = [];
+        data.flows.forEach(function (item) {
+            item.company_type = item.user_type.split('-')[0];
+            item.company_id = item.user_type.split('-')[1];
+            newData.push(item);
+        });
+        data.flows = newData;
+        return data;
+    }
+
+    function getSearchUrl (){
         var company_type = $("#input-company-type").val();
         var company_id = $("#input-company-id").val();
         var userId = $("#input-user-id").val();
@@ -100,21 +82,35 @@
         } else {
             url = "/api/flow?page="+currentPage+"&pageSize="+pageSize;
         }
+        return url;
+    }
 
+    function getData (pageNumber){
+        console.log('------getData------');
+
+        var dataList = [];
+
+        //服务器数据
         $.ajax({
             method: "get",
-            url: url
+            url: getSearchUrl()
         }).done(function (data) {
             formatData(data);
             // console.dir(data);
         });
+
+        //本地数据
+        // $.getJSON('./json/dataList.json', function(res){
+        //     console.log(res.dataList[pageNumber-1]);
+        //      dataList= formatData(res.dataList[pageNumber-1]);
+        //     console.log(dataList);
+        // });
+        return dataList;
     }
 
     $(".btn-submit").click(function(){
         currentPage = 1;
-        getData();
-        var history = ejs.compile($('#tmpl_table').html())(newDataList);
-        $('#table-list').html(history);
+        new PAGE().init();
     });
 
     $("#input-user-type").focus(function () {

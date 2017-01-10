@@ -1,15 +1,16 @@
 package com.yimei.cflow.api.util
 
 import akka.event.{Logging, LoggingAdapter}
-import com.yimei.cflow.config.CoreConfig
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.DatabaseConfig._
 
 import scala.concurrent.Future
+import com.yimei.cflow.config.CoreConfig._
 
 /**
   * Created by wangqi on 16/12/16.
   */
-object DBUtils extends CoreConfig {
+object DBUtils {
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
 
   import driver.api._

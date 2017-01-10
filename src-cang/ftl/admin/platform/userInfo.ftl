@@ -42,37 +42,36 @@
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.username}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUsername')>-1">{{@errorMessage.inputUsername}}</div>
-
                             </div>
                         </fieldset>
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
                                 <div class="col-sm-5">
-                                    <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentCompany" ms-rules='{required:true}' data-required-message="请选择公司名称" data-duplex-changed="@selectCompany">
+                                    <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' "
+                                            ms-duplex="@currentCompanyJSON"  data-duplex-changed="@selectCompany">
                                         <option value="" > - </option>
                                         <option ms-for="company in @companyList" ms-attr="{value : @jsonStringfy(company)}">{{company.companyName}}
                                         </option>
                                     </select>
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@companyList.companyName}}</p>
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.companyName}}</p>
                                 </div>
-                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
+                                <div class="col-sm-5 help-block addCompanyNameErrMess" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                             </div>
                         </fieldset>
-                        <fieldset ms-visible="@currentUser.partyClass === 'trader' || @currentUser.partyClass === 'fundProvider'">
+                        <fieldset >
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputUserRole')>-1 && 'has-error' ]">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>用户类型:</label>
-                                <div class="col-sm-5">
+                                <div class="col-sm-5" ms-visible="@currentCompany.partyClass === @role.trader || @currentCompany.partyClass === @role.fundProvider ">
                                     <select name="account" class="form-control" id="inputUserRole" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
-                                            ms-duplex="@currentUser.role" ms-rules='{required:true}' data-required-message="请选择用户类型">
-                                        <option value="" > - </option>
-                                        <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" >{{role.displayName}} </option>
-                                        <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" >{{role.displayName}} </option>
+                                            ms-duplex="@currentUser.role">
+                                        <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" ms-visible="@currentCompany.partyClass === 'trader'">{{role.displayName}} </option>
+                                        <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" ms-visible="@currentCompany.partyClass === 'fundProvider'">{{role.displayName}} </option>
                                     </select>
-                                    <span class="help-block m-b-none" ms-visible="@currentUser.role===@role.traderAccountant || @currentUser.role===@role.fundProviderAccountant">
-                                    </span>
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.role | rolename}}</p>
+                                </div>
+
+                                <div class="col-sm-5" ms-visible="@currentCompany.partyClass !== @role.trader && @currentCompany.partyClass !== @role.fundProvider ">
+                                    <p class="form-control-static ">{{@currentUser.role | rolename}} </p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUserRole')>-1">{{@errorMessage.inputUserRole}}</div>
                             </div>
@@ -108,15 +107,15 @@
 
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error']">
-                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>公司邮箱:</label>
-                                <div class="col-sm-5">
+                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>邮箱:</label>
+                                <div class="col-sm-4">
                                     <input type="text" id="inputEmail" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.email"
                                            ms-rules='{required:true, email:true}' data-required-message="请输入公司邮箱" data-email-message="邮箱格式不正确">
                                     <p class="form-control-static " ms-visible=" @pageShowStatus === 'info'">{{@currentUser.email}}</p>
                                     <span class="help-block m-b-none" ms-visible="@pageShowStatus === 'edit' || @pageShowStatus === 'add'">*&nbsp;为用户发送与找回密码的有效途径</span>
                                 </div>
                                 <div class="col-sm-5" ms-visible="@pageShowStatus === 'info'">
-                                    <a href="/warehouse/admin/home/session/password" class="btn btn-primary">重置密码</a>
+                                    <button class="btn btn-primary" ms-click="@resetPassword">重置密码</button>
                                     <span class=" marginL">重置后，该密码将发送至该邮箱</span>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputEmail')>-1">{{@errorMessage.inputEmail}}</div>
@@ -126,9 +125,9 @@
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputMobilePhone')>-1 && 'has-error'] ">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>手机号码:</label>
                                 <div class="col-sm-5">
-                                    <input type="text" id="inputMobilePhone" placeholder="请输入手机号码" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.mobilePhone"
+                                    <input type="text" id="inputMobilePhone" placeholder="请输入手机号码" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.phone"
                                            ms-rules="{ required:true, pattern: /^1[358][0123456789]\d{8}$/ }" data-required-message="请输入手机号码" data-pattern-message="手机号码不正确">
-                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.mobilePhone}}</p>
+                                    <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.phone}}</p>
                                 </div>
                                 <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputMobilePhone')>-1">{{@errorMessage.inputMobilePhone}}</div>
                             </div>

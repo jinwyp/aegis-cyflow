@@ -21,10 +21,9 @@ object CangFlowValidator {
         basicInfo.applyCompanyName.length as "融资方公司名称字段长度" is between(1, 100)
         basicInfo.applyUserId as "融资方用户id" is notEmpty
         basicInfo.applyUserName as "融资方用户姓名" is notEmpty
-        basicInfo.applyUserName.length as "融资方用户姓名字段长度" is between(1, 10)
+        basicInfo.applyUserName.get.length as "融资方用户姓名字段长度" is between(1, 10)
         basicInfo.applyUserPhone as "融资方用户手机号" is notEmpty
         basicInfo.applyUserPhone.length as "融资方用户手机号字段长度" is between(10, 20)
-        basicInfo.auditFileList.each is valid
         basicInfo.businessCode as "业务编号" is notEmpty
         basicInfo.businessCode.length as "业务编号字段长度" max(20)
         basicInfo.coalAmount as "总质押吨数" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
@@ -36,7 +35,7 @@ object CangFlowValidator {
         basicInfo.downstreamCompanyName as "下游签约单位公司名称" is notEmpty
         basicInfo.downstreamCompanyName.length as "下游签约单位公司名称字段长度" is between(1, 100)
         basicInfo.financeCreateTime as "审批开始时间" is notNull
-        basicInfo.financeEndTime as "审批完成时间" is notNull
+        basicInfo.financeEndTime as "审批开始时间" is notNull
         basicInfo.financingAmount as "拟融资金额" is notNull
         basicInfo.financingAmount as "拟融资金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         basicInfo.financingDays as "拟融资天数" min(1)
@@ -57,23 +56,23 @@ object CangFlowValidator {
       investigationInfo =>
         investigationInfo.applyCompanyName as "融资方公司名称" is notEmpty
         investigationInfo.applyCompanyName.length as "融资方公司名称字段长度" is between(1, 100)
-        investigationInfo.businessRiskPoint.length as "业务风险点字段长度" is between(1, 5000)
-        investigationInfo.businessTransferInfo.length as "业务流转信息字段长度" is between(1, 5000)
+        investigationInfo.businessRiskPoint.get.length as "业务风险点字段长度" is between(1, 5000)
+        investigationInfo.businessTransferInfo.get.length as "业务流转信息字段长度" is between(1, 5000)
         investigationInfo.downstreamContractCompany.length as "下游签约单位名称字段长度" is between(1, 100)
-        investigationInfo.finalConclusion.length as "综合意见字段长度" is between(1, 5000)
+        investigationInfo.finalConclusion.get.length as "综合意见字段长度" is between(1, 5000)
         investigationInfo.financingAmount as "尽调报告中融资金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         investigationInfo.financingPeriod as "融资期限" max(3650)
-        investigationInfo.historicalCooperationDetail.length as "历史合作情况字段长度" is between(1, 5000)
+        investigationInfo.historicalCooperationDetail.get.length as "历史合作情况字段长度" is between(1, 5000)
         investigationInfo.interestRate as "利率" is notNull
         investigationInfo.interestRate as "利率" is between(BigDecimal.valueOf(0), BigDecimal.valueOf(100))
-        investigationInfo.mainBusinessInfo.length as "业务主要信息" is between(1, 5000)
+        investigationInfo.mainBusinessInfo.get.length as "业务主要信息" is between(1, 5000)
         investigationInfo.ourContractCompany.length as "我方签约公司字段长度" is between(1, 100)
-        investigationInfo.performanceCreditAbilityEval.length as "履约信用及能力评估字段长度" is between(1, 5000)
-        investigationInfo.qualityInspectionUnit.length as "质量检验单位字段长度" is between(1, 100)
-        investigationInfo.quantityInspectionUnit.length as "数量检验单位字段长度" is between(1, 100)
-        investigationInfo.terminalServer.length as "终端客户字段长度" is between(1, 100)
-        investigationInfo.transitPort.length as "中转港口字段长度" is between(1, 100)
-        investigationInfo.transportParty.length as "中转方字段长度" is between(1, 100)
+        investigationInfo.performanceCreditAbilityEval.get.length as "履约信用及能力评估字段长度" is between(1, 5000)
+        investigationInfo.qualityInspectionUnit.get.length as "质量检验单位字段长度" is between(1, 100)
+        investigationInfo.quantityInspectionUnit.get.length as "数量检验单位字段长度" is between(1, 100)
+        investigationInfo.terminalServer.get.length as "终端客户字段长度" is between(1, 100)
+        investigationInfo.transitPort.get.length as "中转港口字段长度" is between(1, 100)
+        investigationInfo.transportParty.get.length as "中转方字段长度" is between(1, 100)
         investigationInfo.upstreamContractCompany.length as "上游签约单位名称字段长度" is between(1, 100)
     }
 
@@ -81,15 +80,15 @@ object CangFlowValidator {
   implicit val startFlowSupervisorInfoValidator: Validator[StartFlowSupervisorInfo] =
     validator[StartFlowSupervisorInfo] {
       supervisorInfo =>
-        supervisorInfo.finalConclusion.length as "综合意见字段长度" is between(1, 5000)
-        supervisorInfo.historicalCooperationDetail.length as "历史合作情况字段长度" is between(1, 5000)
-        supervisorInfo.operatingStorageDetail.length as "经营及堆存情况字段长度" is between(1, 5000)
-        supervisorInfo.storageAddress.length as "仓储地地址字段长度" is between(1, 200)
-        supervisorInfo.storageLocation.length as "仓储地字段长度" is between(1, 100)
-        supervisorInfo.storageProperty.length as "仓储性质字段长度" is between(1, 100)
-        supervisorInfo.portStandardDegree.length as "保管及进出口流程规范程度字段长度" is between(1, 5000)
-        supervisorInfo.supervisionCooperateDetail.length as "监管配合情况字段长度" is between(1, 5000)
-        supervisorInfo.supervisionScheme.length as "监管方案字段长度" is between(1, 5000)
+        supervisorInfo.finalConclusion.get.length as "综合意见字段长度" is between(1, 5000)
+        supervisorInfo.historicalCooperationDetail.get.length as "历史合作情况字段长度" is between(1, 5000)
+        supervisorInfo.operatingStorageDetail.get.length as "经营及堆存情况字段长度" is between(1, 5000)
+        supervisorInfo.storageAddress.get.length as "仓储地地址字段长度" is between(1, 200)
+        supervisorInfo.storageLocation.get.length as "仓储地字段长度" is between(1, 100)
+        supervisorInfo.storageProperty.get.length as "仓储性质字段长度" is between(1, 100)
+        supervisorInfo.portStandardDegree.get.length as "保管及进出口流程规范程度字段长度" is between(1, 5000)
+        supervisorInfo.supervisionCooperateDetail.get.length as "监管配合情况字段长度" is between(1, 5000)
+        supervisorInfo.supervisionScheme.get.length as "监管方案字段长度" is between(1, 5000)
     }
 
   /** 贸易商选择 港口, 监管, 资金方 业务人员, 财务 **/

@@ -74,6 +74,7 @@ exports.logout = function (user){
     window.location.href = '/warehouse/admin/login'
 };
 
+
 exports.getSessionUser = function (query){
 
     if (sessionUserId){
@@ -83,7 +84,7 @@ exports.getSessionUser = function (query){
             headers : headers,
             contentType : 'application/json',
             dataType : 'json',
-            url      : url.userList + '/' + sessionUserId,
+            url      : url.session ,
             method   : 'GET',
             data     : params
 
@@ -96,6 +97,43 @@ exports.getSessionUser = function (query){
         }
     }
 };
+
+exports.updateSessionUserInfo = function (user){
+
+    var params = jQuery.extend({}, user);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session,
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
+exports.updateSessionUserPassword = function (oldPassword, newPassword){
+
+    var params = jQuery.extend({}, {
+        oldPassword : oldPassword,
+        newPassword : newPassword
+    });
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.session + '/password',
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+    });
+
+};
+
+
+
+
 
 exports.getUserList = function (query){
 
@@ -164,33 +202,47 @@ exports.updateUserInfoById = function (userId, user){
         contentType : 'application/json',
         dataType : 'json',
         url      : url.userList + '/' + userId,
-        method   : 'PATCH',
+        method   : 'PUT',
         data     : JSON.stringify(params)
 
     });
-
 };
 
-exports.modifyPassword = function (userId, oldPassword, newPassword){
+exports.resetPasswordByUserId = function (userId, oldPassword, newPassword){
 
     var params = jQuery.extend({}, {
         userId : userId,
-        oldPassword : oldPassword,
-        newPassword : newPassword
+        oldPassword : oldPassword || '',
+        newPassword : newPassword || ''
     });
 
     return jQuery.ajax({
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.password,
-        method   : 'POST',
+        url      : url.userList + '/' + userId + '/password',
+        method   : 'PUT',
         data     : JSON.stringify(params)
 
     });
 
 };
 
+
+exports.deleteUser = function (userId, user){
+
+    var params = jQuery.extend({}, user);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.userList + '/' + userId,
+        method   : 'delete',
+        data     : JSON.stringify(params)
+
+    });
+};
 
 
 
@@ -211,12 +263,11 @@ exports.getCompanyList = function (query){
 
 };
 
-
 exports.addNewCompany = function (company){
 
     var params = jQuery.extend({
-        party_name : '',
-        party_class : ''
+        companyName : '',
+        partyClass : ''
     }, company);
 
 
@@ -232,21 +283,6 @@ exports.addNewCompany = function (company){
 
 };
 
-exports.updateCompanyInfoById = function (companyId, company){
-
-    var params = jQuery.extend({}, company);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.companyList + '/' + companyId,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
 exports.getCompanyInfoById = function (companyId, query){
 
     var params = jQuery.extend({}, query);
@@ -262,3 +298,19 @@ exports.getCompanyInfoById = function (companyId, query){
     });
 
 };
+exports.updateCompanyInfoById = function (companyId, company){
+
+    var params = jQuery.extend({}, company);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.companyList + '/' + companyId,
+        method   : 'PUT',
+        data     : JSON.stringify(params)
+
+    });
+
+};
+

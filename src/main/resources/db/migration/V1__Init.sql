@@ -137,3 +137,37 @@ create table asset(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 CREATE UNIQUE INDEX asset_index ON asset(asset_id);
 
+
+-- 保证金
+create table deposit (
+  id             BIGINT(20)  NOT NULL AUTO_INCREMENT,
+  flowId         VARCHAR(64) NOT NULL,
+  expectedAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  actuallyAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
+  state          VARCHAR(30) NOT NULL DEFAULT 'init',
+  memo           VARCHAR(1024)        DEFAULT NULL,
+  ts_c           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- 仓压交易记录
+create table cang_pay_transaction (
+  id BIGINT not null auto_increment,       -- 非业务主键
+  flow_id    varchar(64)   not null,
+  point_name VARCHAR(32) not null,
+  src_user_type varchar(32) not null,
+  src_user_id   varchar(64) not null,
+  src_company_id varchar(32) not null,
+  target_user_type varchar(32) not null,
+  target_user_id   varchar(64) not null,
+  target_company_id varchar(32) not null,
+  amount     DECIMAL(18,2) NOT NULL,
+  transaction_id varchar(32),
+  status   TINYINT not NULL,
+  message VARCHAR(256),
+  PRIMARY KEY (`id`)
+);
+
+
+
+

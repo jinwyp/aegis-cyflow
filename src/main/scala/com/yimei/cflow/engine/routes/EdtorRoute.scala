@@ -11,11 +11,12 @@ import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.engine.db.DesignTable
 import com.yimei.cflow.engine.routes.EditorObject.DesignDetail
+import com.yimei.cflow.config.CoreConfig._
 /**
   * Created by hary on 16/12/28.
   */
 
-class EditorRoute(proxy: ActorRef) extends CoreConfig with DesignTable with SprayJsonSupport {
+class EditorRoute(proxy: ActorRef) extends DesignTable with SprayJsonSupport {
 
   import com.yimei.cflow.engine.routes.EditorObject.DesignList
   import driver.api._

@@ -1,11 +1,11 @@
 package com.yimei.cflow.graph.cang
 
-import akka.actor.ActorLogging
-import akka.camel.Consumer
 import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{Arrow, State}
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
+import com.yimei.cflow.graph.cang.services.FlowService._
 
 import scala.concurrent.Future
 
@@ -113,7 +113,16 @@ object CangGraphJar extends Config {
   //资金方自动付款
   def fundProviderPayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
     //todo 向数据库中插入一条记录
-    Future{Map(fundProviderPaying -> "yes")}
+    insertIntoCangPay(
+      cmd.state.points(fundProviderUserId).value,           //src  - fundProviderUser
+      cmd.state.points(traderUserId).value,                 //target - traderUser
+      BigDecimal(cmd.state.points(recommendAmount).value),
+      cmd.state.flowId,
+      fundProviderPaySuccess
+    ) map { t =>
+      Map(fundProviderPaying -> "yes")
+    }
+
   }
 
 
@@ -131,6 +140,7 @@ object CangGraphJar extends Config {
     //todo 向数据库中插入一条记录
     Future{Map(traderRepaying -> "yes")}
   }
+
 
 }
 

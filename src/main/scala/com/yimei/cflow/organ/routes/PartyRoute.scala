@@ -9,6 +9,7 @@ import com.yimei.cflow.api.util.DBUtils
 import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.organ.db._
 import DBUtils._
+import com.yimei.cflow.config.CoreConfig._
 
 import scala.concurrent.Future
 
