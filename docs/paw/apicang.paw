@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>3953F143-6ED2-4B71-A6A0-4556E582293E</UUID>
-        <nextObjectID>138</nextObjectID>
+        <nextObjectID>140</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -127,7 +127,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">8</attribute>
+        <attribute name="order" type="int64">9</attribute>
         <attribute name="name" type="string">admin add company</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -153,7 +153,7 @@
         <attribute name="method" type="string">PUT</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"data":{"json":"{\\"companyName\\":\\"xxx\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
-        <attribute name="order" type="int64">7</attribute>
+        <attribute name="order" type="int64">8</attribute>
         <attribute name="name" type="string">admin modify company</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -188,7 +188,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">6</attribute>
+        <attribute name="order" type="int64">7</attribute>
         <attribute name="name" type="string">admin get specific company</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -203,7 +203,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">3</attribute>
+        <attribute name="order" type="int64">0</attribute>
         <attribute name="name" type="string">admin get all users</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -229,7 +229,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">0</attribute>
+        <attribute name="order" type="int64">2</attribute>
         <attribute name="name" type="string">admin add user</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -352,7 +352,7 @@
         <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">admin</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z117 z131 z119 z136 z113 z137 z111 z116 z133"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z117 z131 z119 z136 z139 z113 z137 z111 z116 z133"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -369,7 +369,7 @@
     </object>
     <object type="LMREQUEST" id="z131">
         <attribute name="uuid" type="string">9B4C0E32-F74E-4623-8C3E-8450BFF2CC20</attribute>
-        <attribute name="url" type="string">localhost:9000/api/cang/users/trader/88888888/77777/edit</attribute>
+        <attribute name="url" type="string">localhost:9000/api/cang/users/u2</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -394,15 +394,15 @@
     </object>
     <object type="LMREQUEST" id="z133">
         <attribute name="uuid" type="string">7D7B5B72-9ABD-4AF4-B610-4ACB971B8624</attribute>
-        <attribute name="url" type="string">http://localhost:9000/cang/admin/userinfo/:party/:instance_id</attribute>
+        <attribute name="url" type="string">http://localhost:9000/api/cang/users/u3</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">PUT</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="body" type="string">[{"data":{"json":"{\\"userid\\":\\"00000\\"\\/*,\\"username\\":\\"u3\\",\\"password\\":\\"654321\\",\\"name\\":\\"admins\\"*\\/,\\"email\\":\\"654321@12345.com\\",\\"phone\\":\\"13800000003\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
-        <attribute name="order" type="int64">2</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"userid\\":\\"00000\\",\\"username\\":\\"u3\\",\\"password\\":\\"654321\\",\\"name\\":\\"admins\\",\\"email\\":\\"654321@12345.com\\",\\"phone\\":\\"13800000003\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">admin modify user info</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -430,14 +430,14 @@
     </object>
     <object type="LMREQUEST" id="z136">
         <attribute name="uuid" type="string">58470B3D-BE93-4C38-A01B-776031488D0E</attribute>
-        <attribute name="url" type="string">http://localhost:9000/api/cang/users/</attribute>
+        <attribute name="url" type="string">http://localhost:9000/api/cang/users/u3</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
         <attribute name="redirectauthorization" type="bool">0</attribute>
-        <attribute name="method" type="string">GET</attribute>
+        <attribute name="method" type="string">DELETE</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">4</attribute>
+        <attribute name="order" type="int64">5</attribute>
         <attribute name="name" type="string">admin delete user</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -452,7 +452,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">5</attribute>
+        <attribute name="order" type="int64">6</attribute>
         <attribute name="name" type="string">admin get all companies</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -467,5 +467,30 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z137"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z139">
+        <attribute name="uuid" type="string">96198EEF-8915-406B-A9B7-1E00EDCC1CD0</attribute>
+        <attribute name="url" type="string">http://localhost:9000/api/cang/users/u3/password</attribute>
+        <attribute name="storecookies" type="bool">1</attribute>
+        <attribute name="sendcookies" type="bool">1</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">PUT</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">4</attribute>
+        <attribute name="name" type="string">admin reset user's password</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z129"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z140"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z140">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z139"></relationship>
     </object>
 </database>
