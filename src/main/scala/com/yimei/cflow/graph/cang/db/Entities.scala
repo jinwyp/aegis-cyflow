@@ -7,4 +7,18 @@ import java.sql.Timestamp
   */
 object Entities {
   case class DepositEntity(id: Option[Long], flowId: String, expectedAmount: BigDecimal, actuallyAmount: BigDecimal, state: String, memo: String, ts_c: Timestamp)
+  case class CangPayTransactionEntity(id:Option[Long],
+                                      flowId:String,
+                                      pointName:String,
+                                      srcUserType:String,
+                                      srcUserId:String,
+                                      srcCompanyId:String,
+                                      targetUserType:String,
+                                      targetUserId:String,
+                                      targetCompanyId:String,
+                                      amount:BigDecimal,
+                                      transaction_id:Option[String],
+                                      status:Int,
+                                      message:Option[String]
+                                      )
 }
