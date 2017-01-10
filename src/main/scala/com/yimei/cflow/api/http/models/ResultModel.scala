@@ -36,7 +36,7 @@ object ResultModel {
         if(obj==null){
           JsString("")
         } else {
-          JsArray(JsNumber(obj.code),JsString(obj.message),JsString(obj.field))
+          JsObject(("code",JsNumber(obj.code)),("message",JsString(obj.message)),("field",JsString(obj.field)))
         }
       }
 
