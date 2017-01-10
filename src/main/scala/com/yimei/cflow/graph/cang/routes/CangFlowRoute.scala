@@ -44,14 +44,14 @@ class CangFlowRoute extends AdminClient
         println(startFlow)
         //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
 
-//        val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
-//          Map(startPoint -> startFlow.toJson.toString,
-//              orderId    -> startFlow.basicInfo.businessCode,
-//              traderUserId -> myfUserId,
-//              traderAccountantUserId -> myfFinanceId)
-//        ) map { c =>
-//          Result(Some(c))
-//        }
+        val create: Future[Result[FlowInstanceEntity]] = createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
+          Map(startPoint -> startFlow.toJson.toString,
+              orderId    -> startFlow.basicInfo.businessCode,
+              traderUserId -> myfUserId,
+              traderAccountantUserId -> myfFinanceId)
+        ) map { c =>
+          Result(Some(c))
+        }
         complete(StartFlowResult(true))
       }
     }
