@@ -362,7 +362,6 @@
                     y: 10
                 });
 
-                console.log(cytoscapeChart.edges().data())
                 sourceData = cytoscapeChart.formatterObjectToArray(formattedData)
 
                 vm.edges = sourceData.edges;
