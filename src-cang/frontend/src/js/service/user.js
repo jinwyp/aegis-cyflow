@@ -229,7 +229,20 @@ exports.resetPasswordByUserId = function (userId, oldPassword, newPassword){
 };
 
 
+exports.deleteUser = function (userId, user){
 
+    var params = jQuery.extend({}, user);
+
+    return jQuery.ajax({
+        headers : headers,
+        contentType : 'application/json',
+        dataType : 'json',
+        url      : url.userList + '/' + userId,
+        method   : 'delete',
+        data     : JSON.stringify(params)
+
+    });
+};
 
 
 
