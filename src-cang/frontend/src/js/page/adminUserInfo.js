@@ -56,7 +56,7 @@ var userInfo = function() {
         selectCompany: function (e) {
             vm.currentCompany = JSON.parse(vm.currentCompanyJSON);
             vm.currentUser.partyClass = vm.currentCompany.partyClass;
-            vm.currentUser.companyId = vm.currentCompany.companyId;
+            vm.currentUser.companyId = vm.currentCompany.instanceId;
             vm.currentUser.companyName = vm.currentCompany.companyName;
             companyErr();
         },
