@@ -4,6 +4,7 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, _}
 import akka.util.ByteString
+import com.yimei.cflow.api.http.models.ResultModel.Result
 import com.yimei.cflow.config.{ApplicationConfig, CoreConfig}
 import com.yimei.cflow.graph.cang.exception.BusinessException
 
@@ -11,13 +12,14 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import spray.json.DefaultJsonProtocol._
 import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.api.http.models.ResultModel._
 
 
 /**
   * Created by wangqi on 16/12/26.
   */
 
-object HttpUtil extends ApplicationConfig{
+object HttpUtil extends ApplicationConfig with ResultProtocol {
 
   implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
 
@@ -155,7 +157,12 @@ object HttpUtil extends ApplicationConfig{
         case StatusCodes.OK =>
           result
         case _            =>
-          result map( r => throw new BusinessException(r))
+
+          result map{ r =>
+            log.info("!!!!!!!{}",r)
+            val temp = r.parseJson.convertTo[Result[String]]
+            throw BusinessException(temp.error.get.message)
+          }
       }
     } recover {
       case BusinessException(r) =>
