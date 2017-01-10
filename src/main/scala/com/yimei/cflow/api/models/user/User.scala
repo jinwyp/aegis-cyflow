@@ -33,7 +33,7 @@ case class CommandShutDown(guid: String) extends Command
 case class CommandQueryUser(guid: String) extends Command
 
 // 采集用户数据
-case class CommandUserTask(flowId: String, guid: String, taskName: String,flowType:String)
+case class CommandUserTask(flowId: String, guid: String, taskName: String, flowType: String)
 
 ////////////////////////////////////////////////////
 // 事件
@@ -55,13 +55,18 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit object TimeStampJsonFormat extends RootJsonFormat[Timestamp] {
 
-    val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
-    override def write(obj: Timestamp) = JsString(formatter.format(obj))
+    override def write(obj: Timestamp) = {
+      val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+      JsString(formatter.format(obj))
+    }
 
-    override def read(json: JsValue) : Timestamp = json match {
-      case JsString(s) => new Timestamp(formatter.parse(s).getTime)
-      case _ => throw new DeserializationException("Error info you want here ...")
+    override def read(json: JsValue): Timestamp = {
+      val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+      json match {
+        case JsString(s) => new Timestamp(formatter.parse(s).getTime)
+        case _ => throw new DeserializationException("Error info you want here ...")
+      }
     }
   }
 
@@ -88,9 +93,9 @@ trait UserProtocol extends DefaultJsonProtocol with FlowProtocol {
 
   implicit val CommandShutDownFormat = jsonFormat1(CommandShutDown)
 
-//  implicit val CommandMobileComeFormat = jsonFormat2(CommandMobileCome)
+  //  implicit val CommandMobileComeFormat = jsonFormat2(CommandMobileCome)
 
-//  implicit val CommandDesktopComeFormat = jsonFormat2(CommandDesktopCome)
+  //  implicit val CommandDesktopComeFormat = jsonFormat2(CommandDesktopCome)
 
   implicit val CommandQueryUserFormat = jsonFormat1(CommandQueryUser)
 

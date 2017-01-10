@@ -267,7 +267,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   case class FlowData(
                     currentTask:UserState,
                     cargoOwner:String,                          //货权（贸易商审核通过前为融资方，然后为贸易方）
-                    status:List[String],                                        //当前所在vertices
+                    status:String,                                        //当前所在vertices
                     loanValue:Option[BigDecimal],                         //实际放款金额
                     depositValue:Option[BigDecimal],                      //保证金金额
                     loanFundProviderInterestRate:Option[BigDecimal],      //资金方借款的利率

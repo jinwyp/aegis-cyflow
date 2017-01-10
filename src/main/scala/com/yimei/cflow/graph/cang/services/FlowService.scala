@@ -713,7 +713,7 @@ object FlowService extends UserModelProtocol
             //这个地方肯定是有了，因为已经有还款了
             val startDate: Long = state.points(traderPaySuccess).timestamp
             //拿到全部的还款的task
-            val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId,financer.companyId, financer.userId)
+            val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId, financer.companyId, financer.userId)
             val tt: BigDecimal = BigDecimal(total.value.toDouble)
             var curMoney = tt
 
@@ -724,7 +724,7 @@ object FlowService extends UserModelProtocol
                   case Some(data) =>
                     //本次还款金额
                     val repaymentValue = BigDecimal(data.value.toDouble)
-                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate)+1
+                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate) + 1
                     val result = Repayment(
                       repaymentValue,
                       curMoney,
@@ -740,7 +740,7 @@ object FlowService extends UserModelProtocol
             }
 
             for {
-              ts <- getRepayment(flowId, financer.companyId,financer.userId)
+              ts <- getRepayment(flowId, financer.companyId, financer.userId)
               repayments = getRepaymentList(ts)
             } yield {
               (Some(tt), Some(tt - curMoney), Some(curMoney), Some(repayments.toList))
@@ -799,12 +799,18 @@ object FlowService extends UserModelProtocol
       case _ => None //港口还没有确认金额的时候
     }
 
+    val states = state.edges.map(entry =>
+      graph.edges(entry._1).begin
+    ).toList
+
     FlowData(
       currentTask, //当前任务
       cargoOwner, //货权（贸易商审核通过前为融资方，然后为贸易方）
-      state.edges.map(entry =>
-        graph.edges(entry._1).begin
-      ).toList, //当前所在vertices
+      states.length match {
+        case 1 => states(0)
+        case 0 => ""
+        case _ => throw BusinessException(s"$states 异常")
+      }, //当前所在vertices
       repaymentInfo._1, // 实际放款金额
       None, //todo 保证金金额
       extractValue(fundProviderInterestRate, state), //资金方借款的利率
@@ -820,11 +826,11 @@ object FlowService extends UserModelProtocol
     )
   }
 
-  private def getTaskInfo(us:UserState): (String, String) = {
+  private def getTaskInfo(us: UserState): (String, String) = {
     val taskList: List[(String, CommandUserTask)] = us.tasks.toList
     taskList.length match {
-      case 1 => (taskList(0)._1,taskList(0)._2.taskName)
-      case 0 => ("","")
+      case 1 => (taskList(0)._1, taskList(0)._2.taskName)
+      case 0 => ("", "")
       case _ => throw BusinessException(s"userType:${us.userType}, userId:${us.userId}有误")
     }
   }
@@ -845,16 +851,16 @@ object FlowService extends UserModelProtocol
       //仓压成员记录
       cyPartyMember <- fillCYPartyMember(flowState)
       //港口放货记录
-      deliverys <- getDeliverys(flowId,cyPartyMember)
+      deliverys <- getDeliverys(flowId, cyPartyMember)
       //用户当前任务
       currentTask <- getCurrentTasks(flowId, party_class, company_id, user_Id)
       //融资方还款记录
-      repayments <- calculateInterest(flowId,cyPartyMember,spData.interestRate,flowState)
-      taskInfo  = getTaskInfo(currentTask)
+      repayments <- calculateInterest(flowId, cyPartyMember, spData.interestRate, flowState)
+      taskInfo = getTaskInfo(currentTask)
     } yield {
       CYData(spData,
         cyPartyMember,
-        setFlowData(flowState,currentTask,fileList,deliverys,repayments),
+        setFlowData(flowState, currentTask, fileList, deliverys, repayments),
         flowId,
         taskInfo._1,
         taskInfo._2

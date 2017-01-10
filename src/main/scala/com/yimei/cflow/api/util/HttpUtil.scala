@@ -89,6 +89,8 @@ object HttpUtil extends ApplicationConfig{
         case StatusCodes.OK =>
           result map{r =>
             log.info("{}",r)
+            val temp = r.parseJson
+            log.info(temp.prettyPrint)
             r.parseJson.convertTo[R]}
         case _            =>
           result map( r => throw new BusinessException(r.toString))
