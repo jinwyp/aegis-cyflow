@@ -67,19 +67,18 @@
                                         <td class="text-center">操作</td>
                                     </tr>
                                     <tr ms-for="(index, user) in @userList">
-                                        <td><a ms-attr="{href:'/warehouse/admin/home/user/'+ user._id }" >{{ user.username || '--'}}</a></td>
-                                        <td>{{ user.mobilePhone || '--'}}</td>
+                                        <td><a ms-attr="{href:'/warehouse/admin/home/user/'+ user.username }" >{{ user.username || '--'}}</a></td>
+                                        <td>{{ user.phone || '--'}}</td>
                                         <td>{{ user.email || '--'}}</td>
                                         <td>{{ user.companyName || '--'}}</td>
                                         <td>{{user.role | rolename}}</td>
 
                                         <td>
                                             <span class="btn btn-default resetPassword" ms-click="@clickResetPassword">重置密码</span>
-                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/user/'+ user.userId + '/edit'}">编辑</a>
+                                            <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/user/'+ user.username + '/edit'}">编辑</a>
                                             <span class="btn btn-default marginL" ms-click="@clickDelete">删除</span>
                                         </td>
                                     </tr>
-
                                 </table>
 
                             </div>

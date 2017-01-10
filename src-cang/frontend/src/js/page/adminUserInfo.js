@@ -12,7 +12,7 @@ var role = userService.userRoleKeyObject;
 
 var url = window.location.href;
 var urlShowStatus = url.substring(url.lastIndexOf("\/") + 1, url.length);
-var userId = url.match(/\/user\/[a-zA-Z_0-9]{24,24}/);
+var userId = url.match(/\/user\/[a-zA-Z_0-9]{2,24}/);
 if (userId){ userId = userId[0].split('/')[2] }
 
 console.log('userID:', userId, '页面状态:', urlShowStatus);
@@ -26,7 +26,7 @@ var userInfo = function() {
         currentUser : {
             username : '',
             email : '',
-            mobilePhone : '',
+            phone : '',
             companyName : '',
             partyClass:'',
             // belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
@@ -110,7 +110,7 @@ var userInfo = function() {
                     var user = {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
-                        mobilePhone : vm.currentUser.mobilePhone,
+                        phone : vm.currentUser.phone,
                         companyName : vm.currentUser.companyName,
                         partyClass : vm.currentUser.partyClass,
                         role : vm.currentUser.role
@@ -133,7 +133,7 @@ var userInfo = function() {
                     }
 
                     if (vm.pageShowStatus === 'edit'){
-                        userService.updateUserInfoById(vm.currentUser._id, user).done(function( data, textStatus, jqXHR ) {
+                        userService.updateUserInfoById(userId, user).done(function( data, textStatus, jqXHR ) {
                             if (data.success){
                                 vm.successInputName = [];
                                 vm.errorInputName = [];
@@ -143,16 +143,26 @@ var userInfo = function() {
                     }
                 }
 
-
-
-
             }
         },
 
 
         addUser :function(){
-            console.log(vm.currentUser.companyName)
+            console.log(vm.currentUser)
         },
+        editUser :function(){
+            console.log(vm.currentUser)
+        },
+        
+        resetPassword : function () {
+            userService.resetPasswordByUserId(userId).done(function (data, textStatus, jqXHR) {
+                if (data.success) {
+                    $.notify("重置密码成功!", 'success');
+                    // vm.currentUser = data.data;
+                    // vm.configPagination.totalPages = Math.ceil(data.meta.total / data.meta.count);
+                }
+            });
+        }
         // isValid : checkMYS
 
     });
