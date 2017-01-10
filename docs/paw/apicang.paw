@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="no"?>
+<?xml version="1.0"?>
 <!DOCTYPE database SYSTEM "file:///System/Library/DTDs/CoreData.dtd">
 
 <database>
@@ -10,7 +10,7 @@
             <plist version="1.0">
                 <dict>
                     <key>NSPersistenceFrameworkVersion</key>
-                    <integer>526</integer>
+                    <integer>752</integer>
                     <key>NSStoreModelVersionHashes</key>
                     <dict>
                         <key>LMCookieJar</key>
@@ -220,7 +220,7 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z117"></relationship>
     </object>
     <object type="LMREQUEST" id="z119">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"username\\":\\"test\\",\\"password\\":\\"123456\\",\\"name\\":\\"\\\\u8d44\\\\u91d1\\\\u65b9\\\\u4e1a\\\\u52a1\\",\\"email\\":\\"asdf@qq.com\\",\\"phone\\":\\"12345678912\\",\\"companyId\\":\\"66666666\\",\\"className\\":\\"fundProvider\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"username\\":\\"test\\"\\/*,\\"password\\":\\"123456\\"*\\/,\\"name\\":\\"\\\\u8d44\\\\u91d1\\\\u65b9\\\\u4e1a\\\\u52a1\\",\\"email\\":\\"asdf@qq.com\\",\\"phone\\":\\"12345678912\\",\\"companyId\\":\\"66666666\\",\\"className\\":\\"fundProvider\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">7FE7A497-C92F-4EB5-9FA9-97F03EB97D35</attribute>
         <attribute name="url" type="string">localhost:9000/api/cang/users</attribute>
         <attribute name="storecookies" type="bool">1</attribute>

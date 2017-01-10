@@ -18,10 +18,9 @@ trait DepositTable {
     def actuallyAmount = column[BigDecimal]("actuallyAmount")
     def state = column[String]("state")
     def memo = column[String]("memo")
-    def ts_c = column[Timestamp]("ts_c")
+    def ts_c = column[Option[Timestamp]]("ts_c")
     def * = (id,flowId,expectedAmount,actuallyAmount,state,memo,ts_c)<>(DepositEntity.tupled,DepositEntity.unapply)
   }
 
-  protected val partClass = TableQuery[Deposit]
-
+  protected val deposit = TableQuery[Deposit]
 }
