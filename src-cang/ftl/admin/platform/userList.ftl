@@ -74,9 +74,9 @@
                                         <td>{{user.role | rolename}}</td>
 
                                         <td>
-                                            <span class="btn btn-default resetPassword" ms-click="@clickResetPassword">重置密码</span>
+                                            <span class="btn btn-default resetPassword" ms-click="@clickResetPassword" ms-attr="{id:user.username}">重置密码</span>
                                             <a class="btn btn-default marginL" ms-attr="{href:'/warehouse/admin/home/user/'+ user.username + '/edit'}">编辑</a>
-                                            <span class="btn btn-default marginL" ms-click="@clickDelete">删除</span>
+                                            <span class="btn btn-default marginL deleteUser" ms-click="@clickDelete" ms-attr="{id:user.username}">删除</span>
                                         </td>
                                     </tr>
                                 </table>
