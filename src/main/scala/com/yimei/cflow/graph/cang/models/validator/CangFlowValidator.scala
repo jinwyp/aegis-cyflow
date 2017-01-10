@@ -35,7 +35,7 @@ object CangFlowValidator {
         basicInfo.downstreamCompanyName as "下游签约单位公司名称" is notEmpty
         basicInfo.downstreamCompanyName.length as "下游签约单位公司名称字段长度" is between(1, 100)
         basicInfo.financeCreateTime as "审批开始时间" is notNull
-        basicInfo.financeEndTime as "审批完成时间" is notNull
+        basicInfo.financeEndTime as "审批开始时间" is notNull
         basicInfo.financingAmount as "拟融资金额" is notNull
         basicInfo.financingAmount as "拟融资金额" is between(BigDecimal.valueOf(1), BigDecimal.valueOf(100000000))
         basicInfo.financingDays as "拟融资天数" min(1)

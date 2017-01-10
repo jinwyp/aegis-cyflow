@@ -448,7 +448,7 @@ object FlowService extends UserModelProtocol
         SPData(
           startFlow.basicInfo.financeCreateTime,
           startFlow.basicInfo.financeEndTime,
-          "MID",
+          "MYD",
           startFlow.basicInfo.businessCode,
           startFlow.basicInfo.downstreamCompanyName,
           startFlow.basicInfo.stockPort,

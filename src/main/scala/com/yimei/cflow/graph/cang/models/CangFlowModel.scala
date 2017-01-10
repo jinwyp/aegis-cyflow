@@ -23,7 +23,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                                 applyCompanyName: String,
                                 businessCode: String,              //业务编号
                                 financeCreateTime: Timestamp,      //审批开始时间
-                                financeEndTime: Timestamp,         //审批结束时间
+                                financeEndTime: Timestamp,         //审批完成时间
                                 downstreamCompanyName: String,     //下游签约公司-公司名称
                                 financingAmount: BigDecimal,       //拟融资金额 - 融资方想要融资金额
                                 financingDays: Int,                //融资天数
