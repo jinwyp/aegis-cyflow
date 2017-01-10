@@ -150,5 +150,24 @@ create table deposit (
   PRIMARY KEY (`id`)
 );
 
+-- 仓压交易记录
+create table cang_pay_transaction (
+  id BIGINT not null auto_increment,       -- 非业务主键
+  flow_id    varchar(64)   not null,
+  point_name VARCHAR(32) not null,
+  src_user_type varchar(32) not null,
+  src_user_id   varchar(64) not null,
+  src_company_id varchar(32) not null,
+  target_user_type varchar(32) not null,
+  target_user_id   varchar(64) not null,
+  target_company_id varchar(32) not null,
+  amount     DECIMAL(18,2) NOT NULL,
+  transaction_id varchar(32),
+  status   TINYINT not NULL,
+  message VARCHAR(256),
+  PRIMARY KEY (`id`)
+);
+
+
 
 

@@ -52,7 +52,7 @@
                                     <option value="" > - </option>
                                     <option ms-for="role in @roleList" ms-attr="{value: role.name}" >{{role.displayName}} </option>
                                 </select>
-                                <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentCompany.role | rolename}}</p>
+                                <p class="form-control-static " ms-visible="@pageShowStatus === 'edit'">{{@currentCompany.partyClass | rolename}}</p>
                             </div>
                             <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputPartyClass')>-1">{{@errorMessage.inputPartyClass}}</div>
                         </div>

@@ -11,11 +11,23 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsVa
   */
 object Entities {
   case class DepositEntity(id: Option[Long], flowId: String, expectedAmount: BigDecimal, actuallyAmount: BigDecimal, state: String, memo: String, ts_c: Option[Timestamp])
-
-
+  case class CangPayTransactionEntity(id:Option[Long],
+                                      flowId:String,
+                                      pointName:String,
+                                      srcUserType:String,
+                                      srcUserId:String,
+                                      srcCompanyId:String,
+                                      targetUserType:String,
+                                      targetUserId:String,
+                                      targetCompanyId:String,
+                                      amount:BigDecimal,
+                                      transaction_id:Option[String],
+                                      status:Int,
+                                      message:Option[String]
+                                      )
 }
 
-trait DepositProtocol extends DefaultJsonProtocol {
+trait DepositEntityProtocal extends DefaultJsonProtocol {
   implicit object TimeStampJsonFormat extends RootJsonFormat[Timestamp] {
 
 
@@ -32,5 +44,6 @@ trait DepositProtocol extends DefaultJsonProtocol {
       }
     }
   }
+
   implicit val DepositEntityFormat = jsonFormat7(DepositEntity)
 }

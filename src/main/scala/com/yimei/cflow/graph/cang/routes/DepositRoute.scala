@@ -4,7 +4,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.util.DBUtils._
-import com.yimei.cflow.graph.cang.db.{DepositProtocol, DepositTable}
+import com.yimei.cflow.graph.cang.db.{DepositEntityProtocal, DepositTable}
 import com.yimei.cflow.graph.cang.models.DepositModel._
 import com.yimei.cflow.graph.cang.db.Entities.DepositEntity
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -21,7 +21,7 @@ import scala.concurrent.Future
   * Created by xl on 17/1/9.
   */
 
-class DepositRoute extends DepositTable with DepositProtocol with ResultProtocol with SprayJsonSupport{
+class DepositRoute extends DepositTable with DepositEntityProtocal with ResultProtocol with SprayJsonSupport{
   val NOTIFIED = "notified"          // 保证金已通知
   val ALREADYPAID = "alreadyPaid"    // 保证金已缴纳
   val TRANSFERRED = "transferred"    // 保证金已到账
