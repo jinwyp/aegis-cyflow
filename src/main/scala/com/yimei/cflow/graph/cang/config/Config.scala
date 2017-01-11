@@ -25,6 +25,11 @@ trait Config {
   val financeFile  = "financeFile" //财务文件
   val businessFile = "businessFile" //业务文件
 
+  //保证金状态
+  val NOTIFIED = "notified"          // 保证金已通知
+  val ALREADYPAID = "alreadyPaid"    // 保证金已缴纳
+  val TRANSFERRED = "transferred"    // 保证金已到账
+
   //参与方
   val rzf = "financer"
   val zjf = "fundProvider"
