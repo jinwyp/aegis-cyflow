@@ -226,6 +226,7 @@
                     id : property,
                     source : currentEdge.begin,
                     target : currentEdge.end,
+                    sourceData : {}
                 },
                 sourceData : {
                     id : currentEdge.name,
@@ -261,7 +262,8 @@
                 tempNode = {
                     classes : 'node',
                     data : {
-                        id : currentEdge.begin
+                        id : currentEdge.begin,
+                        sourceData : {}
                     },
                     sourceData : {
                         id : currentEdge.begin,
@@ -272,10 +274,13 @@
 
                 addStyleForNode(tempNode)
 
+                tempNode.data.sourceData = tempNode.sourceData;
+
                 tempNodesId.push(currentEdge.begin)
                 result.nodes.push(tempNode)
                 result.formattedSource.vertices.push(tempNode)
             }
+
 
             if (tempNodesId.indexOf(currentEdge.end) === -1) {
 
@@ -298,15 +303,18 @@
                     classes : 'node',
                     data : {
                         id : currentEdge.end,
-                        sourceData : {
-                            id : currentEdge.end,
-                            description : tempNodeTarget.description,
-                            program : tempNodeTarget.program
-                        }
+                        sourceData : {}
+                    },
+                    sourceData : {
+                        id : currentEdge.end,
+                        description : tempNodeTarget.description,
+                        program : tempNodeTarget.program
                     }
                 };
 
                 addStyleForNode(tempNode)
+
+                tempNode.data.sourceData = tempNode.sourceData;
 
                 tempNodesId.push(currentEdge.end)
                 result.nodes.push(tempNode)
@@ -334,27 +342,28 @@
                                 classes : 'node task ' + taskType,
                                 data : {
                                     id : task,
-                                    sourceData : {
-                                        id : task,
-                                        type : taskType,
-                                        description : source[taskType][task].description,
-                                        points : [],
+                                    sourceData : {}
+                                },
+                                sourceData : {
+                                    id : task,
+                                    type : taskType,
+                                    description : source[taskType][task].description,
+                                    points : [],
 
-                                        belongToEdge : {
-                                            id : currentEdge.name,
-                                            source : currentEdge.begin,
-                                            target : currentEdge.end,
-                                            userTasks : currentEdge.userTasks,
-                                            autoTasks : currentEdge.autoTasks,
-                                            partGTasks : currentEdge.partGTasks,
-                                            partUTasks : currentEdge.partUTasks
-                                        }
+                                    belongToEdge : {
+                                        id : currentEdge.name,
+                                        source : currentEdge.begin,
+                                        target : currentEdge.end,
+                                        userTasks : currentEdge.userTasks,
+                                        autoTasks : currentEdge.autoTasks,
+                                        partGTasks : currentEdge.partGTasks,
+                                        partUTasks : currentEdge.partUTasks
                                     }
                                 }
                             };
 
                             source[taskType][task].points.forEach(function(point, pointIndex){
-                                tempTask.data.sourceData.points.push({
+                                tempTask.sourceData.points.push({
                                     id : point,
                                     description : source.points[point]
                                 })
@@ -364,7 +373,8 @@
                             if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
                             if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
 
-                            tempEdge.data.sourceData.allTask.push(tempTask)
+                            tempTask.data.sourceData = tempTask.sourceData;
+                            tempEdge.sourceData.allTask.push(tempTask)
                             result.formattedSource.allTask.push(tempTask);
                         }
 
@@ -378,45 +388,47 @@
                                         classes : 'node task ' + taskType,
                                         data : {
                                             id : subTask,
-                                            sourceData : {
-                                                id : subTask,
-                                                type : taskType,
-                                                guidKey : '',
-                                                ggidKey : '',
-                                                description : source['userTasks'][subTask].description,
-                                                points : [],
+                                            sourceData : {}
+                                        },
+                                        sourceData : {
+                                            id : subTask,
+                                            type : taskType,
+                                            guidKey : '',
+                                            ggidKey : '',
+                                            description : source['userTasks'][subTask].description,
+                                            points : [],
 
-                                                belongToEdge : {
-                                                    id : currentEdge.name,
-                                                    source : currentEdge.begin,
-                                                    target : currentEdge.end,
-                                                    userTasks : currentEdge.userTasks,
-                                                    autoTasks : currentEdge.autoTasks,
-                                                    partGTasks : currentEdge.partGTasks,
-                                                    partUTasks : currentEdge.partUTasks
-                                                }
+                                            belongToEdge : {
+                                                id : currentEdge.name,
+                                                source : currentEdge.begin,
+                                                target : currentEdge.end,
+                                                userTasks : currentEdge.userTasks,
+                                                autoTasks : currentEdge.autoTasks,
+                                                partGTasks : currentEdge.partGTasks,
+                                                partUTasks : currentEdge.partUTasks
                                             }
                                         }
                                     };
 
                                     source['userTasks'][subTask].points.forEach(function(point, pointIndex){
-                                        tempTask.data.sourceData.points.push({
+                                        tempTask.sourceData.points.push({
                                             id : point,
                                             description : source.points[point]
                                         })
                                     })
 
                                     if (taskType === 'partUTasks') {
-                                        tempTask.data.sourceData.guidKey = task.guidKey
+                                        tempTask.sourceData.guidKey = task.guidKey
                                         result.formattedSource.partUTasks.push(tempTask);
                                     }
 
                                     if (taskType === 'partGTasks') {
-                                        tempTask.data.sourceData.ggidKey = task.ggidKey
+                                        tempTask.sourceData.ggidKey = task.ggidKey
                                         result.formattedSource.partGTasks.push(tempTask);
                                     }
 
-                                    tempEdge.data.sourceData.allTask.push(tempTask)
+                                    tempTask.data.sourceData = tempTask.sourceData;
+                                    tempEdge.sourceData.allTask.push(tempTask)
                                     result.formattedSource.allTask.push(tempTask);
                                 })
                             }
@@ -428,6 +440,7 @@
 
 
             // 整理边
+            tempEdge.data.sourceData = tempEdge.sourceData
             result.edges.push(tempEdge)
             result.formattedSource.edges.push(tempEdge)
 

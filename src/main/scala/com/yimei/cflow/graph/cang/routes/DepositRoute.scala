@@ -29,7 +29,7 @@ class DepositRoute extends DepositTable with DepositEntityProtocal with ResultPr
   import driver.api._
 
   def createDeposit: Route = post {
-    (path("deposit") & entity(as[AddDeposit])) { dp =>
+    (path("deposits") & entity(as[AddDeposit])) { dp =>
       val exist = dbrun(deposit.filter{dpt =>
         dpt.flowId === dp.flowId &&
         dpt.state === NOTIFIED
@@ -54,14 +54,24 @@ class DepositRoute extends DepositTable with DepositEntityProtocal with ResultPr
   }
 
   def getDeposit: Route = get {
-    path("deposit" / Segment) { flowId =>
-      (parameter('page.as[Int].?) & parameter('pageSize.as[Int].?)) { (p, ps) =>
+    path("deposits" / Segment) { flowId =>
+      (parameter('page.as[Int].?) & parameter('count.as[Int].?) & parameter('state.as[String].?)) { (p, ps, s) =>
         val page = if(p.isDefined) p.get else 1
         val pageSize = if(ps.isDefined) ps.get else 10
+        val state = if(s.isDefined) s.get else NOTIFIED
 
-        val result = dbrun(
-          deposit.filter(dp => dp.flowId === flowId).result
-        ) map { dl => Result(data = Some(dl))}
+        val dplist = dbrun(
+          deposit.filter(dp => dp.flowId === flowId && dp.state === state).drop((page - 1) * pageSize).take(pageSize).result
+        )
+
+        val total = dbrun(
+          deposit.length.result
+        )
+
+        val result = for {
+          list <- dplist
+          t <- total
+        } yield Result(data = Some(list), success = true, meta = Some(PagerInfo(total = t, count = pageSize, offset = (page - 1) * pageSize, page = page)))
 
         complete(result)
       }
@@ -69,7 +79,7 @@ class DepositRoute extends DepositTable with DepositEntityProtocal with ResultPr
   }
 
   def modifyDeposit: Route = put {
-    path("deposit" / Segment / Segment) { (flowId, state) =>
+    path("deposits" / Segment / Segment) { (flowId, state) =>
       val update = deposit.filter(_.flowId === flowId).map(dp => (dp.state)).update(state)
 
       val result = dbrun(update) map { count =>
