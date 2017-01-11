@@ -235,7 +235,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
         val result = for {
           info <- getUserInfoByUsername(s.userName)
         } yield Result(data = Some(info))
-  
+
         complete(result)
       }
     }
