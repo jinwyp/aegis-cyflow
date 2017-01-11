@@ -6,7 +6,7 @@ INSERT INTO `cyflow`.`party_class` (`class_name`, `description`) VALUES ('fundPr
 INSERT INTO `cyflow`.`party_class` (`class_name`, `description`) VALUES ('systemAdmin', '管理员组');
 
 --贸易方公司（现在至于易煤网）
-INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('trader', '88888888', '易煤网');
+INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('trader', '88888888', '孟州市至信有限责任公司');
 
 INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('systemAdmin', '00000000', '管理员');
 

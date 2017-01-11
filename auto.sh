@@ -5,8 +5,8 @@
 # 1.创建公司（inst）
 
 init() {
-curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"financer","instanceId":"1","companyName":"融资方1"}'
-curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"fundProvider","instanceId":"1","companyName":"资金方1"}'
+curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"financer","instanceId":"1","companyName":"宇宙商贸有限公司"}'
+curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"fundProvider","instanceId":"2","companyName":"环球贸易有限公司"}'
 curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"harbor","instanceId":"1","companyName":"港口1"}'
 curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst -d '{"party":"supervisor","instanceId":"1","companyName":"监管1"}'
 
@@ -14,8 +14,8 @@ curl -XPOST  -H "Content-Type: application/json" http://localhost:9000/api/inst 
 curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/financer/1/f1id -d '{"password":"123456","phone":"1310000001","email":"f1@123.com","name":"f1","username":"f1"}'
 curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/harbor/1/h1id -d '{"password":"123456","phone":"1310000001","email":"h1@123.com","name":"h1","username":"h1"}'
 curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/supervisor/1/s1id -d '{"password":"123456","phone":"1310000001","email":"s1@123.com","name":"s1","username":"s1"}'
-curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/fundProvider/1/zj1id -d '{"password":"123456","phone":"1310000001","email":"zj1@123.com","name":"zj1","username":"zj1"}'
-curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/fundProvider/1/zj2id -d '{"password":"123456","phone":"1310000001","email":"zj2@123.com","name":"zj2","username":"zj2"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/fundProvider/2/zj1id -d '{"password":"123456","phone":"1310000001","email":"zj1@123.com","name":"zj1","username":"zj1"}'
+curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/user/fundProvider/2/zj2id -d '{"password":"123456","phone":"1310000001","email":"zj2@123.com","name":"zj2","username":"zj2"}'
 
 # 3 创建user-group 关系
 curl -X POST  -H "Content-Type: application/json" http://localhost:9000/api/ugroup/5/1/zj1id
@@ -42,7 +42,7 @@ echo "task_id is $task_id"
 #read a
 
 # 6> 贸易方指定四个参与方
-k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"1","fundProviderUserId":"zj1id","fundProviderAccountantUserId":"zj2id"}'
+k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompanyId":"1","supervisorUserId":"s1id","supervisorCompanyId":"1","fundProviderCompanyId":"2","fundProviderUserId":"zj1id","fundProviderAccountantUserId":"zj2id"}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
@@ -95,30 +95,30 @@ res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/88888)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"loanValue":1024.1}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"loanValue":10}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a16traderRecommendAmount/88888/trader/88888888 -d "$k")
 echo $res
 #read a
 
 
 #12>资金方审核
-res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/1/zj1id)
+res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/2/zj1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"approvedStatus":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a17fundProviderAudit/zj1id/fundProvider/2 -d "$k")
 echo $res
 #read a
 
 
 #13>资金方财务审核
-res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/1/zj2id)
+res=$(curl -X GET http://localhost:9000/api/utask/fundProvider/2/zj2id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a18fundProviderAccountantAudit/zj2id/fundProvider/2 -d "$k")
 echo $res
 #read a
 
@@ -138,14 +138,14 @@ read a
 #res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
 #echo $res
 
-read a
+#read a
 
 #16>融资方确认回款
 res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":512.1}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":5}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
@@ -195,7 +195,7 @@ res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
 task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_id)) | .[0].key")
 echo "task_id is $task_id"
 
-k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":511}'
+k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":5}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
 echo $res
 
