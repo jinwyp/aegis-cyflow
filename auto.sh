@@ -46,7 +46,7 @@ k='{"flowId":'$flow_id',"taskId":'$task_id', "harborUserId":"h1id","harborCompan
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a11SelectHarborAndSupervisor/77777/trader/88888888 -d "$k")
 echo $res
 
-read a
+#read a
 
 # 7> 融资方上传文件
 res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
@@ -128,17 +128,17 @@ echo $res
 #14>资金方放款（自动任务）
 #k='http://localhost:9000/api/cang/fortest/'$flowId'/fundProviderPaySuccess/success'
 #echo $k
-res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
-echo $res
+#res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/fundProviderPaySuccess/success)
+#echo $res
 
-#read a
+read a
 
 #sleep 5
 #15>贸易方向融资方放款（自动任务）
-res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
-echo $res
+#res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderPaySuccess/success)
+#echo $res
 
-#read a
+read a
 
 #16>融资方确认回款
 res=$(curl -X GET http://localhost:9000/api/utask/financer/1/f1id)
@@ -153,9 +153,9 @@ echo $res
 
 #17>融资方回款自动任务
 #sleep 5
-res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
-echo $res
-#read a
+#res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
+#echo $res
+read a
 
 #18>贸易方通知港口放款
 res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
@@ -203,10 +203,10 @@ echo $res
 
 #17>融资方回款自动任务
 #sleep 5
-res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
-echo $res
+#res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/financerPaySuccess/success)
+#echo $res
 
-#read a
+read a
 
 #18>贸易方通知港口放款
 res=$(curl -X GET http://localhost:9000/api/utask/trader/88888888/77777)
@@ -263,9 +263,9 @@ k='{"flowId":'$flow_id',"taskId":'$task_id',"status":1}'
 res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a24AccountantReturnMoney/88888/trader/88888888 -d "$k")
 echo $res
 
-#read a
+read a
 
 #23>贸易商回款自动任务
-res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
-echo $res
+#res=$(curl -X GET http://localhost:9000/api/cang/fortest/cang\!financer-1\!f1id\!1/traderRepaySuccess/success)
+#echo $res
 #read a

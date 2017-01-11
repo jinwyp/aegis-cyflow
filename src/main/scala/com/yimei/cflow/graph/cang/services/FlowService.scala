@@ -941,8 +941,8 @@ object FlowService extends UserModelProtocol
       cangPayTransaction returning cangPayTransaction.map(_.id) into ( (cp,id) => cp.copy(id=id) ) += cpt
     )
 
-    def req(cp:CangPayTransactionEntity): Future[PayResponse] = request[PayRequest,PayResponse](
-      path = "aa/aaa",
+    def req(cp:CangPayTransactionEntity): Future[PayResponse] = requestServer[PayRequest,PayResponse](
+      path = "pay/transfer/account",
       model = Some(PayRequest(
         cp.srcUserType,
         cp.srcCompanyId,
@@ -979,7 +979,7 @@ object FlowService extends UserModelProtocol
 
     Source.fromPublisher(queryList).throttle(1, 5 seconds, 1, ThrottleMode.shaping)
       .runForeach(b => {
-        val res = request[String,PayQueryResponse](path="bb/bb",pathVariables = Array(b.transactionId.getOrElse("error")))
+        val res = requestServer[String,PayQueryResponse](path="pay/transaction/query",paramters = Map("transactionId"->(b.transactionId.getOrElse("error"))))
 
         res.map{ re =>
           re.status match {
