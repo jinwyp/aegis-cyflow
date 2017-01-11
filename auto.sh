@@ -54,7 +54,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"fileList":["1","2"]}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a12FinishedUpload/f1id/financer/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financerTask/a12FinishedUpload/f1id/1 -d "$k")
 echo $res
 #read a
 
@@ -146,7 +146,7 @@ task_id=$(echo $res | jq ".tasks | to_entries | map(select(.value.flowId==$flow_
 echo "task_id is $task_id"
 
 k='{"flowId":'$flow_id',"taskId":'$task_id',"repaymentValue":5}'
-res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financeorders/action/a19SecondReturnMoney/f1id/financer/1 -d "$k")
+res=$(curl -X POST -H "Content-Type: application/json" http://localhost:9000/api/cang/financerTask/a19SecondReturnMoney/f1id/1 -d "$k")
 echo $res
 
 #read a

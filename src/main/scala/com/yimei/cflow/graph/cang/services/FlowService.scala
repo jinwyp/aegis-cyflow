@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 
 import akka.stream.ThrottleMode
 import akka.stream.scaladsl.Source
-import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, FlowQueryResponse, HijackEntity}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitEntity}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
@@ -29,6 +29,7 @@ import com.yimei.cflow.graph.cang.db.{CangPayTransactionTable, DepositTable}
 import com.yimei.cflow.graph.cang.db.Entities.{CangPayTransactionEntity, DepositEntity}
 import slick.backend.DatabasePublisher
 
+import scala.collection.immutable.Iterable
 import scala.concurrent.duration._
 
 /**
@@ -874,7 +875,7 @@ object FlowService extends UserModelProtocol
   /**
     * 组装流程数据
     */
-  def cyDataCollection(flowId: String, party_class: String, company_id: String, user_Id: String) = {
+  def cyDataCollection(flowId: String, party_class: String, company_id: String, user_Id: String): Future[CYData] = {
 
 
     for {
@@ -1004,10 +1005,61 @@ object FlowService extends UserModelProtocol
         }
 
       })
+  }
 
+  /**
+    *
+    * @return
+    */
+  def getFinancerList(company_Id: String, user_Id: String): Future[Seq[CYData]] = {
+    val userType: String = rzf+"-"+company_Id
+
+    val rs: Future[FlowQueryResponse] = request[String,FlowQueryResponse](
+      path = "api/flow",
+      paramters = Map( "userId" -> user_Id, "userType" -> userType)
+    )
+
+    rs flatMap { r =>
+      Future.sequence(r.flows.map(entry =>
+        cyDataCollection(entry.flow_id,rzf,company_Id,user_Id)
+      ))
+    }
+  }
+
+
+  /**
+    *
+    */
+  def getflowList(classType:String,companyId: String, userId: String): Future[List[CYData]] = {
+    val oldFlows: Future[Seq[String]] = request[String,Seq[FlowTaskEntity]](path="api/utask",
+      pathVariables = Array(classType,companyId,userId),
+      paramters = Map("history" -> "ok")
+    ) map { fq =>
+      fq.map(_.flow_id)
+    }
+
+    val newFLows: Future[List[String]] = request[String,UserState](path="api/utask", pathVariables = Array(classType,companyId,userId)) map { nf =>
+      nf.tasks.map(entry => entry._2.flowId).toList.distinct
+    }
+
+    def allflows(old:List[String],news:List[String]): Future[List[CYData]] = {
+      Future.sequence((old:::news).distinct.map(t =>
+        cyDataCollection(t,classType,companyId,userId)
+      ))
+    }
+
+    for {
+      old <- oldFlows
+      news <- newFLows
+      r    <- allflows(old.toList,news)
+    } yield {
+        r
+    }
 
 
   }
+
+
 
 
 
