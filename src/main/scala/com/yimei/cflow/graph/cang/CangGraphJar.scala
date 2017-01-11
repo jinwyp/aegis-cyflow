@@ -156,9 +156,9 @@ object CangGraphJar extends Config {
 
   def traderRepayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
 
-    val total: BigDecimal = BigDecimal(cmd.state.points(recommendAmount).value) *
+    val total: BigDecimal =BigDecimal(cmd.state.points(recommendAmount).value) + (BigDecimal(cmd.state.points(recommendAmount).value) *
       TimeUnit.MICROSECONDS.toDays(cmd.state.points(TraderAccountantConfirm).timestamp - cmd.state.points(fundProviderPaySuccess).timestamp) *
-      BigDecimal(cmd.state.points(fundProviderInterestRate).value)/365
+      BigDecimal(cmd.state.points(fundProviderInterestRate).value)/365)
 
     // 向数据库中插入一条记录
     insertIntoCangPay(
@@ -166,7 +166,7 @@ object CangGraphJar extends Config {
       cmd.state.points(fundProviderUserId).value,                 // target  - traderUserId
       total,
       cmd.state.flowId,
-      traderPaySuccess
+      traderRepaySuccess
     ) map { t =>
       Map(traderRepaying -> "yes")
     }
