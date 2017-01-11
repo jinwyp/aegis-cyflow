@@ -6,6 +6,12 @@ import akka.http.scaladsl.server.Route
 import com.yimei.cflow.api.http.client.AdminClient
 import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
 import com.yimei.cflow.api.http.models.ResultModel._
+import com.yimei.cflow.api.http.models.PartyModel.PartyInstanceInfo
+import com.yimei.cflow.graph.cang.config.Config
+import spray.json._
+import com.yimei.cflow.api.http.models.ResultModel._
+import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserAddModel, UserModelProtocol}
+import com.yimei.cflow.api.models.database.FlowDBModel.FlowInstanceEntity
 import com.yimei.cflow.api.models.flow.State
 import com.yimei.cflow.api.util.HttpUtil.request
 import com.yimei.cflow.config.CoreConfig._
@@ -15,6 +21,10 @@ import com.yimei.cflow.graph.cang.models.CangFlowModel._
 import com.yimei.cflow.graph.cang.services.FlowService._
 import com.yimei.cflow.graph.cang.session.{MySession, Session, SessionProtocol}
 import spray.json._
+import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.graph.cang.services.LoginService._
+
+import scala.concurrent.Future
 
 /**
   * Created by wangqi on 16/12/26.
@@ -26,6 +36,7 @@ class CangFlowRoute extends AdminClient
   with ResultProtocol
   with Session
   with SessionProtocol
+  with UserModelProtocol
   with Config {
 
   ///////////////////////////////////////////////融资方////////////呵呵呵呵呵/////////////////////////////////////////////////////////////////////
@@ -38,7 +49,19 @@ class CangFlowRoute extends AdminClient
   def startFlow = post {
     pathPrefix("startflow") {
       entity(as[StartFlow]) { startFlow =>
-        //该用户是否已经存在。如果不存在要自动添加。 //todo 大磊哥
+        import com.yimei.cflow.graph.cang.services.LoginService
+        val getExistUserInfo: Future[QueryUserResult] = LoginService.getUserInfo(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyUserId)
+
+        (for {
+          existUserInfo <- getExistUserInfo
+        } yield existUserInfo.userInfo.id) recover {
+          case _ => {
+            createPartyInstance(PartyInstanceInfo(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyCompanyName).toJson.toString)
+            val user = UserAddModel(startFlow.basicInfo.applyUserPhone, "111111", startFlow.basicInfo.applyUserName.getOrElse(""), "", startFlow.basicInfo.applyUserPhone, startFlow.basicInfo.applyCompanyId, rzf)
+            createPartyUser(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyUserId, user.toJson.toString)
+          }
+        }
+
         complete(createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
           Map(startPoint -> startFlow.toJson.toString,
             orderId -> startFlow.basicInfo.businessCode,
