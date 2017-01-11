@@ -114,7 +114,7 @@
         vm.points = [];
         vm.groups = [];
         vm.edges = [];
-        vm.vertices = [];
+        vm.nodes = [];
 
         vm.userTasks = [];
         vm.autoTasks = [];
@@ -162,13 +162,15 @@
                     data : {
                         id : vm.newVertex.id,
                         description : vm.newVertex.description,
-                        sourceData : {
-                            id : vm.newVertex.id,
-                            description : vm.newVertex.description,
-                            program : ''
-                        }
+                        sourceData : {}
+                    },
+                    sourceData : {
+                        id : vm.newVertex.id,
+                        description : vm.newVertex.description,
+                        program : ''
                     }
                 };
+                newTempNode.data.sourceData = newTempNode.sourceData;
 
                 var newTempEdge = {
                     group: "edges",
@@ -177,19 +179,20 @@
                         id : vm.newEdge.id,
                         source : vm.currentVertex.id,
                         target : vm.newVertex.id,
-                        sourceData : {
-                            id : vm.newEdge.id,
-                            source : vm.currentVertex.id,
-                            target : vm.newVertex.id,
-                            allTask : [],
-                            userTasks : [],
-                            autoTasks : [],
-                            partUTasks : [],
-                            partGTasks : []
-                        }
+                        sourceData : {}
+                    },
+                    sourceData : {
+                        id : vm.newEdge.id,
+                        source : vm.currentVertex.id,
+                        target : vm.newVertex.id,
+                        allTask : [],
+                        userTasks : [],
+                        autoTasks : [],
+                        partUTasks : [],
+                        partGTasks : []
                     }
                 };
-
+                newTempEdge.data.sourceData = newTempEdge.sourceData;
 
 
                 if (vertexIdList.indexOf(vm.newEdge.id) === -1 ){
@@ -201,7 +204,7 @@
 
 
                 if (vm.isNewNode){
-                    vm.vertices.push(newTempNode)
+                    vm.nodes.push(newTempNode)
                     cytoscapeChart.add(newTempNode);
                 }
 
@@ -233,13 +236,14 @@
                     classes : 'node task ' + vm.newTask.type,
                     data : {
                         id : vm.newTask.id,
-                        sourceData : {
-                            id : vm.newTask.id,
-                            type : vm.newTask.type,
-                            description : vm.newTask.description,
-                            points : [],
-                            belongToEdge : {}
-                        }
+                        sourceData : {}
+                    },
+                    sourceData : {
+                        id : vm.newTask.id,
+                        type : vm.newTask.type,
+                        description : vm.newTask.description,
+                        points : [],
+                        belongToEdge : {}
                     }
                 };
 
@@ -250,19 +254,35 @@
                 })
 
                 vm.currentEdge.sourceData.allTask.push(newTempTask);
-                newTempTask.data.sourceData.belongToEdge = vm.currentEdge.sourceData;
+                newTempTask.sourceData.belongToEdge = vm.currentEdge.sourceData;
+                newTempTask.data.sourceData = newTempTask.sourceData;
 
                 if (taskIdList.indexOf(vm.newEdge.id) === -1 ){
                     taskIdList.push(newTempTask.data.id)
                 }
 
                 cytoscapeChart.getElementById( vm.currentEdge.id ).data(sourceData, vm.currentEdge.sourceData);
+
+
+                vm.edges.forEach(function (edge, edgeIndex) {
+                    if (edge.data.id === vm.currentEdge.id){
+                        edge.sourceData = vm.currentEdge.sourceData
+                        edge.data.sourceData = vm.currentEdge.sourceData
+                    }
+                })
+
             }
         }
 
 
-        vm.convertData = function () {
-            vm.ouputData = formatter.cyArrayToRawArray(vm.node)
+        vm.convertDataArray = function () {
+            vm.ouputData = formatter.cyArrayToRawArray(vm.nodes, vm.edges)
+            console.log(vm.ouputData)
+        }
+
+        vm.convertDataObj = function () {
+            vm.ouputData = formatter.rawArrayToObj(vm.nodes, vm.edges)
+            console.log(vm.ouputData)
         }
 
 
@@ -327,13 +347,14 @@
 
 
             cy.on('click', 'edge', function(evt){
-                console.log('edge:', this.data())
+
                 vm.currentEdge.id = this.data().id;
                 vm.currentEdge.source = this.data().source;
                 vm.currentEdge.target = this.data().target;
                 vm.currentEdge.sourceData = this.data().sourceData;
                 vm.selectType = 'edge';
                 $scope.$apply();
+                console.log('edge:', this.data(), vm.currentEdge)
             })
 
         };
@@ -365,7 +386,7 @@
                 sourceData = cytoscapeChart.formatterObjectToArray(formattedData)
 
                 vm.edges = sourceData.edges;
-                vm.vertices = sourceData.nodes;
+                vm.nodes = sourceData.nodes;
 
                 vertexIdList = sourceData.nodes.map(function(vertex, vertexIndex){
                     return vertex.data.id

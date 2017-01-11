@@ -81,6 +81,32 @@ var point = {
             var partGTasksArray = [];
             var partUTasksArray = [];
 
+            sourceNodes.forEach(function (node, nodeIndex) {
+                var tempNode = {
+                    id : node.sourceData.id,
+                    description : node.sourceData.description,
+                    program : node.sourceData.program
+                }
+                verticesArray.push(tempNode)
+            })
+
+
+            sourceEdges.forEach(function (edge, edgeIndex) {
+                var tempEdge = {
+                    id : edge.sourceData.id,
+                    name : edge.sourceData.id,
+                    begin : edge.sourceData.source,
+                    end : edge.sourceData.target,
+                    "userTasks": edge.sourceData.userTasks,
+                    "autoTasks": edge.sourceData.autoTasks,
+                    "partGTasks": edge.sourceData.partGTasks,
+                    "partUTasks": edge.sourceData.partUTasks,
+                    "allTasks": edge.sourceData.allTask
+                }
+
+                edgeArray.push(tempEdge)
+            })
+
 
             return {
                 vertices : verticesArray,
