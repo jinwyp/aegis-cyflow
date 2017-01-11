@@ -150,7 +150,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
   def getUserList: Route = get {
     pathPrefix("user" / Segment / Segment ) { (party,instance_id) =>
-        ( parameter('limit.as[Int]) & parameter('offset.as[Int]) ) { (limit,offset) =>
+        ( parameter('page.as[Int]) & parameter('pageSize.as[Int]) ) { (page,pageSize) =>
+          if(page <= 0 || pageSize <= 0) throw BusinessException("分页参数有误!")
 
           val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
             p.party_class === party &&
@@ -163,7 +164,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
             dbrun(partyUser.filter(u =>
                 u.party_id === p.id &&
                 u.disable === 0
-            ).drop(offset).take(limit).result) recover {
+            ).drop((page - 1) * pageSize).take(pageSize).result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
           }

@@ -48,8 +48,6 @@ trait Config {
 
   val zjfyw = "fundProvider"
   val zjfcw = "fundProviderAccountant"
-  val rzfyw = "financer"
-  val rzfcw = "financerAccountant"
   
   //资金方业务组ID和财务组Id
   val fundGid = "1"

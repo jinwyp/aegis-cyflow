@@ -125,20 +125,11 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
-      case e: String if(e == rzfyw) => {
+      case e: String if(e == rzf) => {
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
           cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
-          cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
-        } yield cu
-      }
-      case e: String if(e == rzfcw) => {
-        for {
-          iyu <- isYimeiUser
-          pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
-          cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
       case _ => {
@@ -328,14 +319,6 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       UserData(userId = ugi.userId, username = ugi.userName, email = ugi.email, phone = ugi.phone, role = role, companyId = ugi.instanceId, companyName = ugi.companyName)
     }
     getSpecificUserInfoByUsername(username) map { deal(_)}
-  }
-
-  //管理员查询用户列表
-  def adminGetUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[Result[UserListEntity]] = {
-    log.info(s"get into method adminGetUserList, party:${party}, instance_id:${instance_id}")
-    for {
-      list <- getUserList(party, instance_id, limit, offset)
-    } yield Result(data = Some(list), success = true)
   }
 
   //管理员禁用用户
