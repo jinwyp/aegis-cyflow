@@ -10,7 +10,6 @@ INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name
 
 INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('systemAdmin', '00000000', '管理员');
 
-INSERT INTO `cyflow`.`party_instance` (`party_class`, `instance_id`, `party_name`) VALUES ('fundProvider', '66666666', '有钱人');
 
 --添加组（贸易商业务，贸易商财务，资金方业务，资金方财务）
 INSERT INTO `cyflow`.`party_group` (`party_class`, `gid`, `description`) VALUES ('trader', '1', '贸易方业务');
