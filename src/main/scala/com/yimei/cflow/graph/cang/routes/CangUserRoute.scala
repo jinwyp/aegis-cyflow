@@ -200,7 +200,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
       onSuccess(getLoginUserInfo(user)) { (info: UserGroupInfo) =>
         val role = if(!info.gid.isDefined || info.gid.get == "1") info.party else info.party + "Accountant"
-        val session = MySession(userName = info.userName, userId = info.userId, party = info.party, gid = info.gid, instanceId = info.instanceId, companyName = info.companyName)
+        val session = MySession(userName = info.userName, userId = info.userId, party = info.party, instanceId = info.instanceId, companyName = info.companyName)
         mySetSession(session) {
           complete(Result[UserData](data = Some(UserData(userId = info.userId, username = info.userName, email = info.email, phone = info.phone, role = role, companyId = info.instanceId, companyName = info.companyName))))
         }
@@ -232,11 +232,10 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
     path("sessionuser") {
       myRequiredSession { s =>
         import scala.concurrent.ExecutionContext.Implicits.global
-        val role = if(!s.gid.isDefined  || s.gid.get == "null" || s.gid.get == "1") s.party else s.party + "Accountant"
         val result = for {
-          info <- getUserInfo(s.party, s.instanceId, s.userId)
-        } yield Result[UserData](data = Some(UserData(userId = s.userId, username = s.userName, email = info.userInfo.email.getOrElse(""), phone = info.userInfo.phone.getOrElse(""), role = role, companyId = s.instanceId, companyName = s.companyName)))
-
+          info <- getUserInfoByUsername(s.userName)
+        } yield Result(data = Some(info))
+  
         complete(result)
       }
     }
