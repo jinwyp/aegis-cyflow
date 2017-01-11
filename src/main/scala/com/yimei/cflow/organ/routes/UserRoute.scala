@@ -74,7 +74,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
                PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username, 0,Timestamp.from(Instant.now))) recover {
                case e =>
                   log.error("{}",e)
-                 throw new DatabaseException("添加用户错误")
+                 throw new DatabaseException("存在相同用户名，添加用户错误")
                //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }

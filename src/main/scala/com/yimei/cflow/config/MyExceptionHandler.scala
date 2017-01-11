@@ -32,7 +32,7 @@ trait MyExceptionHandler extends ResultProtocol with SprayJsonSupport {
     case e:DatabaseException =>
       extractUri { uri =>
         println(s"Request to $uri could not be handled normally!!!!!!!!! DatabaseException11111111 {}",e.message)
-        complete(HttpResponse(StatusCodes.BadRequest,entity = e.message ))
+        complete(HttpResponse(StatusCodes.BadRequest,entity = Result(data = Some("error"),success = false,error = Some(Error(409,e.message,""))).toJson.toString ))
       }
     case e =>
       extractUri { uri =>

@@ -25,8 +25,8 @@ import com.yimei.cflow.config.CoreConfig._
 import scala.concurrent.Future
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.api.util.DBUtils._
-import com.yimei.cflow.graph.cang.db.CangPayTransactionTable
-import com.yimei.cflow.graph.cang.db.Entities.CangPayTransactionEntity
+import com.yimei.cflow.graph.cang.db.{CangPayTransactionTable, DepositTable}
+import com.yimei.cflow.graph.cang.db.Entities.{CangPayTransactionEntity, DepositEntity}
 import slick.backend.DatabasePublisher
 
 import scala.concurrent.duration._
@@ -38,8 +38,10 @@ object FlowService extends UserModelProtocol
   with TaskProtocol
   with AdminProtocol
   with CangPayTransactionTable
+  with DepositTable
   with Config {
 
+  import driver.api._
 
   def genGuId(party_class: String, company_id: String, user_Id: String) = {
     party_class + "-" + company_id + "!" + user_Id
@@ -776,6 +778,23 @@ object FlowService extends UserModelProtocol
     }
   }
 
+  //获取保证金金额记录
+  def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter{ dpt => dpt.state === TRANSFERRED && dpt.flowId === flowId}.result) map { dplist =>
+    dplist.map{ dp => DepositRecord(expectedAmount = dp.expectedAmount,
+      actuallyAmount = dp.actuallyAmount,
+      memo = dp.memo,
+      status = dp.state,
+      ts_c = dp.ts_c.get)}.toList
+  }
+
+
+  //获取保证金总额
+  def getDepositAmount(flowId: String): Future[BigDecimal] = {
+    getDepositList(flowId).map { list =>
+      list.foldLeft(BigDecimal(0))((sum, dp) => sum + dp.actuallyAmount)
+    }
+  }
+
 
   /**
     * 组装flow数据
@@ -790,7 +809,9 @@ object FlowService extends UserModelProtocol
                   currentTask: UserState,
                   Filelist: Seq[FileObj],
                   deliveryInfo: (Option[List[Delivery]], Option[BigDecimal]),
-                  repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]])): FlowData = {
+                  repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]]),
+                  depositAmount: BigDecimal,
+                  depositList: List[DepositRecord]): FlowData = {
 
     //货权（贸易商审核通过前为融资方，然后为贸易方
     val cargoOwner = state.histories.contains(E3) match {
@@ -815,6 +836,9 @@ object FlowService extends UserModelProtocol
       graph.edges(entry._1).begin
     ).toList
 
+
+
+
     FlowData(
       currentTask, //当前任务
       cargoOwner, //货权（贸易商审核通过前为融资方，然后为贸易方）
@@ -824,14 +848,14 @@ object FlowService extends UserModelProtocol
         case _ => throw BusinessException(s"$states 异常")
       }, //当前所在vertices
       repaymentInfo._1, // 实际放款金额
-      None, //todo 保证金金额
+      Some(depositAmount),
       extractValue(fundProviderInterestRate, state), //资金方借款的利率
       harborCA, //港口确认吨数
       deliveryInfo._2, //已赎回吨数
       repaymentInfo._2, //已归还金额
       redemptionAmountLeft, //待赎回吨数
       repaymentInfo._3, //待还款
-      None, //todo 保证金记录
+      Some(depositList),
       repaymentInfo._4, //还款交易记录
       deliveryInfo._1, //放货记录
       Filelist.toList //该流程对应全部文件
@@ -869,10 +893,12 @@ object FlowService extends UserModelProtocol
       //融资方还款记录
       repayments <- calculateInterest(flowId, cyPartyMember, spData.interestRate, flowState)
       taskInfo = getTaskInfo(currentTask)
+      depositList <- getDepositList(flowState.flowId)
+      depositAmount <- getDepositAmount(flowState.flowId)
     } yield {
       CYData(spData,
         cyPartyMember,
-        setFlowData(flowState, currentTask, fileList, deliverys, repayments),
+        setFlowData(flowState, currentTask, fileList, deliverys, repayments,depositAmount, depositList),
         flowId,
         taskInfo._1,
         taskInfo._2
@@ -881,8 +907,6 @@ object FlowService extends UserModelProtocol
 
 
   }
-
-  import driver.api._
 
   /**
     * 插入交易记录
