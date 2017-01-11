@@ -162,8 +162,7 @@ class AdminRoute(proxy: ActorRef)
     * @return
     */
   def getFLows = get {
-    pathPrefix("flow") {
-      pathEnd {
+    path("flow") {
         parameters(("flowId".?, "flowType".?, "userType".?, "userId".?, "status".as[Int].?, "page".as[Int].?, "pageSize".as[Int].?)).as(FlowQuery) { fq =>
           log.info("{}", fq)
           val q = flowInstance.filter { fi =>
@@ -190,7 +189,6 @@ class AdminRoute(proxy: ActorRef)
           }
           complete(result)
         }
-      }
     }
   }
 

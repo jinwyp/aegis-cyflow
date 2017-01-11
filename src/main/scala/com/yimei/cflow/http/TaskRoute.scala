@@ -84,7 +84,7 @@ class TaskRoute(proxy: ActorRef) extends UserProtocol
     * @return
     */
   def getUTaskHistory = get {
-    pathPrefix("utask" / Segment / Segment / Segment) { (party, instance_id, user_id) =>
+    path("utask" / Segment / Segment / Segment) { (party, instance_id, user_id) =>
       parameters("history","flowId".?,"taskname".?) { (history,flowId,taskName) =>
         val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
           p.party_class === party &&

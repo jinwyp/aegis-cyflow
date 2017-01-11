@@ -1,7 +1,7 @@
 package com.yimei.cflow.api.http.client
 
 import com.yimei.cflow.api.http.models.UserModel._
-import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, UserGroupEntity}
+import com.yimei.cflow.api.models.database.UserOrganizationDBModel.{PartyInstanceEntity, PartyUserEntity, UserGroupEntity}
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.util.HttpUtil._
 import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
@@ -78,18 +78,6 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
     }
   }
 
-  def getUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[UserListEntity] = {
-    //访问com.yimei.cflow.organ.routes.UserRoute中的getUserList接口
-    sendRequest(
-      path = "api/user",
-      paramters = Map("limit" -> limit.toString, "offset" -> offset.toString),
-      pathVariables = Array(party, instance_id),
-      method = "get"
-    ) map { result =>
-      result.parseJson.convertTo[UserListEntity]
-    }
-  }
-
   def disableUser(username: String): Future[String] = {
     //访问com.yimei.cflow.organ.routes.UserRoute中的disAbleUser接口
      sendRequest(
@@ -97,8 +85,6 @@ trait UserClient extends UserModelProtocol with SessionProtocol {
       pathVariables = Array(username),
       method = "get"
     )
-   // res.map( s => println(s))
-   // res
   }
 
   def getAllUserList(page: Int, pageSize: Int, dynamicQuery: String): Future[UserInfoList] = {
