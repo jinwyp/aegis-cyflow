@@ -36,7 +36,7 @@
                             <!--<legend>Classic inputs</legend>-->
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputUsername')>-1 && 'has-error' ]">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>用户帐号:</label>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <input type="text" id="inputUsername" class="form-control" placeholder="请输入用户账号" ms-visible="@pageShowStatus === 'add' "
                                            ms-duplex="@currentUser.username" ms-rules='{required:true}' data-required-message="请输入用户账号" >
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info' || @pageShowStatus === 'edit'">{{@currentUser.username}}</p>
@@ -47,7 +47,7 @@
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputCompanyName')>-1 && 'has-error' ]">
                                 <label for="inputCompanyName" class="col-sm-2 control-label "><span class=" marginR">*</span>公司名称:</label>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <select name="account" class="form-control" id="inputCompanyName" ms-visible="@pageShowStatus === 'add' "
                                             ms-duplex="@currentCompanyJSON"  data-duplex-changed="@selectCompany">
                                         <option value="" > - </option>
@@ -62,24 +62,25 @@
                         <fieldset >
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputUserRole')>-1 && 'has-error' ]">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>用户类型:</label>
-                                <div class="col-sm-5" ms-visible="@currentCompany.partyClass === @role.trader || @currentCompany.partyClass === @role.fundProvider ">
+                                <div class="col-sm-4" ms-visible="@currentCompany.partyClass === @role.trader || @currentCompany.partyClass === @role.fundProvider ">
                                     <select name="account" class="form-control" id="inputUserRole" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"
                                             ms-duplex="@currentUser.role">
                                         <option ms-for="role in @userRoleTrader" ms-attr="{value: role.name}" ms-visible="@currentCompany.partyClass === 'trader'">{{role.displayName}} </option>
                                         <option ms-for="role in @userRoleFundProvider" ms-attr="{value: role.name}" ms-visible="@currentCompany.partyClass === 'fundProvider'">{{role.displayName}} </option>
                                     </select>
                                 </div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUserRole')>-1">{{@errorMessage.inputUserRole}}</div>
 
                                 <div class="col-sm-5" ms-visible="@currentCompany.partyClass !== @role.trader && @currentCompany.partyClass !== @role.fundProvider ">
                                     <p class="form-control-static ">{{@currentUser.role | rolename}} </p>
                                 </div>
-                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputUserRole')>-1">{{@errorMessage.inputUserRole}}</div>
+
                             </div>
                         </fieldset>
                         <!--<fieldset ms-visible="@currentUser.role === @role.traderAccountant">-->
                             <!--<div class="form-group" ms-class="[!@isMYSCWValid && 'has-error']">-->
                                 <!--<label class="col-sm-2 control-label "><span class=" marginR">*</span>选择贸易商:</label>-->
-                                <!--<div class="col-sm-5">-->
+                                <!--<div class="col-sm-4">-->
                                     <!--<select name="account" class="form-control m-b" id="inputMYSFinance" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit'"-->
                                             <!--ms-duplex="@currentUser.belongToUser" ms-blur="@isValid">-->
                                         <!--<option value="" > - </option>-->
@@ -93,7 +94,7 @@
                         <!--<fieldset ms-visible="@currentUser.role === @role.fundProviderAccountant">-->
                             <!--<div class="form-group" ms-class="[!@isMYSCWValid && 'has-error']">-->
                                 <!--<label class="col-sm-2 control-label "><span class=" marginR">*</span>选择资金方:</label>-->
-                                <!--<div class="col-sm-5">-->
+                                <!--<div class="col-sm-4">-->
                                     <!--<select name="account" class="form-control m-b" id="inputZJFFinance" ms-visible="@pageShowStatus === 'add' || @pageShowStatus ==='edit'"-->
                                             <!--ms-duplex="@currentUser.belongToUser" ms-blur="@isValid">-->
                                         <!--<option value="" > - </option>-->
@@ -104,6 +105,18 @@
                                 <!--<div class="col-sm-5 help-block"  ms-visible="!@isMYSCWValid">请选择资金方</div>-->
                             <!--</div>-->
                         <!--</fieldset>-->
+
+                        <fieldset>
+                            <div class="form-group" ms-class="[@errorInputName.indexOf('inputFullName')>-1 && 'has-error']">
+                                <label class="col-sm-2 control-label "><span class=" marginR">*</span>姓名:</label>
+                                <div class="col-sm-4">
+                                    <input type="text" id="inputFullName" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.fullName"
+                                           ms-rules='{required:true}' data-required-message="请输入姓名">
+                                    <p class="form-control-static " ms-visible=" @pageShowStatus === 'info'">{{@currentUser.name}}</p>
+                                </div>
+                                <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputFullName')>-1">{{@errorMessage.inputFullName}}</div>
+                            </div>
+                        </fieldset>
 
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputEmail')>-1 && 'has-error']">
@@ -124,7 +137,7 @@
                         <fieldset>
                             <div class="form-group" ms-class="[@errorInputName.indexOf('inputMobilePhone')>-1 && 'has-error'] ">
                                 <label class="col-sm-2 control-label "><span class=" marginR">*</span>手机号码:</label>
-                                <div class="col-sm-5">
+                                <div class="col-sm-4">
                                     <input type="text" id="inputMobilePhone" placeholder="请输入手机号码" class="form-control" ms-visible="@pageShowStatus === 'add' || @pageShowStatus === 'edit' " ms-duplex="@currentUser.phone"
                                            ms-rules="{ required:true, pattern: /^1[358][0123456789]\d{8}$/ }" data-required-message="请输入手机号码" data-pattern-message="手机号码不正确">
                                     <p class="form-control-static " ms-visible="@pageShowStatus === 'info'">{{@currentUser.phone}}</p>

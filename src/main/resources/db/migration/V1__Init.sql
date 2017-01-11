@@ -146,7 +146,9 @@ create table deposit (
   actuallyAmount DECIMAL(18, 2)  NOT NULL  DEFAULT 0,
   state          VARCHAR(30) NOT NULL DEFAULT 'init',
   memo           VARCHAR(1024)        DEFAULT NULL,
+  operator       VARCHAR(128) NOT NULL,
   ts_c           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ts_u           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
 

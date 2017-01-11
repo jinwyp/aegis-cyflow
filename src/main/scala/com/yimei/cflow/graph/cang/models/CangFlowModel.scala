@@ -231,12 +231,13 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   /**
     *保证金记录
     */
-  case class Deposit(amount:BigDecimal,                                 //保证金金额
-                     transactionNo:String,                                   //流水号
+  case class DepositRecord(expectedAmount:BigDecimal,                                 //保证金金额\
+                    actuallyAmount: BigDecimal,
+                     memo:String,                                   //流水号
                      status:String,                                     //保证金状态
                      ts_c: Timestamp                                    //创建时间
                     )
-  implicit val depositFormat = jsonFormat4(Deposit)
+  implicit val depositFormat = jsonFormat5(DepositRecord)
 
   /**
     * 还款交易记录
@@ -276,7 +277,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                     returnValue:Option[BigDecimal],                       //已归还金额
                     redemptionAmountLeft:Option[BigDecimal],              //待赎回吨数
                     repaymentValue:Option[BigDecimal],                    //待还款
-                    depositList:Option[List[Deposit]],                    //保证金记录
+                    depositList:Option[List[DepositRecord]],                    //保证金记录
                     repaymentList:Option[List[Repayment]],                //还款交易记录
                     deliveryList:Option[List[Delivery]],                  //放货记录
                     fileList:List[FileObj]                        //该流程对应全部文件
