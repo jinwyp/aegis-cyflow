@@ -329,6 +329,68 @@
 
 
             // 整理任务
+
+            function generateNewTask (sourceAllData, edge, task, taskType, fatherTask){
+                var newTask = {
+                    classes : 'node task ' + taskType,
+                    data : {
+                        id : task,
+                        sourceData : {}
+                    },
+                    sourceData : {
+                        id : task,
+                        type : taskType,
+                        description : '',
+                        points : [],
+
+                        belongToEdge : {
+                            id : edge.name,
+                            source : edge.begin,
+                            target : edge.end,
+                            userTasks : edge.userTasks,
+                            autoTasks : edge.autoTasks,
+                            partGTasks : edge.partGTasks,
+                            partUTasks : edge.partUTasks
+                        }
+                    }
+                };
+
+                if (taskType === 'userTasks' ||  taskType === 'autoTasks'){
+                    newTask.sourceData.description = sourceAllData[taskType][task].description
+
+                    source[taskType][task].points.forEach(function(point, pointIndex){
+                        newTask.sourceData.points.push({
+                            id : point,
+                            description : sourceAllData.points[point]
+                        })
+                    })
+
+                }
+
+                if (taskType === 'partUTasks' || taskType === 'partGTasks'){
+                    newTask.sourceData.description = sourceAllData['userTasks'][task].description
+
+                    source['userTasks'][task].points.forEach(function(point, pointIndex){
+                        newTask.sourceData.points.push({
+                            id : point,
+                            description : sourceAllData.points[point]
+                        })
+                    })
+                }
+
+                if (taskType === 'partUTasks') {
+                    newTask.sourceData.guidKey = fatherTask.guidKey
+                }
+
+                if (taskType === 'partGTasks') {
+                    newTask.sourceData.ggidKey = fatherTask.ggidKey
+                }
+
+                newTask.data.sourceData = newTask.sourceData;
+
+                return newTask
+            }
+
             var taskTypeList = ['autoTasks', 'userTasks', 'partUTasks', 'partGTasks'];
             taskTypeList.forEach(function(taskType, taskTypeIndex){
 
@@ -336,44 +398,15 @@
 
                     currentEdge[taskType].forEach(function(task, taskIndex){
                         var tempTask = {};
+
+
                         if (taskType === 'userTasks' ||  taskType === 'autoTasks') {
 
-                            tempTask = {
-                                classes : 'node task ' + taskType,
-                                data : {
-                                    id : task,
-                                    sourceData : {}
-                                },
-                                sourceData : {
-                                    id : task,
-                                    type : taskType,
-                                    description : source[taskType][task].description,
-                                    points : [],
-
-                                    belongToEdge : {
-                                        id : currentEdge.name,
-                                        source : currentEdge.begin,
-                                        target : currentEdge.end,
-                                        userTasks : currentEdge.userTasks,
-                                        autoTasks : currentEdge.autoTasks,
-                                        partGTasks : currentEdge.partGTasks,
-                                        partUTasks : currentEdge.partUTasks
-                                    }
-                                }
-                            };
-
-                            source[taskType][task].points.forEach(function(point, pointIndex){
-                                tempTask.sourceData.points.push({
-                                    id : point,
-                                    description : source.points[point]
-                                })
-                            })
-
+                            tempTask = generateNewTask(source, currentEdge, task, taskType)
 
                             if (taskType === 'userTasks') result.formattedSource.userTasks.push(tempTask);
                             if (taskType === 'autoTasks') result.formattedSource.autoTasks.push(tempTask);
 
-                            tempTask.data.sourceData = tempTask.sourceData;
                             tempEdge.sourceData.allTask.push(tempTask)
                             result.formattedSource.allTask.push(tempTask);
                         }
@@ -384,50 +417,12 @@
                             if (task.tasks && task.tasks.length > 0){
                                 task.tasks.forEach(function(subTask, subTaskIndex){
 
-                                    tempTask = {
-                                        classes : 'node task ' + taskType,
-                                        data : {
-                                            id : subTask,
-                                            sourceData : {}
-                                        },
-                                        sourceData : {
-                                            id : subTask,
-                                            type : taskType,
-                                            guidKey : '',
-                                            ggidKey : '',
-                                            description : source['userTasks'][subTask].description,
-                                            points : [],
+                                    tempTask = generateNewTask(source, currentEdge, subTask, taskType, task)
 
-                                            belongToEdge : {
-                                                id : currentEdge.name,
-                                                source : currentEdge.begin,
-                                                target : currentEdge.end,
-                                                userTasks : currentEdge.userTasks,
-                                                autoTasks : currentEdge.autoTasks,
-                                                partGTasks : currentEdge.partGTasks,
-                                                partUTasks : currentEdge.partUTasks
-                                            }
-                                        }
-                                    };
 
-                                    source['userTasks'][subTask].points.forEach(function(point, pointIndex){
-                                        tempTask.sourceData.points.push({
-                                            id : point,
-                                            description : source.points[point]
-                                        })
-                                    })
+                                    if (taskType === 'partUTasks') result.formattedSource.partUTasks.push(tempTask)
+                                    if (taskType === 'partGTasks') result.formattedSource.partGTasks.push(tempTask)
 
-                                    if (taskType === 'partUTasks') {
-                                        tempTask.sourceData.guidKey = task.guidKey
-                                        result.formattedSource.partUTasks.push(tempTask);
-                                    }
-
-                                    if (taskType === 'partGTasks') {
-                                        tempTask.sourceData.ggidKey = task.ggidKey
-                                        result.formattedSource.partGTasks.push(tempTask);
-                                    }
-
-                                    tempTask.data.sourceData = tempTask.sourceData;
                                     tempEdge.sourceData.allTask.push(tempTask)
                                     result.formattedSource.allTask.push(tempTask);
                                 })
