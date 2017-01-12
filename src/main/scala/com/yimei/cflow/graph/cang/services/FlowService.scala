@@ -659,7 +659,7 @@ object FlowService extends UserModelProtocol
   def getFileObjects(fileNames: List[String]): Future[Seq[FileObj]] = {
 
     getFiles(fileNames).map { sq =>
-      sq.map(entity => FileObj(entity.asset_id, entity.origin_name, entity.busi_type))
+      sq.map(entity => FileObj(entity.asset_id, entity.origin_name, entity.file_type ,entity.busi_type,entity.gid))
     }
 
   }
