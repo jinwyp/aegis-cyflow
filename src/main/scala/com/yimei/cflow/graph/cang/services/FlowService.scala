@@ -1021,7 +1021,7 @@ object FlowService extends UserModelProtocol
         cp.srcCompanyId,
         cp.targetUserType,
         cp.targetCompanyId,
-        cp.amount)),
+        cp.amount)),                        //todo 很关键，pay的支付单位是不是元？？？？
       method = "post"
     )
 
