@@ -281,7 +281,7 @@
         }
 
         vm.convertDataObj = function () {
-            vm.ouputData = formatter.rawArrayToObj(vm.nodes, vm.edges)
+            vm.ouputData = formatter.rawArrayToObj(formatter.cyArrayToRawArray(vm.nodes, vm.edges))
             console.log(vm.ouputData)
         }
 

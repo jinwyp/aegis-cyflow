@@ -1,3 +1,5 @@
+## 项目流程 代码位置 /aegis-cyflow/src/main/resources/cang.json
+
 1.任务提交：
 /api/cang/financeorders/action/{actionname}
 
@@ -7,7 +9,12 @@
 3.任务详情查询
 /api/cang/financeorders/{flowId}
 
-##1 detail
+
+代码 Model 位置  aegis-cyflow/src/main/scala/com/yimei/cflow/graph/cang/models/CangFlowModel.scala
+
+
+```
+
 {
   "currentSessionUserTaskTaskName": "",
   "flowData": {
@@ -172,3 +179,6 @@
   "currentSessionUserTaskId": "",
   "flowId": "cang!financer-1!f1id!1"
 }
+
+
+```
