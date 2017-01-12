@@ -47,7 +47,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   //  }
 
   // 3> http
-  val base: Route = pathPrefix("api") {
+  val base: Route = pathPrefix("api" / "internal") {
     OrganRoute.route(proxy) ~
       EngineRoute.route(proxy) ~
       AssetRoute.route
