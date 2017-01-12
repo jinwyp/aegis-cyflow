@@ -129,8 +129,8 @@
                                                 <td>{{ order.flowData.returnValue || '--'}}</td>
                                                 <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>{{ order.flowData.loanValue || '--'}}</td>
-                                                <td>暂无</td>
-                                                <td>暂无</td>
+                                                <td>需要做</td>
+                                                <td>需要做</td>
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
@@ -152,7 +152,7 @@
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
-                                                <td>{{ order.cargoOwner || '--'}}</td>
+                                                <td>{{ order.flowData.cargoOwner || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
                                                 <td>{{ order.flowData.status | statusname}}</td>
@@ -176,7 +176,7 @@
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
-                                                <td>{{ order.cargoOwner || '--'}}</td>
+                                                <td>{{ order.flowData.cargoOwner || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmount || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
