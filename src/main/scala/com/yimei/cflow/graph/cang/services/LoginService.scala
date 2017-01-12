@@ -314,6 +314,8 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   def getUserInfoByUsername(username: String): Future[UserData] = {
+    log.info(s"get into getUserInfoByUsername, username:${username}")
+
     def deal(ugi: UserGroupInfo): UserData = {
       val role = if(ugi.gid.isDefined && ugi.gid.get == "2") ugi.party + "Accountant" else ugi.party
       UserData(userId = ugi.userId, username = ugi.userName, email = ugi.email, phone = ugi.phone, role = role, companyId = ugi.instanceId, companyName = ugi.companyName)

@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import akka.stream.ThrottleMode
 import akka.stream.scaladsl.Source
 import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, FlowQueryResponse, HijackEntity}
-import com.yimei.cflow.api.http.models.ResultModel.{Result, ResultProtocol}
+import com.yimei.cflow.api.http.models.ResultModel.{PagerInfo, Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitEntity}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
@@ -1074,7 +1074,7 @@ object FlowService extends UserModelProtocol
     def allflows(old: List[String], news: List[String]): Future[Result[List[CYData]]] = {
       Future.sequence((old ::: news).distinct.map(t =>
         cyDataCollection(t, classType, companyId, userId)
-      )).map(t => Result(Some(t)))
+      )).map(t => Result(Some(t),meta = Some(PagerInfo(10, 1, 0, 1))))
     }
 
     for {
