@@ -181,7 +181,7 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <th class="text-right">当前状态:</th>
+                                        <th class="text-right">当前状态:{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</th>
                                         <td>{{@currentOrder.flowData.status | statusname}} </td>
                                     </tr>
 
@@ -639,7 +639,7 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt && @currentOrder.statusChild2Harbor && @currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>

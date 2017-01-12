@@ -44,8 +44,8 @@ var actions = [
     {statusAt:"financingStep12", operator : 'harbor', name : 'a13FinishedUpload', displayName : '确认完成上传资料并已确认货物数量'},
     {statusAt:"financingStep12", operator : 'supervisor', name : 'a14FinishedUpload', displayName : '确认完成上传资料并提交'},
 
-    {statusAt:"financingStep12", operator : 'trader', name : 'a15Approved', displayName : '审核通过'},
-    {statusAt:"financingStep12", operator : 'trader', name : 'a16NotApproved', displayName : '审核不通过'},
+    {statusAt:"financingStep13", operator : 'trader', name : 'a15Approved', displayName : '审核通过'},
+    {statusAt:"financingStep13", operator : 'trader', name : 'a16NotApproved', displayName : '审核不通过'},
 
     {statusAt:"financingStep16", operator : 'traderAccountant', name : 'a17Approved', displayName : '确认放款'},
 
@@ -223,10 +223,10 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
     if (additionalData && additionalData.redemptionAmountDeliveryId) params.redemptionAmountDeliveryId = additionalData.redemptionAmountDeliveryId;
 
     if (actionName === 'a15Approved' || actionName === 'a18Approved') {
-        params.approveStatus = 1
+        params.approvedStatus = 1
     }
     if (actionName === 'a16NotApproved' || actionName === 'a19NotApproved') {
-        params.approveStatus = 0
+        params.approvedStatus = 0
     }
 
     if (actionName === 'a17Approved' || actionName === 'a20Approved' || actionName === 'a36ReturnMoney' || actionName === 'a37Approved') {
