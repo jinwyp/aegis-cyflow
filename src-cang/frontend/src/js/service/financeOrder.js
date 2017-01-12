@@ -14,7 +14,7 @@ var status = [
     // {name : 'financingStep14', displayName:'港口完成上传合同,待贸易商审核'}, // 不需要
     // {name : 'financingStep15', displayName:'监管方完成上传合同,待贸易商审核'}, // 不需要
     {name : 'financingStep51', displayName:'贸易商审核不通过，流程结束'},
-    {name : 'financingStep16', displayName:'贸易商审核通过,待贸易商财务放款建议'},
+    {name : 'financingStep14', displayName:'贸易商审核通过,待贸易商财务放款建议'},
     {name : 'financingStep17', displayName:'贸易商财务放款建议审核通过,待资金方审核'},
     {name : 'financingStep52', displayName:'资金方审核不通过，流程结束'},
     {name : 'financingStep18', displayName:'资金方审核通过,待资金方财务放款'},
@@ -47,7 +47,7 @@ var actions = [
     {statusAt:"financingStep13", operator : 'trader', name : 'a15Approved', displayName : '审核通过'},
     {statusAt:"financingStep13", operator : 'trader', name : 'a16NotApproved', displayName : '审核不通过'},
 
-    {statusAt:"financingStep16", operator : 'traderAccountant', name : 'a17Approved', displayName : '确认放款'},
+    {statusAt:"financingStep14", operator : 'traderAccountant', name : 'a16traderRecommendAmount', displayName : '确认放款'},
 
     {statusAt:"financingStep17", operator : 'fundProvider', name : 'a18Approved', displayName : '审核通过'},
     {statusAt:"financingStep17", operator : 'fundProvider', name : 'a19NotApproved', displayName : '审核不通过'},
@@ -216,6 +216,7 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
     if (additionalData && additionalData.fileList) params.fileList = additionalData.fileList;
     if (additionalData && additionalData.harborConfirmAmount) params.harborConfirmAmount = additionalData.harborConfirmAmount;
 
+    if (additionalData && additionalData.fundProviderInterestRate) params.fundProviderInterestRate = additionalData.fundProviderInterestRate;
     if (additionalData && additionalData.loanValue) params.loanValue = additionalData.loanValue;
 
     if (additionalData && additionalData.repaymentValue) params.repaymentValue = additionalData.redemptionValue;

@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>3953F143-6ED2-4B71-A6A0-4556E582293E</UUID>
-        <nextObjectID>155</nextObjectID>
+        <nextObjectID>161</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -79,19 +79,19 @@
     <object type="LMENVIRONMENT" id="z103">
         <attribute name="uuid" type="string">FEA9F42A-5F2C-483B-9144-55C5BE0D3388</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Default Environment</attribute>
+        <attribute name="name" type="string">dev</attribute>
         <relationship name="domain" type="0/1" destination="LMENVIRONMENTDOMAIN" idrefs="z108"></relationship>
-        <relationship name="variablesvalues" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z104"></relationship>
+        <relationship name="variablesvalues" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z104 z156 z160 z159"></relationship>
     </object>
     <object type="LMENVIRONMENTVARIABLEVALUE" id="z104">
-        <attribute name="value" type="string"></attribute>
+        <attribute name="value" type="string">77777777</attribute>
         <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z103"></relationship>
         <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z105"></relationship>
     </object>
     <object type="LMENVIRONMENTVARIABLE" id="z105">
         <attribute name="uuid" type="string">4824425D-6F77-444B-966C-EEB71F76CA88</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string"></attribute>
+        <attribute name="name" type="string">companyId</attribute>
         <relationship name="domain" type="0/1" destination="LMENVIRONMENTDOMAIN" idrefs="z108"></relationship>
         <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z104"></relationship>
     </object>
@@ -113,9 +113,9 @@
     <object type="LMENVIRONMENTDOMAIN" id="z108">
         <attribute name="uuid" type="string">DB3C67E8-DFC7-4D6F-8D00-528479E18597</attribute>
         <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Default Domain</attribute>
+        <attribute name="name" type="string">Dev</attribute>
         <relationship name="environments" type="0/0" destination="LMENVIRONMENT" idrefs="z103"></relationship>
-        <relationship name="variables" type="0/0" destination="LMENVIRONMENTVARIABLE" idrefs="z105"></relationship>
+        <relationship name="variables" type="0/0" destination="LMENVIRONMENTVARIABLE" idrefs="z158 z105 z157 z161"></relationship>
     </object>
     <object type="LMREQUEST" id="z111">
         <attribute name="body" type="string">[{"data":{"json":"{\\"companyName\\":\\"中国上海\\",\\"partyClass\\":\\"harbor\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
@@ -616,7 +616,7 @@
     </object>
     <object type="LMREQUEST" id="z153">
         <attribute name="uuid" type="string">1FA07D93-BE32-467B-AAD3-B3F1F9FD9801</attribute>
-        <attribute name="url" type="string">http://localhost:9000/api/utask/financer/15011101/66661</attribute>
+        <attribute name="url" type="string">["http:\\/\\/localhost:9000\\/api\\/internal\\/utask\\/financer\\/",{"data":{"environmentVariable":"4824425D-6F77-444B-966C-EEB71F76CA88"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"},"\\/",{"data":{"environmentVariable":"819CAB21-8BFC-47EB-A30D-186F159209E1"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"}]</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -630,9 +630,9 @@
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z152"></relationship>
     </object>
     <object type="LMREQUEST" id="z154">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"flowId\\":\\"cang!financer-15011101!66661!1\\",\\"taskId\\":\\"96376191-4a2f-4adf-a6b3-6f4cd5b4fc3f\\",\\"fileList\\":[\\"1\\",\\"2\\"]}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"flowId\\":\\"[{\\\\\\"data\\\\\\":{\\\\\\"environmentVariable\\\\\\":\\\\\\"9D5A6D01-D5F3-4945-85BA-3737B4B76D0C\\\\\\"},\\\\\\"identifier\\\\\\":\\\\\\"com.luckymarmot.EnvironmentVariableDynamicValue\\\\\\"}]\\",\\"taskId\\":\\"[{\\\\\\"data\\\\\\":{\\\\\\"environmentVariable\\\\\\":\\\\\\"FA9C7A5A-1681-438C-9CB4-5456F6265856\\\\\\"},\\\\\\"identifier\\\\\\":\\\\\\"com.luckymarmot.EnvironmentVariableDynamicValue\\\\\\"}]\\",\\"fileList\\":[\\"1\\",\\"2\\"]}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">8F7F51B2-5B21-4B37-9A32-BB46FC27E49D</attribute>
-        <attribute name="url" type="string">http://localhost:9000/api/cang/financerTask/a12FinishedUpload/66661/15011101</attribute>
+        <attribute name="url" type="string">["http:\\/\\/localhost:9000\\/api\\/cang\\/financerTask\\/a12FinishedUpload\\/",{"data":{"environmentVariable":"819CAB21-8BFC-47EB-A30D-186F159209E1"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"},"\\/",{"data":{"environmentVariable":"4824425D-6F77-444B-966C-EEB71F76CA88"},"identifier":"com.luckymarmot.EnvironmentVariableDynamicValue"}]</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -654,5 +654,41 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z154"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLEVALUE" id="z156">
+        <attribute name="value" type="string">66661</attribute>
+        <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z103"></relationship>
+        <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z157"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLE" id="z157">
+        <attribute name="uuid" type="string">819CAB21-8BFC-47EB-A30D-186F159209E1</attribute>
+        <attribute name="order" type="int64">1</attribute>
+        <attribute name="name" type="string">userId</attribute>
+        <relationship name="domain" type="0/1" destination="LMENVIRONMENTDOMAIN" idrefs="z108"></relationship>
+        <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z156"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLE" id="z158">
+        <attribute name="uuid" type="string">FA9C7A5A-1681-438C-9CB4-5456F6265856</attribute>
+        <attribute name="order" type="int64">2</attribute>
+        <attribute name="name" type="string">taskId</attribute>
+        <relationship name="domain" type="0/1" destination="LMENVIRONMENTDOMAIN" idrefs="z108"></relationship>
+        <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z160"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLEVALUE" id="z159">
+        <attribute name="value" type="string">cang!financer-77777777!66661!1</attribute>
+        <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z103"></relationship>
+        <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z161"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLEVALUE" id="z160">
+        <attribute name="value" type="string">6f0bade2-588b-4f5a-9851-772930aa24e8</attribute>
+        <relationship name="environment" type="1/1" destination="LMENVIRONMENT" idrefs="z103"></relationship>
+        <relationship name="variable" type="1/1" destination="LMENVIRONMENTVARIABLE" idrefs="z158"></relationship>
+    </object>
+    <object type="LMENVIRONMENTVARIABLE" id="z161">
+        <attribute name="uuid" type="string">9D5A6D01-D5F3-4945-85BA-3737B4B76D0C</attribute>
+        <attribute name="order" type="int64">3</attribute>
+        <attribute name="name" type="string">flowId</attribute>
+        <relationship name="domain" type="0/1" destination="LMENVIRONMENTDOMAIN" idrefs="z108"></relationship>
+        <relationship name="values" type="0/0" destination="LMENVIRONMENTVARIABLEVALUE" idrefs="z159"></relationship>
     </object>
 </database>
