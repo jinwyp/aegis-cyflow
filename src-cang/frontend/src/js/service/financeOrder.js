@@ -197,24 +197,21 @@ exports.addNewFinanceOrder = function (order){
 
 };
 
-exports.auditFinanceOrder = function (orderId, userRole, actionName, additionalData){
-    console.log("流程:%s, 角色 %s 发出的动作: %s", orderId, userRole, actionName)
+exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, additionalData){
+    console.log("在流程 %s, 中的任务 %s , 发出的动作: %s", flowId, taskName, actionName)
     var params = jQuery.extend({}, {
-        "taskId": orderId,
-        "flowId": orderId,
-        "orderId": orderId,
-        "action": actionName,
-        "operator": userRole
-        // "harborUserId": "583ea0b1f17d22ecde1ecb17",
-        // "supervisorUserId": "583fc370e6e14eedaa51d2a0",
-        // "fundProviderUserId": "583fd13e75a02a0f2935374e",
-        // "fundProviderAccountantUserId": "583fd178551ff10f40108c8c"
+        "taskId": taskId,
+        "flowId": flowId
     });
 
     if (additionalData && additionalData.harborUserId) params.harborUserId = additionalData.harborUserId;
+    if (additionalData && additionalData.harborCompanyId) params.harborCompanyId = additionalData.harborCompanyId;
     if (additionalData && additionalData.supervisorUserId) params.supervisorUserId = additionalData.supervisorUserId;
+    if (additionalData && additionalData.supervisorCompanyId) params.supervisorCompanyId = additionalData.supervisorCompanyId;
     if (additionalData && additionalData.fundProviderUserId) params.fundProviderUserId = additionalData.fundProviderUserId;
+    if (additionalData && additionalData.fundProviderCompanyId) params.fundProviderCompanyId = additionalData.fundProviderCompanyId;
     if (additionalData && additionalData.fundProviderAccountantUserId) params.fundProviderAccountantUserId = additionalData.fundProviderAccountantUserId;
+    if (additionalData && additionalData.fundProviderAccountantCompanyId) params.fundProviderAccountantCompanyId = additionalData.fundProviderAccountantCompanyId;
 
 
     if (additionalData && additionalData.fileList) params.fileList = additionalData.fileList;
@@ -241,7 +238,7 @@ exports.auditFinanceOrder = function (orderId, userRole, actionName, additionalD
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.financeOrderList + '/task',
+        url      : url.financeOrderList + '/action/' + taskName,
         method   : 'POST',
         data     :JSON.stringify(params)
 
@@ -268,22 +265,7 @@ exports.updateFinanceOrderInfoById = function (id, order){
 
 
 
-
-exports.getContractListByOrderId = function (orderId, query){
-
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.contractList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.getContractById = function (id, query){
+exports.getFileById = function (id, query){
     var params = jQuery.extend({}, query);
 
     window.location = url.financeOrderList + '/file/' + id;
@@ -294,93 +276,4 @@ exports.getContractById = function (id, query){
 
 
 
-exports.getPaymentOrderListByOrderId = function (orderId, query){
 
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.addNewPaymentOrder = function (order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList,
-        method   : 'POST',
-        data     : JSON.stringify(params)
-
-    });
-
-};
-exports.updatePaymentOrderInfoById = function (id, order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList + '/' + id,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
-
-
-
-exports.getDeliveryListByOrderId = function (orderId, query){
-
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.addNewDelivery = function (order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList,
-        method   : 'POST',
-        data     : JSON.stringify(params)
-
-    });
-};
-exports.updateDeliveryInfoById = function (id, order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList + '/' + id,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
