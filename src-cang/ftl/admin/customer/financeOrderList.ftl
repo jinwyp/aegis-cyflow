@@ -79,12 +79,12 @@
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.stockPort || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
-                                                <td>{{ order.mortgageValue || '--'}}</td>
-                                                <td>{{ order.mortgageDeadline || '--'}}</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.spData.financingAmount || '--'}}</td>
+                                                <td>{{ order.spData.financingDays || '--'}}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>需要计算</td>
                                                 <td>{{ order.status | statusname }}</td>
 
@@ -121,13 +121,13 @@
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.stockPort || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.loanInterestRate || '--'}}</td>
                                                 <td>需要计算</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
                                                 <td>{{ order.returnValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>{{ order.loanValue || '--'}}</td>
                                                 <td>暂无</td>
                                                 <td>暂无</td>
@@ -153,8 +153,8 @@
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.cargoOwner || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.mortgageAmount - order.redemptionAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
                                                 <td>{{ order.status | statusname}}</td>
 
                                                 <td>
@@ -177,9 +177,9 @@
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.cargoOwner || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmount || '--'}}</td>
-                                                <td>{{ order.mortgageAmount - order.redemptionAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
                                                 <td>{{ order.status | statusname}}</td>
 
                                                 <td>
@@ -213,15 +213,15 @@
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.stockPort || '--'}}</td>
-                                                <td>{{ order.mortgageValue || '--'}}</td>
-                                                <td>{{ order.mortgageDeadline || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.spData.financingAmount || '--'}}</td>
+                                                <td>{{ order.spData.financingDays || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.loanFundProviderInterestRate || '--'}}</td>
                                                 <td>需要计算</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
                                                 <td>{{ order.returnValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>{{ order.status | statusname }}</td>
 
                                                 <td>
