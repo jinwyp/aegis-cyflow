@@ -373,72 +373,13 @@ var orderInfo = function () {
         orderService.getFinanceOrderInfoById(orderId).done(function (data) {
             if (data.success) {
                 vm.currentOrder = data.data;
-            } else {
-                console.log(data.error);
-            }
-        });
 
-        orderService.getContractListByOrderId(orderId).done(function (data) {
-            if (data.success) {
-                var tempFiles = {};
-                data.data.forEach(function(file, fileIndex){
-                    tempFiles[file._id.toString()] = file;
-                })
-                vm.contractList = data.data;
-
-                orderService.getDeliveryListByOrderId(orderId).done(function (data) {
-                    if (data.success) {
-
-                        if (data.data.length > 0){
-                            data.data.forEach(function (delivery, deliveryIndex) {
-
-                                delivery.fileList = [];
-                                delivery.uploadFiles.forEach(function(file2, file2Index){
-                                    delivery.fileList.push(tempFiles[file2.toString()])
-                                })
-                            })
-
-                            if (typeof data.data[data.data.length - 1].confirmDate === 'undefined'){
-                                vm.isNeedDelivery = false;
-                                tempDeliveryId = data.data[data.data.length - 1]._id
-                            }else{
-                                vm.isNeedDelivery = true;
-                            }
-
-                        }else{
-                            vm.isNeedDelivery = true;
-                        }
-
-                        vm.deliveryList = data.data;
-
-                        upload()
-
-                    } else {
-                        console.log(data.error);
-                    }
-                });
+                upload()
 
             } else {
                 console.log(data.error);
             }
         });
-
-        orderService.getPaymentOrderListByOrderId(orderId, {paymentType  : orderService.paymentTypeKey.deposit}).done(function (data) {
-            if (data.success) {
-                vm.depositList = data.data;
-            } else {
-                console.log(data.error);
-            }
-        });
-
-        orderService.getPaymentOrderListByOrderId(orderId, {paymentType  : orderService.paymentTypeKey.repayment}).done(function (data) {
-            if (data.success) {
-                vm.repaymentList = data.data;
-            } else {
-                console.log(data.error);
-            }
-        });
-
     }
 
     getOrderInfo();
@@ -584,6 +525,7 @@ var orderInfo = function () {
 
 
     //折线图
+/*
     var myChart = echarts.init(document.getElementById('main'));
     myChart.setOption({
         title   : {
@@ -652,6 +594,7 @@ var orderInfo = function () {
         ]
     });
 
+*/
 
 
     if (urlShowStatus === 'orderInfo') {

@@ -124,13 +124,14 @@
                                                 <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.spData.interestRate || '--'}}</td>
-                                                <td>需要计算</td>
+                                                <td>{{ order.flowData.totalInterest || '--'}}</td>
                                                 <td>{{ order.flowData.depositValue || '--'}}</td>
                                                 <td>{{ order.flowData.returnValue || '--'}}</td>
                                                 <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>{{ order.flowData.loanValue || '--'}}</td>
-                                                <td>需要做</td>
-                                                <td>需要做</td>
+
+                                                <td>{{ order.flowData.loanActualArrivalDate | date("yyyy-MM-dd") }}</td>
+                                                <td>{{ order.flowData.LastRepaymentDate | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>

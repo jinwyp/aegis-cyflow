@@ -268,22 +268,7 @@ exports.updateFinanceOrderInfoById = function (id, order){
 
 
 
-
-exports.getContractListByOrderId = function (orderId, query){
-
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.contractList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.getContractById = function (id, query){
+exports.getFileById = function (id, query){
     var params = jQuery.extend({}, query);
 
     window.location = url.financeOrderList + '/file/' + id;
@@ -294,93 +279,4 @@ exports.getContractById = function (id, query){
 
 
 
-exports.getPaymentOrderListByOrderId = function (orderId, query){
 
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.addNewPaymentOrder = function (order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList,
-        method   : 'POST',
-        data     : JSON.stringify(params)
-
-    });
-
-};
-exports.updatePaymentOrderInfoById = function (id, order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.paymentOrderList + '/' + id,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
-
-
-
-exports.getDeliveryListByOrderId = function (orderId, query){
-
-    var params = jQuery.extend({}, query, {orderId : orderId});
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList,
-        method   : 'GET',
-        data     : params
-
-    });
-};
-exports.addNewDelivery = function (order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList,
-        method   : 'POST',
-        data     : JSON.stringify(params)
-
-    });
-};
-exports.updateDeliveryInfoById = function (id, order){
-
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.deliveryList + '/' + id,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
