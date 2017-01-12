@@ -16,7 +16,7 @@ var headers = {
 var prefix = '/api/cang';
 
 var url = {
-    files : prefix + '/files',
+    files : '/api/file',
     financeOrderList : prefix + '/financeorders',
     paymentOrderList : prefix + '/paymentorders',
     deliveryList : prefix + '/deliveries',

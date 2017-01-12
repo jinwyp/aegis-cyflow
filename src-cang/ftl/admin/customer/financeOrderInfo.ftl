@@ -419,14 +419,14 @@
 
 
                     <!-- 港口确认货物 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && !@currentOrder.harborConfirmAmount">
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.status === @action.a13FinishedUpload.statusAt">
                         <div class="panel-heading">港口确认货物</div>
                         <div class="panel-body">
                             <h4 class="lineH40">
                                 当前有 <input type="text" class="goods" ms-duplex-number="@inputHarborConfirmAmount">吨货物 <br>
                                 货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
                             </h4>
-                            <span class="text-danger" ms-visible="@errorHarborConfirmAmount"> 数量错误!</span>
+                            <span class="text-danger" ms-visible="@errorHarborConfirmAmount"> 数量不能小于10吨!</span>
                         </div>
                     </div>
 
@@ -620,7 +620,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.financer ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a12FinishedUpload.statusAt && !@currentOrder.statusChild1Financer" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a12FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
@@ -679,7 +679,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.harbor">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a13FinishedUpload.statusAt && !@currentOrder.statusChild2Harbor" ms-click="doAction(@action.a13FinishedUpload.name)">{{@action.a13FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a13FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a13FinishedUpload.name)">{{@action.a13FinishedUpload.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
@@ -693,7 +693,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.supervisor ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a14FinishedUpload.statusAt && !@currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a14FinishedUpload.name)">{{@action.a14FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a14FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a14FinishedUpload.name)">{{@action.a14FinishedUpload.displayName}}</button>
                         </div>
                     </div>
 

@@ -96,7 +96,7 @@ var orderInfo = function () {
                 // 贸易商 判断是否完成 融资方 港口 监管 上传文件
 
 
-                    if (vm.currentOrder.status === 'repaymentStep31'){
+                    if (vm.currentOrder.flowData.status === 'repaymentStep31'){
 
                         // 贸易商 返还货物 并给港口上传货物文件
 
@@ -149,11 +149,7 @@ var orderInfo = function () {
 
                     }
 
-                }else{
-
-
                 }
-
 
 
 
@@ -162,28 +158,23 @@ var orderInfo = function () {
                 additionalData.fileList = uploadFileList;
             }
 
+
+
             if (sessionUserRole === vm.role.harbor){
 
                 // 港口确认货物
-                if (vm.currentOrder.status === 'financingStep12'){
+                if (vm.currentOrder.flowData.status === vm.action.a13FinishedUpload.statusAt){
                     vm.errorHarborConfirmAmount = false;
 
-                    if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 100) {
+                    if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 10) {
                         vm.errorHarborConfirmAmount = true;
                         return ;
                     } else {
                         additionalData.harborConfirmAmount =  vm.inputHarborConfirmAmount
-
-                        orderService.updateFinanceOrderInfoById(orderId, { harborConfirmAmount : vm.inputHarborConfirmAmount }).done(function (data) {
-                            if (data.success) {
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
                     }
                 }
 
-                if (vm.currentOrder.status === 'repaymentStep32' || vm.currentOrder.status === 'repaymentStep33'){
+                if (vm.currentOrder.flowData.status === 'repaymentStep32' || vm.currentOrder.flowData.status === 'repaymentStep33'){
                     additionalData.redemptionAmountDeliveryId = tempDeliveryId
 
                     if (tempDeliveryId){
@@ -202,7 +193,7 @@ var orderInfo = function () {
             // 贸易商财务 给出具体放款金额
             if (sessionUserRole === vm.role.traderAccountant){
 
-                if (vm.currentOrder.status === 'financingStep18'){
+                if (vm.currentOrder.flowData.status === 'financingStep18'){
                     vm.errorActualLoanValue = false;
 
                     if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
@@ -210,13 +201,6 @@ var orderInfo = function () {
                         return ;
                     } else {
                         additionalData.loanValue = vm.inputActualLoanValue
-
-                        orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
-                            if (data.success) {
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
                     }
                 }
             }
@@ -227,7 +211,7 @@ var orderInfo = function () {
                 // 融资方 还款金额
 
                 // 融资方 还款金额
-                if (vm.currentOrder.status === 'financingStep12'){
+                if (vm.currentOrder.flowData.status === 'financingStep12'){
 
                 }else{
                     vm.errorRepaymentValue = false;

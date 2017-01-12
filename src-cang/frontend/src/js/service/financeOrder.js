@@ -145,7 +145,6 @@ exports.getFinanceOrderList = function (query){
         if (query.userRole === role.fundProviderAccountant) {
             user = {fundProviderAccountantUserId : query.userId}
         }
-
     }
 
     delete query.userRole;
@@ -247,21 +246,7 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
 };
 
 
-exports.updateFinanceOrderInfoById = function (id, order){
 
-    var params = jQuery.extend({}, order);
-
-    return jQuery.ajax({
-        headers : headers,
-        contentType : 'application/json',
-        dataType : 'json',
-        url      : url.financeOrderList + '/' + id,
-        method   : 'PATCH',
-        data     : JSON.stringify(params)
-
-    });
-
-};
 
 
 
