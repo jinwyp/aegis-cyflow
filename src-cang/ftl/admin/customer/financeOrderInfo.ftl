@@ -98,9 +98,7 @@
 
                                         <th class="text-right">煤种:</th>
                                         <td>{{@currentOrder.spData.coalType || '--'}} </td>
-
                                     </tr>
-
 
                                     <tr>
                                         <th class="text-right">热值:</th>
@@ -112,7 +110,6 @@
                                         <th class="text-right">空干基挥发分:</th>
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
-
 
                                 </table>
 
