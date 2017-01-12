@@ -390,7 +390,7 @@
 
 
                     <!-- 融资方, 港口 与 监管 上传合同-->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer || @currentUser.role === @role.harbor || @currentUser.role === @role.supervisor ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskId ">
                         <div class="panel-heading">上传合同及单据</div>
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
