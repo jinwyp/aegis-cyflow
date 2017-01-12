@@ -225,7 +225,7 @@ class CangUserRoute extends SprayJsonSupport with ResultProtocol with UserModelP
 
   /*
    * 获取用户信息
-   * url      http://localhost:9000/api/cang/info
+   * url      http://localhost:9000/api/cang/sessionuser
    * method   get
    */
   def getInfoRoute: Route = get {
