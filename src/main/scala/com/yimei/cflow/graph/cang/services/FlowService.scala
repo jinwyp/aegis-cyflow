@@ -809,7 +809,7 @@ object FlowService extends UserModelProtocol
   }
 
   //获取保证金金额记录
-  def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter { dpt => dpt.state === TRANSFERRED && dpt.flowId === flowId }.result) map { dplist =>
+  def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter { dpt => dpt.flowId === flowId }.result) map { dplist =>
     dplist.map { dp =>
       DepositRecord(expectedAmount = dp.expectedAmount,
         actuallyAmount = dp.actuallyAmount,
