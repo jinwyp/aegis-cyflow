@@ -1,6 +1,7 @@
 package com.yimei.cflow.graph.cang.services
 
 import java.sql.Timestamp
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 import akka.stream.ThrottleMode
@@ -861,6 +862,15 @@ object FlowService extends UserModelProtocol
       graph.edges(entry._1).begin
     ).toList
 
+    val loanActualArrivalDate: Option[Timestamp] = state.points.get(traderPaySuccess) match {
+      case Some(data) => Some(new Timestamp(data.timestamp))
+      case _ => None
+    }
+
+    val lastRepaymentDate = state.points.get(TraderConfirmPayToFundProvider) match {
+      case Some(data) => Some(new Timestamp(data.timestamp))
+      case _ => None
+    }
 
     FlowData(
       currentTask, //当前任务
@@ -881,7 +891,9 @@ object FlowService extends UserModelProtocol
       Some(depositList),
       repaymentInfo._4, //还款交易记录
       deliveryInfo._1, //放货记录
-      Filelist.toList //该流程对应全部文件
+      Filelist.toList, //该流程对应全部文件
+      loanActualArrivalDate,    //实际放款时间
+      lastRepaymentDate
     )
   }
 

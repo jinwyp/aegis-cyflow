@@ -280,9 +280,11 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                     depositList:Option[List[DepositRecord]],                    //保证金记录
                     repaymentList:Option[List[Repayment]],                //还款交易记录
                     deliveryList:Option[List[Delivery]],                  //放货记录
-                    fileList:List[FileObj]                        //该流程对应全部文件
+                    fileList:List[FileObj],                        //该流程对应全部文件
+                    loanActualArrivalDate:Option[Timestamp],        //实际放款时间
+                    LastRepaymentDate:Option[Timestamp]            //实际结息时间
                    )
-  implicit val flowDataFormat = jsonFormat15(FlowData)
+  implicit val flowDataFormat = jsonFormat17(FlowData)
 
 
   /**
