@@ -741,9 +741,11 @@ object FlowService extends UserModelProtocol
 
     val financer = cyPartyMember.financer
 
-    state.points.get(recommendAmount) match {
+    state.points.get(traderPaySuccess) match {
       //说明贸易方已经审核通过了。已经有了借款金额
-      case Some(total) =>
+      case Some(_) =>
+        val total = state.points(recommendAmount)
+
         state.points.get(financerPaySuccess) match {
           //说明融资方至少有一笔还款了
           case Some(_) =>
@@ -788,7 +790,7 @@ object FlowService extends UserModelProtocol
               (Some(tt), Some(tt - curMoney), Some(curMoney), Some(repayments.toList))
             }
           case _ => Future {
-            (Some(BigDecimal(total.value.toDouble)), None, None, None)
+            (None, None, None, None)
           }
         }
       case _ => Future {
