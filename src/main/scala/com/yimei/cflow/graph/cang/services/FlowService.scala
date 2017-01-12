@@ -20,7 +20,7 @@ import com.yimei.cflow.asset.service.AssetService._
 import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, SPData, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 import spray.json._
 import com.yimei.cflow.config.CoreConfig._
 
@@ -748,12 +748,14 @@ object FlowService extends UserModelProtocol
           //说明融资方至少有一笔还款了
           case Some(_) =>
 
-            //这个地方肯定是有了，因为已经有还款了
-            val startDate: Long = state.points(traderPaySuccess).timestamp
+           // val startDate: Long = state.points(traderPaySuccess).timestamp
             //拿到全部的还款的task
             val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId, financer.companyId, financer.userId)
             val tt: BigDecimal = BigDecimal(total.value.toDouble)
             var curMoney = tt
+
+            //这个地方肯定是有了，因为已经有还款了
+            var latestPayDate: Long = state.points(traderPaySuccess).timestamp
 
             //获得还款记录表
             def getRepaymentList(tasks: Seq[FlowTaskEntity]): Seq[Repayment] = {
@@ -762,7 +764,9 @@ object FlowService extends UserModelProtocol
                   case Some(data) =>
                     //本次还款金额
                     val repaymentValue = BigDecimal(data.value.toDouble)
-                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate) + 1
+                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - latestPayDate) + 1
+                    //把最近还款时间改成现在
+                    latestPayDate = data.timestamp
                     val result = Repayment(
                       repaymentValue,
                       curMoney,
@@ -822,6 +826,28 @@ object FlowService extends UserModelProtocol
   }
 
 
+  def getTotalInterest(repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]]),interestRate:BigDecimal,state: FlowState): Option[BigDecimal] = {
+    (repaymentInfo._1,repaymentInfo._2)match {
+      case (Some(totalMoney),Some(repayMoney)) =>
+        //有还款
+        //还款时计算的利息
+        val interestHistory: BigDecimal = repaymentInfo._4.getOrElse(List()).foldLeft(BigDecimal(0))((i, rep) => i+rep.interest)
+        //最后一次还款时间
+        val latestRepayDate = state.points(financerPaySuccess).timestamp
+
+        Some(interestHistory + repaymentInfo._3.get*(TimeUnit.MICROSECONDS.toDays(Timestamp.from(Instant.now()).getTime - latestRepayDate) + 1)*interestRate/365)
+
+      case (Some(totalMoney),_) =>
+        //还没还款
+        val startDate: Long = state.points(traderPaySuccess).timestamp
+        //利息为本金 *（当前时间-借款时间）*利率/365
+        Some(totalMoney*(TimeUnit.MICROSECONDS.toDays(Timestamp.from(Instant.now()).getTime - startDate) + 1)*interestRate/365)
+
+      case _    => None //还没有放款
+    }
+  }
+
+
   /**
     * 组装flow数据
     *
@@ -837,7 +863,8 @@ object FlowService extends UserModelProtocol
                   deliveryInfo: (Option[List[Delivery]], Option[BigDecimal]),
                   repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]]),
                   depositAmount: BigDecimal,
-                  depositList: List[DepositRecord]): FlowData = {
+                  depositList: List[DepositRecord],
+                  spData:SPData): FlowData = {
 
     //货权（贸易商审核通过前为融资方，然后为贸易方
     val cargoOwner = state.histories.contains(E3) match {
@@ -872,6 +899,10 @@ object FlowService extends UserModelProtocol
       case _ => None
     }
 
+    val totalInterest: Option[BigDecimal] = getTotalInterest(repaymentInfo,spData.interestRate,state)
+
+
+
     FlowData(
       currentTask, //当前任务
       cargoOwner, //货权（贸易商审核通过前为融资方，然后为贸易方）
@@ -893,7 +924,8 @@ object FlowService extends UserModelProtocol
       deliveryInfo._1, //放货记录
       Filelist.toList, //该流程对应全部文件
       loanActualArrivalDate,    //实际放款时间
-      lastRepaymentDate
+      lastRepaymentDate,
+      totalInterest
     )
   }
 
@@ -933,7 +965,7 @@ object FlowService extends UserModelProtocol
     } yield {
       CYData(spData,
         cyPartyMember,
-        setFlowData(flowState, currentTask, fileList, deliverys, repayments, depositAmount, depositList),
+        setFlowData(flowState, currentTask, fileList, deliverys, repayments, depositAmount, depositList,spData),
         flowId,
         taskInfo._1,
         taskInfo._2
