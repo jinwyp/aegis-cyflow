@@ -451,7 +451,7 @@
 
 
                     <!-- 贸易商选择 资金方 港口 监管方-->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && !@currentOrder.harborUserId && !@currentOrder.fundProviderUserId" >
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && @currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" >
                         <div class="panel-heading">选择资金方,港口和监管方 </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -461,7 +461,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedFundProvider">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @fundProviderList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.fundProvider)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}}</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.fundProvider">
@@ -474,7 +474,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedFundProviderAccountant">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @fundProviderAccountantList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.fundProviderAccountant)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}} </option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.fundProviderAccountant">
@@ -488,7 +488,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedHarbor">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @harborList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.harbor)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}}</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.harbor">
@@ -501,7 +501,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedSupervisor">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @supervisorList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.supervisor)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}} </option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.supervisor">

@@ -197,24 +197,21 @@ exports.addNewFinanceOrder = function (order){
 
 };
 
-exports.auditFinanceOrder = function (orderId, userRole, actionName, additionalData){
-    console.log("流程:%s, 角色 %s 发出的动作: %s", orderId, userRole, actionName)
+exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, additionalData){
+    console.log("在流程 %s, 中的任务 %s , 发出的动作: %s", flowId, taskName, actionName)
     var params = jQuery.extend({}, {
-        "taskId": orderId,
-        "flowId": orderId,
-        "orderId": orderId,
-        "action": actionName,
-        "operator": userRole
-        // "harborUserId": "583ea0b1f17d22ecde1ecb17",
-        // "supervisorUserId": "583fc370e6e14eedaa51d2a0",
-        // "fundProviderUserId": "583fd13e75a02a0f2935374e",
-        // "fundProviderAccountantUserId": "583fd178551ff10f40108c8c"
+        "taskId": taskId,
+        "flowId": flowId
     });
 
     if (additionalData && additionalData.harborUserId) params.harborUserId = additionalData.harborUserId;
+    if (additionalData && additionalData.harborCompanyId) params.harborCompanyId = additionalData.harborCompanyId;
     if (additionalData && additionalData.supervisorUserId) params.supervisorUserId = additionalData.supervisorUserId;
+    if (additionalData && additionalData.supervisorCompanyId) params.supervisorCompanyId = additionalData.supervisorCompanyId;
     if (additionalData && additionalData.fundProviderUserId) params.fundProviderUserId = additionalData.fundProviderUserId;
+    if (additionalData && additionalData.fundProviderCompanyId) params.fundProviderCompanyId = additionalData.fundProviderCompanyId;
     if (additionalData && additionalData.fundProviderAccountantUserId) params.fundProviderAccountantUserId = additionalData.fundProviderAccountantUserId;
+    if (additionalData && additionalData.fundProviderAccountantCompanyId) params.fundProviderAccountantCompanyId = additionalData.fundProviderAccountantCompanyId;
 
 
     if (additionalData && additionalData.fileList) params.fileList = additionalData.fileList;
@@ -241,7 +238,7 @@ exports.auditFinanceOrder = function (orderId, userRole, actionName, additionalD
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.financeOrderList + '/task',
+        url      : url.financeOrderList + '/action/' + taskName,
         method   : 'POST',
         data     :JSON.stringify(params)
 
