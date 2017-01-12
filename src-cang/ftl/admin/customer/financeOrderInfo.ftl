@@ -364,7 +364,7 @@
                                     <tr>
                                         <th class="text-right ">融资用户合同及单据:</th>
                                         <td>
-                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.financer)" ms-click="@getFile($event, contract)">{{contract.originalFileName}}</a>
+                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.financer)" ms-click="@getFile($event, contract)">{{contract.originName}}</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -512,8 +512,30 @@
 
 
 
+                    <!-- 贸易商 给出利率 -->
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && @currentOrder.flowData.status === @action.a15Approved.statusAt " >
+                        <div class="panel-heading">贸易商贷款利率: </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" novalidate>
+
+                                <div class="form-group" ms-class="[@errorFundProviderInterestRate && 'has-error']">
+                                    <label class="col-sm-3 control-label">贷款利率:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex-number="@inputFundProviderInterestRate" >
+                                    </div>
+                                    <div class="col-sm-5" ms-visible="@errorFundProviderInterestRate">
+                                        <span class="help-block">*&nbsp;请填写资金方贷款给贸易商的利率!</span>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+
+
                     <!-- 贸易商财务 给出放款金额建议 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.traderAccountant && @currentOrder.flowData.status === @action.a17Approved.statusAt " >
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.traderAccountant && @currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt " >
                         <div class="panel-heading">贸易商财务放款金额建议: </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -668,7 +690,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.traderAccountant ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17Approved.statusAt" ms-click="doAction(@action.a17Approved.name)">{{@action.a17Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt" ms-click="doAction(@action.a16traderRecommendAmount.name)">{{@action.a16traderRecommendAmount.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
