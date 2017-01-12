@@ -8,7 +8,7 @@ import spray.json.DefaultJsonProtocol
 
 object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
-  case class FileObj(id: String, originName: String, fileType:Int, busiType:String = default, party:Option[String])
+  case class FileObj(id: String, originName: String, fileType:Int, busiType:String = default, role:Option[String])
   implicit val fileObjFormat = jsonFormat5(FileObj)
 
   case class StartFlowResult(success: Boolean)
