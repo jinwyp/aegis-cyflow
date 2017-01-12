@@ -276,16 +276,21 @@ exports.addNewDepositOrder = function (order){
 };
 
 
-exports.updateDepositOrderInfoById = function (id, order){
+exports.updateDepositOrderInfoById = function (order){
 
     var params = jQuery.extend({}, order);
 
+    var urlTemp = url.depositList + '/' + order.flowId + '?state=' + order.state
+
+    if (order.amount){
+        urlTemp = urlTemp + '&amount=' + order.amount
+    }
     return jQuery.ajax({
         headers : headers,
         contentType : 'application/json',
         dataType : 'json',
-        url      : url.depositList + '/' + id,
-        method   : 'PATCH',
+        url      : urlTemp,
+        method   : 'PUT',
         data     : JSON.stringify(params)
 
     });

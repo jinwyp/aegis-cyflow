@@ -265,24 +265,31 @@
                                 <tr>
                                     <th>创建时间</th>
                                     <th>要缴纳的金额(万元)</th>
-                                    <th>交易流水号</th>
-                                    <th>缴纳时间</th>
+                                    <th>实际缴纳金额(万元)</th>
+                                    <th>备注</th>
                                     <th>当前状态</th>
                                     <th>操作</th>
                                 </tr>
 
-                                <tr ms-for="(index, paymentOrder) in @depositList">
-                                    <td>{{ paymentOrder.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
-                                    <td>{{ paymentOrder.depositValue}}</td>
-                                    <td>{{ paymentOrder.paymentNo || '--'}}</td>
-                                    <td> <span ms-visible="paymentOrder.confirmDate">{{ paymentOrder.confirmDate | date("yyyy-MM-dd:HH:mm:ss ") }}</span></td>
-                                    <td>{{ paymentOrder.depositType | deposittype}}</td>
+                                <tr ms-for="(index, depositOrder) in @depositList">
+                                    <td>{{ depositOrder.ts_c | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
+                                    <td>{{ depositOrder.expectedAmount}}</td>
+                                    <td>{{ depositOrder.actuallyAmount}}</td>
+                                    <td>{{ depositOrder.memo || '--'}}</td>
+                                    <td>{{ depositOrder.status | deposittype}}</td>
                                     <td>
-                                        <div ms-visible="@currentUser.role === @role.financer && paymentOrder.depositType ==='notified' ">
-                                            <input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">
-                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(paymentOrder._id)">确认已缴</button>
-                                            <span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>
+                                        <div ms-visible="@currentUser.role === @role.financer && depositOrder.status ==='notified' ">
+                                            <#--<input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">-->
+                                                <#--<span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>-->
+                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(depositOrder)">确认已缴</button>
                                         </div>
+
+                                        <div ms-visible="@currentUser.role === @role.trader && depositOrder.status ==='alreadyPaid' ">
+                                        <input type="text" class="payment-no" placeholder="实际到账金额" ms-duplex-number="@inputPaymentOrderNo">
+                                        <span class="text-danger" ms-visible="@errorPaymentOrderNo">实际到账金额不能少于5万元!</span>
+                                            <button class="btn btn-info" type="button" ms-click="@approveDepositOrder(depositOrder)">确认到账</button>
+                                        </div>
+
                                     </td>
                                 </tr>
                             </table>
