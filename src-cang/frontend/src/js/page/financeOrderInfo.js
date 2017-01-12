@@ -92,64 +92,77 @@ var orderInfo = function () {
                     }
                 }
 
+                // 贸易商给出从资金方的贷款利率
+                console.log(vm.currentOrder.flowData.status,vm.action.a15Approved.statusAt );
+                if (vm.currentOrder.flowData.status === vm.action.a15Approved.statusAt){
 
-                // 贸易商 判断是否完成 融资方 港口 监管 上传文件
+                    vm.errorFundProviderInterestRate = false;
 
-
-                    if (vm.currentOrder.flowData.status === 'repaymentStep31'){
-
-                        // 贸易商 返还货物 并给港口上传货物文件
-
-                        vm.errorRedemptionAmount = false;
-                        vm.errorRedemptionReceiver = false;
-                        vm.errorRedemptionFileList = false;
-
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 ) {
-                            vm.errorRedemptionAmount = true;
-                            return ;
+                    if (!vm.inputFundProviderInterestRate) {
+                        vm.errorFundProviderInterestRate = true;
+                        return ;
+                    }else{
+                        additionalData = {
+                            "fundProviderInterestRate" : vm.inputFundProviderInterestRate
                         }
-                        if (!vm.inputRedemptionReceiver ||  vm.inputRedemptionReceiver.length < 2 ) {
-                            vm.errorRedemptionReceiver = true;
-                            return ;
-                        }
-                        if (vm.inputRedemptionFileList.length === 0 ) {
-                            vm.errorRedemptionFileList = true;
-                            return ;
-                        }
+                    }
+                }
 
 
-                        var tempDelivery = {
-                            uploadFiles : [],
-                            redemptionAmount : vm.inputRedemptionAmount,
-                            receiver : vm.inputRedemptionReceiver,
-                            orderId      : orderId,
-                            orderNo      : vm.currentOrder.orderNo
-                        }
+                if (vm.currentOrder.flowData.status === 'repaymentStep31'){
 
-                        additionalData.fileList = []
-                        additionalData.redemptionAmount = vm.inputRedemptionAmount
-                        additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
+                    // 贸易商 返还货物 并给港口上传货物文件
 
-                        vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                            tempDelivery.uploadFiles.push(file.fileId)
-                            additionalData.fileList.push(file.fileId)
-                        })
+                    vm.errorRedemptionAmount = false;
+                    vm.errorRedemptionReceiver = false;
+                    vm.errorRedemptionFileList = false;
 
-
-
-                        orderService.addNewDelivery(tempDelivery).done(function (data) {
-                            if (data.success) {
-                                getOrderInfo()
-                                $.notify("保存成功!", 'success');
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
-
-
+                    if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 ) {
+                        vm.errorRedemptionAmount = true;
+                        return ;
+                    }
+                    if (!vm.inputRedemptionReceiver ||  vm.inputRedemptionReceiver.length < 2 ) {
+                        vm.errorRedemptionReceiver = true;
+                        return ;
+                    }
+                    if (vm.inputRedemptionFileList.length === 0 ) {
+                        vm.errorRedemptionFileList = true;
+                        return ;
                     }
 
-                }
+
+                    var tempDelivery = {
+                        uploadFiles : [],
+                        redemptionAmount : vm.inputRedemptionAmount,
+                        receiver : vm.inputRedemptionReceiver,
+                        orderId      : orderId,
+                        orderNo      : vm.currentOrder.orderNo
+                    }
+
+                    additionalData.fileList = []
+                    additionalData.redemptionAmount = vm.inputRedemptionAmount
+                    additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
+
+                    vm.inputRedemptionFileList.forEach(function(file, fileIndex){
+                        tempDelivery.uploadFiles.push(file.fileId)
+                        additionalData.fileList.push(file.fileId)
+                    })
+
+
+
+                    orderService.addNewDelivery(tempDelivery).done(function (data) {
+                        if (data.success) {
+                            getOrderInfo()
+                            $.notify("保存成功!", 'success');
+                        } else {
+                            console.log(data.error);
+                        }
+                    })
+
+
+            }
+
+            }
 
 
 
@@ -186,14 +199,13 @@ var orderInfo = function () {
                         })
                     }
                 }
-
             }
 
 
             // 贸易商财务 给出具体放款金额
             if (sessionUserRole === vm.role.traderAccountant){
 
-                if (vm.currentOrder.flowData.status === 'financingStep18'){
+                if (vm.currentOrder.flowData.status === vm.action.a16traderRecommendAmount.statusAt){
                     vm.errorActualLoanValue = false;
 
                     if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
@@ -203,6 +215,7 @@ var orderInfo = function () {
                         additionalData.loanValue = vm.inputActualLoanValue
                     }
                 }
+                console.log(additionalData, vm.currentOrder.currentSessionUserTaskTaskName)
             }
 
 
@@ -273,7 +286,7 @@ var orderInfo = function () {
 
         contractFilter : function (el, i, role) {
             // console.log(el, i,role)
-            return el.contractUserType === role
+            return el.role === role
         },
 
         userListFilter : function (el, i, role) {
@@ -353,6 +366,11 @@ var orderInfo = function () {
             }
         },
 
+
+        inputFundProviderInterestRate : 0,
+        errorFundProviderInterestRate : '',
+
+
         inputActualLoanValue : 0,
         errorActualLoanValue : '',
 
@@ -377,6 +395,7 @@ var orderInfo = function () {
     function getOrderInfo() {
         orderService.getFinanceOrderInfoById(orderId).done(function (data) {
             if (data.success) {
+                vm.contractList = data.data.flowData.fileList;
                 vm.currentOrder = data.data;
 
                 upload()
