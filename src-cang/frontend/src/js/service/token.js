@@ -18,7 +18,7 @@ var prefix = '/api/cang';
 var url = {
     files : '/api/file',
     financeOrderList : prefix + '/financeorders',
-    paymentOrderList : prefix + '/paymentorders',
+    depositList : prefix + '/deposits',
     deliveryList : prefix + '/deliveries',
     contractList : prefix + '/files',
     userList : prefix + '/users',

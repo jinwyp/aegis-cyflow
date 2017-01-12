@@ -10,10 +10,6 @@ INSERT INTO `cyflow`.`asset` (`asset_id`, `file_type`, `busi_type`, `username`, 
 INSERT INTO `cyflow`.`asset` (`asset_id`, `file_type`, `busi_type`, `username`, `gid`, `description`, `url`, `origin_name`) VALUES ('10', '1', '1', '123', '123', '123', '123', '22');
 
 
---保证金
-INSERT INTO `deposit` (`id`, `flowId`, `expectedAmount`, `actuallyAmount`, `state`, `memo`, `operator`, `ts_c`, `ts_u`)
-VALUES
-	(1, '123456', 50.00, 100.00, 'notified', 'hehe, this is just a test', 'haha', '2017-01-11 09:37:06', '2017-01-10 19:38:46');
 
 --公司
 INSERT INTO `party_instance` (`id`, `party_class`, `instance_id`, `party_name`, `disable`, `ts_c`)
@@ -95,9 +91,9 @@ VALUES
 --
 --
 -- INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
--- ('1000', '10000', '3110710006261382225', 'eeafb716f93fa090d7716749a6eefa72', '2', '15500000001', '融资方1', '2016-07-01 15:44:17', '2016-08-29 14:35:38', '中信银行', '0', '中信银行上海自贸区分行',2);
+-- ('1000', '10000', '3110710006261382225', 'eeafb716f93fa090d7716749a6eefa72', '2', '15500000001', '宇宙商贸有限公司', '2016-07-01 15:44:17', '2016-08-29 14:35:38', '中信银行', '0', '中信银行上海自贸区分行',2);
 -- INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
--- ('1001', '10001', '3110710006261382229', '9a440f1f071dad3043b6c8ba93bb761c', '2', '15500000002', '资金方1', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
+-- ('1001', '10001', '3110710006261382229', '9a440f1f071dad3043b6c8ba93bb761c', '2', '15500000002', '环球贸易有限公司', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
 -- INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
--- ('1002', '10002', '3110710006261346971', 'ea8753722c0e8ecde195d6adb8ba7c0d', '2', '15500000003', '贸易商1', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
+-- ('1002', '10002', '3110710006261346971', 'ea8753722c0e8ecde195d6adb8ba7c0d', '2', '15500000003', '孟州市至信有限责任公司', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
 

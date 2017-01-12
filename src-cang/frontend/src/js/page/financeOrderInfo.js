@@ -320,6 +320,7 @@ var orderInfo = function () {
 
 
         inputDepositValue : 0,
+        inputDepositMemo : '',
         errorDepositValue : '',
         addNotifyDeposit       : function (event) {
             event.preventDefault();
@@ -329,14 +330,13 @@ var orderInfo = function () {
                 vm.errorDepositValue = true;
             } else {
                 var tempPaymentOrder = {
-                    depositValue : vm.inputDepositValue,
-                    paymentType  : orderService.paymentTypeKey.deposit,
-                    depositType  : 'notified',
-                    orderId      : orderId,
-                    orderNo      : vm.currentOrder.orderNo
+                    flowId      : orderId,
+                    expectedAmount : vm.inputDepositValue,
+                    state  : orderService.depositTypeKey.notified,
+                    memo  : vm.inputDepositMemo
                 }
 
-                orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
+                orderService.addNewDepositOrder(tempPaymentOrder).done(function (data) {
                     if (data.success) {
                         getOrderInfo()
                         $.notify("保存成功!", 'success');

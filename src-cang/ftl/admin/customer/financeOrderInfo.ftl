@@ -176,7 +176,7 @@
 
                     <!--审批详情 审批记录 流程图显示 -->
                     <div class="panel panel-default " >
-                        <div class="panel-heading">审批详情</div>
+                        <div class="panel-heading">审批详情 <a class="pull-right" ms-attr="{href:'http://localhost:9000/graph.html?id='+@currentOrder.flowId}" target="_blank">流程图</a></div>
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -236,6 +236,13 @@
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorDepositValue">
                                         <span class="help-block">*&nbsp;金额数量不正确, 最少10万元!</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" >
+                                    <label class="col-sm-3 control-label">备注:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex="@inputDepositMemo" >
                                     </div>
                                 </div>
 
@@ -722,7 +729,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProvider ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18Approved.statusAt" ms-click="doAction(@action.a18Approved.name)">{{@action.a18Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name)">{{@action.a17fundProviderAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
@@ -731,7 +738,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProviderAccountant ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a20Approved.statusAt" ms-click="doAction(@action.a20Approved.name)">{{@action.a20Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18fundProviderAccountantAudit.statusAt" ms-click="doAction(@action.a18fundProviderAccountantAudit.name)">{{@action.a18fundProviderAccountantAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
