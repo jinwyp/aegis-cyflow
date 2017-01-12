@@ -114,8 +114,8 @@ class CangFlowRoute extends AdminClient
     //path("financeorders" / Segment / Segment / Segment) { (classType, companyId, userId) =>
     myRequiredSession { (session: MySession) =>
       val classType = session.party
-      val companyId = session.userId
-      val userId = session.instanceId
+      val userId = session.userId
+      val companyId = session.instanceId
       complete(getflowList(classType, companyId, userId))
     }
   }
