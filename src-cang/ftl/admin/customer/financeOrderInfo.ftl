@@ -368,7 +368,6 @@
                                         </td>
                                     </tr>
                                 </table>
-
                                 <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.harbor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider " >
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>

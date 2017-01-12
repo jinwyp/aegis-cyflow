@@ -273,7 +273,8 @@ var orderInfo = function () {
 
         contractFilter : function (el, i, role) {
             // console.log(el, i,role)
-            return el.contractUserType === role
+            // return el.contractUserType === role
+            return el
         },
 
         userListFilter : function (el, i, role) {
@@ -377,6 +378,7 @@ var orderInfo = function () {
     function getOrderInfo() {
         orderService.getFinanceOrderInfoById(orderId).done(function (data) {
             if (data.success) {
+                vm.contractList = data.data.flowData.fileList;
                 vm.currentOrder = data.data;
 
                 upload()
