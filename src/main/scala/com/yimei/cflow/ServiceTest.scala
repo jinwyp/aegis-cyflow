@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.asset.AssetRoute
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.engine.graph.GraphLoader
@@ -48,7 +49,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   // 3> http
   val base: Route = pathPrefix("api") {
     OrganRoute.route(proxy) ~
-      EngineRoute.route(proxy)
+      EngineRoute.route(proxy) ~
+      AssetRoute.route
   } ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes) ~
