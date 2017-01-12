@@ -74,10 +74,10 @@
                                                 <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
-                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order._id }" >{{ order.orderNo || '--'}}</a></td>
-                                                <td>{{ order.orderType || '--'}}</td>
-                                                <td>{{ order.requestTime | date("yyyy-MM-dd") }}</td>
-                                                <td>{{ order.downstreamCompanyName || '--'}}</td>
+                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
+                                                <td>{{ order.spData.orderType || '--'}}</td>
+                                                <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
+                                                <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
                                                 <td>{{ order.harbor || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmountLeft || '--'}}</td>
@@ -89,7 +89,7 @@
                                                 <td>{{ order.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order._id}">查看</a>
+                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -116,10 +116,10 @@
                                                 <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
-                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order._id }" >{{ order.orderNo || '--'}}</a></td>
-                                                <td>{{ order.requestTime | date("yyyy-MM-dd") }}</td>
+                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
+                                                <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
-                                                <td>{{ order.downstreamCompanyName || '--'}}</td>
+                                                <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
                                                 <td>{{ order.harbor || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmountLeft || '--'}}</td>
@@ -134,7 +134,7 @@
                                                 <td>{{ order.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order._id}">查看</a>
+                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -151,14 +151,14 @@
                                                 <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
-                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order._id }" >{{ order.orderNo || '--'}}</a></td>
+                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.cargoOwner || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.mortgageAmount - order.redemptionAmount || '--'}}</td>
                                                 <td>{{ order.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order._id}">查看</a>
+                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -175,7 +175,7 @@
                                                 <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
-                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order._id }" >{{ order.orderNo || '--'}}</a></td>
+                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.cargoOwner || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmount || '--'}}</td>
@@ -183,7 +183,7 @@
                                                 <td>{{ order.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order._id}">查看</a>
+                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -209,8 +209,8 @@
                                                 <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
-                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order._id }" >{{ order.orderNo || '--'}}</a></td>
-                                                <td>{{ order.requestTime | date("yyyy-MM-dd") }}</td>
+                                                <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
+                                                <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
                                                 <td>{{ order.harbor || '--'}}</td>
                                                 <td>{{ order.mortgageValue || '--'}}</td>
@@ -225,7 +225,7 @@
                                                 <td>{{ order.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order._id}">查看</a>
+                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
                                                 </td>
                                             </tr>
                                         </table>
