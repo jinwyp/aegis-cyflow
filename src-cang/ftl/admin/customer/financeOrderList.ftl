@@ -71,7 +71,7 @@
                                                 <td class="text-center">待还金额<br/>(万元)</td>
                                                 <td class="text-center">资金成本<br/>(万元)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">操作</td>
+                                                <td class="text-center">代办</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -89,7 +89,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
+                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -113,7 +113,7 @@
                                                 <td class="text-center">放款时间</td>
                                                 <td class="text-center">实际结息时间</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">操作</td>
+                                                <td class="text-center">代办</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -135,7 +135,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
+                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -149,7 +149,7 @@
                                                 <td class="text-center">质押总数量<br/>(吨)</td>
                                                 <td class="text-center">实时库存<br/>(吨)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">操作</td>
+                                                <td class="text-center">代办</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -159,7 +159,7 @@
                                                 <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
+                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -173,7 +173,7 @@
                                                 <td class="text-center">已赎回数量<br/>(吨)</td>
                                                 <td class="text-center">实时库存<br/>(吨)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">操作</td>
+                                                <td class="text-center">代办</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -184,7 +184,7 @@
                                                 <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
+                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -207,7 +207,7 @@
                                                 <td class="text-center">待还金额<br/>(万元)</td>
 
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">操作</td>
+                                                <td class="text-center">代办</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -226,7 +226,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
+                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
