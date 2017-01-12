@@ -111,11 +111,11 @@ class CangFlowRoute extends AdminClient
 
   //todo 改成session
   def flowList = get {
-    path("financeorders" / Segment / Segment / Segment) { (classType, companyId, userId) =>
-      //      myRequiredSession { (session: MySession) =>
-      //        val classType = session.party
-      //        val companyId = session.userId
-      //        val userId = session.instanceId
+    //path("financeorders" / Segment / Segment / Segment) { (classType, companyId, userId) =>
+    myRequiredSession { (session: MySession) =>
+      val classType = session.party
+      val companyId = session.userId
+      val userId = session.instanceId
       complete(getflowList(classType, companyId, userId))
     }
   }
@@ -128,11 +128,11 @@ class CangFlowRoute extends AdminClient
     */
   def submitTask = post {
     // path("financeorders" / "action" / Segment) { action =>
-    path("financeorders" / "action" / Segment / Segment / Segment / Segment) { (action, user_id, party_class, instance_id) =>
-      //      myRequiredSession { (session: MySession) =>
-      //        val party_class = session.party
-      //        val user_id = session.userId
-      //        val instance_id = session.instanceId
+   // path("financeorders" / "action" / Segment / Segment / Segment / Segment) { (action, user_id, party_class, instance_id) =>
+    (path("financeorders" / "action" / Segment) & myRequiredSession) { (action, session) =>
+      val party_class = session.party
+      val user_id = session.userId
+      val instance_id = session.instanceId
       action match {
         //完成选择港口,监管方和资金方
         case `a11SelectHarborAndSupervisor` =>
@@ -228,16 +228,13 @@ class CangFlowRoute extends AdminClient
     * @return
     */
   def flowDetail = get {
-    pathPrefix("financeorders" / Segment / Segment / Segment / Segment) {
-      //      path("financeorders" / Segment) { flowId=>
-      //        myRequiredSession { (session: MySession) =>
-      //          val party_class = session.party
-      //          val user_id = session.userId
-      //          val instance_id = session.instanceId
-      (user_id, party_class, instance_id, flowId) =>
+    //pathPrefix("financeorders" / Segment / Segment / Segment / Segment) {(user_id, party_class, instance_id, flowId) =>
+    (path("financeorders" / Segment) & myRequiredSession) { (flowId, session) =>
+      val party_class = session.party
+      val user_id = session.userId
+      val instance_id = session.instanceId
         //获得流程信息
         complete(cyDataCollection(flowId, party_class, instance_id, user_id))
-      //       }
     }
   }
 
