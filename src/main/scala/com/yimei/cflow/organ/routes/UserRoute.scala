@@ -262,6 +262,12 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
         dbrun(query.as[(String, String, String, String, String, String, String, String)])
       }
 
+      //todo 三表联立查询例子 注意：如果gid没有值，会返回null
+//      val a = for {
+//        ((pi, pu), ug) <- partyInstance join partyUser on (_.id === _.party_id) joinLeft userGroup on (_._2.user_id === _.user_id)
+//        if pu.username like username
+//      } yield (pi.party_name, pu.username, ug.map( g => g.gid))
+
       def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
         if(info.length == 0) {
           throw BusinessException("登录信息有误！")
