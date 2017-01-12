@@ -181,7 +181,7 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <th class="text-right">当前状态:</th>
+                                        <th class="text-right">当前状态:{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</th>
                                         <td>{{@currentOrder.flowData.status | statusname}} </td>
                                     </tr>
 
@@ -368,7 +368,6 @@
                                         </td>
                                     </tr>
                                 </table>
-
                                 <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.harbor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider " >
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>
@@ -391,7 +390,7 @@
 
 
                     <!-- 融资方, 港口 与 监管 上传合同-->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer || @currentUser.role === @role.harbor || @currentUser.role === @role.supervisor ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskId ">
                         <div class="panel-heading">上传合同及单据</div>
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
@@ -640,7 +639,7 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt && @currentOrder.statusChild2Harbor && @currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>
