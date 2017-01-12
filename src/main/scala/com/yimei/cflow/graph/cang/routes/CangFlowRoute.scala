@@ -217,7 +217,7 @@ class CangFlowRoute extends AdminClient
 
         val point = Map(pointName -> value.wrap())
         val hijackEntity = HijackEntity(updatePoints = point, trigger = true, decision = None)
-        request[HijackEntity, State](path = "api/flow/admin/hijack", pathVariables = Array(flowId), model = Some(hijackEntity), method = "put")
+        request[HijackEntity, State](path = "api/internal/flow/admin/hijack", pathVariables = Array(flowId), model = Some(hijackEntity), method = "put")
         complete("success")
     }
   }
