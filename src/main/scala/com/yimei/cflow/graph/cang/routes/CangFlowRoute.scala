@@ -234,7 +234,7 @@ class CangFlowRoute extends AdminClient
       val user_id = session.userId
       val instance_id = session.instanceId
         //获得流程信息
-        complete(cyDataCollection(flowId, party_class, instance_id, user_id))
+        complete(cyDataResult(flowId, party_class, instance_id, user_id))
     }
   }
 
