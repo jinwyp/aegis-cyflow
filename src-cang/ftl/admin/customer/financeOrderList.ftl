@@ -78,7 +78,7 @@
                                                 <td>{{ order.spData.orderType || '--'}}</td>
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.mortgageValue || '--'}}</td>
@@ -120,7 +120,7 @@
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.loanInterestRate || '--'}}</td>
@@ -212,7 +212,7 @@
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.financerCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
                                                 <td>{{ order.mortgageValue || '--'}}</td>
                                                 <td>{{ order.mortgageDeadline || '--'}}</td>
                                                 <td>{{ order.mortgageAmount || '--'}}</td>
