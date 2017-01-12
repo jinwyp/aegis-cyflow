@@ -91,10 +91,10 @@
 
                                     <tr>
                                         <th class="text-right">港口已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">监管已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">煤种:</th>
                                         <td>{{@currentOrder.spData.coalType || '--'}} </td>
@@ -148,10 +148,10 @@
 
                                     <tr>
                                         <th class="text-right">港口已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">监管已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">煤种:</th>
                                         <td>{{@currentOrder.spData.coalType || '--'}} </td>
@@ -419,7 +419,7 @@
 
 
                     <!-- 港口确认货物 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.status === @action.a13FinishedUpload.statusAt">
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.status === @action.a13FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId">
                         <div class="panel-heading">港口确认货物</div>
                         <div class="panel-body">
                             <h4 class="lineH40">
@@ -432,11 +432,11 @@
 
 
                     <!-- 港口 与 监管 显示确认货物信息 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.harborConfirmAmount || @currentUser.role === @role.supervisor && @currentOrder.harborConfirmAmount">
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.harborConfirmAmount || @currentUser.role === @role.supervisor && @currentOrder.flowData.harborConfirmAmount">
                         <div class="panel-heading">港口货物确认信息</div>
                         <div class="panel-body">
-                            <h4 class="lineH40" ms-visible="@currentOrder.harborConfirmAmount">
-                                已确认有 {{@currentOrder.harborConfirmAmount}} 吨货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
+                            <h4 class="lineH40" ms-visible="@currentOrder.flowData.harborConfirmAmount">
+                                已确认有 {{@currentOrder.flowData.harborConfirmAmount}} 吨货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
                             </h4>
                         </div>
                         <div class="panel-footer text-center">
