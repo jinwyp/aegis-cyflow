@@ -74,7 +74,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
                PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,user.username, 0,Timestamp.from(Instant.now))) recover {
                case e =>
                   log.error("{}",e)
-                 throw new DatabaseException("添加用户错误")
+                 throw new DatabaseException("存在相同用户名，添加用户错误")
                //case a:SQLIntegrityConstraintViolationException => PartyUserEntity(None,p.id.get,userId,user.password,user.phone,user.email,user.name,Timestamp.from(Instant.now))
              }
            }
@@ -150,7 +150,8 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
 
   def getUserList: Route = get {
     pathPrefix("user" / Segment / Segment ) { (party,instance_id) =>
-        ( parameter('limit.as[Int]) & parameter('offset.as[Int]) ) { (limit,offset) =>
+        ( parameter('page.as[Int]) & parameter('pageSize.as[Int]) ) { (page,pageSize) =>
+          if(page <= 0 || pageSize <= 0) throw BusinessException("分页参数有误!")
 
           val pi: Future[PartyInstanceEntity] = dbrun(partyInstance.filter(p =>
             p.party_class === party &&
@@ -163,7 +164,7 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
             dbrun(partyUser.filter(u =>
                 u.party_id === p.id &&
                 u.disable === 0
-            ).drop(offset).take(limit).result) recover {
+            ).drop((page - 1) * pageSize).take(pageSize).result) recover {
               case _ => throw new DatabaseException("不存在该用户")
             }
           }
@@ -260,6 +261,12 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
              """
         dbrun(query.as[(String, String, String, String, String, String, String, String)])
       }
+
+      //todo 三表联立查询例子 注意：如果gid没有值，会返回null
+//      val a = for {
+//        ((pi, pu), ug) <- partyInstance join partyUser on (_.id === _.party_id) joinLeft userGroup on (_._2.user_id === _.user_id)
+//        if pu.username like username
+//      } yield (pi.party_name, pu.username, ug.map( g => g.gid))
 
       def getResult(info: Seq[(String, String, String, String, String, String, String, String)]): UserGroupInfo = {
         if(info.length == 0) {

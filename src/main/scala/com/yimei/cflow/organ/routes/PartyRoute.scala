@@ -10,6 +10,7 @@ import com.yimei.cflow.config.DatabaseConfig.driver
 import com.yimei.cflow.organ.db._
 import DBUtils._
 import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.graph.cang.exception.BusinessException
 
 import scala.concurrent.Future
 
@@ -20,10 +21,11 @@ class PartyRoute extends PartyClassTable with UserProtocol with SprayJsonSupport
 
   import driver.api._
 
-  //GET  /party?limit=10&offset=20         参与方类别列表
+  //GET  /party?page=10&pageSize=20         参与方类别列表
   def getParty: Route = get {
-    (pathPrefix("party") & parameter("limit".as[Int]) & parameter("offset".as[Int])) { (limit, offset) =>
-      complete(dbrun(partClass.drop(offset).take(limit).result))
+    (pathPrefix("party") & parameter("page".as[Int]) & parameter("pageSize".as[Int])) { (page, pageSize) =>
+      if(page <= 0 || pageSize <= 0) throw BusinessException("分页参数有误！")
+      complete(dbrun(partClass.drop((page - 1) * pageSize).take(pageSize).result))
     }
   }
 

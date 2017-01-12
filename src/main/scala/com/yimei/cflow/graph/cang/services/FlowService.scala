@@ -1,11 +1,13 @@
 package com.yimei.cflow.graph.cang.services
 
 import java.sql.Timestamp
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 import akka.stream.ThrottleMode
 import akka.stream.scaladsl.Source
-import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, HijackEntity}
+import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, FlowQueryResponse, HijackEntity}
+import com.yimei.cflow.api.http.models.ResultModel.{PagerInfo, Result, ResultProtocol}
 import com.yimei.cflow.api.http.models.TaskModel.{TaskProtocol, UserSubmitEntity}
 import com.yimei.cflow.api.http.models.UserModel.{QueryUserResult, UserModelProtocol}
 import com.yimei.cflow.api.models.database.FlowDBModel.FlowTaskEntity
@@ -18,7 +20,7 @@ import com.yimei.cflow.asset.service.AssetService._
 import com.yimei.cflow.engine.FlowRegistry
 import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.exception.BusinessException
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.{CYPartyMember, FinancerToTrader, SPData, TraderRecommendAmount, TraffickerConfirmPayToFundProvider, _}
 import spray.json._
 import com.yimei.cflow.config.CoreConfig._
 
@@ -29,6 +31,7 @@ import com.yimei.cflow.graph.cang.db.{CangPayTransactionTable, DepositTable}
 import com.yimei.cflow.graph.cang.db.Entities.{CangPayTransactionEntity, DepositEntity}
 import slick.backend.DatabasePublisher
 
+import scala.collection.immutable.Iterable
 import scala.concurrent.duration._
 
 /**
@@ -39,6 +42,7 @@ object FlowService extends UserModelProtocol
   with AdminProtocol
   with CangPayTransactionTable
   with DepositTable
+  with ResultProtocol
   with Config {
 
   import driver.api._
@@ -66,7 +70,7 @@ object FlowService extends UserModelProtocol
     * @param tass
     * @return
     */
-  def submitA11(party_class: String, user_id: String, instant_id: String, tass: TraffickerAssignUsers) = {
+  def submitA11(party_class: String, user_id: String, instant_id: String, tass: TraffickerAssignUsers): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfUserId` =>
         val gkUser = request[String, QueryUserResult](path = "api/user", pathVariables = Array(gkf, tass.harborCompanyId, tass.harborUserId))
@@ -109,7 +113,7 @@ object FlowService extends UserModelProtocol
           zjFinanceAccount <- zjAccUser
           r <- commitTask(gk, jg, zjAccount, zjFinanceAccount)
         } yield {
-          r
+          Result(Some(r))
         }
       case _ => throw BusinessException("该用户:" + genGuId(party_class, instant_id, user_id) + "没有提交" + a11SelectHarborAndSupervisor + "任务的权限")
     }
@@ -126,7 +130,7 @@ object FlowService extends UserModelProtocol
     * @param upload
     * @return
     */
-  def submitA12AndA14(party_class: String, user_id: String, instant_id: String, taskName: String, upload: UploadContract) = {
+  def submitA12AndA14(party_class: String, user_id: String, instant_id: String, taskName: String, upload: UploadContract): Future[Result[UserState]] = {
     val dataPoint: String = (party_class, taskName) match {
       case (`rzf`, `a12FinishedUpload`) => financerContractFiles
       case (`jgf`, `a14FinishedUpload`) => supervisorContractFiles
@@ -139,7 +143,9 @@ object FlowService extends UserModelProtocol
 
     val userSubmit = UserSubmitEntity(upload.flowId, taskName, points)
 
-    request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, upload.taskId), model = Some(userSubmit), method = "put")
+    request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, upload.taskId), model = Some(userSubmit), method = "put") map { r =>
+      Result(Some(r))
+    }
 
   }
 
@@ -153,7 +159,7 @@ object FlowService extends UserModelProtocol
     * @param harborUpload
     * @return
     */
-  def submitA13(party_class: String, user_id: String, instant_id: String, taskName: String, harborUpload: HarborUploadContract) = {
+  def submitA13(party_class: String, user_id: String, instant_id: String, taskName: String, harborUpload: HarborUploadContract): Future[Result[UserState]] = {
     party_class match {
       case `gkf` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -162,7 +168,9 @@ object FlowService extends UserModelProtocol
           harborConfirmAmount -> harborUpload.harborConfirmAmount.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(harborUpload.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, harborUpload.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, harborUpload.taskId), model = Some(userSubmit), method = "put") map {
+          r=> Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -177,7 +185,7 @@ object FlowService extends UserModelProtocol
     * @param audit
     * @return
     */
-  def submitA15(party_class: String, user_id: String, instant_id: String, taskName: String, audit: TraderAudit) = {
+  def submitA15(party_class: String, user_id: String, instant_id: String, taskName: String, audit: TraderAudit): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfUserId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -186,7 +194,9 @@ object FlowService extends UserModelProtocol
           fundProviderInterestRate -> audit.fundProviderInterestRate.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(audit.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, audit.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, audit.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -202,7 +212,7 @@ object FlowService extends UserModelProtocol
     * @param recommend
     * @return
     */
-  def submitA16(party_class: String, user_id: String, instant_id: String, taskName: String, recommend: TraderRecommendAmount) = {
+  def submitA16(party_class: String, user_id: String, instant_id: String, taskName: String, recommend: TraderRecommendAmount): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfFinanceId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -210,7 +220,9 @@ object FlowService extends UserModelProtocol
           recommendAmount -> recommend.loanValue.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(recommend.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, recommend.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, recommend.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -225,7 +237,7 @@ object FlowService extends UserModelProtocol
     * @param fundAudit
     * @return
     */
-  def submitA17(party_class: String, user_id: String, instant_id: String, taskName: String, fundAudit: FundProviderAudit) = {
+  def submitA17(party_class: String, user_id: String, instant_id: String, taskName: String, fundAudit: FundProviderAudit): Future[Result[UserState]] = {
     party_class match {
       case `zjf` =>
         val valid: Future[UserGroupEntity] = request[String, Seq[UserGroupEntity]](path = "api/validateugroup", pathVariables = Array(party_class, instant_id, user_id, fundGid)) map { t =>
@@ -248,7 +260,7 @@ object FlowService extends UserModelProtocol
         for {
           v <- valid
           r <- submit(v)
-        } yield r
+        } yield  Result(Some(r))
 
       case _ => throw new BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
@@ -265,7 +277,7 @@ object FlowService extends UserModelProtocol
     * @param fundAudit
     * @return
     */
-  def submitA18(party_class: String, user_id: String, instant_id: String, taskName: String, fundAudit: FundProviderAccountantAudit) = {
+  def submitA18(party_class: String, user_id: String, instant_id: String, taskName: String, fundAudit: FundProviderAccountantAudit): Future[Result[UserState]] = {
     party_class match {
       case `zjf` =>
         val valid: Future[UserGroupEntity] = request[String, Seq[UserGroupEntity]](path = "api/validateugroup", pathVariables = Array(party_class, instant_id, user_id, fundFinanceGid)) map { t =>
@@ -288,7 +300,7 @@ object FlowService extends UserModelProtocol
         for {
           v <- valid
           r <- submit(v)
-        } yield r
+        } yield  Result(Some(r))
 
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
@@ -305,7 +317,7 @@ object FlowService extends UserModelProtocol
     * @param ft
     * @return
     */
-  def submitA19(party_class: String, user_id: String, instant_id: String, taskName: String, ft: FinancerToTrader) = {
+  def submitA19(party_class: String, user_id: String, instant_id: String, taskName: String, ft: FinancerToTrader): Future[Result[UserState]] = {
     party_class match {
       case `rzf` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -313,7 +325,9 @@ object FlowService extends UserModelProtocol
           repaymentAmount -> ft.repaymentValue.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(ft.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, ft.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, ft.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -329,7 +343,7 @@ object FlowService extends UserModelProtocol
     * @param release
     * @return
     */
-  def submitA20(party_class: String, user_id: String, instant_id: String, taskName: String, release: TraffickerNoticePortReleaseGoods) = {
+  def submitA20(party_class: String, user_id: String, instant_id: String, taskName: String, release: TraffickerNoticePortReleaseGoods): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfUserId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -337,7 +351,9 @@ object FlowService extends UserModelProtocol
           traderNoticeHarborRelease -> release.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(release.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, release.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, release.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -353,7 +369,7 @@ object FlowService extends UserModelProtocol
     * @param release
     * @return
     */
-  def submitA21(party_class: String, user_id: String, instant_id: String, taskName: String, release: PortReleaseGoods) = {
+  def submitA21(party_class: String, user_id: String, instant_id: String, taskName: String, release: PortReleaseGoods): Future[Result[UserState]] = {
     party_class match {
       case `gkf` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -361,7 +377,9 @@ object FlowService extends UserModelProtocol
           harborReleaseGoods -> release.status.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(release.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, release.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, release.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -377,7 +395,7 @@ object FlowService extends UserModelProtocol
     * @param cpl
     * @return
     */
-  def submitA22(party_class: String, user_id: String, instant_id: String, taskName: String, cpl: TraffickerAuditIfCompletePayment) = {
+  def submitA22(party_class: String, user_id: String, instant_id: String, taskName: String, cpl: TraffickerAuditIfCompletePayment): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfUserId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -385,7 +403,9 @@ object FlowService extends UserModelProtocol
           TraderAuditIfCompletePayment -> cpl.status.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(cpl.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cpl.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cpl.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -400,7 +420,7 @@ object FlowService extends UserModelProtocol
     * @param cf
     * @return
     */
-  def submitA23(party_class: String, user_id: String, instant_id: String, taskName: String, cf: TraffickerConfirmPayToFundProvider) = {
+  def submitA23(party_class: String, user_id: String, instant_id: String, taskName: String, cf: TraffickerConfirmPayToFundProvider): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfUserId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -408,7 +428,9 @@ object FlowService extends UserModelProtocol
           TraderConfirmPayToFundProvider -> cf.status.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(cf.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cf.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cf.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -424,7 +446,7 @@ object FlowService extends UserModelProtocol
     * @param cf
     * @return
     */
-  def submitA24(party_class: String, user_id: String, instant_id: String, taskName: String, cf: TraffickerFinancePayToFundProvider) = {
+  def submitA24(party_class: String, user_id: String, instant_id: String, taskName: String, cf: TraffickerFinancePayToFundProvider): Future[Result[UserState]] = {
     genGuId(party_class, instant_id, user_id) match {
       case `myfFinanceId` =>
         val op = genGuId(party_class, instant_id, user_id)
@@ -432,7 +454,9 @@ object FlowService extends UserModelProtocol
           TraderAccountantConfirm -> cf.status.wrap(operator = Some(op))
         )
         val userSubmit = UserSubmitEntity(cf.flowId, taskName, points)
-        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cf.taskId), model = Some(userSubmit), method = "put")
+        request[UserSubmitEntity, UserState](path = "api/utask", pathVariables = Array(party_class, instant_id, user_id, cf.taskId), model = Some(userSubmit), method = "put") map {
+          r =>  Result(Some(r))
+        }
       case _ => throw BusinessException(s"用户: $user_id  类型：$party_class 和任务 $taskName 不匹配")
     }
   }
@@ -724,12 +748,14 @@ object FlowService extends UserModelProtocol
           //说明融资方至少有一笔还款了
           case Some(_) =>
 
-            //这个地方肯定是有了，因为已经有还款了
-            val startDate: Long = state.points(traderPaySuccess).timestamp
+           // val startDate: Long = state.points(traderPaySuccess).timestamp
             //拿到全部的还款的task
             val tasks: Future[Seq[FlowTaskEntity]] = getRepayment(flowId, financer.companyId, financer.userId)
             val tt: BigDecimal = BigDecimal(total.value.toDouble)
             var curMoney = tt
+
+            //这个地方肯定是有了，因为已经有还款了
+            var latestPayDate: Long = state.points(traderPaySuccess).timestamp
 
             //获得还款记录表
             def getRepaymentList(tasks: Seq[FlowTaskEntity]): Seq[Repayment] = {
@@ -738,7 +764,9 @@ object FlowService extends UserModelProtocol
                   case Some(data) =>
                     //本次还款金额
                     val repaymentValue = BigDecimal(data.value.toDouble)
-                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - startDate) + 1
+                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - latestPayDate) + 1
+                    //把最近还款时间改成现在
+                    latestPayDate = data.timestamp
                     val result = Repayment(
                       repaymentValue,
                       curMoney,
@@ -779,12 +807,14 @@ object FlowService extends UserModelProtocol
   }
 
   //获取保证金金额记录
-  def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter{ dpt => dpt.state === TRANSFERRED && dpt.flowId === flowId}.result) map { dplist =>
-    dplist.map{ dp => DepositRecord(expectedAmount = dp.expectedAmount,
-      actuallyAmount = dp.actuallyAmount,
-      memo = dp.memo,
-      status = dp.state,
-      ts_c = dp.ts_c.get)}.toList
+  def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter { dpt => dpt.state === TRANSFERRED && dpt.flowId === flowId }.result) map { dplist =>
+    dplist.map { dp =>
+      DepositRecord(expectedAmount = dp.expectedAmount,
+        actuallyAmount = dp.actuallyAmount,
+        memo = dp.memo,
+        status = dp.state,
+        ts_c = dp.ts_c.get)
+    }.toList
   }
 
 
@@ -792,6 +822,28 @@ object FlowService extends UserModelProtocol
   def getDepositAmount(flowId: String): Future[BigDecimal] = {
     getDepositList(flowId).map { list =>
       list.foldLeft(BigDecimal(0))((sum, dp) => sum + dp.actuallyAmount)
+    }
+  }
+
+
+  def getTotalInterest(repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]]),interestRate:BigDecimal,state: FlowState): Option[BigDecimal] = {
+    (repaymentInfo._1,repaymentInfo._2)match {
+      case (Some(totalMoney),Some(repayMoney)) =>
+        //有还款
+        //还款时计算的利息
+        val interestHistory: BigDecimal = repaymentInfo._4.getOrElse(List()).foldLeft(BigDecimal(0))((i, rep) => i+rep.interest)
+        //最后一次还款时间
+        val latestRepayDate = state.points(financerPaySuccess).timestamp
+
+        Some(interestHistory + repaymentInfo._3.get*(TimeUnit.MICROSECONDS.toDays(Timestamp.from(Instant.now()).getTime - latestRepayDate) + 1)*interestRate/365)
+
+      case (Some(totalMoney),_) =>
+        //还没还款
+        val startDate: Long = state.points(traderPaySuccess).timestamp
+        //利息为本金 *（当前时间-借款时间）*利率/365
+        Some(totalMoney*(TimeUnit.MICROSECONDS.toDays(Timestamp.from(Instant.now()).getTime - startDate) + 1)*interestRate/365)
+
+      case _    => None //还没有放款
     }
   }
 
@@ -811,7 +863,8 @@ object FlowService extends UserModelProtocol
                   deliveryInfo: (Option[List[Delivery]], Option[BigDecimal]),
                   repaymentInfo: (Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]]),
                   depositAmount: BigDecimal,
-                  depositList: List[DepositRecord]): FlowData = {
+                  depositList: List[DepositRecord],
+                  spData:SPData): FlowData = {
 
     //货权（贸易商审核通过前为融资方，然后为贸易方
     val cargoOwner = state.histories.contains(E3) match {
@@ -836,6 +889,17 @@ object FlowService extends UserModelProtocol
       graph.edges(entry._1).begin
     ).toList
 
+    val loanActualArrivalDate: Option[Timestamp] = state.points.get(traderPaySuccess) match {
+      case Some(data) => Some(new Timestamp(data.timestamp))
+      case _ => None
+    }
+
+    val lastRepaymentDate = state.points.get(TraderConfirmPayToFundProvider) match {
+      case Some(data) => Some(new Timestamp(data.timestamp))
+      case _ => None
+    }
+
+    val totalInterest: Option[BigDecimal] = getTotalInterest(repaymentInfo,spData.interestRate,state)
 
 
 
@@ -858,7 +922,10 @@ object FlowService extends UserModelProtocol
       Some(depositList),
       repaymentInfo._4, //还款交易记录
       deliveryInfo._1, //放货记录
-      Filelist.toList //该流程对应全部文件
+      Filelist.toList, //该流程对应全部文件
+      loanActualArrivalDate,    //实际放款时间
+      lastRepaymentDate,
+      totalInterest
     )
   }
 
@@ -874,7 +941,7 @@ object FlowService extends UserModelProtocol
   /**
     * 组装流程数据
     */
-  def cyDataCollection(flowId: String, party_class: String, company_id: String, user_Id: String) = {
+  def cyDataCollection(flowId: String, party_class: String, company_id: String, user_Id: String): Future[CYData] = {
 
 
     for {
@@ -898,18 +965,24 @@ object FlowService extends UserModelProtocol
     } yield {
       CYData(spData,
         cyPartyMember,
-        setFlowData(flowState, currentTask, fileList, deliverys, repayments,depositAmount, depositList),
+        setFlowData(flowState, currentTask, fileList, deliverys, repayments, depositAmount, depositList,spData),
         flowId,
         taskInfo._1,
         taskInfo._2
       )
     }
+  }
 
-
+ //heheheh
+  def cyDataResult(flowId: String, party_class: String, company_id: String, user_Id: String): Future[Result[CYData]] = {
+    cyDataCollection(flowId, party_class, company_id, user_Id) map { r=>
+      Result(Some(r))
+    }
   }
 
   /**
     * 插入交易记录
+    *
     * @param srcGuid
     * @param targetGuid
     * @param amount
@@ -917,7 +990,7 @@ object FlowService extends UserModelProtocol
     * @param pointName
     * @return
     */
-  def insertIntoCangPay(srcGuid:String,targetGuid:String,amount:BigDecimal,flowId:String,pointName:String) = {
+  def insertIntoCangPay(srcGuid: String, targetGuid: String, amount: BigDecimal, flowId: String, pointName: String) = {
 
     val src = splitGUID(srcGuid)
     val target = splitGUID(targetGuid)
@@ -926,11 +999,11 @@ object FlowService extends UserModelProtocol
       flowId,
       pointName,
       src._1,
-      src._2,
       src._3,
+      src._2,
       target._1,
-      target._2,
       target._3,
+      target._2,
       amount,
       None,
       1,
@@ -938,30 +1011,30 @@ object FlowService extends UserModelProtocol
     )
 
     val cp: Future[CangPayTransactionEntity] = dbrun(
-      cangPayTransaction returning cangPayTransaction.map(_.id) into ( (cp,id) => cp.copy(id=id) ) += cpt
+      cangPayTransaction returning cangPayTransaction.map(_.id) into ((cp, id) => cp.copy(id = id)) += cpt
     )
 
-    def req(cp:CangPayTransactionEntity): Future[PayResponse] = requestServer[PayRequest,PayResponse](
+    def req(cp: CangPayTransactionEntity): Future[PayResponse] = requestServer[PayRequest, PayResponse](
       path = "pay/transfer/account",
       model = Some(PayRequest(
         cp.srcUserType,
         cp.srcCompanyId,
         cp.targetUserType,
         cp.targetCompanyId,
-        cp.amount)),
-      method="post"
+        cp.amount)),                        //todo 很关键，pay的支付单位是不是元？？？？
+      method = "post"
     )
 
-    def update(resp:PayResponse,id:Option[Long]): Future[Int] = {
-      dbrun(cangPayTransaction.filter(_.id===id)
-        .map(c => (c.status,c.transactionId,c.message))
-        .update((resp.status,resp.transactionId,resp.message)))
+    def update(resp: PayResponse, id: Option[Long]): Future[Int] = {
+      dbrun(cangPayTransaction.filter(_.id === id)
+        .map(c => (c.status, c.transactionId, c.message))
+        .update((resp.status, resp.transactionId, resp.message)))
     }
 
-    for{
-      p <- cp                                       //插入一条打款记录
-      r <- req(p)                                   //发起打款
-      i <- update(r,p.id)                           //根据返回更新数据
+    for {
+      p <- cp //插入一条打款记录
+      r <- req(p) //发起打款
+      i <- update(r, p.id) //根据返回更新数据
     } yield {
       i
     }
@@ -970,24 +1043,25 @@ object FlowService extends UserModelProtocol
 
   /**
     * 跑批查询
+    *
     * @return
     */
   def queryPayResult() = {
     val queryList: DatabasePublisher[CangPayTransactionEntity] = db.stream(
-      cangPayTransaction.filter(c=>c.status===process).result
+      cangPayTransaction.filter(c => c.status === process).result
     )
 
     Source.fromPublisher(queryList).throttle(1, 5 seconds, 1, ThrottleMode.shaping)
       .runForeach(b => {
-        val res = requestServer[String,PayQueryResponse](path="pay/transaction/query",paramters = Map("transactionId"->(b.transactionId.getOrElse("error"))))
+        val res = requestServer[String, PayQueryResponse](path = "pay/transaction/query", paramters = Map("transactionId" -> (b.transactionId.getOrElse("error"))))
 
-        res.map{ re =>
+        res.map { re =>
           re.status match {
             case 2 =>
               //成功
               dbrun(cangPayTransaction.filter(_.transactionId === b.transactionId)
-                .map(c => (c.status,c.message))
-                .update((re.status,re.message))) map { i =>
+                .map(c => (c.status, c.message))
+                .update((re.status, re.message))) map { i =>
                 //填充point
                 val point = Map(b.pointName -> "success".wrap())
                 val hijackEntity = HijackEntity(updatePoints = point, trigger = true, decision = None)
@@ -996,19 +1070,67 @@ object FlowService extends UserModelProtocol
             case 0 =>
               //失败
               dbrun(cangPayTransaction.filter(_.transactionId === b.transactionId)
-                .map(c => (c.status,c.message))
-                .update((re.status,re.message)))
+                .map(c => (c.status, c.message))
+                .update((re.status, re.message)))
             case _ =>
           }
-
         }
-
       })
+  }
 
+  /**
+    *
+    * @return
+    */
+  def getFinancerList(company_Id: String, user_Id: String): Future[Result[Seq[CYData]]] = {
+    val userType: String = rzf + "-" + company_Id
+
+    val rs: Future[FlowQueryResponse] = request[String, FlowQueryResponse](
+      path = "api/flow",
+      paramters = Map("userId" -> user_Id, "userType" -> userType)
+    )
+
+    rs flatMap { r =>
+      Future.sequence(r.flows.map(entry =>
+        cyDataCollection(entry.flow_id, rzf, company_Id, user_Id)
+      )).map(t=>
+        Result(Some(t))
+      )
+    }
+  }
+
+
+  /**
+    *
+    */
+  def getflowList(classType: String, companyId: String, userId: String): Future[Result[List[CYData]]] = {
+    val oldFlows: Future[Seq[String]] = request[String, Seq[FlowTaskEntity]](path = "api/utask",
+      pathVariables = Array(classType, companyId, userId),
+      paramters = Map("history" -> "ok")
+    ) map { fq =>
+      fq.map(_.flow_id)
+    }
+
+    val newFLows: Future[List[String]] = request[String, UserState](path = "api/utask", pathVariables = Array(classType, companyId, userId)) map { nf =>
+      nf.tasks.map(entry => entry._2.flowId).toList.distinct
+    }
+
+    def allflows(old: List[String], news: List[String]): Future[Result[List[CYData]]] = {
+      Future.sequence((old ::: news).distinct.map(t =>
+        cyDataCollection(t, classType, companyId, userId)
+      )).map(t => Result(Some(t),meta = Some(PagerInfo(10, 1, 0, 1))))
+    }
+
+    for {
+      old <- oldFlows
+      news <- newFLows
+      r <- allflows(old.toList, news)
+    } yield {
+      r
+    }
 
 
   }
-
 
 
 }

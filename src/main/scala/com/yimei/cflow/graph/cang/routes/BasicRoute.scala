@@ -49,7 +49,7 @@ class BasicRoute extends Session with SessionProtocol{
     */
   def adminIndexRedirect = get {
     path("warehouse" / "admin") {
-      redirect("/warehouse/admin/home", StatusCodes.PermanentRedirect)
+      redirect("/warehouse/admin/home", StatusCodes.Found)
     }
   }
 
@@ -163,6 +163,14 @@ class BasicRoute extends Session with SessionProtocol{
     }
   }
 
+  def adminFinanceDetails = get {
+    path("warehouse" / "admin" / "home" / "finance" / Segment) { flowId =>
+      myRequiredSession { s =>
+        ftl("admin/customer/financeOrderInfo.ftl")
+      }
+    }
+  }
+
 
   /**
     * 管理后台平台管理员 - 融资管理 - 订单合同上传
@@ -176,6 +184,7 @@ class BasicRoute extends Session with SessionProtocol{
       }
     }
   }
+
 
 
   /**
@@ -227,7 +236,7 @@ class BasicRoute extends Session with SessionProtocol{
   def adminHome = get {
     pathPrefix("warehouse" / "admin" / "home") {
       myRequiredSession { s =>
-        redirect("/warehouse/admin/home/session/info", StatusCodes.PermanentRedirect)
+        redirect("/warehouse/admin/home/session/info", StatusCodes.Found)
       }
     }
   }
@@ -254,7 +263,7 @@ class BasicRoute extends Session with SessionProtocol{
   def route: Route = contractJindiao ~ contractJianguan ~ cangHtml ~ adminLogin ~ adminCurrentUserInfo ~
     adminDemoDashboard ~ adminDemoEchart ~
     adminUserList ~ adminUserAdd ~ adminUserEdit ~ adminUserInfo ~
-    adminCurrentUserModifyPassport ~ adminFinanceOrderDetails ~
+    adminCurrentUserModifyPassport ~ adminFinanceDetails ~ adminFinanceOrderDetails ~
     adminCompanyList ~ adminCompanyAdd ~ adminCompanyEdit ~ adminCompanyInfo ~
     adminHome ~ adminIndexRedirect
 }

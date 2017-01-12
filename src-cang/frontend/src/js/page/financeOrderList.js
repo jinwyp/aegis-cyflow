@@ -51,15 +51,12 @@ var orderList = function() {
 
 
     function getOrders(query){
-        query = query || {
-            userRole : sessionUserRole,
-            userId : sessionUserId
-        };
+        query = query || {};
 
         if (vm.searchQuery.orderNo) query.orderNo = vm.searchQuery.orderNo
         if (vm.searchQuery.status) query.status = vm.searchQuery.status
-        if (vm.searchQuery.countPerPage) query.$limit = vm.searchQuery.countPerPage
-        if (vm.searchQuery.skip) query.$skip = vm.searchQuery.skip
+        if (vm.searchQuery.countPerPage) query.count = vm.searchQuery.countPerPage
+        // if (vm.searchQuery.skip) query.$skip = vm.searchQuery.skip
 
         orderService.getFinanceOrderList(query).done(function(data, textStatus, jqXHR) {
             if (data.success){
