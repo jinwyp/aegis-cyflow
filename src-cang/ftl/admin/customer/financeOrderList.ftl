@@ -78,15 +78,15 @@
                                                 <td>{{ order.spData.orderType || '--'}}</td>
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
-                                                <td>{{ order.mortgageValue || '--'}}</td>
-                                                <td>{{ order.mortgageDeadline || '--'}}</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.spData.financingAmount || '--'}}</td>
+                                                <td>{{ order.spData.financingDays || '--'}}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
                                                 <td>需要计算</td>
-                                                <td>{{ order.status | statusname }}</td>
+                                                <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
                                                     <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
@@ -118,20 +118,20 @@
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
-                                                <td>{{ order.financerCompanyName || '--'}}</td>
+                                                <td>{{ order.cyPartyMember.financer.companyName || '--'}}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
-                                                <td>{{ order.loanInterestRate || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.spData.interestRate || '--'}}</td>
                                                 <td>需要计算</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
-                                                <td>{{ order.returnValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
-                                                <td>{{ order.loanValue || '--'}}</td>
-                                                <td>暂无</td>
-                                                <td>暂无</td>
-                                                <td>{{ order.status | statusname }}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.returnValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
+                                                <td>{{ order.flowData.loanValue || '--'}}</td>
+                                                <td>需要做</td>
+                                                <td>需要做</td>
+                                                <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
                                                     <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
@@ -152,10 +152,10 @@
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
-                                                <td>{{ order.cargoOwner || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.mortgageAmount - order.redemptionAmount || '--'}}</td>
-                                                <td>{{ order.status | statusname}}</td>
+                                                <td>{{ order.flowData.cargoOwner || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
+                                                <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
                                                     <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
@@ -176,11 +176,11 @@
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
-                                                <td>{{ order.cargoOwner || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
+                                                <td>{{ order.flowData.cargoOwner || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.redemptionAmount || '--'}}</td>
-                                                <td>{{ order.mortgageAmount - order.redemptionAmount || '--'}}</td>
-                                                <td>{{ order.status | statusname}}</td>
+                                                <td>{{ order.spData.coalAmount - order.redemptionAmount || '--'}}</td>
+                                                <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
                                                     <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
@@ -211,18 +211,18 @@
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
                                                 <td>{{ order.spData.financeCreateTime | date("yyyy-MM-dd") }}</td>
-                                                <td>{{ order.financerCompanyName || '--'}}</td>
-                                                <td>{{ order.harbor || '--'}}</td>
-                                                <td>{{ order.mortgageValue || '--'}}</td>
-                                                <td>{{ order.mortgageDeadline || '--'}}</td>
-                                                <td>{{ order.mortgageAmount || '--'}}</td>
-                                                <td>{{ order.redemptionAmountLeft || '--'}}</td>
+                                                <td>{{ order.cyPartyMember.financer.companyName || '--'}}</td>
+                                                <td>{{ order.spData.stockPort || '--'}}</td>
+                                                <td>{{ order.spData.financingAmount || '--'}}</td>
+                                                <td>{{ order.spData.financingDays || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.loanFundProviderInterestRate || '--'}}</td>
                                                 <td>需要计算</td>
-                                                <td>{{ order.depositValue || '--'}}</td>
-                                                <td>{{ order.returnValue || '--'}}</td>
-                                                <td>{{ order.repaymentValue || '--'}}</td>
-                                                <td>{{ order.status | statusname }}</td>
+                                                <td>{{ order.flowData.depositValue || '--'}}</td>
+                                                <td>{{ order.flowData.returnValue || '--'}}</td>
+                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
+                                                <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
                                                     <a class="btn btn-info resetPassword" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">查看</a>
