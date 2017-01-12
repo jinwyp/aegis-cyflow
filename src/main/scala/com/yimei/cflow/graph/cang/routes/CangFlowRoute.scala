@@ -112,7 +112,7 @@ class CangFlowRoute extends AdminClient
   //todo 改成session
   def flowList = get {
     //path("financeorders" / Segment / Segment / Segment) { (classType, companyId, userId) =>
-    myRequiredSession { (session: MySession) =>
+    (path("financeorders") & myRequiredSession) { (session: MySession) =>
       val classType = session.party
       val userId = session.userId
       val companyId = session.instanceId
