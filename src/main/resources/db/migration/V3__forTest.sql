@@ -68,3 +68,36 @@ VALUES
 	(6, 13, '2', '33334', '2017-01-11 18:12:30'),
 	(7, 14, '1', '33335', '2017-01-11 18:12:30'),
 	(8, 14, '2', '33336', '2017-01-11 18:12:30');
+
+
+	#用户信息
+INSERT INTO `kitt`.`users` (`id`, `securephone`, `password`, `registertime`, `isactive`, `verifystatus`, `verifytime`, `clienttype`, `email`, `traderid`) VALUES
+('10000', '15000000001', 'e10adc3949ba59abbe56e057f20f883e', '2016-07-01 14:44:45', '1', '审核通过', '2016-07-01 15:27:25', '1', 'liyuan@yimei180.com', '93');
+
+#用户信息
+INSERT INTO `kitt`.`users` (`id`, `securephone`, `password`, `registertime`, `isactive`, `verifystatus`, `verifytime`, `clienttype`, `email`, `traderid`) VALUES
+('10001', '15000000002', 'e10adc3949ba59abbe56e057f20f883e', '2016-07-01 14:44:45', '1', '审核通过', '2016-07-01 15:27:25', '1', 'liyuan@yimei180.com', '93');
+
+#用户信息
+INSERT INTO `kitt`.`users` (`id`, `securephone`, `password`, `registertime`, `isactive`, `verifystatus`, `verifytime`, `clienttype`, `email`, `traderid`) VALUES
+('10002', '15000000003', 'e10adc3949ba59abbe56e057f20f883e', '2016-07-01 14:44:45', '1', '审核通过', '2016-07-01 15:27:25', '1', 'liyuan@yimei180.com', '93');
+
+
+##公司信息
+INSERT INTO `kitt`.`companies` (`id`, `name`, `phone`, `fax`, `legalperson`, `businesslicense`, `identificationnumber`, `organizationcode`, `operatinglicense`, `userid`, `verifystatus`, `remarks`, `account`, `legalpersonname`, `traderphone`, `openinglicense`, `logopic`, `bannerpic`, `istender`, `province`, `city`, `country`, `detailaddress`, `provinceCode`, `cityCode`, `countryCode`, `childBankCode`, `legalpersonVest`, `certificateType`, `IPO`, `socialCreditCode`, `certificateUnite`, `certificateValidType`, `registeredCapital`, `manageProvince`, `manageCity`, `manageCountry`, `manageProvinceCode`, `manageCityCode`, `manageCountryCode`, `manageDetailAddress`, `enterpriseType`, `enterpriseProperty`, `companyType`, `companyProperty`, `certificateUnitePic`, `rcType`, `licenseCode`, `creditCodePic`) VALUES
+('66666666', '宇宙商贸有限公司', '021-11111111', '021-22222234', '', '/files/upload/1963365c-959c-435b-9d54-a39087f9b5b2.jpg', '', '', '', '10000', '审核通过', '', '1234567890', '媛', '', '/files/upload/6deb8512-8589-4f17-b45c-866117a8bf05.jpg', '', '', '0', '重庆市', '重庆市', '大渡口区', '啊啊啊啊啊啊', '42', '42100', '42100104', '102221000366', '1', '1', '2', '和答复客户可水电费可', '1', '1', '123454321', '江西省', '抚州市', '临川区', '26', '26100', '26100104', '的法规和大发光火', '2', '2', '煤炭贸易类企业', '内资企业', '', '1', '', '/files/upload/f27ac3c6-6420-4f83-80f8-6c0b8ada62fa.jpeg');
+
+INSERT INTO `kitt`.`companies` (`id`, `name`, `phone`, `fax`, `legalperson`, `businesslicense`, `identificationnumber`, `organizationcode`, `operatinglicense`, `userid`, `verifystatus`, `remarks`, `account`, `legalpersonname`, `traderphone`, `openinglicense`, `logopic`, `bannerpic`, `istender`, `province`, `city`, `country`, `detailaddress`, `provinceCode`, `cityCode`, `countryCode`, `childBankCode`, `legalpersonVest`, `certificateType`, `IPO`, `socialCreditCode`, `certificateUnite`, `certificateValidType`, `registeredCapital`, `manageProvince`, `manageCity`, `manageCountry`, `manageProvinceCode`, `manageCityCode`, `manageCountryCode`, `manageDetailAddress`, `enterpriseType`, `enterpriseProperty`, `companyType`, `companyProperty`, `certificateUnitePic`, `rcType`, `licenseCode`, `creditCodePic`) VALUES
+('77777777', '环球贸易有限公司', '021-11111111', '021-22222234', '', '/files/upload/1963365c-959c-435b-9d54-a39087f9b5b2.jpg', '', '', '', '10001', '审核通过', '', '1234567890', '媛', '', '/files/upload/6deb8512-8589-4f17-b45c-866117a8bf05.jpg', '', '', '0', '重庆市', '重庆市', '大渡口区', '啊啊啊啊啊啊', '42', '42100', '42100104', '102221000366', '1', '1', '2', '和答复客户可水电费可', '1', '1', '123454321', '江西省', '抚州市', '临川区', '26', '26100', '26100104', '的法规和大发光火', '2', '2', '煤炭贸易类企业', '内资企业', '', '1', '', '/files/upload/f27ac3c6-6420-4f83-80f8-6c0b8ada62fa.jpeg');
+
+INSERT INTO `kitt`.`companies` (`id`, `name`, `phone`, `fax`, `legalperson`, `businesslicense`, `identificationnumber`, `organizationcode`, `operatinglicense`, `userid`, `verifystatus`, `remarks`, `account`, `legalpersonname`, `traderphone`, `openinglicense`, `logopic`, `bannerpic`, `istender`, `province`, `city`, `country`, `detailaddress`, `provinceCode`, `cityCode`, `countryCode`, `childBankCode`, `legalpersonVest`, `certificateType`, `IPO`, `socialCreditCode`, `certificateUnite`, `certificateValidType`, `registeredCapital`, `manageProvince`, `manageCity`, `manageCountry`, `manageProvinceCode`, `manageCityCode`, `manageCountryCode`, `manageDetailAddress`, `enterpriseType`, `enterpriseProperty`, `companyType`, `companyProperty`, `certificateUnitePic`, `rcType`, `licenseCode`, `creditCodePic`) VALUES
+('88888888', '孟州市至信有限责任公司', '021-11111111', '021-22222234', '', '/files/upload/1963365c-959c-435b-9d54-a39087f9b5b2.jpg', '', '', '', '10002', '审核通过', '', '1234567890', '媛', '', '/files/upload/6deb8512-8589-4f17-b45c-866117a8bf05.jpg', '', '', '0', '重庆市', '重庆市', '大渡口区', '啊啊啊啊啊啊', '42', '42100', '42100104', '102221000366', '1', '1', '2', '和答复客户可水电费可', '1', '1', '123454321', '江西省', '抚州市', '临川区', '26', '26100', '26100104', '的法规和大发光火', '2', '2', '煤炭贸易类企业', '内资企业', '', '1', '', '/files/upload/f27ac3c6-6420-4f83-80f8-6c0b8ada62fa.jpeg');
+
+
+INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
+('1000', '10000', '3110710006261382225', 'eeafb716f93fa090d7716749a6eefa72', '2', '15500000001', '融资方1', '2016-07-01 15:44:17', '2016-08-29 14:35:38', '中信银行', '0', '中信银行上海自贸区分行',2);
+INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
+('1001', '10001', '3110710006261382229', '9a440f1f071dad3043b6c8ba93bb761c', '2', '15500000002', '资金方1', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
+INSERT INTO `kitt`.`pay_userfundaccounts` (`id`, `userId`, `account`, `password`, `status`, `payPhone`, `companyName`, `createTime`, `lastUpdateTime`, `accountBankName`, `deleted`, `accountChildBankName`,`flag`) VALUES
+('1002', '10002', '3110710006261346971', 'ea8753722c0e8ecde195d6adb8ba7c0d', '2', '15500000003', '贸易商1', '2016-07-01 15:44:17', '2016-08-29 14:41:08', '中信银行', '0', '中信银行上海自贸区分行',2);
+
