@@ -21,8 +21,10 @@ var status = [
     {name : 'financingStep17', displayName:'资金方财务已放款,待贸易商确认收款,银行转账中'},
 
     {name : 'financingStep18', displayName:'贸易商已自动确认收款,贸易商已自动打款给融资方, 待融资方确认收款,银行转账中'},
+
     {name : 'financingStep19', displayName:'融资方已自动确认收款,融资放款阶段完成,待融资方回款'},
-    {name : 'repaymentStep31', displayName:'融资方已回款,待贸易商放货'},
+
+    {name : 'repaymentStep20', displayName:'融资方已回款,待贸易商放货'},
     {name : 'repaymentStep32', displayName:'贸易商已放货, 融资方部分回款已完成, 待港口放货确认'},
     {name : 'repaymentStep33', displayName:'贸易商已放货, 融资方全部回款已完成, 待港口放货确认'},
     {name : 'repaymentStep34', displayName:'港口已确认返回货物,融资方部分回款已完成, 待融资方继续回款'},
@@ -53,17 +55,17 @@ var actions = [
     {statusAt:"financingStep15", operator : 'fundProvider', name : 'a17fundProviderAudit', displayName : '审核通过'},
     {statusAt:"financingStep15", operator : 'fundProvider', name : 'a19NotApproved', displayName : '审核不通过'},
 
-
     {statusAt:"financingStep16", operator : 'fundProviderAccountant', name : 'a18fundProviderAccountantAudit', displayName : '确认放款'},
-    {statusAt:"financingStep19", operator : 'fundProviderAccountant', name : 'a21auto', displayName : '自动确认收款1'},
-    {statusAt:"financingStep20", operator : 'fundProviderAccountant', name : 'a22auto', displayName : '自动确认收款2'},
+    // {statusAt:"financingStep19", operator : 'fundProviderAccountant', name : 'a21auto', displayName : '自动确认收款1'},
+    // {statusAt:"financingStep20", operator : 'fundProviderAccountant', name : 'a22auto', displayName : '自动确认收款2'},
 
 
-    {statusAt:"financingStep21", operator : 'financer', name : 'a31FirstReturnMoney', displayName : '确认还款'},
-    {statusAt:"repaymentStep34", operator : 'financer', name : 'a32SecondReturnMoney', displayName : '确认还款'},
+    // {statusAt:"financingStep19", operator : 'financer', name : 'a31FirstReturnMoney', displayName : '确认还款'},
+    {statusAt:"financingStep19", operator : 'financer', name : 'a19SecondReturnMoney', displayName : '确认还款'},
 
-    {statusAt:"repaymentStep31", operator : 'trader', name : 'a32ReturnPortionCargo', displayName : ' 部分回款完成,确认放货'},
-    {statusAt:"repaymentStep31", operator : 'trader', name : 'a33ReturnAllCargo', displayName : '全部回款完成,确认放货'},
+    {statusAt:"repaymentStep20", operator : 'trader', name : 'a32ReturnPortionCargo', displayName : ' 回款完成,确认放货'},
+    // {statusAt:"repaymentStep31", operator : 'trader', name : 'a32ReturnPortionCargo', displayName : ' 部分回款完成,确认放货'},
+    // {statusAt:"repaymentStep31", operator : 'trader', name : 'a33ReturnAllCargo', displayName : '全部回款完成,确认放货'},
     {statusAt:"repaymentStep32", operator : 'harbor', name : 'a34ConfirmPortionCargo', displayName : ' 部分回款完成,确认返回货物'},
     {statusAt:"repaymentStep33", operator : 'harbor', name : 'a35ConfirmAllCargo', displayName : '全部回款完成,确认返回货物'},
 
@@ -228,7 +230,7 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
     if (additionalData && additionalData.fundProviderInterestRate) params.fundProviderInterestRate = additionalData.fundProviderInterestRate;
     if (additionalData && additionalData.loanValue) params.loanValue = additionalData.loanValue;
 
-    if (additionalData && additionalData.repaymentValue) params.repaymentValue = additionalData.redemptionValue;
+    if (additionalData && additionalData.repaymentValue) params.repaymentValue = additionalData.repaymentValue;
     if (additionalData && additionalData.redemptionAmount) params.redemptionAmount = additionalData.redemptionAmount;
     if (additionalData && additionalData.redemptionAmountDeliveryId) params.redemptionAmountDeliveryId = additionalData.redemptionAmountDeliveryId;
 
