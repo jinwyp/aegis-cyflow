@@ -419,7 +419,7 @@
 
 
                     <!-- 融资方, 港口 与 监管 上传合同-->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskId ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskTaskName === @action.a12FinishedUpload.name  || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskTaskName === @action.a13FinishedUpload.name || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskTaskName === @action.a14FinishedUpload.name ">
                         <div class="panel-heading">上传合同及单据</div>
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
@@ -589,7 +589,7 @@
 
 
                     <!-- 融资方还款 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt || @currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" >
+                    <div class="panel panel-info" ms-if=" @currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a19SecondReturnMoney.statusAt" >
                         <div class="panel-heading">融资方还款: </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -673,11 +673,14 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a12FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
                         </div>
 
+                        <!--
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt" ms-click="doAction(@action.a31FirstReturnMoney.name)">{{@action.a31FirstReturnMoney.displayName}}</button>
                         </div>
+                        -->
+
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" ms-click="doAction(@action.a32SecondReturnMoney.name)">{{@action.a32SecondReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a19SecondReturnMoney.statusAt" ms-click="doAction(@action.a19SecondReturnMoney.name)">{{@action.a19SecondReturnMoney.displayName}}</button>
                         </div>
 
                         <#--<div class="col-sm-2"><button type="button" class="mb-sm btn btn-danger">Success</button></div>-->
@@ -762,19 +765,22 @@
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18fundProviderAccountantAudit.statusAt" ms-click="doAction(@action.a18fundProviderAccountantAudit.name)">{{@action.a18fundProviderAccountantAudit.displayName}}</button>
                         </div>
+
+                        <!--
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22auto.statusAt" ms-click="doAction(@action.a22auto.name)">{{@action.a22auto.displayName}}</button>
                         </div>
+                        -->
                     </div>
                 </div>
             </section>
 
 
 
-            <!-- Page footer-->
+            <!-- Page footer -->
             <#include "../common/footer.ftl" >
 
 </div>
