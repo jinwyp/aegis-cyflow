@@ -22,6 +22,7 @@ import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.graph.cang.models.DepositModel.CompanyAuditQueryResponse
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -87,12 +88,20 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
-      val queryYimei = Promise[Boolean].success(true).future //todo
+      val queryYimei = Promise[Boolean].success(true).future 
       for {
         qym <- queryYimei
       } yield {
         if(qym == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
       }
+
+      //已经调试通过，暂时先关闭对公司的是否开通资金账户的校验。todo
+//      val queryYimei: Future[CompanyAuditQueryResponse] = requestServer[String, CompanyAuditQueryResponse](path = "user/company/audit", paramters = Map("companyId" -> userInfo.companyId))
+//      for {
+//        qym <- queryYimei
+//      } yield {
+//        if(qym.success == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
+//      }
     }
 
 
@@ -111,7 +120,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
       case e: String if(e == zjfyw) => {
         for {
-          iyu <- isYimeiUser()
+          iyu <- isYimeiUser
           pie <- getExistCompany(zjf, userInfo.companyId)
           cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
@@ -146,10 +155,10 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
     log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
-    val formatter = new SimpleDateFormat("yyMMddhh")
-    def instanceId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
+//    val formatter = new SimpleDateFormat("yyMMddhh")
+//    def instanceId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
-    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = companyInfo.companyId, companyName = companyInfo.companyName)
 
     for {
       re <- createPartyInstance(partyInstanceInfo.toJson.toString)

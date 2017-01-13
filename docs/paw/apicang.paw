@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" standalone="yes"?>
 <!DOCTYPE database SYSTEM "file:///System/Library/DTDs/CoreData.dtd">
 
 <database>
@@ -10,7 +10,7 @@
             <plist version="1.0">
                 <dict>
                     <key>NSPersistenceFrameworkVersion</key>
-                    <integer>752</integer>
+                    <integer>526</integer>
                     <key>NSStoreModelVersionHashes</key>
                     <dict>
                         <key>LMCookieJar</key>
@@ -118,7 +118,7 @@
         <relationship name="variables" type="0/0" destination="LMENVIRONMENTVARIABLE" idrefs="z158 z105 z157 z161"></relationship>
     </object>
     <object type="LMREQUEST" id="z111">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"companyName\\":\\"中国上海\\",\\"partyClass\\":\\"harbor\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"companyName\\":\\"\\\\u62c5\\\\u4fdd\\\\u4ea4\\\\u6613\\\\u6d4b\\\\u8bd5\\\\u5356\\\\u5bb6\\",\\"companyId\\":\\"1111111111\\",\\"partyClass\\":\\"fundProviderAccountant\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">FEDAABA6-8FA9-4FC3-8EF6-0233D33AEB01</attribute>
         <attribute name="url" type="string">http://localhost:8000/api/cang/companies</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
@@ -220,7 +220,7 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z117"></relationship>
     </object>
     <object type="LMREQUEST" id="z119">
-        <attribute name="body" type="string">[{"data":{"json":"{\\"username\\":\\"test\\",\\"name\\":\\"\\\\u8d44\\\\u91d1\\\\u65b9\\\\u4e1a\\\\u52a1\\",\\"email\\":\\"asdf@qq.com\\",\\"phone\\":\\"12345678912\\",\\"companyId\\":\\"66666666\\",\\"className\\":\\"fundProvider\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
+        <attribute name="body" type="string">[{"data":{"json":"{\\"username\\":\\"test\\",\\"name\\":\\"\\\\u65b0\\\\u4e2d\\\\u4fe1\\\\u6d4b\\\\u8bd5\\\\u4e8c\\",\\"email\\":\\"asdf@qq.com\\",\\"phone\\":\\"12345678912\\",\\"companyId\\":\\"1849\\",\\"className\\":\\"fundProviderAccountant\\"}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">7FE7A497-C92F-4EB5-9FA9-97F03EB97D35</attribute>
         <attribute name="url" type="string">localhost:9000/api/cang/users</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
