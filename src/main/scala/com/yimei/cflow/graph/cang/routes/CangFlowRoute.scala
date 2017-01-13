@@ -79,7 +79,7 @@ class CangFlowRoute extends AdminClient
     * @return
     */
   def submitFinancerTask = post {
-    path("financerTask" / Segment / Segment / Segment) { (action, user_id, instance_id) =>
+    path("internal"/"financerTask" / Segment / Segment / Segment) { (action, user_id, instance_id) =>
       action match {
         case `a12FinishedUpload` =>
           entity(as[UploadContract]) { upload =>
@@ -101,10 +101,23 @@ class CangFlowRoute extends AdminClient
     * @return
     */
   def financerFlowList = get {
-    path("financerFlowList" / Segment / Segment) { (user_id, instance_id) =>
+    path("internal"/"financerFlowList" / Segment / Segment) { (user_id, instance_id) =>
       complete(getFinancerList(instance_id, user_id))
     }
   }
+
+
+  def financerflowDetail = get {
+    pathPrefix("internal"/"financerDetail" / Segment / Segment / Segment) {(user_id, instance_id, flowId) =>
+   // (path("financeorders" / Segment) & myRequiredSession) { (flowId, session) =>
+//      val party_class = session.party
+//      val user_id = session.userId
+//      val instance_id = session.instanceId
+      //获得流程信息
+      complete(cyDataResult(flowId, rzf , instance_id, user_id))
+    }
+  }
+
 
 
   ////////////////////////////////////////////别的////////////////////////////////////////////////////////////////////////////////////
@@ -239,7 +252,7 @@ class CangFlowRoute extends AdminClient
   }
 
 
-  def route = startFlow ~ submitTask ~ test ~ flowDetail ~ submitFinancerTask ~ financerFlowList ~ flowList
+  def route = startFlow ~ submitTask ~ test ~ flowDetail ~ submitFinancerTask ~ financerFlowList ~ flowList ~ financerflowDetail
 }
 
 
