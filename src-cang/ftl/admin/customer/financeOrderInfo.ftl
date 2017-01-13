@@ -111,6 +111,18 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+                                    <tr>
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jindiao/' + @currentOrder.flowId}" target="_blank">尽调报告</a></th>
+                                        <td></td>
+
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jianguan/' + @currentOrder.flowId}" target="_blank">监管报告</a></th>
+                                        <td> </td>
+
+                                        <th class="text-right"></th>
+                                        <td> </td>
+                                    </tr>
                                 </table>
 
                             </div>
@@ -168,6 +180,9 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+
+
+                                    
                                 </table>
                             </div>
                         </div>
@@ -176,7 +191,7 @@
 
                     <!--审批详情 审批记录 流程图显示 -->
                     <div class="panel panel-default " >
-                        <div class="panel-heading">审批详情</div>
+                        <div class="panel-heading">审批详情 <a class="pull-right" ms-attr="{href:'http://localhost:9000/graph.html?id='+@currentOrder.flowId}" target="_blank">流程图</a></div>
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -239,6 +254,13 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group" >
+                                    <label class="col-sm-3 control-label">备注:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex="@inputDepositMemo" >
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
                                     <div class="col-sm-offset-3 col-sm-5">
                                         <button class="btn btn-default btn-lg btn-primary" ms-click="@addNotifyDeposit($event)">提交保证金缴纳通知</button>
@@ -258,24 +280,31 @@
                                 <tr>
                                     <th>创建时间</th>
                                     <th>要缴纳的金额(万元)</th>
-                                    <th>交易流水号</th>
-                                    <th>缴纳时间</th>
+                                    <th>实际缴纳金额(万元)</th>
+                                    <th>备注</th>
                                     <th>当前状态</th>
                                     <th>操作</th>
                                 </tr>
 
-                                <tr ms-for="(index, paymentOrder) in @depositList">
-                                    <td>{{ paymentOrder.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
-                                    <td>{{ paymentOrder.depositValue}}</td>
-                                    <td>{{ paymentOrder.paymentNo || '--'}}</td>
-                                    <td> <span ms-visible="paymentOrder.confirmDate">{{ paymentOrder.confirmDate | date("yyyy-MM-dd:HH:mm:ss ") }}</span></td>
-                                    <td>{{ paymentOrder.depositType | deposittype}}</td>
+                                <tr ms-for="(index, depositOrder) in @depositList">
+                                    <td>{{ depositOrder.ts_c | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
+                                    <td>{{ depositOrder.expectedAmount}}</td>
+                                    <td>{{ depositOrder.actuallyAmount}}</td>
+                                    <td>{{ depositOrder.memo || '--'}}</td>
+                                    <td>{{ depositOrder.status | deposittype}}</td>
                                     <td>
-                                        <div ms-visible="@currentUser.role === @role.financer && paymentOrder.depositType ==='notified' ">
-                                            <input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">
-                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(paymentOrder._id)">确认已缴</button>
-                                            <span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>
+                                        <div ms-visible="@currentUser.role === @role.financer && depositOrder.status ==='notified' ">
+                                            <#--<input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">-->
+                                                <#--<span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>-->
+                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(depositOrder)">确认已缴</button>
                                         </div>
+
+                                        <div ms-visible="@currentUser.role === @role.trader && depositOrder.status ==='alreadyPaid' ">
+                                        <input type="text" class="payment-no" placeholder="实际到账金额" ms-duplex-number="@inputPaymentOrderNo">
+                                        <span class="text-danger" ms-visible="@errorPaymentOrderNo">实际到账金额不能少于5万元!</span>
+                                            <button class="btn btn-info" type="button" ms-click="@approveDepositOrder(depositOrder)">确认到账</button>
+                                        </div>
+
                                     </td>
                                 </tr>
                             </table>
@@ -395,8 +424,8 @@
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
                                 <tr ms-for="(index, file) in @uploadFileList">
-                                    <td class="border0 text-center">{{file.name}} <a href=""></a></td>
-                                    <td class="border0 text-center"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
+                                    <td class="border0"><a href="" ms-click="@getFile($event, file)"> {{file.name}} </a> </td>
+                                    <td class="border0"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
                                 </tr>
                             </table>
                         </div>
@@ -722,7 +751,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProvider ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18Approved.statusAt" ms-click="doAction(@action.a18Approved.name)">{{@action.a18Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name)">{{@action.a17fundProviderAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
@@ -731,7 +760,7 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProviderAccountant ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a20Approved.statusAt" ms-click="doAction(@action.a20Approved.name)">{{@action.a20Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18fundProviderAccountantAudit.statusAt" ms-click="doAction(@action.a18fundProviderAccountantAudit.name)">{{@action.a18fundProviderAccountantAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
