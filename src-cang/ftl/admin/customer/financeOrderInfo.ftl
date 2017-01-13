@@ -706,16 +706,16 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 1)">确认回款全部完成</button>
                         </div>
 
+                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a23ReturnMoney.statusAt" ms-click="doAction(@action.a23ReturnMoney.name)">{{@action.a23ReturnMoney.displayName}}</button>
+                        </div>
+
 
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
-                        </div>
-
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a36ReturnMoney.statusAt" ms-click="doAction(@action.a36ReturnMoney.name)">{{@action.a36ReturnMoney.displayName}}</button>
                         </div>
 
                     </div>
@@ -726,7 +726,7 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt" ms-click="doAction(@action.a16traderRecommendAmount.name)">{{@action.a16traderRecommendAmount.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a24AccountantReturnMoney.statusAt" ms-click="doAction(@action.a24AccountantReturnMoney.name)">{{@action.a24AccountantReturnMoney.displayName}}</button>
                         </div>
                     </div>
 
