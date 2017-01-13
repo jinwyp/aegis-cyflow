@@ -111,13 +111,18 @@ var orderInfo = function () {
                         additionalData = {
                             "fundProviderInterestRate" : vm.inputFundProviderInterestRate
                         }
+
+                        if (status){
+                            additionalData.approvedStatus = 1
+                        }else{
+                            additionalData.approvedStatus = 0
+                        }
                     }
                 }
 
 
+                // 贸易商 返还货物 并给港口上传货物文件
                 if (vm.currentOrder.flowData.status === vm.action.a20noticeHarborRelease.statusAt){
-
-                    // 贸易商 返还货物 并给港口上传货物文件
 
                     vm.errorRedemptionAmount = false;
                     vm.errorRedemptionReceiver = false;
@@ -136,7 +141,6 @@ var orderInfo = function () {
                         return ;
                     }
 
-
                     additionalData.fileList = []
                     additionalData.redemptionAmount = vm.inputRedemptionAmount
                     additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
@@ -144,12 +148,6 @@ var orderInfo = function () {
                     vm.inputRedemptionFileList.forEach(function(file, fileIndex){
                         additionalData.fileList.push(file.fileId)
                     })
-
-                    if (status){
-                        additionalData.approvedStatus = 1
-                    }else{
-                        additionalData.approvedStatus = 0
-                    }
                 }
 
 
@@ -217,6 +215,18 @@ var orderInfo = function () {
                     }
                 }
             }
+
+
+            // 资金方审核
+            if (vm.currentOrder.flowData.status === vm.action.a17fundProviderAudit.statusAt){
+
+                if (status){
+                    additionalData.approvedStatus = 1
+                }else{
+                    additionalData.approvedStatus = 0
+                }
+            }
+
 
 
             if (sessionUserRole === vm.role.financer){
@@ -381,6 +391,7 @@ var orderInfo = function () {
         inputRedemptionFileList : [],
         errorRedemptionAmount : '',
         errorRedemptionReceiver : '',
+        errorRedemptionFileList : '',
         isNeedDelivery  : false,
         saveRedemptionAmount  : function (event) {
             event.preventDefault();

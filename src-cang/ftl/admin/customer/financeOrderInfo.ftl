@@ -196,8 +196,8 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <th class="text-right">当前状态:{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</th>
-                                        <td>{{@currentOrder.flowData.status | statusname}} </td>
+                                        <th class="text-right">当前状态:</th>
+                                        <td>{{@currentOrder.flowData.status | statusname}} <br>{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</td>
                                     </tr>
 
 
@@ -690,31 +690,28 @@
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
 
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name, 1)">{{@action.a15Approved.displayName}}</button>
-
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a20noticeHarborRelease.statusAt" ms-click="doAction(@action.a20noticeHarborRelease.name)">{{@action.a20noticeHarborRelease.displayName}}</button>
 
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 0)">{{@action.a22traderAuditIfComplete.displayName}}</button>
-
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a23ReturnMoney.statusAt" ms-click="doAction(@action.a23ReturnMoney.name)">{{@action.a23ReturnMoney.displayName}}</button>
+
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
                         </div>
 
+                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name, 1)">{{@action.a15Approved.displayName}}</button>
+                        </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name, 0)">审核不通过</button>
-
                         </div>
 
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 0)">{{@action.a22traderAuditIfComplete.displayName}}</button>
+                        </div>
+                        <div class="col-sm-3">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 1)">确认回款全部完成</button>
                         </div>
 
-
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
-                        </div>
 
                     </div>
 
