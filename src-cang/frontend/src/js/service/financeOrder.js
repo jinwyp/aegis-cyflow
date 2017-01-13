@@ -23,8 +23,12 @@ var status = [
     {name : 'financingStep18', displayName:'贸易商已自动确认收款,贸易商已自动打款给融资方, 待融资方确认收款,银行转账中'},
 
     {name : 'financingStep19', displayName:'融资方已自动确认收款,融资放款阶段完成,待融资方回款'},
+    {name : 'repaymentStep20', displayName:'融资方已回款,待贸易商自动确认收款,银行转账中'},
+    {name : 'repaymentStep21', displayName:'融资方已回款,待贸易商放货'},
 
-    {name : 'repaymentStep20', displayName:'融资方已回款,待贸易商放货'},
+    {name : 'repaymentStep22', displayName:'贸易商已放货, 融资方回款完成, 待港口放货确认'},
+    {name : 'repaymentStep23', displayName:'港口已完成放货, 待贸易商确认还款是否完成'},
+
     {name : 'repaymentStep32', displayName:'贸易商已放货, 融资方部分回款已完成, 待港口放货确认'},
     {name : 'repaymentStep33', displayName:'贸易商已放货, 融资方全部回款已完成, 待港口放货确认'},
     {name : 'repaymentStep34', displayName:'港口已确认返回货物,融资方部分回款已完成, 待融资方继续回款'},
@@ -63,11 +67,15 @@ var actions = [
     // {statusAt:"financingStep19", operator : 'financer', name : 'a31FirstReturnMoney', displayName : '确认还款'},
     {statusAt:"financingStep19", operator : 'financer', name : 'a19SecondReturnMoney', displayName : '确认还款'},
 
-    {statusAt:"repaymentStep20", operator : 'trader', name : 'a32ReturnPortionCargo', displayName : ' 回款完成,确认放货'},
-    // {statusAt:"repaymentStep31", operator : 'trader', name : 'a32ReturnPortionCargo', displayName : ' 部分回款完成,确认放货'},
-    // {statusAt:"repaymentStep31", operator : 'trader', name : 'a33ReturnAllCargo', displayName : '全部回款完成,确认放货'},
-    {statusAt:"repaymentStep32", operator : 'harbor', name : 'a34ConfirmPortionCargo', displayName : ' 部分回款完成,确认返回货物'},
-    {statusAt:"repaymentStep33", operator : 'harbor', name : 'a35ConfirmAllCargo', displayName : '全部回款完成,确认返回货物'},
+    {statusAt:"repaymentStep21", operator : 'trader', name : 'a20noticeHarborRelease', displayName : ' 回款完成,确认放货'},
+
+    {statusAt:"repaymentStep22", operator : 'harbor', name : 'a21harborRelease', displayName : ' 部分回款完成,确认返回货物'},
+    // {statusAt:"repaymentStep33", operator : 'harbor', name : 'a35ConfirmAllCargo', displayName : '全部回款完成,确认返回货物'},
+
+    {statusAt:"repaymentStep23", operator : 'trader', name : 'a22traderAuditIfComplete', displayName : '确认回款部分完成, 需要融资方继续还款'},
+    // {statusAt:"repaymentStep23", operator : 'trader', name : 'a22traderAuditIfComplete', displayName : '确认回款全部完成'},
+
+
 
     {statusAt:"repaymentStep35", operator : 'trader', name : 'a36ReturnMoney', displayName : '确认回款给资金方'},
     {statusAt:"repaymentStep36", operator : 'traderAccountant', name : 'a37Approved', displayName : '放款给资金方'},
@@ -232,6 +240,12 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
 
     if (additionalData && additionalData.repaymentValue) params.repaymentValue = additionalData.repaymentValue;
     if (additionalData && additionalData.redemptionAmount) params.redemptionAmount = additionalData.redemptionAmount;
+    if (additionalData && additionalData.goodsReceiveCompanyName) params.goodsReceiveCompanyName = additionalData.goodsReceiveCompanyName;
+
+    if (additionalData && additionalData.status === 0) params.status = 0;
+    if (additionalData && additionalData.status === 1) params.status = 1;
+
+
     if (additionalData && additionalData.redemptionAmountDeliveryId) params.redemptionAmountDeliveryId = additionalData.redemptionAmountDeliveryId;
 
     if (actionName === 'a15Approved' || actionName === 'a17fundProviderAudit') {
@@ -241,7 +255,7 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
         params.approvedStatus = 0
     }
 
-    if (actionName === 'a18fundProviderAccountantAudit' || actionName === 'a20Approved' || actionName === 'a36ReturnMoney' || actionName === 'a37Approved') {
+    if (actionName === 'a18fundProviderAccountantAudit' || actionName === 'a21harborRelease' || actionName === 'a37Approved') {
         params.status = 1
     }
 

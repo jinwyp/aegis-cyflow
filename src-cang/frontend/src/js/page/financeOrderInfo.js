@@ -52,7 +52,11 @@ var orderInfo = function () {
             currentSessionUserTaskId : '',
             currentSessionUserTaskTaskName : '',
             cyPartyMember : {
-                financer : {}
+                financer : {},
+                trader : {
+                    companyName : '',
+                    userName : ''
+                }
             },
             flowData : {},
             spData : {
@@ -61,7 +65,7 @@ var orderInfo = function () {
             }
         },
 
-        doAction             : function (actionName) {
+        doAction             : function (actionName, status) {
             var additionalData = {};
 
             if (sessionUserRole === vm.role.trader) {
@@ -96,7 +100,6 @@ var orderInfo = function () {
                 }
 
                 // 贸易商给出从资金方的贷款利率
-                console.log(vm.currentOrder.flowData.status,vm.action.a15Approved.statusAt );
                 if (vm.currentOrder.flowData.status === vm.action.a15Approved.statusAt){
 
                     vm.errorFundProviderInterestRate = false;
@@ -112,7 +115,7 @@ var orderInfo = function () {
                 }
 
 
-                if (vm.currentOrder.flowData.status === 'repaymentStep31'){
+                if (vm.currentOrder.flowData.status === vm.action.a20noticeHarborRelease.statusAt){
 
                     // 贸易商 返还货物 并给港口上传货物文件
 
@@ -134,36 +137,25 @@ var orderInfo = function () {
                     }
 
 
-                    var tempDelivery = {
-                        uploadFiles : [],
-                        redemptionAmount : vm.inputRedemptionAmount,
-                        receiver : vm.inputRedemptionReceiver,
-                        orderId      : orderId,
-                        orderNo      : vm.currentOrder.orderNo
-                    }
-
                     additionalData.fileList = []
                     additionalData.redemptionAmount = vm.inputRedemptionAmount
                     additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
 
                     vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                        tempDelivery.uploadFiles.push(file.fileId)
                         additionalData.fileList.push(file.fileId)
                     })
+                }
 
 
+                if (vm.currentOrder.flowData.status === vm.action.a22traderAuditIfComplete.statusAt){
+                    if (status){
+                        additionalData.status = 1
+                    }else{
+                        additionalData.status = 0
+                    }
 
-                    orderService.addNewDelivery(tempDelivery).done(function (data) {
-                        if (data.success) {
-                            getOrderInfo()
-                            $.notify("保存成功!", 'success');
-                        } else {
-                            console.log(data.error);
-                        }
-                    })
-
-
-            }
+                    console.log(status, additionalData.status)
+                }
 
             }
 
@@ -220,7 +212,6 @@ var orderInfo = function () {
                         additionalData.loanValue = vm.inputActualLoanValue
                     }
                 }
-                console.log(additionalData, vm.currentOrder.currentSessionUserTaskTaskName)
             }
 
 
@@ -253,7 +244,8 @@ var orderInfo = function () {
 
         getFile : function (event, file) {
             event.preventDefault();
-            orderService.getFileById(file.fileId);
+            console.log(file)
+            orderService.getFileById(file.id);
         },
         deleteFile : function (event, file) {
             event.preventDefault();
@@ -381,8 +373,10 @@ var orderInfo = function () {
         errorRepaymentValue : '',
 
         inputRedemptionAmount : 0,
+        inputRedemptionReceiver : '',
         inputRedemptionFileList : [],
         errorRedemptionAmount : '',
+        errorRedemptionReceiver : '',
         isNeedDelivery  : false,
         saveRedemptionAmount  : function (event) {
             event.preventDefault();
@@ -399,6 +393,8 @@ var orderInfo = function () {
             if (data.success) {
                 vm.contractList = data.data.flowData.fileList;
                 vm.depositList = data.data.flowData.depositList;
+                vm.repaymentList = data.data.flowData.repaymentList;
+                vm.deliveryList = data.data.flowData.deliveryList;
                 vm.currentOrder = data.data;
 
                 upload()
