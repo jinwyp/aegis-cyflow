@@ -28,7 +28,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
 //  implicit val testEc = coreExecutor
 
  // drop
-  migrate
+//  migrate
 
   GraphLoader.loadall()
 
