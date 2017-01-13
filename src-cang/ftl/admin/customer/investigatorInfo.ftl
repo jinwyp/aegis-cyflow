@@ -29,7 +29,7 @@
 
             <!--基本信息 显示 贸易商 与 资金方 -->
             <div class="panel panel-default" ms-if="@currentUser.role === @role.financer || @currentUser.role === @role.trader || @currentUser.role === @role.traderAccountant || @currentUser.role === @role.fundProvider || @currentUser.role === @role.fundProviderAccountant">
-                <div class="panel-heading">基本信息</div>
+                <div class="panel-heading">尽调报告</div>
                 <div class="panel-body">
                     <div class="table-responsive">
                         <table class="table table-hover">

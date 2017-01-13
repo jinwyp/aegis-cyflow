@@ -111,6 +111,18 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+                                    <tr>
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jindiao/' + @currentOrder.flowId}" target="_blank">尽调报告</a></th>
+                                        <td></td>
+
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jianguan/' + @currentOrder.flowId}" target="_blank">监管报告</a></th>
+                                        <td> </td>
+
+                                        <th class="text-right"></th>
+                                        <td> </td>
+                                    </tr>
                                 </table>
 
                             </div>
@@ -168,6 +180,9 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+
+
+                                    
                                 </table>
                             </div>
                         </div>
