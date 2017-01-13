@@ -111,6 +111,18 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+                                    <tr>
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jindiao/' + @currentOrder.flowId}" target="_blank">尽调报告</a></th>
+                                        <td></td>
+
+                                        <th class="text-right">
+                                            <a ms-attr="{href:'/warehouse/admin/home/finance/contract/' + @currentOrder.flowId + '/jianguan/' + @currentOrder.flowId}" target="_blank">监管报告</a></th>
+                                        <td> </td>
+
+                                        <th class="text-right"></th>
+                                        <td> </td>
+                                    </tr>
                                 </table>
 
                             </div>
@@ -168,6 +180,9 @@
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
+
+
+                                    
                                 </table>
                             </div>
                         </div>
@@ -409,8 +424,8 @@
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
                                 <tr ms-for="(index, file) in @uploadFileList">
-                                    <td class="border0 text-center">{{file.name}} <a href=""></a></td>
-                                    <td class="border0 text-center"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
+                                    <td class="border0"><a href="" ms-click="@getFile($event, file)"> {{file.name}} </a> </td>
+                                    <td class="border0"><span class="btn btn-primary" ms-click="@deleteFile($event, file)">删除</span></td>
                                 </tr>
                             </table>
                         </div>
