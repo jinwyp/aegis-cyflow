@@ -55,7 +55,10 @@ var orderInfo = function () {
                 financer : {}
             },
             flowData : {},
-            spData : {}
+            spData : {
+                investigationInfo : {},
+                supervisorInfo : {}
+            }
         },
 
         doAction             : function (actionName) {
