@@ -25,19 +25,18 @@ trait MyExceptionHandler extends ResultProtocol with SprayJsonSupport {
   implicit def myExceptionHandler: ExceptionHandler = ExceptionHandler {
     case e:BusinessException =>
       extractUri { uri =>
-        log.error(s"Request to $uri could not be handled normally!!!!!!!!! BusinessException")
+        log.error("Request to {} could not be handled normally!! error:{} ",uri,e)
         complete(HttpResponse(StatusCodes.BadRequest,entity = Result(data = Some("error"),success = false,error = Some(Error(409,e.message,""))).toJson.toString ))
       }
 
     case e:DatabaseException =>
       extractUri { uri =>
-        println(s"Request to $uri could not be handled normally!!!!!!!!! DatabaseException11111111 {}",e.message)
+        log.error("Request to {} could not be handled normally!! error:{} ",uri,e)
         complete(HttpResponse(StatusCodes.BadRequest,entity = Result(data = Some("error"),success = false,error = Some(Error(409,e.message,""))).toJson.toString ))
       }
     case e =>
       extractUri { uri =>
-        log.error(s"Request to $uri could not be handled normally!!!!!!!!!")
-        log.error("{}",e)
+        log.error("Request to {} could not be handled normally!! error:{} ",uri,e)
         complete(HttpResponse(StatusCodes.InternalServerError,entity = Result(data = Some("error"),success = false,error = Some(Error(500,"系统错误",""))).toJson.toString ))
       }
   }

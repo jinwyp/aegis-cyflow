@@ -103,7 +103,7 @@ object HttpUtil extends ApplicationConfig with ResultProtocol {
         throw new BusinessException(r)
       case e =>
         log.error("url:{},err:{}",path,e)
-        throw new BusinessException("网络异常")
+        throw e
     }
   }
 
@@ -249,8 +249,8 @@ object HttpUtil extends ApplicationConfig with ResultProtocol {
       case BusinessException(r) =>
         log.info(r)
         throw new BusinessException(r)
-      case _ =>
-        log.error("!!!!!!!!!!!!!")
+      case e =>
+        log.error("url:{},err:{}",path,e)
         throw new BusinessException("网络异常")
     }
   }
