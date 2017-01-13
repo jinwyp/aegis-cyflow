@@ -911,7 +911,7 @@ object FlowService extends UserModelProtocol
       cargoOwner, //货权（贸易商审核通过前为融资方，然后为贸易方）
       states.length match {
         case 1 => states(0)
-        case 0 => ""
+        case 0 => state.ending.get
         case _ => throw BusinessException(s"$states 异常")
       }, //当前所在vertices
       repaymentInfo._1, // 实际放款金额
