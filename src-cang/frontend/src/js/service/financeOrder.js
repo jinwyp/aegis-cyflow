@@ -13,10 +13,10 @@ var status = [
     {name : 'financingStep13', displayName:'融资方, 港口和监管方完成上传合同,待贸易商审核'},
     // {name : 'financingStep14', displayName:'港口完成上传合同,待贸易商审核'}, // 不需要
     // {name : 'financingStep15', displayName:'监管方完成上传合同,待贸易商审核'}, // 不需要
-    {name : 'financingStep51', displayName:'贸易商审核不通过，流程结束'},
+    {name : 'TraderDisapprove', displayName:'贸易商审核不通过，流程结束'},
     {name : 'financingStep14', displayName:'贸易商审核通过,待贸易商财务放款建议'},
     {name : 'financingStep15', displayName:'贸易商财务放款建议审核通过,待资金方审核'},
-    {name : 'financingStep52', displayName:'资金方审核不通过，流程结束'},
+    {name : 'FundProviderDisapprove', displayName:'资金方审核不通过，流程结束'},
     {name : 'financingStep16', displayName:'资金方审核通过,待资金方财务放款'},
     {name : 'financingStep17', displayName:'资金方财务已放款,待贸易商确认收款,银行转账中'},
 
@@ -38,7 +38,7 @@ var status = [
     {name : 'repaymentStep53', displayName:'贸易商已扣押货物（处置货权）,融资方未回款, 待贸易商确认回款给资金方'},
     {name : 'repaymentStep25', displayName:'贸易商已确认回款给资金方,待贸易商财务放款'},
     {name : 'repaymentStep26', displayName:'贸易商财务已放款给资金方，银行转账中'},
-    {name : 'repaymentStep27', displayName:'贸易商财务已完成回款给资金方，流程结束'}
+    {name : 'success', displayName:'贸易商财务已完成回款给资金方，流程结束'}
 ];
 
 var statusObject = {};
@@ -245,18 +245,17 @@ exports.auditFinanceOrder = function (flowId, taskName, taskId, actionName, addi
     if (additionalData && additionalData.redemptionAmount) params.redemptionAmount = additionalData.redemptionAmount;
     if (additionalData && additionalData.goodsReceiveCompanyName) params.goodsReceiveCompanyName = additionalData.goodsReceiveCompanyName;
 
+    if (additionalData && additionalData.approvedStatus === 0) params.approvedStatus = 0;
+    if (additionalData && additionalData.approvedStatus === 1) params.approvedStatus = 1;
+
     if (additionalData && additionalData.status === 0) params.status = 0;
     if (additionalData && additionalData.status === 1) params.status = 1;
 
 
     if (additionalData && additionalData.redemptionAmountDeliveryId) params.redemptionAmountDeliveryId = additionalData.redemptionAmountDeliveryId;
 
-    if (actionName === 'a15Approved' || actionName === 'a17fundProviderAudit') {
-        params.approvedStatus = 1
-    }
-    if (actionName === 'a16NotApproved' || actionName === 'a19NotApproved') {
-        params.approvedStatus = 0
-    }
+
+
 
     if (actionName === 'a18fundProviderAccountantAudit' || actionName === 'a21harborRelease' || actionName === 'a23ReturnMoney' || actionName === 'a24AccountantReturnMoney') {
         params.status = 1

@@ -144,6 +144,12 @@ var orderInfo = function () {
                     vm.inputRedemptionFileList.forEach(function(file, fileIndex){
                         additionalData.fileList.push(file.fileId)
                     })
+
+                    if (status){
+                        additionalData.approvedStatus = 1
+                    }else{
+                        additionalData.approvedStatus = 0
+                    }
                 }
 
 
@@ -153,8 +159,6 @@ var orderInfo = function () {
                     }else{
                         additionalData.status = 0
                     }
-
-                    console.log(status, additionalData.status)
                 }
 
             }
