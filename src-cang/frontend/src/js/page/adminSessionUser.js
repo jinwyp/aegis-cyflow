@@ -24,7 +24,7 @@ var sessionUser = function() {
         currentUser : {
             username : '',
             email : '',
-            mobilePhone : '',
+            phone : '',
             companyName : '',
             belongToUser : '', // 资金方财务关联资金方用户ID, 贸易商财务关联贸易商用户ID
             role : ''
@@ -70,7 +70,7 @@ var sessionUser = function() {
                             // role : vm.currentUser.role,
                             // companyName : vm.currentUser.companyName,
                             email : vm.currentUser.email,
-                            mobilePhone : vm.currentUser.mobilePhone
+                            phone : vm.currentUser.phone
                         };
 
                         userService.updateSessionUserInfo(user).done(function (data, textStatus, jqXHR) {

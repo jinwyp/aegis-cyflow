@@ -31,9 +31,13 @@ var header = function() {
             var data = jqXHR.responseText;
             if (jqXHR.getResponseHeader('content-type').indexOf('json') > -1){
                 data = JSON.parse(jqXHR.responseText);
+                $.notify(data, 'error');
+            }else{
+                console.log(data);
+                $.notify(data.error.message, 'error');
             }
-            $.notify(data || data.error.message, 'error');
-            console.log(data.error);
+
+            console.log(data);
         }
     });
 

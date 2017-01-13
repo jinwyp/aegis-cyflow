@@ -25,6 +25,7 @@ var userInfo = function() {
         companyList:[],
         currentUser : {
             username : '',
+            fullName : '',
             email : '',
             phone : '',
             companyId : '',
@@ -49,6 +50,7 @@ var userInfo = function() {
         errorMessage : {
             inputUsername : '',
             inputEmail : '',
+            inputFullName : '',
             inputMobilePhone : '',
             inputCompanyName : '请选择公司名称',
             inputUserRole:''
@@ -118,6 +120,7 @@ var userInfo = function() {
                         username : vm.currentUser.username,
                         email : vm.currentUser.email,
                         phone : vm.currentUser.phone,
+                        name : vm.currentUser.fullName,
                         companyName : vm.currentUser.companyName,
                         companyId : vm.currentUser.companyId,
                         className : vm.currentUser.role

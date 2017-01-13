@@ -9,7 +9,7 @@ import com.softwaremill.session.SessionOptions._
 import spray.json.DefaultJsonProtocol
 import scala.util.Try
 
-case class MySession(userName: String, userId: String, party: String, gid: Option[String], instanceId: String, companyName: String)
+case class MySession(userName: String, userId: String, party: String, instanceId: String, companyName: String)
 
 trait Session {
   val sessionConfig = SessionConfig.fromConfig()
@@ -19,16 +19,13 @@ trait Session {
       "name" -> ms.userName,
       "id" -> ms.userId,
       "party" -> ms.party,
-      "gid" -> ms.gid.getOrElse(""),
       "instanceId" -> ms.instanceId,
       "companyName" -> ms.companyName),
     (msm: Map[String, String]) => Try {
-      val gid = if(msm.get("gid").get == "") None else Some(msm.get("gid").get)
       MySession(
         msm.get("name").get,
         msm.get("id").get,
         msm.get("party").get,
-        gid,
         msm.get("instanceId").get,
         msm.get("companyName").get)}
   )
@@ -39,5 +36,5 @@ trait Session {
 }
 
 trait SessionProtocol extends DefaultJsonProtocol {
-  implicit val mySessionFormat = jsonFormat6(MySession)
+  implicit val mySessionFormat = jsonFormat5(MySession)
 }

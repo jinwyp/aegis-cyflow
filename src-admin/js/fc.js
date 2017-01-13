@@ -155,7 +155,7 @@
                 this.tmplRender();
             },
             getModel: function(){
-                 var url = '/api/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
+                 var url = '/api/internal/flow/' + location.search.match(new RegExp("[\?\&]id=([^\&]+)", "i"))[1];
                 // var url = '../json/data4.json'
                 $.getJSON(url, function(res){
                     originalData = res;

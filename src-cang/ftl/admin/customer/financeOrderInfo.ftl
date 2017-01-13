@@ -35,83 +35,81 @@
                                 <table class="table table-hover">
                                     <tr>
                                         <th class="text-right ">融资类型:</th>
-                                        <td>{{@currentOrder.orderType | typename}}</td>
+                                        <td>{{@currentOrder.spData.orderType | typename}}</td>
 
                                         <th class="text-right">业务编号:</th>
-                                        <td>{{@currentOrder.orderNo}}</td>
+                                        <td>{{@currentOrder.spData.businessCode}}</td>
 
                                         <th class="text-right">申请时间:</th>
-                                        <td>{{@currentOrder.requestTime | date("yyyy-MM-dd")}}</td>
+                                        <td>{{@currentOrder.spData.financeCreateTime | date("yyyy-MM-dd")}}</td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">融资用户:</th>
-                                        <td><span ms-if="@currentOrder.financerUser">{{@currentOrder.financerUser.username}}</span></td>
+                                        <td><span >{{@currentOrder.cyPartyMember.financer.companyName}} - {{@currentOrder.cyPartyMember.financer.userName}} </span></td>
 
                                         <th class="text-right">库存港口:</th>
-                                        <td><span ms-if="@currentOrder.harborUser">{{@currentOrder.harborUser.username}}</span></td>
+                                        <td><span >{{@currentOrder.spData.stockPort}}</span></td>
 
                                         <th class="text-right">当前货主:</th>
-                                        <td><span ms-if="@currentOrder.cargoOwner">{{@currentOrder.cargoOwner}}</span></td>
+                                        <td><span >{{@currentOrder.flowData.cargoOwner}}</span></td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">融资金额(万元):</th>
-                                        <td>{{@currentOrder.mortgageValue}}</td>
+                                        <td>{{@currentOrder.spData.financingAmount}}</td>
 
                                         <th class="text-right">融资期限(天):</th>
-                                        <td>{{@currentOrder.mortgageDeadline}}</td>
+                                        <td>{{@currentOrder.spData.financingDays}}</td>
 
                                         <th class="text-right">已缴纳保证金(万元):</th>
-                                        <td>{{@currentOrder.depositValue || 0}}</td>
+                                        <td>{{@currentOrder.flowData.depositValue || 0}}</td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">放款总金额(万元):</th>
-                                        <td>{{@currentOrder.loanValue || 0}}</td>
+                                        <td>{{@currentOrder.flowData.loanValue || 0}}</td>
 
                                         <th class="text-right">已回款金额(万元):</th>
-                                        <td>{{@currentOrder.returnValue || 0 }}</td>
+                                        <td>{{@currentOrder.flowData.returnValue || 0 }}</td>
 
                                         <th class="text-right">待还款(万元):</th>
-                                        <td>{{@currentOrder.repaymentValue || 0}}</td>
+                                        <td>{{@currentOrder.flowData.repaymentValue || 0}}</td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">质押总数量(吨):</th>
-                                        <td>{{@currentOrder.mortgageAmount}}</td>
+                                        <td>{{@currentOrder.spData.coalAmount}}</td>
 
                                         <th class="text-right">已赎回数量(吨):</th>
-                                        <td>{{@currentOrder.redemptionAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.redemptionAmount || 0}} </td>
 
                                         <th class="text-right">待赎回数量(吨):</th>
-                                        <td>{{@currentOrder.redemptionAmountLeft || 0}} </td>
+                                        <td>{{@currentOrder.flowData.redemptionAmountLeft || 0}} </td>
                                     </tr>
 
 
                                     <tr>
                                         <th class="text-right">港口已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">监管已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">煤种:</th>
-                                        <td>{{@currentOrder.infoCoalType || '--'}} </td>
+                                        <td>{{@currentOrder.spData.coalType || '--'}} </td>
                                     </tr>
-
 
                                     <tr>
                                         <th class="text-right">热值:</th>
-                                        <td>{{@currentOrder.infoCalorificValue || '--' }} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_NCV || '--' }} </td>
 
                                         <th class="text-right">收到基硫分:</th>
-                                        <td>{{@currentOrder.infoSulfur || '--' }} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_RS || '--' }} </td>
 
                                         <th class="text-right">空干基挥发分:</th>
-                                        <td>{{@currentOrder.infoVolatile || '--'}} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
-
 
                                 </table>
 
@@ -128,35 +126,46 @@
                                 <table class="table table-hover">
                                     <tr>
                                         <th class="text-right ">融资类型:</th>
-                                        <td>{{@currentOrder.orderType | typename}}</td>
+                                        <td>{{@currentOrder.spData.orderType | typename}}</td>
 
                                         <th class="text-right">业务编号:</th>
-                                        <td>{{@currentOrder.orderNo}}</td>
+                                        <td>{{@currentOrder.spData.businessCode}}</td>
 
                                         <th class="text-right">申请时间:</th>
-                                        <td>{{@currentOrder.requestTime | date("yyyy-MM-dd")}}</td>
+                                        <td>{{@currentOrder.spData.financeCreateTime | date("yyyy-MM-dd")}}</td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">融资用户:</th>
-                                        <td><span ms-if="@currentOrder.financerUser">{{@currentOrder.financerUser.username}}</span></td>
+                                        <td><span>{{@currentOrder.cyPartyMember.financer.username}}</span></td>
 
                                         <th class="text-right">库存港口:</th>
-                                        <td><span ms-if="@currentOrder.harborUser">{{@currentOrder.harborUser.username}}</span></td>
+                                        <td><span>{{@currentOrder.spData.stockPort}}</span></td>
 
                                         <th class="text-right">当前货主:</th>
-                                        <td><span ms-if="@currentOrder.cargoOwner">{{@currentOrder.cargoOwner}}</span></td>
+                                        <td><span>{{@currentOrder.flowData.cargoOwner}}</span></td>
                                     </tr>
 
                                     <tr>
                                         <th class="text-right">港口已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">监管已确认数量(吨):</th>
-                                        <td>{{@currentOrder.harborConfirmAmount || 0}} </td>
+                                        <td>{{@currentOrder.flowData.harborConfirmAmount || 0}} </td>
 
                                         <th class="text-right">煤种:</th>
-                                        <td>{{@currentOrder.infoCoalType || '--'}} </td>
+                                        <td>{{@currentOrder.spData.coalType || '--'}} </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th class="text-right">热值:</th>
+                                        <td>{{@currentOrder.spData.coalIndex_NCV || '--' }} </td>
+
+                                        <th class="text-right">收到基硫分:</th>
+                                        <td>{{@currentOrder.spData.coalIndex_RS || '--' }} </td>
+
+                                        <th class="text-right">空干基挥发分:</th>
+                                        <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
                                 </table>
@@ -167,23 +176,15 @@
 
                     <!--审批详情 审批记录 流程图显示 -->
                     <div class="panel panel-default " >
-                        <div class="panel-heading">审批详情</div>
+                        <div class="panel-heading">审批详情 <a class="pull-right" ms-attr="{href:'http://localhost:9000/graph.html?id='+@currentOrder.flowId}" target="_blank">流程图</a></div>
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <th class="text-right">当前状态:</th>
-                                        <td>{{@currentOrder.status | statusname}} </td>
+                                        <th class="text-right">当前状态:{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</th>
+                                        <td>{{@currentOrder.flowData.status | statusname}} </td>
                                     </tr>
 
-                                    <tr>
-                                        <th class="text-right">子状态:</th>
-                                        <td>
-                                            <span ms-visible="@currentOrder.statusChild1Financer"> {{@currentOrder.statusChild1Financer | statusname}} <br> </span>
-                                            <span ms-visible="@currentOrder.statusChild2Harbor"> {{@currentOrder.statusChild2Harbor | statusname}} <br> </span>
-                                            <span ms-visible="@currentOrder.statusChild3Supervisor"> {{@currentOrder.statusChild3Supervisor | statusname}} </span>
-                                        </td>
-                                    </tr>
 
                                     <tr ms-for="(index, audit) in @currentOrder.auditHistory">
                                         <th class="text-right">审批时间:</th>
@@ -207,13 +208,15 @@
 
 
 
-                    <!--货值趋势图-->
+                    <!-- 货值趋势图 -->
+                    <!--
                     <div class="panel panel-default" >
                         <div class="panel-heading">货值趋势图</div>
                         <div class="panel-body">
                             <div id="main" style="width: 100%;height: 400px;border: 1px solid gray;"></div>
                         </div>
                     </div>
+                    -->
 
 
 
@@ -221,7 +224,7 @@
 
 
                     <!-- 贸易商通知融资方缴纳保证金-->
-                    <div class="panel panel-default" ms-if="@currentUser.role === @role.trader && @currentOrder.status !== 'repaymentStep37'" >
+                    <div class="panel panel-default" ms-if="@currentUser.role === @role.trader && @currentOrder.flowData.status !== 'repaymentStep37'" >
                         <div class="panel-heading">通知融资方缴纳保证金 </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -233,6 +236,13 @@
                                     </div>
                                     <div class="col-sm-5" ms-visible="@errorDepositValue">
                                         <span class="help-block">*&nbsp;金额数量不正确, 最少10万元!</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" >
+                                    <label class="col-sm-3 control-label">备注:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex="@inputDepositMemo" >
                                     </div>
                                 </div>
 
@@ -255,24 +265,31 @@
                                 <tr>
                                     <th>创建时间</th>
                                     <th>要缴纳的金额(万元)</th>
-                                    <th>交易流水号</th>
-                                    <th>缴纳时间</th>
+                                    <th>实际缴纳金额(万元)</th>
+                                    <th>备注</th>
                                     <th>当前状态</th>
                                     <th>操作</th>
                                 </tr>
 
-                                <tr ms-for="(index, paymentOrder) in @depositList">
-                                    <td>{{ paymentOrder.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
-                                    <td>{{ paymentOrder.depositValue}}</td>
-                                    <td>{{ paymentOrder.paymentNo || '--'}}</td>
-                                    <td> <span ms-visible="paymentOrder.confirmDate">{{ paymentOrder.confirmDate | date("yyyy-MM-dd:HH:mm:ss ") }}</span></td>
-                                    <td>{{ paymentOrder.depositType | deposittype}}</td>
+                                <tr ms-for="(index, depositOrder) in @depositList">
+                                    <td>{{ depositOrder.ts_c | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
+                                    <td>{{ depositOrder.expectedAmount}}</td>
+                                    <td>{{ depositOrder.actuallyAmount}}</td>
+                                    <td>{{ depositOrder.memo || '--'}}</td>
+                                    <td>{{ depositOrder.status | deposittype}}</td>
                                     <td>
-                                        <div ms-visible="@currentUser.role === @role.financer && paymentOrder.depositType ==='notified' ">
-                                            <input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">
-                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(paymentOrder._id)">确认已缴</button>
-                                            <span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>
+                                        <div ms-visible="@currentUser.role === @role.financer && depositOrder.status ==='notified' ">
+                                            <#--<input type="text" class="payment-no" placeholder="交易流水号" ms-duplex="@inputPaymentOrderNo">-->
+                                                <#--<span class="text-danger" ms-visible="@errorPaymentOrderNo">流水号长度少于10位!</span>-->
+                                            <button class="btn btn-info" type="button" ms-click="@savePaymentOrder(depositOrder)">确认已缴</button>
                                         </div>
+
+                                        <div ms-visible="@currentUser.role === @role.trader && depositOrder.status ==='alreadyPaid' ">
+                                        <input type="text" class="payment-no" placeholder="实际到账金额" ms-duplex-number="@inputPaymentOrderNo">
+                                        <span class="text-danger" ms-visible="@errorPaymentOrderNo">实际到账金额不能少于5万元!</span>
+                                            <button class="btn btn-info" type="button" ms-click="@approveDepositOrder(depositOrder)">确认到账</button>
+                                        </div>
+
                                     </td>
                                 </tr>
                             </table>
@@ -307,7 +324,7 @@
                                         <td>{{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}}  </td>
                                         <td> 第 3 天 </td>
                                         <td> {{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}} x 3 x 0.1 / 360 </td>
-                                        <td> {{ @currentOrder.financerUser.username}} </td>
+                                        <td> {{ @currentOrder.cyPartyMember.financer.username}} </td>
                                         <td> {{ @currentOrder.traderUser.username}}  </td>
                                     </tr>
                                 </table>
@@ -361,11 +378,10 @@
                                     <tr>
                                         <th class="text-right ">融资用户合同及单据:</th>
                                         <td>
-                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.financer)" ms-click="@getFile($event, contract)">{{contract.originalFileName}}</a>
+                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.financer)" ms-click="@getFile($event, contract)">{{contract.originName}}</a>
                                         </td>
                                     </tr>
                                 </table>
-
                                 <table class="table table-hover contract-table" ms-visible="@currentUser.role === @role.harbor || @currentUser.role === @role.trader || @currentUser.role === @role.fundProvider " >
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>
@@ -388,7 +404,7 @@
 
 
                     <!-- 融资方, 港口 与 监管 上传合同-->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer || @currentUser.role === @role.harbor || @currentUser.role === @role.supervisor ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskId ">
                         <div class="panel-heading">上传合同及单据</div>
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
@@ -416,24 +432,24 @@
 
 
                     <!-- 港口确认货物 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && !@currentOrder.harborConfirmAmount">
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.status === @action.a13FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId">
                         <div class="panel-heading">港口确认货物</div>
                         <div class="panel-body">
                             <h4 class="lineH40">
                                 当前有 <input type="text" class="goods" ms-duplex-number="@inputHarborConfirmAmount">吨货物 <br>
                                 货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
                             </h4>
-                            <span class="text-danger" ms-visible="@errorHarborConfirmAmount"> 数量错误!</span>
+                            <span class="text-danger" ms-visible="@errorHarborConfirmAmount"> 数量不能小于10吨!</span>
                         </div>
                     </div>
 
 
                     <!-- 港口 与 监管 显示确认货物信息 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.harborConfirmAmount || @currentUser.role === @role.supervisor && @currentOrder.harborConfirmAmount">
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.harbor && @currentOrder.flowData.harborConfirmAmount || @currentUser.role === @role.supervisor && @currentOrder.flowData.harborConfirmAmount">
                         <div class="panel-heading">港口货物确认信息</div>
                         <div class="panel-body">
-                            <h4 class="lineH40" ms-visible="@currentOrder.harborConfirmAmount">
-                                已确认有 {{@currentOrder.harborConfirmAmount}} 吨货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
+                            <h4 class="lineH40" ms-visible="@currentOrder.flowData.harborConfirmAmount">
+                                已确认有 {{@currentOrder.flowData.harborConfirmAmount}} 吨货物属于{{@currentOrder.financerCompanyName || ''}}所有, 并承诺与实际情况相符。
                             </h4>
                         </div>
                         <div class="panel-footer text-center">
@@ -445,7 +461,7 @@
 
 
                     <!-- 贸易商选择 资金方 港口 监管方-->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && !@currentOrder.harborUserId && !@currentOrder.fundProviderUserId" >
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && @currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" >
                         <div class="panel-heading">选择资金方,港口和监管方 </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -455,7 +471,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedFundProvider">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @fundProviderList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.fundProvider)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}}</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.fundProvider">
@@ -468,7 +484,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedFundProviderAccountant">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @fundProviderAccountantList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.fundProviderAccountant)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}} </option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.fundProviderAccountant">
@@ -482,7 +498,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedHarbor">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @harborList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.harbor)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}}</option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.harbor">
@@ -495,7 +511,7 @@
                                     <div class="col-sm-3">
                                         <select class="form-control m-b" ms-duplex="@traderForm.selectedSupervisor">
                                             <option value="" > - </option>
-                                            <option ms-for="user in @supervisorList" ms-attr="{value: user._id}" >{{user.username}} </option>
+                                            <option ms-for="user in @traderSelectUserList | filterBy(@userListFilter, @role.supervisor)" ms-attr="{value: user.userId + '-' + user.companyId}" >{{user.companyName}} - {{user.username}} - {{user.phone}} </option>
                                         </select>
                                     </div>
                                     <div class="col-sm-5" ms-visible="@traderFormError.supervisor">
@@ -510,8 +526,30 @@
 
 
 
+                    <!-- 贸易商 给出利率 -->
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.trader && @currentOrder.flowData.status === @action.a15Approved.statusAt " >
+                        <div class="panel-heading">贸易商贷款利率: </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" novalidate>
+
+                                <div class="form-group" ms-class="[@errorFundProviderInterestRate && 'has-error']">
+                                    <label class="col-sm-3 control-label">贷款利率:</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" ms-duplex-number="@inputFundProviderInterestRate" >
+                                    </div>
+                                    <div class="col-sm-5" ms-visible="@errorFundProviderInterestRate">
+                                        <span class="help-block">*&nbsp;请填写资金方贷款给贸易商的利率!</span>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+
+
                     <!-- 贸易商财务 给出放款金额建议 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.traderAccountant && @currentOrder.status === @action.a17Approved.statusAt " >
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.traderAccountant && @currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt " >
                         <div class="panel-heading">贸易商财务放款金额建议: </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -536,7 +574,7 @@
 
 
                     <!-- 融资方还款 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.financer && @currentOrder.status === @action.a31FirstReturnMoney.statusAt || @currentUser.role === @role.financer && @currentOrder.status === @action.a32SecondReturnMoney.statusAt" >
+                    <div class="panel panel-info" ms-if="@currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt || @currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" >
                         <div class="panel-heading">融资方还款: </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -558,7 +596,7 @@
 
 
                     <!-- 贸易方 输入放货数量 和 上传港口放货文件合同 -->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.trader && @currentOrder.status === 'repaymentStep31' && @isNeedDelivery ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.trader && @currentOrder.flowData.status === 'repaymentStep31' && @isNeedDelivery ">
                         <div class="panel-heading">贸易商返还货物信息</div>
 
                         <div class="panel-body">
@@ -617,14 +655,14 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.financer ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a12FinishedUpload.statusAt && !@currentOrder.statusChild1Financer" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a12FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a31FirstReturnMoney.statusAt" ms-click="doAction(@action.a31FirstReturnMoney.name)">{{@action.a31FirstReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt" ms-click="doAction(@action.a31FirstReturnMoney.name)">{{@action.a31FirstReturnMoney.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a32SecondReturnMoney.statusAt" ms-click="doAction(@action.a32SecondReturnMoney.name)">{{@action.a32SecondReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" ms-click="doAction(@action.a32SecondReturnMoney.name)">{{@action.a32SecondReturnMoney.displayName}}</button>
                         </div>
 
                         <#--<div class="col-sm-2"><button type="button" class="mb-sm btn btn-danger">Success</button></div>-->
@@ -634,31 +672,31 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.trader ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a15Approved.statusAt && @currentOrder.statusChild2Harbor && @currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>
-                        </div>
-
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-info" ms-if="@currentOrder.status === @action.a32ReturnPortionCargo.statusAt" ms-click="doAction(@action.a32ReturnPortionCargo.name)">{{@action.a32ReturnPortionCargo.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a33ReturnAllCargo.statusAt" ms-click="doAction(@action.a33ReturnAllCargo.name)">{{@action.a33ReturnAllCargo.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-info" ms-if="@currentOrder.flowData.status === @action.a32ReturnPortionCargo.statusAt" ms-click="doAction(@action.a32ReturnPortionCargo.name)">{{@action.a32ReturnPortionCargo.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a33ReturnAllCargo.statusAt" ms-click="doAction(@action.a33ReturnAllCargo.name)">{{@action.a33ReturnAllCargo.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a36ReturnMoney.statusAt" ms-click="doAction(@action.a36ReturnMoney.name)">{{@action.a36ReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a36ReturnMoney.statusAt" ms-click="doAction(@action.a36ReturnMoney.name)">{{@action.a36ReturnMoney.displayName}}</button>
                         </div>
 
                     </div>
@@ -666,31 +704,31 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.traderAccountant ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a17Approved.statusAt" ms-click="doAction(@action.a17Approved.name)">{{@action.a17Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt" ms-click="doAction(@action.a16traderRecommendAmount.name)">{{@action.a16traderRecommendAmount.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
                         </div>
                     </div>
 
 
                     <div class="row" ms-if="@currentUser.role === @role.harbor">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a13FinishedUpload.statusAt && !@currentOrder.statusChild2Harbor" ms-click="doAction(@action.a13FinishedUpload.name)">{{@action.a13FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a13FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a13FinishedUpload.name)">{{@action.a13FinishedUpload.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a34ConfirmPortionCargo.statusAt" ms-click="doAction(@action.a34ConfirmPortionCargo.name)">{{@action.a34ConfirmPortionCargo.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a34ConfirmPortionCargo.statusAt" ms-click="doAction(@action.a34ConfirmPortionCargo.name)">{{@action.a34ConfirmPortionCargo.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a35ConfirmAllCargo.statusAt" ms-click="doAction(@action.a35ConfirmAllCargo.name)">{{@action.a35ConfirmAllCargo.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a35ConfirmAllCargo.statusAt" ms-click="doAction(@action.a35ConfirmAllCargo.name)">{{@action.a35ConfirmAllCargo.displayName}}</button>
                         </div>
                     </div>
 
 
                     <div class="row" ms-if="@currentUser.role === @role.supervisor ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a14FinishedUpload.statusAt && !@currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a14FinishedUpload.name)">{{@action.a14FinishedUpload.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a14FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a14FinishedUpload.name)">{{@action.a14FinishedUpload.displayName}}</button>
                         </div>
                     </div>
 
@@ -698,22 +736,22 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProvider ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a18Approved.statusAt" ms-click="doAction(@action.a18Approved.name)">{{@action.a18Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name)">{{@action.a17fundProviderAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
                         </div>
                     </div>
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProviderAccountant ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a20Approved.statusAt" ms-click="doAction(@action.a20Approved.name)">{{@action.a20Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18fundProviderAccountantAudit.statusAt" ms-click="doAction(@action.a18fundProviderAccountantAudit.name)">{{@action.a18fundProviderAccountantAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a22auto.statusAt" ms-click="doAction(@action.a22auto.name)">{{@action.a22auto.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22auto.statusAt" ms-click="doAction(@action.a22auto.name)">{{@action.a22auto.displayName}}</button>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,7 @@
 package com.yimei.cflow.graph.cang
 
+import java.util.concurrent.TimeUnit
+
 import com.yimei.cflow.api.models.auto.CommandAutoTask
 import com.yimei.cflow.api.models.flow.{Arrow, State}
 import com.yimei.cflow.config.CoreConfig._
@@ -112,7 +114,7 @@ object CangGraphJar extends Config {
   //自动任务-------------------------
   //资金方自动付款
   def fundProviderPayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
-    //todo 向数据库中插入一条记录
+    //向数据库中插入一条记录
     insertIntoCangPay(
       cmd.state.points(fundProviderUserId).value,           //src  - fundProviderUser
       cmd.state.points(traderUserId).value,                 //target - traderUser
@@ -127,21 +129,49 @@ object CangGraphJar extends Config {
 
 
   def traderPayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
-    //todo 向数据库中插入一条记录
-    Future{Map(traderPaying -> "yes")}
+    // 向数据库中插入一条记录
+    insertIntoCangPay(
+      cmd.state.points(traderUserId).value,                 //src  - traderUserId
+      cmd.state.guid,                                       //target - 流程所属者 financerId
+      BigDecimal(cmd.state.points(recommendAmount).value),
+      cmd.state.flowId,
+      traderPaySuccess
+    ) map { t =>
+      Map(traderPaying -> "yes")
+    }
   }
 
   def financerPayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
-    //todo 向数据库中插入一条记录
-    Future{Map(financerPaying -> "yes")}
+    // 向数据库中插入一条记录
+    insertIntoCangPay(
+      cmd.state.guid,                                       // src -  流程所属者 financerId
+      cmd.state.points(traderUserId).value,                 // target  - traderUserId
+      BigDecimal(cmd.state.points(repaymentAmount).value),
+      cmd.state.flowId,
+      financerPaySuccess
+    ) map { t =>
+      Map(financerPaying -> "yes")
+    }
   }
 
   def traderRepayingTask(cmd: CommandAutoTask): Future[Map[String, String]] = {
-    //todo 向数据库中插入一条记录
-    Future{Map(traderRepaying -> "yes")}
+
+    val total: BigDecimal =BigDecimal(cmd.state.points(recommendAmount).value) + (BigDecimal(cmd.state.points(recommendAmount).value) *
+      TimeUnit.MICROSECONDS.toDays(cmd.state.points(TraderAccountantConfirm).timestamp - cmd.state.points(fundProviderPaySuccess).timestamp) *
+      BigDecimal(cmd.state.points(fundProviderInterestRate).value)/365)
+
+    // 向数据库中插入一条记录
+    insertIntoCangPay(
+      cmd.state.points(traderUserId).value,                  //src - traderUserId
+      cmd.state.points(fundProviderUserId).value,                 // target  - traderUserId
+      total,
+      cmd.state.flowId,
+      traderRepaySuccess
+    ) map { t =>
+      Map(traderRepaying -> "yes")
+    }
+   // Future{Map(traderRepaying -> "yes")}
   }
-
-
 }
 
 
