@@ -20,8 +20,8 @@ var status = [
     {name : 'financingStep16', displayName:'资金方审核通过,待资金方财务放款'},
     {name : 'financingStep17', displayName:'资金方财务已放款,待贸易商确认收款,银行转账中'},
 
-    {name : 'financingStep20', displayName:'贸易商已自动确认收款,贸易商已自动打款给融资方, 待融资方确认收款,银行转账中'},
-    {name : 'financingStep21', displayName:'融资方已自动确认收款,融资放款阶段完成,待融资方回款'},
+    {name : 'financingStep18', displayName:'贸易商已自动确认收款,贸易商已自动打款给融资方, 待融资方确认收款,银行转账中'},
+    {name : 'financingStep19', displayName:'融资方已自动确认收款,融资放款阶段完成,待融资方回款'},
     {name : 'repaymentStep31', displayName:'融资方已回款,待贸易商放货'},
     {name : 'repaymentStep32', displayName:'贸易商已放货, 融资方部分回款已完成, 待港口放货确认'},
     {name : 'repaymentStep33', displayName:'贸易商已放货, 融资方全部回款已完成, 待港口放货确认'},
