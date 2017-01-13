@@ -555,6 +555,7 @@
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z144"></relationship>
     </object>
     <object type="LMREQUEST" id="z146">
+        <attribute name="body" type="string">[{"data":{"json":"{}"},"identifier":"com.luckymarmot.JSONDynamicValue"}]</attribute>
         <attribute name="uuid" type="string">2F16D50D-1CF9-432B-AEB4-6AB40A511BAF</attribute>
         <attribute name="url" type="string">http://127.0.0.1:9000/api/cang/deposits/123456?state=alreadyPaid\u2600amount=100</attribute>
         <attribute name="storecookies" type="bool">1</attribute>

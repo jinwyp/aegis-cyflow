@@ -320,6 +320,7 @@ var orderInfo = function () {
 
 
         inputDepositValue : 0,
+        inputDepositMemo : '',
         errorDepositValue : '',
         addNotifyDeposit       : function (event) {
             event.preventDefault();
@@ -329,14 +330,13 @@ var orderInfo = function () {
                 vm.errorDepositValue = true;
             } else {
                 var tempPaymentOrder = {
-                    depositValue : vm.inputDepositValue,
-                    paymentType  : orderService.paymentTypeKey.deposit,
-                    depositType  : 'notified',
-                    orderId      : orderId,
-                    orderNo      : vm.currentOrder.orderNo
+                    flowId      : orderId,
+                    expectedAmount : vm.inputDepositValue,
+                    state  : orderService.depositTypeKey.notified,
+                    memo  : vm.inputDepositMemo
                 }
 
-                orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
+                orderService.addNewDepositOrder(tempPaymentOrder).done(function (data) {
                     if (data.success) {
                         getOrderInfo()
                         $.notify("保存成功!", 'success');
@@ -349,13 +349,35 @@ var orderInfo = function () {
 
         inputPaymentOrderNo : '',
         errorPaymentOrderNo : '',
-        savePaymentOrder : function(id){
+        savePaymentOrder : function(depositOrder){
+
+
+            orderService.updateDepositOrderInfoById({
+                flowId : orderId,
+                state : orderService.depositTypeKey.alreadyPaid
+            }).done(function (data) {
+                if (data.success) {
+                    getOrderInfo()
+                    $.notify("保存成功!", 'success');
+                } else {
+                    console.log(data.error);
+                }
+            })
+
+        },
+
+        approveDepositOrder : function(depositOrder){
+
             vm.errorPaymentOrderNo = false;
 
-            if (!vm.inputPaymentOrderNo || vm.inputPaymentOrderNo.length < 10) {
+            if (!vm.inputPaymentOrderNo || vm.inputPaymentOrderNo.length < 5) {
                 vm.errorPaymentOrderNo = true;
             } else {
-                orderService.updatePaymentOrderInfoById(id, {paymentNo:vm.inputPaymentOrderNo, depositType:'alreadyPaid'}).done(function (data) {
+                orderService.updateDepositOrderInfoById({
+                    flowId : orderId,
+                    amount : vm.inputPaymentOrderNo,
+                    state : orderService.depositTypeKey.transferred
+                }).done(function (data) {
                     if (data.success) {
                         getOrderInfo()
                         $.notify("保存成功!", 'success');
@@ -396,6 +418,7 @@ var orderInfo = function () {
         orderService.getFinanceOrderInfoById(orderId).done(function (data) {
             if (data.success) {
                 vm.contractList = data.data.flowData.fileList;
+                vm.depositList = data.data.flowData.depositList;
                 vm.currentOrder = data.data;
 
                 upload()
