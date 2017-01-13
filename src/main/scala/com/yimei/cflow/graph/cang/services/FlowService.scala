@@ -1118,7 +1118,7 @@ object FlowService extends UserModelProtocol
     }
 
     def allflows(old: List[String], news: List[String]): Future[Result[List[CYData]]] = {
-      Future.sequence((old ::: news).distinct.map(t =>
+      Future.sequence((news ::: old).distinct.map(t =>
         cyDataCollection(t, classType, companyId, userId)
       )).map(t => Result(Some(t),meta = Some(PagerInfo(10, 1, 0, 1))))
     }
