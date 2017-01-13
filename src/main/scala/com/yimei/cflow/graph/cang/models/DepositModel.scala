@@ -11,7 +11,9 @@ import spray.json.{DefaultJsonProtocol, DeserializationException, JsString, JsVa
   */
 object DepositModel extends DefaultJsonProtocol {
   case class AddDeposit(flowId: String, expectedAmount: BigDecimal, state: String, memo: Option[String])
-
   implicit val AddDepositFormat = jsonFormat4(AddDeposit)
+
+  case class CompanyAuditQueryResponse(success: Boolean, error: Option[String])
+  implicit val CompanyAuditQueryResponseFormat = jsonFormat2(CompanyAuditQueryResponse)
 }
 
