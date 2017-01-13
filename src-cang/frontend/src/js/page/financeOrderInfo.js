@@ -92,98 +92,104 @@ var orderInfo = function () {
                     }
                 }
 
+                // 贸易商给出从资金方的贷款利率
+                console.log(vm.currentOrder.flowData.status,vm.action.a15Approved.statusAt );
+                if (vm.currentOrder.flowData.status === vm.action.a15Approved.statusAt){
 
-                // 贸易商 判断是否完成 融资方 港口 监管 上传文件
+                    vm.errorFundProviderInterestRate = false;
 
-
-                    if (vm.currentOrder.status === 'repaymentStep31'){
-
-                        // 贸易商 返还货物 并给港口上传货物文件
-
-                        vm.errorRedemptionAmount = false;
-                        vm.errorRedemptionReceiver = false;
-                        vm.errorRedemptionFileList = false;
-
-                        if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 ) {
-                            vm.errorRedemptionAmount = true;
-                            return ;
+                    if (!vm.inputFundProviderInterestRate) {
+                        vm.errorFundProviderInterestRate = true;
+                        return ;
+                    }else{
+                        additionalData = {
+                            "fundProviderInterestRate" : vm.inputFundProviderInterestRate
                         }
-                        if (!vm.inputRedemptionReceiver ||  vm.inputRedemptionReceiver.length < 2 ) {
-                            vm.errorRedemptionReceiver = true;
-                            return ;
-                        }
-                        if (vm.inputRedemptionFileList.length === 0 ) {
-                            vm.errorRedemptionFileList = true;
-                            return ;
-                        }
-
-
-                        var tempDelivery = {
-                            uploadFiles : [],
-                            redemptionAmount : vm.inputRedemptionAmount,
-                            receiver : vm.inputRedemptionReceiver,
-                            orderId      : orderId,
-                            orderNo      : vm.currentOrder.orderNo
-                        }
-
-                        additionalData.fileList = []
-                        additionalData.redemptionAmount = vm.inputRedemptionAmount
-                        additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
-
-                        vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                            tempDelivery.uploadFiles.push(file.fileId)
-                            additionalData.fileList.push(file.fileId)
-                        })
-
-
-
-                        orderService.addNewDelivery(tempDelivery).done(function (data) {
-                            if (data.success) {
-                                getOrderInfo()
-                                $.notify("保存成功!", 'success');
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
-
-
                     }
-
-                }else{
-
-
                 }
 
+
+                if (vm.currentOrder.flowData.status === 'repaymentStep31'){
+
+                    // 贸易商 返还货物 并给港口上传货物文件
+
+                    vm.errorRedemptionAmount = false;
+                    vm.errorRedemptionReceiver = false;
+                    vm.errorRedemptionFileList = false;
+
+                    if (!vm.inputRedemptionAmount || vm.inputRedemptionAmount < 10 ) {
+                        vm.errorRedemptionAmount = true;
+                        return ;
+                    }
+                    if (!vm.inputRedemptionReceiver ||  vm.inputRedemptionReceiver.length < 2 ) {
+                        vm.errorRedemptionReceiver = true;
+                        return ;
+                    }
+                    if (vm.inputRedemptionFileList.length === 0 ) {
+                        vm.errorRedemptionFileList = true;
+                        return ;
+                    }
+
+
+                    var tempDelivery = {
+                        uploadFiles : [],
+                        redemptionAmount : vm.inputRedemptionAmount,
+                        receiver : vm.inputRedemptionReceiver,
+                        orderId      : orderId,
+                        orderNo      : vm.currentOrder.orderNo
+                    }
+
+                    additionalData.fileList = []
+                    additionalData.redemptionAmount = vm.inputRedemptionAmount
+                    additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
+
+                    vm.inputRedemptionFileList.forEach(function(file, fileIndex){
+                        tempDelivery.uploadFiles.push(file.fileId)
+                        additionalData.fileList.push(file.fileId)
+                    })
+
+
+
+                    orderService.addNewDelivery(tempDelivery).done(function (data) {
+                        if (data.success) {
+                            getOrderInfo()
+                            $.notify("保存成功!", 'success');
+                        } else {
+                            console.log(data.error);
+                        }
+                    })
+
+
+            }
+
+            }
 
 
 
             // 融资方 港口 监管 上传文件
             if (sessionUserRole === vm.role.financer || sessionUserRole === vm.role.harbor || sessionUserRole === vm.role.supervisor){
-                additionalData.fileList = uploadFileList;
+                additionalData.fileList = uploadFileList.map(function(file, fileIndex){
+                    return file.fileId
+                });
             }
+
+
 
             if (sessionUserRole === vm.role.harbor){
 
                 // 港口确认货物
-                if (vm.currentOrder.status === 'financingStep12'){
+                if (vm.currentOrder.flowData.status === vm.action.a13FinishedUpload.statusAt){
                     vm.errorHarborConfirmAmount = false;
 
-                    if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 100) {
+                    if (!vm.inputHarborConfirmAmount || vm.inputHarborConfirmAmount < 10) {
                         vm.errorHarborConfirmAmount = true;
                         return ;
                     } else {
                         additionalData.harborConfirmAmount =  vm.inputHarborConfirmAmount
-
-                        orderService.updateFinanceOrderInfoById(orderId, { harborConfirmAmount : vm.inputHarborConfirmAmount }).done(function (data) {
-                            if (data.success) {
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
                     }
                 }
 
-                if (vm.currentOrder.status === 'repaymentStep32' || vm.currentOrder.status === 'repaymentStep33'){
+                if (vm.currentOrder.flowData.status === 'repaymentStep32' || vm.currentOrder.flowData.status === 'repaymentStep33'){
                     additionalData.redemptionAmountDeliveryId = tempDeliveryId
 
                     if (tempDeliveryId){
@@ -195,14 +201,13 @@ var orderInfo = function () {
                         })
                     }
                 }
-
             }
 
 
             // 贸易商财务 给出具体放款金额
             if (sessionUserRole === vm.role.traderAccountant){
 
-                if (vm.currentOrder.status === 'financingStep18'){
+                if (vm.currentOrder.flowData.status === vm.action.a16traderRecommendAmount.statusAt){
                     vm.errorActualLoanValue = false;
 
                     if (!vm.inputActualLoanValue || vm.inputActualLoanValue < 10) {
@@ -210,15 +215,9 @@ var orderInfo = function () {
                         return ;
                     } else {
                         additionalData.loanValue = vm.inputActualLoanValue
-
-                        orderService.updateFinanceOrderInfoById(orderId, {loanValue:vm.inputActualLoanValue}).done(function (data) {
-                            if (data.success) {
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
                     }
                 }
+                console.log(additionalData, vm.currentOrder.currentSessionUserTaskTaskName)
             }
 
 
@@ -227,7 +226,7 @@ var orderInfo = function () {
                 // 融资方 还款金额
 
                 // 融资方 还款金额
-                if (vm.currentOrder.status === 'financingStep12'){
+                if (vm.currentOrder.flowData.status === 'financingStep12'){
 
                 }else{
                     vm.errorRepaymentValue = false;
@@ -276,7 +275,7 @@ var orderInfo = function () {
 
         getFile : function (event, file) {
             event.preventDefault();
-            orderService.getContractById(file._id);
+            orderService.getFileById(file.fileId);
         },
         deleteFile : function (event, file) {
             event.preventDefault();
@@ -289,7 +288,7 @@ var orderInfo = function () {
 
         contractFilter : function (el, i, role) {
             // console.log(el, i,role)
-            return el.contractUserType === role
+            return el.role === role
         },
 
         userListFilter : function (el, i, role) {
@@ -323,6 +322,7 @@ var orderInfo = function () {
 
 
         inputDepositValue : 0,
+        inputDepositMemo : '',
         errorDepositValue : '',
         addNotifyDeposit       : function (event) {
             event.preventDefault();
@@ -332,14 +332,13 @@ var orderInfo = function () {
                 vm.errorDepositValue = true;
             } else {
                 var tempPaymentOrder = {
-                    depositValue : vm.inputDepositValue,
-                    paymentType  : orderService.paymentTypeKey.deposit,
-                    depositType  : 'notified',
-                    orderId      : orderId,
-                    orderNo      : vm.currentOrder.orderNo
+                    flowId      : orderId,
+                    expectedAmount : vm.inputDepositValue,
+                    state  : orderService.depositTypeKey.notified,
+                    memo  : vm.inputDepositMemo
                 }
 
-                orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
+                orderService.addNewDepositOrder(tempPaymentOrder).done(function (data) {
                     if (data.success) {
                         getOrderInfo()
                         $.notify("保存成功!", 'success');
@@ -352,13 +351,35 @@ var orderInfo = function () {
 
         inputPaymentOrderNo : '',
         errorPaymentOrderNo : '',
-        savePaymentOrder : function(id){
+        savePaymentOrder : function(depositOrder){
+
+
+            orderService.updateDepositOrderInfoById({
+                flowId : orderId,
+                state : orderService.depositTypeKey.alreadyPaid
+            }).done(function (data) {
+                if (data.success) {
+                    getOrderInfo()
+                    $.notify("保存成功!", 'success');
+                } else {
+                    console.log(data.error);
+                }
+            })
+
+        },
+
+        approveDepositOrder : function(depositOrder){
+
             vm.errorPaymentOrderNo = false;
 
-            if (!vm.inputPaymentOrderNo || vm.inputPaymentOrderNo.length < 10) {
+            if (!vm.inputPaymentOrderNo || vm.inputPaymentOrderNo.length < 5) {
                 vm.errorPaymentOrderNo = true;
             } else {
-                orderService.updatePaymentOrderInfoById(id, {paymentNo:vm.inputPaymentOrderNo, depositType:'alreadyPaid'}).done(function (data) {
+                orderService.updateDepositOrderInfoById({
+                    flowId : orderId,
+                    amount : vm.inputPaymentOrderNo,
+                    state : orderService.depositTypeKey.transferred
+                }).done(function (data) {
                     if (data.success) {
                         getOrderInfo()
                         $.notify("保存成功!", 'success');
@@ -368,6 +389,11 @@ var orderInfo = function () {
                 })
             }
         },
+
+
+        inputFundProviderInterestRate : 0,
+        errorFundProviderInterestRate : '',
+
 
         inputActualLoanValue : 0,
         errorActualLoanValue : '',
@@ -393,6 +419,8 @@ var orderInfo = function () {
     function getOrderInfo() {
         orderService.getFinanceOrderInfoById(orderId).done(function (data) {
             if (data.success) {
+                vm.contractList = data.data.flowData.fileList;
+                vm.depositList = data.data.flowData.depositList;
                 vm.currentOrder = data.data;
 
                 upload()
@@ -429,9 +457,8 @@ var orderInfo = function () {
         function uploadBeforeSend (block, data, headers) {
 
             jQuery.extend(data, {
-                orderId          : orderId,
-                contractUserType : sessionUserRole,
-                contractType     : vm.selectedContractType
+                role : sessionUserRole,
+                busiType     : vm.selectedContractType
             });
             jQuery.extend(headers, tokenHeaders);
         }
@@ -479,8 +506,9 @@ var orderInfo = function () {
 
             uploaderRedemptionFile.on('uploadSuccess', function (file, response) {
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,
@@ -501,9 +529,11 @@ var orderInfo = function () {
             uploader.on('uploadError', uploadError);
 
             uploader.on('uploadSuccess', function (file, response) {
+                console.log(response)
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,

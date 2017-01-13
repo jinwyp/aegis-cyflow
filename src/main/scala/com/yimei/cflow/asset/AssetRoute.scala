@@ -80,6 +80,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
 
         def insert(data:Map[String,String]): Future[FileObj] = {
           val path = data.get("path").get
+          val party = data.get("role")
           val busi_type = data.getOrElse("busi_type", "default")
           val description: String = data.getOrElse("description", "")
           val uuId = path.substring(0, 36)
@@ -87,11 +88,11 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
           val url = uuId.replace("-", "/") + "/" + originName
           val suffix = originName.substring(originName.lastIndexOf('.') + 1)
           val fileType = getFileType(suffix)
-          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", Some("gid"), Some(description), url, originName, None)
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party , Some(description), url, originName, None)
           val temp: Future[Int] = dbrun( assetClass.insertOrUpdate(assetEntity)) recover {
             case _ => throw BusinessException(s"$url 上传失败")
           }
-          temp.map(f=>FileObj(uuId, originName))
+          temp.map(f=>FileObj(uuId, originName,fileType,busi_type,party))
         }
         complete(for{
           r <- result
