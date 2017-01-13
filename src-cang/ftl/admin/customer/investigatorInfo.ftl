@@ -35,221 +35,117 @@
                         <table class="table table-hover">
                             <tr>
                                 <th class="text-right ">业务类型:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.orderType}}</td>
 
                                 <th class="text-right">业务编号:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.businessCode}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">融资方:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
 
                                 <th class="text-right">我方签约单位全称:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.ourContractCompany}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">融资金额(万元):</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.financingAmount}}</td>
 
                                 <th class="text-right">融资期限:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.financingPeriod}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">利率:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.interestRate}}</td>
 
                                 <th class="text-right">业务开展时间:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.businessStartTime}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">上游签约单位:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.upstreamContractCompany}}</td>
 
                                 <th class="text-right">下游签约单位:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.downstreamContractCompany}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">运输方:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.transportParty}}</td>
 
                                 <th class="text-right">中转港口全称:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.transitPort}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">质量检验单位:</th>
-                                <td>{{@currentOrder.orderType | typename}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.qualityInspectionUnit}}</td>
 
                                 <th class="text-right">数量检验单位:</th>
-                                <td>{{@currentOrder.orderNo}}</td>
+                                <td>{{@currentOrder.SPData.investigationInfo.quantityInspectionUnit}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">历史合作情况:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.historicalCooperationDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务主要信息:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.mainBusinessInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">货物流转:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.businessTransferInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务风险点:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.businessRiskPoint}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">履约信用及能力评估:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.performanceCreditAbilityEval}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">综合意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.finalConclusion}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">附件上传:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">是否需要补充材料说明:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">审核意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.orderType | typename}}</td>
+                                <td colspan="3">{{@currentOrder.SPData.investigationInfo.applyCompanyName}}</td>
                             </tr>
 
                         </table>
 
                     </div>
-                </div>
-            </div>
-
-
-            <!-- 动作按钮 -->
-            <div class="row" ms-if="@currentUser.role === @role.financer ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a12FinishedUpload.statusAt && !@currentOrder.statusChild1Financer" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
-                </div>
-
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a31FirstReturnMoney.statusAt" ms-click="doAction(@action.a31FirstReturnMoney.name)">{{@action.a31FirstReturnMoney.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a32SecondReturnMoney.statusAt" ms-click="doAction(@action.a32SecondReturnMoney.name)">{{@action.a32SecondReturnMoney.displayName}}</button>
-                </div>
-
-            <#--<div class="col-sm-2"><button type="button" class="mb-sm btn btn-danger">Success</button></div>-->
-            <#--<div class="col-sm-2"><button type="button" class="mb-sm btn btn-info">Success</button></div>-->
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.trader ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a15Approved.statusAt && @currentOrder.statusChild2Harbor && @currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>
-                </div>
-
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-info" ms-if="@currentOrder.status === @action.a32ReturnPortionCargo.statusAt" ms-click="doAction(@action.a32ReturnPortionCargo.name)">{{@action.a32ReturnPortionCargo.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a33ReturnAllCargo.statusAt" ms-click="doAction(@action.a33ReturnAllCargo.name)">{{@action.a33ReturnAllCargo.displayName}}</button>
-                </div>
-
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
-                </div>
-
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a36ReturnMoney.statusAt" ms-click="doAction(@action.a36ReturnMoney.name)">{{@action.a36ReturnMoney.displayName}}</button>
-                </div>
-
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.traderAccountant ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a17Approved.statusAt" ms-click="doAction(@action.a17Approved.name)">{{@action.a17Approved.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
-                </div>
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.harbor">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a13FinishedUpload.statusAt && !@currentOrder.statusChild2Harbor" ms-click="doAction(@action.a13FinishedUpload.name)">{{@action.a13FinishedUpload.displayName}}</button>
-                </div>
-
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a34ConfirmPortionCargo.statusAt" ms-click="doAction(@action.a34ConfirmPortionCargo.name)">{{@action.a34ConfirmPortionCargo.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a35ConfirmAllCargo.statusAt" ms-click="doAction(@action.a35ConfirmAllCargo.name)">{{@action.a35ConfirmAllCargo.displayName}}</button>
-                </div>
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.supervisor ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a14FinishedUpload.statusAt && !@currentOrder.statusChild3Supervisor" ms-click="doAction(@action.a14FinishedUpload.name)">{{@action.a14FinishedUpload.displayName}}</button>
-                </div>
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.fundProvider ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a18Approved.statusAt" ms-click="doAction(@action.a18Approved.name)">{{@action.a18Approved.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
-                </div>
-            </div>
-
-
-            <div class="row" ms-if="@currentUser.role === @role.fundProviderAccountant ">
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a20Approved.statusAt" ms-click="doAction(@action.a20Approved.name)">{{@action.a20Approved.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.status === @action.a22auto.statusAt" ms-click="doAction(@action.a22auto.name)">{{@action.a22auto.displayName}}</button>
                 </div>
             </div>
         </div>
