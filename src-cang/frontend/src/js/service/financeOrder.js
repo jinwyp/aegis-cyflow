@@ -82,6 +82,7 @@ actions.forEach(function (item, index){
 
 
 var contractType = {
+    default : '-',
     contract : '合同',
     finance  : '财务单据',
     business : '业务单据类(质量和数量单据, 运输单据, 货转证明)'
@@ -302,7 +303,7 @@ exports.updateDepositOrderInfoById = function (order){
 exports.getFileById = function (id, query){
     var params = jQuery.extend({}, query);
 
-    window.location = url.financeOrderList + '/file/' + id;
+    window.location = url.files + '/' + id;
 
 };
 
