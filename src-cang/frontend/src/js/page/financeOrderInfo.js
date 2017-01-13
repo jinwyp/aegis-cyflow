@@ -168,7 +168,9 @@ var orderInfo = function () {
 
             // 融资方 港口 监管 上传文件
             if (sessionUserRole === vm.role.financer || sessionUserRole === vm.role.harbor || sessionUserRole === vm.role.supervisor){
-                additionalData.fileList = uploadFileList;
+                additionalData.fileList = uploadFileList.map(function(file, fileIndex){
+                    return file.fileId
+                });
             }
 
 
@@ -273,7 +275,7 @@ var orderInfo = function () {
 
         getFile : function (event, file) {
             event.preventDefault();
-            orderService.getContractById(file._id);
+            orderService.getFileById(file.fileId);
         },
         deleteFile : function (event, file) {
             event.preventDefault();
@@ -455,9 +457,8 @@ var orderInfo = function () {
         function uploadBeforeSend (block, data, headers) {
 
             jQuery.extend(data, {
-                orderId          : orderId,
-                contractUserType : sessionUserRole,
-                contractType     : vm.selectedContractType
+                role : sessionUserRole,
+                busiType     : vm.selectedContractType
             });
             jQuery.extend(headers, tokenHeaders);
         }
@@ -505,8 +506,9 @@ var orderInfo = function () {
 
             uploaderRedemptionFile.on('uploadSuccess', function (file, response) {
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,
@@ -527,9 +529,11 @@ var orderInfo = function () {
             uploader.on('uploadError', uploadError);
 
             uploader.on('uploadSuccess', function (file, response) {
+                console.log(response)
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,
