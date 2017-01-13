@@ -2,9 +2,9 @@ package com.yimei.cflow.graph.cang.views
 
 import java.sql.Timestamp
 
-import spray.json.DefaultJsonProtocol
 import com.yimei.cflow.graph.cang.models.BaseFormatter._
-import com.yimei.cflow.graph.cang.models.CangFlowModel.{FileObj, TraffickerConfirmPayToFundProvider}
+import com.yimei.cflow.graph.cang.models.CangFlowModel.FileObj
+import spray.json.DefaultJsonProtocol
 
 object CangFlowView extends DefaultJsonProtocol {
 
@@ -181,9 +181,8 @@ object CangFlowView extends DefaultJsonProtocol {
                           coalType: String,                         //煤炭种类
                           coalIndex_NCV: Int,
                           coalIndex_RS: BigDecimal,
-                          coalIndex_ADV: BigDecimal,                //煤炭 热值,硫分,空干基挥发分
-                          status: Map[String, String])              //当前状态
-  implicit val customerListFormat = jsonFormat17(CustomerList)
+                          coalIndex_ADV: BigDecimal)                //煤炭 热值,硫分,空干基挥发分
+  implicit val customerListFormat = jsonFormat16(CustomerList)
 
   /** 港口列表 **/
   case class PortList(businessCode: String,                     //业务编号

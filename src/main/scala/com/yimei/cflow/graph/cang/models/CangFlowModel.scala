@@ -16,7 +16,7 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
-  case class StartFlowBasicInfo(applyUserId: String,                 //申请人-融资方 信息
+  case class StartFlowBasicInfo(applyUserId: String,               //申请人-融资方 信息
                                 applyUserName: Option[String],
                                 applyUserPhone: String,
                                 applyCompanyId: String,
