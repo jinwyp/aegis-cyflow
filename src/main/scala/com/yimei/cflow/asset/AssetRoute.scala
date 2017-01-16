@@ -1,14 +1,20 @@
 package com.yimei.cflow.asset
 
 import java.io.FileOutputStream
+import java.nio.file.Paths
+
 import com.yimei.cflow.config.CoreConfig._
+import akka.http.scaladsl.model.ContentTypes._
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{Multipart, StatusCodes}
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse, Multipart, StatusCodes}
 import akka.http.scaladsl.model.Multipart.FormData.BodyPart
+import akka.http.scaladsl.model.headers.ContentDispositionTypes
+import akka.http.scaladsl.model.headers.{ContentDispositionTypes, `Content-Disposition`}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import akka.stream.scaladsl.FileIO
 import akka.util.ByteString
 import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
 import com.yimei.cflow.api.util.DBUtils.dbrun
@@ -24,7 +30,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
 
   import driver.api._
 
-  val fileRootPath = coreConfig.getString("file.root")
+  val fileRootPath: String = coreConfig.getString("file.root")
 
   import java.io.File
 
@@ -38,11 +44,26 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
       val file: Future[AssetEntity] = dbrun(assetClass.filter(f => f.asset_id === id).result.head) recover {
         case _ => throw new DatabaseException("该文件不存在")
       }
-      val url = for {
-        f <- file
-      } yield f.url
-      getFromFile(new File(fileRootPath + url))
-      complete(StatusCodes.OK)
+//      val url: Future[String] = for {
+//        f <- file
+//      } yield f.url
+
+      onSuccess(file) { f=>
+
+        complete(
+          HttpResponse(
+            status = StatusCodes.OK,
+            headers = List(`Content-Disposition`(ContentDispositionTypes.attachment, Map("filename" -> f.origin_name))),
+            entity = HttpEntity(`application/octet-stream`, FileIO.fromPath(Paths.get(fileRootPath + f.url)))
+          )
+        )
+//        println(fileRootPath+f.url+"!!!!!!")
+//        val fl = new File(fileRootPath + f.url)
+//        getFromFile(fl)
+      }
+
+
+      //complete(StatusCodes.OK)
     }
   }
 
