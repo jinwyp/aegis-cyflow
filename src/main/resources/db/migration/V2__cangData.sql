@@ -54,7 +54,7 @@ VALUES
 --资金方公司
 INSERT INTO `party_instance` (`id`, `party_class`, `instance_id`, `party_name`, `disable`, `ts_c`)
 VALUES
-	(2, 'trader', '1868', 'B2B测试-郑州会员1', 0, '2017-01-15 19:59:11');
+	(2, 'fundProvider', '1868', 'B2B测试-郑州会员1', 0, '2017-01-15 19:59:11');
 
 --资金方业务和财务
 INSERT INTO `party_user` (`id`, `party_id`, `user_id`, `username`, `password`, `phone`, `email`, `name`, `disable`, `ts_c`)
