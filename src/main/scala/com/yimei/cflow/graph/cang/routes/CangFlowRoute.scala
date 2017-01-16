@@ -52,24 +52,28 @@ class CangFlowRoute extends AdminClient
         import com.yimei.cflow.graph.cang.services.LoginService
         val getExistUserInfo: Future[QueryUserResult] = LoginService.getUserInfo(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyUserId)
 
-        (for {
+        val result = (for {
           existUserInfo <- getExistUserInfo
         } yield existUserInfo.userInfo.id) recover {
           case _ => {
-            createPartyInstance(PartyInstanceInfo(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyCompanyName).toJson.toString)
-            val user = UserAddModel(startFlow.basicInfo.applyUserPhone, "111111", startFlow.basicInfo.applyUserName.getOrElse(""), "", startFlow.basicInfo.applyUserPhone, startFlow.basicInfo.applyCompanyId, rzf)
-            createPartyUser(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyUserId, user.toJson.toString)
-          }
+            for {
+              cpi <- createPartyInstance(PartyInstanceInfo(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyCompanyName).toJson.toString)
+            } yield {
+              val user = UserAddModel(startFlow.basicInfo.applyUserPhone, "123456", startFlow.basicInfo.applyUserName.getOrElse(""), "", startFlow.basicInfo.applyUserPhone, cpi.instanceId, rzf)
+              createPartyUser(rzf, startFlow.basicInfo.applyCompanyId, startFlow.basicInfo.applyUserId, user.toJson.toString)
+            }
+            }
         }
 
-        complete(createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
+        onSuccess(result){ r =>
+          complete(createFlow(rzf, startFlow.basicInfo.applyCompanyId.toString, startFlow.basicInfo.applyUserId.toString, flowType,
           Map(startPoint -> startFlow.toJson.toString,
             orderId -> startFlow.basicInfo.businessCode,
             traderUserId -> myfUserId,
             traderAccountantUserId -> myfFinanceId)
         ) map { c =>
           StartFlowResult(true)
-        })
+        })}
       }
     }
   }
