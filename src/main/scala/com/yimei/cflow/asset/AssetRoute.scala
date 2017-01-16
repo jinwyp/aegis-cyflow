@@ -14,7 +14,8 @@ import akka.http.scaladsl.model.headers.ContentDispositionTypes
 import akka.http.scaladsl.model.headers.{ContentDispositionTypes, `Content-Disposition`}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.scaladsl.FileIO
+import akka.stream.IOResult
+import akka.stream.scaladsl.{FileIO, Source}
 import akka.util.ByteString
 import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
 import com.yimei.cflow.api.util.DBUtils.dbrun
@@ -44,17 +45,26 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
       val file: Future[AssetEntity] = dbrun(assetClass.filter(f => f.asset_id === id).result.head) recover {
         case _ => throw new DatabaseException("该文件不存在")
       }
-//      val url: Future[String] = for {
-//        f <- file
-//      } yield f.url
 
-      onSuccess(file) { f=>
+      val content: Future[Source[ByteString, Future[IOResult]]] = file map {
+        f => FileIO.fromPath(Paths.get(fileRootPath + f.url))
+      }
+
+
+
+
+      val entry = for {
+        f <- file
+        c <- content
+      } yield (f,c)
+
+      onSuccess(entry) { (f: AssetEntity, c: Source[ByteString, Future[IOResult]]) =>
 
         complete(
           HttpResponse(
             status = StatusCodes.OK,
             headers = List(`Content-Disposition`(ContentDispositionTypes.attachment, Map("filename" -> f.origin_name))),
-            entity = HttpEntity(`application/octet-stream`, FileIO.fromPath(Paths.get(fileRootPath + f.url)))
+            entity = HttpEntity(`application/octet-stream`, c)
           )
         )
 //        println(fileRootPath+f.url+"!!!!!!")
