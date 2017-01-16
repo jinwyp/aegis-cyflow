@@ -561,7 +561,8 @@ object FlowService extends UserModelProtocol
     val financerUser: UserInfo = state.points.get(startPoint) match {
       case Some(data) =>
         val startFlow: StartFlow = data.value.parseJson.convertTo[StartFlow]
-        UserInfo(startFlow.basicInfo.applyUserId,
+        log.info("financerUser:{}",startFlow)
+        val temp = UserInfo(startFlow.basicInfo.applyUserId,
           startFlow.basicInfo.applyUserPhone,
           Some(startFlow.basicInfo.applyUserPhone),
           None,
@@ -569,6 +570,8 @@ object FlowService extends UserModelProtocol
           startFlow.basicInfo.applyCompanyName,
           startFlow.basicInfo.applyCompanyId
         )
+        log.info("financerUserFinished:{}",temp)
+        temp
       case _ => throw BusinessException("flowId:" + state.flowId + "没有初始数据")
     }
 
