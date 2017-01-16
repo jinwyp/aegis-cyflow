@@ -40,7 +40,7 @@ _auto_sprite.scss
 src/main/resources/templates/admin/dist
 src-cang/frontend/dist
 src-cang/frontend/src/js/page-temp-bundle
-src-cang/frontend/src/css/stylesheets
+#src-cang/frontend/src/css/stylesheets
 src-cang/frontend/src/testing/report
 
 
