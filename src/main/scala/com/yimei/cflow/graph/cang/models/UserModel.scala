@@ -39,8 +39,8 @@ object UserModel extends DefaultJsonProtocol {
   case class AdminDisableUser(id: Long)
   implicit val adminDisableUserFormat = jsonFormat1(AdminDisableUser)
 
-  case class AddCompany(companyName: String, companyId: String, partyClass: String)
-  implicit val addCompanyFormat = jsonFormat3(AddCompany)
+  case class AddCompany(companyName: String, partyClass: String)
+  implicit val addCompanyFormat = jsonFormat2(AddCompany)
 
   case class UpdateCompany(companyName: String)
   implicit val updateCompanyFormat = jsonFormat1(UpdateCompany)
