@@ -13,7 +13,6 @@ import akka.util.ByteString
 import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
 import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
-import com.yimei.cflow.config.CoreConfig
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.graph.cang.exception.BusinessException
