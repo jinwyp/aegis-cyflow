@@ -556,6 +556,7 @@ object FlowService extends UserModelProtocol
     * 填充用户信息
     */
   def fillCYPartyMember(state: FlowState): Future[CYPartyMember] = {
+    log.info("!!!!!!fillCYPartyMember!!!!!!!!! {}",state)
     //financer 数据
     val financerUser: UserInfo = state.points.get(startPoint) match {
       case Some(data) =>
@@ -656,6 +657,7 @@ object FlowService extends UserModelProtocol
     * 获得当前用户当前流程的任务
     */
   def getCurrentTasks(flowId: String, party_class: String, company_id: String, user_Id: String): Future[UserState] = {
+    log.info("!!!!!!!!!!getCurrentTasks!!!!!!!!")
     request[String, UserState](path = "api/internal/utask", pathVariables = Array(party_class, company_id, user_Id)) map { (ts: UserState) =>
       ts.copy(tasks = ts.tasks.filter(entry =>
         entry._2.flowId == flowId
@@ -677,6 +679,7 @@ object FlowService extends UserModelProtocol
     */
   def getDeliverys(flowId: String, cyPartyMember: CYPartyMember): Future[(Option[List[Delivery]], Option[BigDecimal])] = {
 
+    log.info("!!!!!!!getDeliverys!!!!!!")
     cyPartyMember.trader match {
       case Some(trader) =>
         request[String, Seq[FlowTaskEntity]](path = "api/internal/utask", pathVariables = Array(myf, trader.companyId, trader.userId),
@@ -748,6 +751,7 @@ object FlowService extends UserModelProtocol
     */
   def calculateInterest(flowId: String, cyPartyMember: CYPartyMember, interest: BigDecimal, state: FlowState): Future[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]])] = {
 
+    log.info("!!!!!!!!!!!!!!!!calculateInterest!!!!!!!!!")
     val financer = cyPartyMember.financer
 
     state.points.get(traderPaySuccess) match {
@@ -820,6 +824,7 @@ object FlowService extends UserModelProtocol
 
   //获取保证金金额记录
   def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter { dpt => dpt.flowId === flowId }.result) map { dplist =>
+    log.info("!!!!!!getDepositList!!!!")
     dplist.map { dp =>
       DepositRecord(expectedAmount = dp.expectedAmount,
         actuallyAmount = dp.actuallyAmount,
@@ -832,6 +837,7 @@ object FlowService extends UserModelProtocol
 
   //获取保证金总额
   def getDepositAmount(flowId: String): Future[BigDecimal] = {
+    log.info("!!!!!getDepositAmount!!!")
     getDepositList(flowId).map { list =>
       list.foldLeft(BigDecimal(0))((sum, dp) => sum + dp.actuallyAmount)
     }
@@ -942,6 +948,7 @@ object FlowService extends UserModelProtocol
   }
 
   private def getTaskInfo(us: UserState): (String, String) = {
+    log.info("!!!!!!!!!getTaskInfo!!!!!!!!!")
     val taskList: List[(String, CommandUserTask)] = us.tasks.toList
     taskList.length match {
       case 1 => (taskList(0)._1, taskList(0)._2.taskName)
