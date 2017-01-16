@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
+import akka.event.{Logging, LoggingAdapter}
 import akka.stream.ThrottleMode
 import akka.stream.scaladsl.Source
 import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, FlowQueryResponse, HijackEntity}
@@ -46,6 +47,8 @@ object FlowService extends UserModelProtocol
   with Config {
 
   import driver.api._
+  implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
+
 
   def genGuId(party_class: String, company_id: String, user_Id: String) = {
     party_class + "-" + company_id + "!" + user_Id
@@ -482,7 +485,7 @@ object FlowService extends UserModelProtocol
     state.points.get(startPoint) match {
       case Some(data) =>
         val startFlow: StartFlow = data.value.parseJson.convertTo[StartFlow]
-        SPData(
+        val temp = SPData(
           startFlow.basicInfo.financeCreateTime,
           startFlow.basicInfo.financeEndTime,
           "MYD",
@@ -500,6 +503,11 @@ object FlowService extends UserModelProtocol
           startFlow.investigationInfo,
           startFlow.supervisorInfo
         )
+
+        log.info("spData:{}",temp)
+
+        temp
+
       case _ => throw BusinessException("flowId:" + state.flowId + "没有初始数据")
 
     }
@@ -548,18 +556,22 @@ object FlowService extends UserModelProtocol
     * 填充用户信息
     */
   def fillCYPartyMember(state: FlowState): Future[CYPartyMember] = {
+    log.info("!!!!!!fillCYPartyMember!!!!!!!!! {}",state)
     //financer 数据
     val financerUser: UserInfo = state.points.get(startPoint) match {
       case Some(data) =>
         val startFlow: StartFlow = data.value.parseJson.convertTo[StartFlow]
-        UserInfo(startFlow.basicInfo.applyUserId,
+        log.info("financerUser:{}",startFlow)
+        val temp = UserInfo(startFlow.basicInfo.applyUserId,
           startFlow.basicInfo.applyUserPhone,
           Some(startFlow.basicInfo.applyUserPhone),
           None,
-          startFlow.basicInfo.applyUserName.get,
+          startFlow.basicInfo.applyUserName.getOrElse(""),
           startFlow.basicInfo.applyCompanyName,
           startFlow.basicInfo.applyCompanyId
         )
+        log.info("financerUserFinished:{}",temp)
+        temp
       case _ => throw BusinessException("flowId:" + state.flowId + "没有初始数据")
     }
 
@@ -648,6 +660,7 @@ object FlowService extends UserModelProtocol
     * 获得当前用户当前流程的任务
     */
   def getCurrentTasks(flowId: String, party_class: String, company_id: String, user_Id: String): Future[UserState] = {
+    log.info("!!!!!!!!!!getCurrentTasks!!!!!!!!")
     request[String, UserState](path = "api/internal/utask", pathVariables = Array(party_class, company_id, user_Id)) map { (ts: UserState) =>
       ts.copy(tasks = ts.tasks.filter(entry =>
         entry._2.flowId == flowId
@@ -657,7 +670,7 @@ object FlowService extends UserModelProtocol
 
 
   def getFileObjects(fileNames: List[String]): Future[Seq[FileObj]] = {
-
+    log.info("全部文件!!!!!{}",fileNames)
     getFiles(fileNames).map { sq =>
       sq.map(entity => FileObj(entity.asset_id, entity.origin_name, entity.file_type ,entity.busi_type,entity.gid))
     }
@@ -669,6 +682,7 @@ object FlowService extends UserModelProtocol
     */
   def getDeliverys(flowId: String, cyPartyMember: CYPartyMember): Future[(Option[List[Delivery]], Option[BigDecimal])] = {
 
+    log.info("!!!!!!!getDeliverys!!!!!!")
     cyPartyMember.trader match {
       case Some(trader) =>
         request[String, Seq[FlowTaskEntity]](path = "api/internal/utask", pathVariables = Array(myf, trader.companyId, trader.userId),
@@ -708,6 +722,7 @@ object FlowService extends UserModelProtocol
     * 获取流程中全部文件记录
     */
   def getFileList(state: FlowState): List[String] = {
+
     def getList(names: Option[DataPoint]): List[String] = {
       names match {
         case Some(d) => d.value.parseJson.convertTo[List[String]]
@@ -739,6 +754,7 @@ object FlowService extends UserModelProtocol
     */
   def calculateInterest(flowId: String, cyPartyMember: CYPartyMember, interest: BigDecimal, state: FlowState): Future[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[List[Repayment]])] = {
 
+    log.info("!!!!!!!!!!!!!!!!calculateInterest!!!!!!!!!")
     val financer = cyPartyMember.financer
 
     state.points.get(traderPaySuccess) match {
@@ -811,6 +827,7 @@ object FlowService extends UserModelProtocol
 
   //获取保证金金额记录
   def getDepositList(flowId: String): Future[List[DepositRecord]] = dbrun(deposit.filter { dpt => dpt.flowId === flowId }.result) map { dplist =>
+    log.info("!!!!!!getDepositList!!!!")
     dplist.map { dp =>
       DepositRecord(expectedAmount = dp.expectedAmount,
         actuallyAmount = dp.actuallyAmount,
@@ -823,6 +840,7 @@ object FlowService extends UserModelProtocol
 
   //获取保证金总额
   def getDepositAmount(flowId: String): Future[BigDecimal] = {
+    log.info("!!!!!getDepositAmount!!!")
     getDepositList(flowId).map { list =>
       list.foldLeft(BigDecimal(0))((sum, dp) => sum + dp.actuallyAmount)
     }
@@ -933,6 +951,7 @@ object FlowService extends UserModelProtocol
   }
 
   private def getTaskInfo(us: UserState): (String, String) = {
+    log.info("!!!!!!!!!getTaskInfo!!!!!!!!!")
     val taskList: List[(String, CommandUserTask)] = us.tasks.toList
     taskList.length match {
       case 1 => (taskList(0)._1, taskList(0)._2.taskName)
