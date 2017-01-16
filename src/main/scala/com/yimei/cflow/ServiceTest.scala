@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import com.yimei.cflow.api.services.ServiceProxy
+import com.yimei.cflow.asset.AssetRoute
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.config.{ApplicationConfig, MyExceptionHandler}
 import com.yimei.cflow.engine.graph.GraphLoader
@@ -16,6 +17,7 @@ import com.yimei.cflow.organ.routes._
 import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.TestClient
 import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.graph.cang.services.ScheduleTask._
 
 /**
   * Created by hary on 16/12/3.
@@ -25,8 +27,11 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
 //  implicit val testTimeout = coreTimeout
 //  implicit val testEc = coreExecutor
 
-//  drop
-  migrate
+
+
+ // drop
+//  migrate
+
 
   GraphLoader.loadall()
 
@@ -45,9 +50,10 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   //  }
 
   // 3> http
-  val base: Route = pathPrefix("api") {
+  val base: Route = pathPrefix("api" / "internal") {
     OrganRoute.route(proxy) ~
-      EngineRoute.route(proxy)
+      EngineRoute.route(proxy) ~
+      AssetRoute.route
   } ~
     new SwaggerService().route ~
     corsHandler(new SwaggerDocService(coreSystem).routes) ~
@@ -82,6 +88,7 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
   }
 
 //  implicit val mySystem = coreSystem // @todo fixme
+  coreSystem.actorOf(props = Props[CangSchedule], "citic-schedule")
 
   println(s"http is listening on ${coreConfig.getInt("http.port")}")
   Http().bindAndHandle(all, "0.0.0.0", coreConfig.getInt("http.port"))

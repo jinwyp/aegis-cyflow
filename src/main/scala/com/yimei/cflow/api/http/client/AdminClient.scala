@@ -14,7 +14,7 @@ import scala.concurrent.Future
 trait AdminClient extends ResultProtocol with UserProtocol  {
 
   def createFlow(party:String,instance_id:String,user_id:String,flowType:String,initdata:Map[String,String]): Future[FlowInstanceEntity] = {
-    sendRequest(path = "api/flow/user",paramters = Map("flowType"->flowType),pathVariables = Array(party,instance_id,user_id),
+    sendRequest(path = "api/internal/flow/user",paramters = Map("flowType"->flowType),pathVariables = Array(party,instance_id,user_id),
       method = "post",bodyEntity = Some(initdata.toJson.toString)) map { result =>
         result.parseJson.convertTo[FlowInstanceEntity]
 

@@ -19,9 +19,10 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, CompanyInfoQueryModel, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 import com.yimei.cflow.config.CoreConfig._
+
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -87,12 +88,20 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
-      val queryYimei = Promise[Boolean].success(true).future //todo
+      val queryYimei = Promise[Boolean].success(true).future
       for {
         qym <- queryYimei
       } yield {
         if(qym == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
       }
+
+      //已经调试通过，暂时先关闭对公司的是否开通资金账户的校验。todo
+//      val queryYimei: Future[CompanyAuditQueryResponse] = requestServer[String, CompanyAuditQueryResponse](path = "user/company/audit", paramters = Map("companyId" -> userInfo.companyId))
+//      for {
+//        qym <- queryYimei
+//      } yield {
+//        if(qym.success == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
+//      }
     }
 
 
@@ -111,7 +120,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       }
       case e: String if(e == zjfyw) => {
         for {
-          iyu <- isYimeiUser()
+          iyu <- isYimeiUser
           pie <- getExistCompany(zjf, userInfo.companyId)
           cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString) if iyu == true
           cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
@@ -125,20 +134,11 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
           cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
-      case e: String if(e == rzfyw) => {
+      case e: String if(e == rzf) => {
         for {
           iyu <- isYimeiUser
           pie <- getExistCompany(rzf, userInfo.companyId)
           cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
-          cug <- createUserGroup(pie.id.get.toString, 1.toString, cu.userId) if iyu == true
-        } yield cu
-      }
-      case e: String if(e == rzfcw) => {
-        for {
-          iyu <- isYimeiUser
-          pie <- getExistCompany(rzf, userInfo.companyId)
-          cu <- createPartyUser(rzf, pie.instanceId, userId, info.toJson.toString) if iyu == true
-          cug <- createUserGroup(pie.id.get.toString, 2.toString, cu.userId) if iyu == true
         } yield cu
       }
       case _ => {
@@ -151,17 +151,41 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield Result[State](data = Some(re), success = true)
   }
 
-  //管理员添加公司
-  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+  //管理员添加公司  : Future[Result[PartyInstanceEntity]]
+  def
+  adminAddCompany(companyInfo: AddCompany) = {
     log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
-    val formatter = new SimpleDateFormat("yyMMddhh")
-    def instanceId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
+    def getInstanceId: Future[String] = companyInfo.partyClass match {
+        case p: String if (p == zjfyw ||  p == zjfcw || p == rzf) => {
+          val queryModel = CompanyInfoQueryModel(companyInfo.companyName)
+          val getCompanyInfo: Future[CompanyInfoQueryResponse] = requestServer[CompanyInfoQueryModel, CompanyInfoQueryResponse](path = "user/company/info", method = "post", model = Some(queryModel))
 
-    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+          val instanceId = for {
+            r <- getCompanyInfo
+          } yield {
+            if (r.success == false)
+              throw BusinessException(r.message)
+            r.message
+          }
+          instanceId
+        }
+        case _ => {
+          val formatter = new SimpleDateFormat("yyMMddhh")
+          val instanceId: String = (formatter.format(new Date()).toInt + new Random().nextInt(75)).toString
+          Future.apply(instanceId)
+        }
+      }
+
+
+    def deal(instanceId: String): PartyInstanceInfo = {
+      PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+    }
 
     for {
-      re <- createPartyInstance(partyInstanceInfo.toJson.toString)
+      id <- getInstanceId
+      pii = deal(id)
+      re <- createPartyInstance(pii.toJson.toString)
     } yield Result(data = Some(re), success = true)
   }
 
@@ -323,19 +347,13 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
   }
 
   def getUserInfoByUsername(username: String): Future[UserData] = {
+    log.info(s"get into getUserInfoByUsername, username:${username}")
+
     def deal(ugi: UserGroupInfo): UserData = {
       val role = if(ugi.gid.isDefined && ugi.gid.get == "2") ugi.party + "Accountant" else ugi.party
       UserData(userId = ugi.userId, username = ugi.userName, email = ugi.email, phone = ugi.phone, role = role, companyId = ugi.instanceId, companyName = ugi.companyName)
     }
     getSpecificUserInfoByUsername(username) map { deal(_)}
-  }
-
-  //管理员查询用户列表
-  def adminGetUserList(party: String, instance_id: String, limit: Int, offset: Int): Future[Result[UserListEntity]] = {
-    log.info(s"get into method adminGetUserList, party:${party}, instance_id:${instance_id}")
-    for {
-      list <- getUserList(party, instance_id, limit, offset)
-    } yield Result(data = Some(list), success = true)
   }
 
   //管理员禁用用户

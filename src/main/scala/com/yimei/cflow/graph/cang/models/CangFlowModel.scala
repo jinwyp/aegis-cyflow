@@ -8,15 +8,15 @@ import spray.json.DefaultJsonProtocol
 
 object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
 
-  case class FileObj(id: String, originName: String, fileType:String = default )
-  implicit val fileObjFormat = jsonFormat3(FileObj)
+  case class FileObj(id: String, originName: String, fileType:Int, busiType:String = default, role:Option[String])
+  implicit val fileObjFormat = jsonFormat5(FileObj)
 
   case class StartFlowResult(success: Boolean)
   implicit val startFlowResultFormat = jsonFormat1(StartFlowResult)
 
   /** 进入仓押系统,初始化, 开始流程 **/
   /** 基本信息 **/
-  case class StartFlowBasicInfo(applyUserId: String,                 //申请人-融资方 信息
+  case class StartFlowBasicInfo(applyUserId: String,               //申请人-融资方 信息
                                 applyUserName: Option[String],
                                 applyUserPhone: String,
                                 applyCompanyId: String,
@@ -231,12 +231,13 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
   /**
     *保证金记录
     */
-  case class Deposit(amount:BigDecimal,                                 //保证金金额
-                     transactionNo:String,                                   //流水号
+  case class DepositRecord(expectedAmount:BigDecimal,                                 //保证金金额\
+                    actuallyAmount: BigDecimal,
+                     memo:String,                                   //流水号
                      status:String,                                     //保证金状态
                      ts_c: Timestamp                                    //创建时间
                     )
-  implicit val depositFormat = jsonFormat4(Deposit)
+  implicit val depositFormat = jsonFormat5(DepositRecord)
 
   /**
     * 还款交易记录
@@ -245,9 +246,10 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                        interestBearingCapital:BigDecimal,               //本次还款计息本金
                        nextInterestBearingCapital:BigDecimal,           //下次计息本金
                        days:Long,                                        //计息天数
-                       interest:BigDecimal                             //利息
+                       interest:BigDecimal,                             //利息
+                       transactionDate:Timestamp                        //交易时间
                       )
-  implicit val repaymentFormat = jsonFormat5(Repayment)
+  implicit val repaymentFormat = jsonFormat6(Repayment)
 
   /**
     *港口记录
@@ -276,12 +278,15 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                     returnValue:Option[BigDecimal],                       //已归还金额
                     redemptionAmountLeft:Option[BigDecimal],              //待赎回吨数
                     repaymentValue:Option[BigDecimal],                    //待还款
-                    depositList:Option[List[Deposit]],                    //保证金记录
+                    depositList:Option[List[DepositRecord]],                    //保证金记录
                     repaymentList:Option[List[Repayment]],                //还款交易记录
                     deliveryList:Option[List[Delivery]],                  //放货记录
-                    fileList:List[FileObj]                        //该流程对应全部文件
+                    fileList:List[FileObj],                        //该流程对应全部文件
+                    loanActualArrivalDate:Option[Timestamp],        //实际放款时间
+                    LastRepaymentDate:Option[Timestamp],            //实际结息时间
+                    totalInterest:Option[BigDecimal]                //总利息
                    )
-  implicit val flowDataFormat = jsonFormat15(FlowData)
+  implicit val flowDataFormat = jsonFormat18(FlowData)
 
 
   /**

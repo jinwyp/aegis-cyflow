@@ -53,12 +53,14 @@
                                 <table class="table table-striped table-bordered table-hover text-center">
                                     <tr>
                                         <td class="text-center">公司名称<br/>(全称)</td>
+                                        <td class="text-center">公司ID</td>
                                         <td class="text-center">用户类型</td>
                                         <td class="text-center">操作</td>
                                     </tr>
                                     <tr ms-for="(index, company) in @companyList">
 
                                         <td>{{ company.companyName || '--'}}</td>
+                                        <td>{{ company.companyId || '--'}}</td>
                                         <td>{{ company.partyClass | rolename}}</td>
 
                                         <td>

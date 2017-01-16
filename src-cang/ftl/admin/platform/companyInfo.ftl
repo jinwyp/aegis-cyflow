@@ -44,6 +44,7 @@
                             <div class="col-sm-5 help-block" ms-visible="@errorInputName.indexOf('inputCompanyName')>-1">{{@errorMessage.inputCompanyName}}</div>
                         </div>
 
+                        
                         <div class="form-group" ms-class="[@errorInputName.indexOf('inputPartyClass')>-1 && 'has-error' ]">
                             <label class="col-sm-2 control-label "><span class=" marginR">*</span>类型:</label>
                             <div class="col-sm-5">
