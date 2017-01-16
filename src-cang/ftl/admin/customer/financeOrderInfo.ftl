@@ -196,8 +196,8 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <th class="text-right">当前状态:{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</th>
-                                        <td>{{@currentOrder.flowData.status | statusname}} </td>
+                                        <th class="text-right">当前状态:</th>
+                                        <td>{{@currentOrder.flowData.status | statusname}} <br>{{@currentOrder.flowData.status}} / {{@currentOrder.currentSessionUserTaskTaskName}}</td>
                                     </tr>
 
 
@@ -321,10 +321,9 @@
                                 <table class="table table-hover table-striped table-bordered">
                                     <tr>
                                         <th>交易日期</th>
-                                        <th>交易流水号</th>
                                         <th>赎货还款金额(万元)</th>
-                                        <th>下次还款计息本金</th>
                                         <th>本次还款计息本金</th>
+                                        <th>下次还款计息本金</th>
                                         <th>利息计息天数</th>
                                         <th>利息 <br>(剩余本金 X 天 X 每日利息)</th>
                                         <th>付款方</th>
@@ -333,14 +332,13 @@
 
                                     <tr ms-for="(index, paymentOrder) in @repaymentList">
                                         <td>{{ paymentOrder.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
-                                        <td>{{ paymentOrder.paymentNo || '--'}}</td>
-                                        <td>{{ paymentOrder.redemptionValue}}</td>
-                                        <td>{{ paymentOrder.leftPrincipalValue}}  </td>
-                                        <td>{{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}}  </td>
-                                        <td> 第 3 天 </td>
-                                        <td> {{ paymentOrder.leftPrincipalValue  + paymentOrder.redemptionValue}} x 3 x 0.1 / 360 </td>
-                                        <td> {{ @currentOrder.cyPartyMember.financer.username}} </td>
-                                        <td> {{ @currentOrder.traderUser.username}}  </td>
+                                        <td>{{ paymentOrder.repaymentValue}}</td>
+                                        <td>{{ paymentOrder.interestBearingCapital  }}  </td>
+                                        <td>{{ paymentOrder.nextInterestBearingCapital}}  </td>
+                                        <td>{{ paymentOrder.days}}  </td>
+                                        <td>{{ paymentOrder.interest }}  </td>
+                                        <td>{{ @currentOrder.cyPartyMember.financer.companyName}} -  {{ @currentOrder.cyPartyMember.financer.phone}} </td>
+                                        <td>{{ @currentOrder.cyPartyMember.trader.companyName}} - {{ @currentOrder.cyPartyMember.trader.userName}}  </td>
                                     </tr>
                                 </table>
 
@@ -360,18 +358,18 @@
                                         <th>放货数量（吨）</th>
                                         <th>放货方</th>
                                         <th>收货方</th>
-                                        <th>港口确认放货时间</th>
+                                        <#--<th>港口确认放货时间</th>-->
                                         <th>查看放货文件</th>
                                     </tr>
 
                                     <tr ms-for="(index, delivery) in @deliveryList">
-                                        <td>{{ delivery.createdAt | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
+                                        <td>{{ delivery.deliveryTime | date("yyyy-MM-dd:HH:mm:ss ") }}</td>
                                         <td>{{ delivery.redemptionAmount}}</td>
-                                        <td> {{ @currentOrder.traderUser.username}} </td>
-                                        <td> {{ delivery.receiver || '' }}  </td>
-                                        <td> <span ms-visible="delivery.confirmDate"> {{ delivery.confirmDate | date("yyyy-MM-dd:HH:mm:ss ")}}  </span> </td>
+                                        <td> {{ @currentOrder.cyPartyMember.trader.companyName}} - {{ @currentOrder.cyPartyMember.trader.userName}} </td>
+                                        <td> {{ delivery.goodsReceiveCompanyName || '' }}  </td>
+                                        <#--<td> <span ms-visible="delivery.confirmDate"> {{ delivery.confirmDate | date("yyyy-MM-dd:HH:mm:ss ")}}  </span> </td>-->
                                         <td>
-                                            <a class="" ms-for="(index, file) in delivery.fileList" ms-click="@getFile($event, file)">{{file.originalFileName}}<br> </a>
+                                            <a  ms-for="(index, file) in delivery.fileList" ms-click="@getFile($event, file)">{{file.originName}}<br> </a>
                                         </td>
                                     </tr>
                                 </table>
@@ -401,7 +399,7 @@
                                     <tr>
                                         <th class="text-right contract-table">港口方合同及单据:</th>
                                         <td>
-                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.harbor)" ms-click="@getFile($event, contract)">{{contract.originalFileName}}</a>
+                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.harbor)" ms-click="@getFile($event, contract)">{{contract.originName}}</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -409,7 +407,7 @@
                                     <tr>
                                         <th class="text-right contract-table">监管方合同及单据:</th>
                                         <td>
-                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.supervisor)" ms-click="@getFile($event, contract)">{{contract.originalFileName}}</a>
+                                            <a class="" ms-for="(index, contract) in @contractList | filterBy(@contractFilter, @role.supervisor)" ms-click="@getFile($event, contract)">{{contract.originName}}</a>
                                         </td>
                                     </tr>
                                 </table>
@@ -419,7 +417,7 @@
 
 
                     <!-- 融资方, 港口 与 监管 上传合同-->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskId || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskId ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.financer && @currentOrder.currentSessionUserTaskTaskName === @action.a12FinishedUpload.name  || @currentUser.role === @role.harbor && @currentOrder.currentSessionUserTaskTaskName === @action.a13FinishedUpload.name || @currentUser.role === @role.supervisor && @currentOrder.currentSessionUserTaskTaskName === @action.a14FinishedUpload.name ">
                         <div class="panel-heading">上传合同及单据</div>
                         <div class="panel-body upload-box">
                             <table class="table table-hover">
@@ -589,7 +587,7 @@
 
 
                     <!-- 融资方还款 -->
-                    <div class="panel panel-info" ms-if="@currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt || @currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" >
+                    <div class="panel panel-info" ms-if=" @currentUser.role === @role.financer && @currentOrder.flowData.status === @action.a19SecondReturnMoney.statusAt" >
                         <div class="panel-heading">融资方还款: </div>
                         <div class="panel-body">
                             <form class="form-horizontal" novalidate>
@@ -611,7 +609,7 @@
 
 
                     <!-- 贸易方 输入放货数量 和 上传港口放货文件合同 -->
-                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.trader && @currentOrder.flowData.status === 'repaymentStep31' && @isNeedDelivery ">
+                    <div class="panel panel-info" ms-visible="@currentUser.role === @role.trader && @currentOrder.flowData.status === 'repaymentStep21'">
                         <div class="panel-heading">贸易商返还货物信息</div>
 
                         <div class="panel-body">
@@ -673,11 +671,14 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a12FinishedUpload.statusAt && @currentOrder.currentSessionUserTaskId" ms-click="doAction(@action.a12FinishedUpload.name)">{{@action.a12FinishedUpload.displayName}}</button>
                         </div>
 
+                        <!--
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a31FirstReturnMoney.statusAt" ms-click="doAction(@action.a31FirstReturnMoney.name)">{{@action.a31FirstReturnMoney.displayName}}</button>
                         </div>
+                        -->
+
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a32SecondReturnMoney.statusAt" ms-click="doAction(@action.a32SecondReturnMoney.name)">{{@action.a32SecondReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a19SecondReturnMoney.statusAt" ms-click="doAction(@action.a19SecondReturnMoney.name)">{{@action.a19SecondReturnMoney.displayName}}</button>
                         </div>
 
                         <#--<div class="col-sm-2"><button type="button" class="mb-sm btn btn-danger">Success</button></div>-->
@@ -688,31 +689,29 @@
                     <div class="row" ms-if="@currentUser.role === @role.trader ">
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a11SelectHarborAndSupervisor.statusAt" ms-click="doAction(@action.a11SelectHarborAndSupervisor.name)">{{@action.a11SelectHarborAndSupervisor.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name)">{{@action.a15Approved.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a16NotApproved.statusAt" ms-click="doAction(@action.a16NotApproved.name)">{{@action.a16NotApproved.displayName}}</button>
-                        </div>
 
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-info" ms-if="@currentOrder.flowData.status === @action.a32ReturnPortionCargo.statusAt" ms-click="doAction(@action.a32ReturnPortionCargo.name)">{{@action.a32ReturnPortionCargo.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a33ReturnAllCargo.statusAt" ms-click="doAction(@action.a33ReturnAllCargo.name)">{{@action.a33ReturnAllCargo.displayName}}</button>
-                        </div>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a20noticeHarborRelease.statusAt" ms-click="doAction(@action.a20noticeHarborRelease.name)">{{@action.a20noticeHarborRelease.displayName}}</button>
 
-                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a23ReturnMoney.statusAt" ms-click="doAction(@action.a23ReturnMoney.name)">{{@action.a23ReturnMoney.displayName}}</button>
+
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Punishment.statusAt" ms-click="doAction(@action.a37Punishment.name)">{{@action.a37Punishment.displayName}}</button>
-                        </div>
-                        <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a38Punishment.statusAt" ms-click="doAction(@action.a38Punishment.name)">{{@action.a38Punishment.displayName}}</button>
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a36ReturnMoney.statusAt" ms-click="doAction(@action.a36ReturnMoney.name)">{{@action.a36ReturnMoney.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name, 1)">{{@action.a15Approved.displayName}}</button>
                         </div>
+                        <div class="col-sm-2">
+                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a15Approved.statusAt" ms-click="doAction(@action.a15Approved.name, 0)">审核不通过</button>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 0)">{{@action.a22traderAuditIfComplete.displayName}}</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22traderAuditIfComplete.statusAt" ms-click="doAction(@action.a22traderAuditIfComplete.name, 1)">确认回款全部完成</button>
+                        </div>
+
 
                     </div>
 
@@ -722,7 +721,7 @@
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a16traderRecommendAmount.statusAt" ms-click="doAction(@action.a16traderRecommendAmount.name)">{{@action.a16traderRecommendAmount.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a37Approved.statusAt" ms-click="doAction(@action.a37Approved.name)">{{@action.a37Approved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a24AccountantReturnMoney.statusAt" ms-click="doAction(@action.a24AccountantReturnMoney.name)">{{@action.a24AccountantReturnMoney.displayName}}</button>
                         </div>
                     </div>
 
@@ -733,11 +732,14 @@
                         </div>
 
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a34ConfirmPortionCargo.statusAt" ms-click="doAction(@action.a34ConfirmPortionCargo.name)">{{@action.a34ConfirmPortionCargo.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21harborRelease.statusAt" ms-click="doAction(@action.a21harborRelease.name)">{{@action.a21harborRelease.displayName}}</button>
                         </div>
+
+                        <!--
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a35ConfirmAllCargo.statusAt" ms-click="doAction(@action.a35ConfirmAllCargo.name)">{{@action.a35ConfirmAllCargo.displayName}}</button>
                         </div>
+                        -->
                     </div>
 
 
@@ -751,10 +753,10 @@
 
                     <div class="row" ms-if="@currentUser.role === @role.fundProvider ">
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name)">{{@action.a17fundProviderAudit.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name, 1)">{{@action.a17fundProviderAudit.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a19NotApproved.statusAt" ms-click="doAction(@action.a19NotApproved.name)">{{@action.a19NotApproved.displayName}}</button>
+                            <button type="button" class="mb-sm btn btn-danger" ms-if="@currentOrder.flowData.status === @action.a17fundProviderAudit.statusAt" ms-click="doAction(@action.a17fundProviderAudit.name, 0)">审核不通过</button>
                         </div>
                     </div>
 
@@ -762,19 +764,22 @@
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a18fundProviderAccountantAudit.statusAt" ms-click="doAction(@action.a18fundProviderAccountantAudit.name)">{{@action.a18fundProviderAccountantAudit.displayName}}</button>
                         </div>
+
+                        <!--
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a21auto.statusAt" ms-click="doAction(@action.a21auto.name)">{{@action.a21auto.displayName}}</button>
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="mb-sm btn btn-success" ms-if="@currentOrder.flowData.status === @action.a22auto.statusAt" ms-click="doAction(@action.a22auto.name)">{{@action.a22auto.displayName}}</button>
                         </div>
+                        -->
                     </div>
                 </div>
             </section>
 
 
 
-            <!-- Page footer-->
+            <!-- Page footer -->
             <#include "../common/footer.ftl" >
 
 </div>
