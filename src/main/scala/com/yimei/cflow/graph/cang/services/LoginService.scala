@@ -78,7 +78,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     val formatter = new SimpleDateFormat("yyMMddhh")
     def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
-    val password = "111111"
+    val password = "123456"
     def deal(info: AddUser) = {
       UserAddModel(info.username, password, info.name, info.email, info.phone, info.companyId, info.className)
     }
