@@ -51,7 +51,8 @@ object UserModel extends DefaultJsonProtocol {
   implicit val dataFormat = jsonFormat7(UserData)
   case class UserInfoList(datas: List[UserData], total: Int)
   implicit val UserInfoListFormat = jsonFormat2(UserInfoList)
-
+  case class CompanyInfoQueryModel(companyName: String)
+  implicit val CompanyInfoQueryModelFormat = jsonFormat1(CompanyInfoQueryModel)
 }
 
 
