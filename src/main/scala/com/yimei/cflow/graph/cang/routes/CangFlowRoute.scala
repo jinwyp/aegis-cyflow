@@ -129,7 +129,13 @@ class CangFlowRoute extends AdminClient
       val classType = session.party
       val userId = session.userId
       val companyId = session.instanceId
-      complete(getflowList(classType, companyId, userId))
+
+      complete(classType match {
+        case `rzf` => getFinancerList(companyId, userId)
+        case _     => getflowList(classType, companyId, userId)
+      })
+
+    //  complete(getflowList(classType, companyId, userId))
     }
   }
 
@@ -153,7 +159,7 @@ class CangFlowRoute extends AdminClient
             complete(submitA11(party_class, user_id, instance_id, tAssign))
           }
         //融资方上传文件或监管方上传文件
-        case `a14FinishedUpload` =>
+        case `a12FinishedUpload` | `a14FinishedUpload` =>
           entity(as[UploadContract]) { upload =>
             complete(submitA12AndA14(party_class, user_id, instance_id, action, upload))
           }
@@ -183,10 +189,10 @@ class CangFlowRoute extends AdminClient
             complete(submitA18(party_class, user_id, instance_id, action, accountantAduit))
           }
         //融资方确认还款
-        //            case `a19SecondReturnMoney` =>
-        //              entity(as[FinancerToTrader]) { repayment =>
-        //                complete(submitA19(party_class, user_id, instance_id, action, repayment))
-        //              }
+        case `a19SecondReturnMoney` =>
+          entity(as[FinancerToTrader]) { repayment =>
+            complete(submitA19(party_class, user_id, instance_id, action, repayment))
+        }
         //贸易商通知港口放货
         case `a20noticeHarborRelease` =>
           entity(as[TraffickerNoticePortReleaseGoods]) { release =>

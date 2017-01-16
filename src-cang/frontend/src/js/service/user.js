@@ -267,6 +267,7 @@ exports.addNewCompany = function (company){
 
     var params = jQuery.extend({
         companyName : '',
+        companyId : '',
         partyClass : ''
     }, company);
 

@@ -246,9 +246,10 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                        interestBearingCapital:BigDecimal,               //本次还款计息本金
                        nextInterestBearingCapital:BigDecimal,           //下次计息本金
                        days:Long,                                        //计息天数
-                       interest:BigDecimal                             //利息
+                       interest:BigDecimal,                             //利息
+                       transactionDate:Timestamp                        //交易时间
                       )
-  implicit val repaymentFormat = jsonFormat5(Repayment)
+  implicit val repaymentFormat = jsonFormat6(Repayment)
 
   /**
     *港口记录

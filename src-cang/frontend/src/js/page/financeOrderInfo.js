@@ -52,13 +52,20 @@ var orderInfo = function () {
             currentSessionUserTaskId : '',
             currentSessionUserTaskTaskName : '',
             cyPartyMember : {
-                financer : {}
+                financer : {},
+                trader : {
+                    companyName : '',
+                    userName : ''
+                }
             },
             flowData : {},
-            spData : {}
+            spData : {
+                investigationInfo : {},
+                supervisorInfo : {}
+            }
         },
 
-        doAction             : function (actionName) {
+        doAction             : function (actionName, status) {
             var additionalData = {};
 
             if (sessionUserRole === vm.role.trader) {
@@ -93,7 +100,6 @@ var orderInfo = function () {
                 }
 
                 // 贸易商给出从资金方的贷款利率
-                console.log(vm.currentOrder.flowData.status,vm.action.a15Approved.statusAt );
                 if (vm.currentOrder.flowData.status === vm.action.a15Approved.statusAt){
 
                     vm.errorFundProviderInterestRate = false;
@@ -105,13 +111,18 @@ var orderInfo = function () {
                         additionalData = {
                             "fundProviderInterestRate" : vm.inputFundProviderInterestRate
                         }
+
+                        if (status){
+                            additionalData.approvedStatus = 1
+                        }else{
+                            additionalData.approvedStatus = 0
+                        }
                     }
                 }
 
 
-                if (vm.currentOrder.flowData.status === 'repaymentStep31'){
-
-                    // 贸易商 返还货物 并给港口上传货物文件
+                // 贸易商 返还货物 并给港口上传货物文件
+                if (vm.currentOrder.flowData.status === vm.action.a20noticeHarborRelease.statusAt){
 
                     vm.errorRedemptionAmount = false;
                     vm.errorRedemptionReceiver = false;
@@ -130,37 +141,23 @@ var orderInfo = function () {
                         return ;
                     }
 
-
-                    var tempDelivery = {
-                        uploadFiles : [],
-                        redemptionAmount : vm.inputRedemptionAmount,
-                        receiver : vm.inputRedemptionReceiver,
-                        orderId      : orderId,
-                        orderNo      : vm.currentOrder.orderNo
-                    }
-
                     additionalData.fileList = []
                     additionalData.redemptionAmount = vm.inputRedemptionAmount
                     additionalData.goodsReceiveCompanyName = vm.inputRedemptionReceiver
 
                     vm.inputRedemptionFileList.forEach(function(file, fileIndex){
-                        tempDelivery.uploadFiles.push(file.fileId)
                         additionalData.fileList.push(file.fileId)
                     })
+                }
 
 
-
-                    orderService.addNewDelivery(tempDelivery).done(function (data) {
-                        if (data.success) {
-                            getOrderInfo()
-                            $.notify("保存成功!", 'success');
-                        } else {
-                            console.log(data.error);
-                        }
-                    })
-
-
-            }
+                if (vm.currentOrder.flowData.status === vm.action.a22traderAuditIfComplete.statusAt){
+                    if (status){
+                        additionalData.status = 1
+                    }else{
+                        additionalData.status = 0
+                    }
+                }
 
             }
 
@@ -168,7 +165,9 @@ var orderInfo = function () {
 
             // 融资方 港口 监管 上传文件
             if (sessionUserRole === vm.role.financer || sessionUserRole === vm.role.harbor || sessionUserRole === vm.role.supervisor){
-                additionalData.fileList = uploadFileList;
+                additionalData.fileList = uploadFileList.map(function(file, fileIndex){
+                    return file.fileId
+                });
             }
 
 
@@ -215,18 +214,25 @@ var orderInfo = function () {
                         additionalData.loanValue = vm.inputActualLoanValue
                     }
                 }
-                console.log(additionalData, vm.currentOrder.currentSessionUserTaskTaskName)
             }
+
+
+            // 资金方审核
+            if (vm.currentOrder.flowData.status === vm.action.a17fundProviderAudit.statusAt){
+
+                if (status){
+                    additionalData.approvedStatus = 1
+                }else{
+                    additionalData.approvedStatus = 0
+                }
+            }
+
 
 
             if (sessionUserRole === vm.role.financer){
 
                 // 融资方 还款金额
-
-                // 融资方 还款金额
-                if (vm.currentOrder.flowData.status === 'financingStep12'){
-
-                }else{
+                if (vm.currentOrder.flowData.status === vm.action.a19SecondReturnMoney.statusAt){
                     vm.errorRepaymentValue = false;
 
                     if (!vm.inputRepaymentValue || vm.inputRepaymentValue < 10) {
@@ -234,28 +240,7 @@ var orderInfo = function () {
                         return ;
 
                     } else {
-                        var tempLeftValue = vm.currentOrder.loanValue;
-
-                        vm.repaymentList.forEach(function(pay){
-                            tempLeftValue = tempLeftValue - pay.redemptionValue;
-                        })
-
-                        var tempPaymentOrder = {
-                            redemptionValue : vm.inputRepaymentValue,
-                            leftPrincipalValue : tempLeftValue - vm.inputRepaymentValue,
-                            paymentType  : orderService.paymentTypeKey.repayment,
-                            orderId      : orderId,
-                            orderNo      : vm.currentOrder.orderNo
-                        }
-
                         additionalData.repaymentValue = vm.inputRepaymentValue
-
-                        orderService.addNewPaymentOrder(tempPaymentOrder).done(function (data) {
-                            if (data.success) {
-                            } else {
-                                console.log(data.error);
-                            }
-                        })
                     }
                 }
 
@@ -273,7 +258,8 @@ var orderInfo = function () {
 
         getFile : function (event, file) {
             event.preventDefault();
-            orderService.getContractById(file._id);
+            console.log(file)
+            orderService.getFileById(file.id);
         },
         deleteFile : function (event, file) {
             event.preventDefault();
@@ -401,8 +387,11 @@ var orderInfo = function () {
         errorRepaymentValue : '',
 
         inputRedemptionAmount : 0,
+        inputRedemptionReceiver : '',
         inputRedemptionFileList : [],
         errorRedemptionAmount : '',
+        errorRedemptionReceiver : '',
+        errorRedemptionFileList : '',
         isNeedDelivery  : false,
         saveRedemptionAmount  : function (event) {
             event.preventDefault();
@@ -419,6 +408,8 @@ var orderInfo = function () {
             if (data.success) {
                 vm.contractList = data.data.flowData.fileList;
                 vm.depositList = data.data.flowData.depositList;
+                vm.repaymentList = data.data.flowData.repaymentList;
+                vm.deliveryList = data.data.flowData.deliveryList;
                 vm.currentOrder = data.data;
 
                 upload()
@@ -455,9 +446,8 @@ var orderInfo = function () {
         function uploadBeforeSend (block, data, headers) {
 
             jQuery.extend(data, {
-                orderId          : orderId,
-                contractUserType : sessionUserRole,
-                contractType     : vm.selectedContractType
+                role : sessionUserRole,
+                busiType     : vm.selectedContractType
             });
             jQuery.extend(headers, tokenHeaders);
         }
@@ -505,8 +495,9 @@ var orderInfo = function () {
 
             uploaderRedemptionFile.on('uploadSuccess', function (file, response) {
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,
@@ -527,9 +518,11 @@ var orderInfo = function () {
             uploader.on('uploadError', uploadError);
 
             uploader.on('uploadSuccess', function (file, response) {
+                console.log(response)
                 var tempFile = {
-                    fileId : response.data._id,
-                    path : response.data.fileId,
+                    fileId : response.id,
+                    busiType : response.busiType,
+                    originName : response.originName,
                     name : file.name,
                     ext  : file.ext,
                     size : file.size,
