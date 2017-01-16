@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
+import akka.event.{Logging, LoggingAdapter}
 import akka.stream.ThrottleMode
 import akka.stream.scaladsl.Source
 import com.yimei.cflow.api.http.models.AdminModel.{AdminProtocol, FlowQueryResponse, HijackEntity}
@@ -46,6 +47,8 @@ object FlowService extends UserModelProtocol
   with Config {
 
   import driver.api._
+  implicit val log: LoggingAdapter = Logging(coreSystem, getClass)
+
 
   def genGuId(party_class: String, company_id: String, user_Id: String) = {
     party_class + "-" + company_id + "!" + user_Id
@@ -482,7 +485,7 @@ object FlowService extends UserModelProtocol
     state.points.get(startPoint) match {
       case Some(data) =>
         val startFlow: StartFlow = data.value.parseJson.convertTo[StartFlow]
-        SPData(
+        val temp = SPData(
           startFlow.basicInfo.financeCreateTime,
           startFlow.basicInfo.financeEndTime,
           "MYD",
@@ -500,6 +503,11 @@ object FlowService extends UserModelProtocol
           startFlow.investigationInfo,
           startFlow.supervisorInfo
         )
+
+        log.info("spData:{}",temp)
+
+        temp
+
       case _ => throw BusinessException("flowId:" + state.flowId + "没有初始数据")
 
     }
@@ -657,7 +665,7 @@ object FlowService extends UserModelProtocol
 
 
   def getFileObjects(fileNames: List[String]): Future[Seq[FileObj]] = {
-
+    log.info("全部文件!!!!!{}",fileNames)
     getFiles(fileNames).map { sq =>
       sq.map(entity => FileObj(entity.asset_id, entity.origin_name, entity.file_type ,entity.busi_type,entity.gid))
     }
@@ -708,6 +716,7 @@ object FlowService extends UserModelProtocol
     * 获取流程中全部文件记录
     */
   def getFileList(state: FlowState): List[String] = {
+
     def getList(names: Option[DataPoint]): List[String] = {
       names match {
         case Some(d) => d.value.parseJson.convertTo[List[String]]
