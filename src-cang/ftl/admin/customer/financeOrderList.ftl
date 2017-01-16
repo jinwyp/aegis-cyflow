@@ -123,8 +123,8 @@
                                                 <td>{{ order.spData.stockPort || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
-                                                <td>{{ order.spData.interestRate || '--'}}</td>
-                                                <td>{{ order.flowData.totalInterest || '--'}}</td>
+                                                <td>{{ order.spData.interestRate }}</td>
+                                                <td>{{ order.flowData.totalInterest|number}}</td>
                                                 <td>{{ order.flowData.depositValue || '--'}}</td>
                                                 <td>{{ order.flowData.returnValue || '--'}}</td>
                                                 <td>{{ order.flowData.repaymentValue || '--'}}</td>
