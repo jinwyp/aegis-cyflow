@@ -109,7 +109,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       case e: String if(e == gkf) => {
         for {
           pie <- getExistCompany(gkf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString)
+          cu <- createPartyUser(gkf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == jgf) => {
