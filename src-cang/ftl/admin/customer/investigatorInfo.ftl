@@ -91,56 +91,49 @@
 
                             <tr>
                                 <th class="text-right ">历史合作情况:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.historicalCooperationDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务主要信息:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.mainBusinessInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">货物流转:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.businessTransferInfo}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">业务风险点:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.businessRiskPoint}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">履约信用及能力评估:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.performanceCreditAbilityEval}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">综合意见:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.investigationInfo.finalConclusion}}</td>
                             </tr>
 
-                            <tr>
-                                <th class="text-right ">附件上传:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.investigationInfo.applyCompanyName}}</td>
-                            </tr>
+                            <#--<tr>-->
+                                <#--<th class="text-right ">附件上传:</th>-->
+                                <#--&lt;#&ndash;<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>&ndash;&gt;-->
+                                <#--<td colspan="3">{{@currentOrder.spData.investigationInfo.applyCompanyName}}</td>-->
+                            <#--</tr>-->
 
                             <tr>
                                 <th class="text-right ">是否需要补充材料说明:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.investigationInfo.applyCompanyName}}</td>
+                                <td colspan="3">{{@currentOrder.spData.investigationInfo.supplyMaterialIntroduce}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">审核意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.investigationInfo.applyCompanyName}}</td>
+                                <td colspan="3">{{@currentOrder.spData.investigationInfo.approveState}}</td>
                             </tr>
 
                         </table>
