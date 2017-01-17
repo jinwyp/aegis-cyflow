@@ -783,7 +783,7 @@ object FlowService extends UserModelProtocol
                   case Some(data) =>
                     //本次还款金额
                     val repaymentValue = BigDecimal(data.value.toDouble)
-                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - latestPayDate) + 1
+                    val days: Long = TimeUnit.MICROSECONDS.toDays(data.timestamp - latestPayDate)
                     //把最近还款时间改成现在
                     latestPayDate = data.timestamp
                     val result = Repayment(
