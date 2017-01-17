@@ -89,7 +89,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
+                                                    <a class="btn" ms-class="order.currentSessionUserTaskId ? 'btn-info' : 'btn-primary' " ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '待办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -135,7 +135,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
+                                                    <a class="btn" ms-class="order.currentSessionUserTaskId ? 'btn-info' : 'btn-primary' " ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '待办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -159,7 +159,7 @@
                                                 <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
+                                                    <a class="btn" ms-class="order.currentSessionUserTaskId ? 'btn-info' : 'btn-primary' " ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '待办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -184,7 +184,7 @@
                                                 <td>{{ order.flowData.status | statusname}}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
+                                                    <a class="btn" ms-class="order.currentSessionUserTaskId ? 'btn-info' : 'btn-primary' " ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '待办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -226,7 +226,7 @@
                                                 <td>{{ order.flowData.status | statusname }}</td>
 
                                                 <td>
-                                                    <a class="btn btn-info" ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '代办' : '查看'}} </a>
+                                                    <a class="btn" ms-class="order.currentSessionUserTaskId ? 'btn-info' : 'btn-primary' " ms-attr="{href:'/warehouse/admin/home/finance/'+order.flowId}">{{ order.currentSessionUserTaskId ? '待办' : '查看'}} </a>
                                                 </td>
                                             </tr>
                                         </table>
