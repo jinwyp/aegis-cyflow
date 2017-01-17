@@ -71,7 +71,7 @@
                                                 <td class="text-center">待还金额<br/>(万元)</td>
                                                 <td class="text-center">资金成本<br/>(万元)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">代办</td>
+                                                <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -113,7 +113,7 @@
                                                 <td class="text-center">放款时间</td>
                                                 <td class="text-center">实际结息时间</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">代办</td>
+                                                <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -149,7 +149,7 @@
                                                 <td class="text-center">质押总数量<br/>(吨)</td>
                                                 <td class="text-center">实时库存<br/>(吨)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">代办</td>
+                                                <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -173,7 +173,7 @@
                                                 <td class="text-center">已赎回数量<br/>(吨)</td>
                                                 <td class="text-center">实时库存<br/>(吨)</td>
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">代办</td>
+                                                <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
@@ -207,7 +207,7 @@
                                                 <td class="text-center">待还金额<br/>(万元)</td>
 
                                                 <td class="text-center">业务状态</td>
-                                                <td class="text-center">代办</td>
+                                                <td class="text-center">操作</td>
                                             </tr>
                                             <tr ms-for="(index, order) in @orderList">
                                                 <td><a ms-attr="{href:'/warehouse/admin/home/finance/'+ order.flowId }" >{{ order.spData.businessCode || '--'}}</a></td>
