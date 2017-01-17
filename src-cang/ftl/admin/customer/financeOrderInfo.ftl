@@ -101,13 +101,13 @@
                                     </tr>
 
                                     <tr>
-                                        <th class="text-right">热值:</th>
+                                        <th class="text-right">热值(Qnet,ar):</th>
                                         <td>{{@currentOrder.spData.coalIndex_NCV || '--' }} </td>
 
-                                        <th class="text-right">收到基硫分:</th>
+                                        <th class="text-right">收到基硫分(Std):</th>
                                         <td>{{@currentOrder.spData.coalIndex_RS || '--' }} </td>
 
-                                        <th class="text-right">空干基挥发分:</th>
+                                        <th class="text-right">空干基挥发分(Vdaf):</th>
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
