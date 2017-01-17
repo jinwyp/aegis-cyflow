@@ -1,18 +1,21 @@
 package com.yimei.cflow.asset
 
 import java.io.FileOutputStream
-import com.yimei.cflow.config.CoreConfig._
 import java.util.UUID
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import akka.http.scaladsl.model.{Multipart, StatusCodes}
+import akka.http.scaladsl.model.Multipart
 import akka.http.scaladsl.model.Multipart.FormData.BodyPart
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server._
+import akka.http.scaladsl.server.directives.BasicDirectives.{extractSettings => _, pass => _}
+import akka.http.scaladsl.server.directives.CacheConditionDirectives.{conditional => _}
+import akka.http.scaladsl.server.directives.RouteDirectives.{complete => _, reject => _}
 import akka.util.ByteString
 import com.yimei.cflow.api.models.database.AssetDBModel.AssetEntity
 import com.yimei.cflow.api.util.DBUtils.dbrun
 import com.yimei.cflow.asset.db.AssetTable
+import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.config.DatabaseConfig._
 import com.yimei.cflow.exception.DatabaseException
 import com.yimei.cflow.graph.cang.exception.BusinessException
@@ -38,11 +41,11 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
       val file: Future[AssetEntity] = dbrun(assetClass.filter(f => f.asset_id === id).result.head) recover {
         case _ => throw new DatabaseException("该文件不存在")
       }
-      val url = for {
-        f <- file
-      } yield f.url
-      getFromFile(new File(fileRootPath + url))
-      complete(StatusCodes.OK)
+      onComplete(file) { f =>
+        val url = f.map(f => f.url).get
+        getFromFile(new File(fileRootPath + url))
+      }
+
     }
   }
 
@@ -77,7 +80,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
             .map(strict => data.name -> strict.entity.data.utf8String)
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
 
-        def insert(data:Map[String,String]): Future[FileObj] = {
+        def insert(data: Map[String, String]): Future[FileObj] = {
           val path = data.get("path").get
           val party = data.get("role")
           val busi_type = data.getOrElse("busi_type", "default")
@@ -87,13 +90,13 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
           val url = uuId.replace("-", "/") + "/" + originName
           val suffix = originName.substring(originName.lastIndexOf('.') + 1)
           val fileType = getFileType(suffix)
-          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party , Some(description), url, originName, None)
-          val temp: Future[Int] = dbrun( assetClass.insertOrUpdate(assetEntity)) recover {
+          val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party, Some(description), url, originName, None)
+          val temp: Future[Int] = dbrun(assetClass.insertOrUpdate(assetEntity)) recover {
             case _ => throw BusinessException(s"$url 上传失败")
           }
-          temp.map(f=>FileObj(uuId, originName,fileType,busi_type,party))
+          temp.map(f => FileObj(uuId, originName, fileType, busi_type, party))
         }
-        complete(for{
+        complete(for {
           r <- result
           i <- insert(r)
         } yield {
