@@ -808,7 +808,7 @@ object FlowService extends UserModelProtocol
               (Some(tt), Some(tt - curMoney), Some(curMoney), Some(repayments.toList))
             }
           case _ => Future {
-            (total, None, None, None)
+            (BigDecimal(total.value.toDouble), None, None, None)
           }
         }
       case _ => Future {
