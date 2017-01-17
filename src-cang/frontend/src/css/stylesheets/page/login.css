@@ -1,0 +1,9 @@
+@keyframes spin { from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); } }
+
+@-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); } }
+
+body { background-color: #ffffff; }
+
+.wd-xl { border: 1px solid #e4e4e4; }

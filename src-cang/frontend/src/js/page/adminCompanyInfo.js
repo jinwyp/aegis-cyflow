@@ -24,7 +24,6 @@ var companyInfo = function() {
         $id : 'companyAddController',
         currentCompany : {
             companyName : '',
-            companyId : '',
             partyClass : ''
         },
         traderList : [],
@@ -36,7 +35,6 @@ var companyInfo = function() {
 
         errorMessage : {
             inputCompanyName : '',
-            inputCompanyId : '',
             inputPartyClass:''
         },
         isMYSCWValid : false,
@@ -67,7 +65,6 @@ var companyInfo = function() {
 
                     var user = {
                         companyName : vm.currentCompany.companyName,
-                        companyId : vm.currentCompany.companyId,
                         partyClass : vm.currentCompany.partyClass
                     };
 

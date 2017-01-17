@@ -42,8 +42,8 @@ trait Config {
   val flowType = "cang"
 
   //初始化的用户UserId，贸易方，贸易方财务，管理员
-  val myfUserId = "trader-88888888!77777"
-  val myfFinanceId = "trader-88888888!88888"
+  val myfUserId = "trader-1822!77777"
+  val myfFinanceId = "trader-1822!88888"
   val adminId = "systemAdmin-00000000!00000"
 
   val zjfyw = "fundProvider"

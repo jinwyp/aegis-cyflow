@@ -19,10 +19,10 @@ import com.yimei.cflow.graph.cang.exception.BusinessException
 import scala.concurrent.{Await, Future, Promise}
 import scala.concurrent.duration.Duration
 import com.yimei.cflow.graph.cang.config.Config
-import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
+import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, CompanyInfoQueryModel, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 import com.yimei.cflow.config.CoreConfig._
-import com.yimei.cflow.graph.cang.models.DepositModel.CompanyAuditQueryResponse
+
 
 
 //import scala.concurrent.ExecutionContext.Implicits.global
@@ -78,7 +78,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     val formatter = new SimpleDateFormat("yyMMddhh")
     def userId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
 
-    val password = "111111"
+    val password = "123456"
     def deal(info: AddUser) = {
       UserAddModel(info.username, password, info.name, info.email, info.phone, info.companyId, info.className)
     }
@@ -88,7 +88,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
-      val queryYimei = Promise[Boolean].success(true).future 
+      val queryYimei = Promise[Boolean].success(true).future
       for {
         qym <- queryYimei
       } yield {
@@ -109,7 +109,7 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
       case e: String if(e == gkf) => {
         for {
           pie <- getExistCompany(gkf, userInfo.companyId)
-          cu <- createPartyUser(zjf, pie.instanceId, userId, info.toJson.toString)
+          cu <- createPartyUser(gkf, pie.instanceId, userId, info.toJson.toString)
         } yield cu
       }
       case e: String if(e == jgf) => {
@@ -151,17 +151,41 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
     } yield Result[State](data = Some(re), success = true)
   }
 
-  //管理员添加公司
-  def adminAddCompany(companyInfo: AddCompany): Future[Result[PartyInstanceEntity]] = {
+  //管理员添加公司  : Future[Result[PartyInstanceEntity]]
+  def
+  adminAddCompany(companyInfo: AddCompany) = {
     log.info(s"get into method adminAddCompany, companyName:${companyInfo.companyName}, partyClass:${companyInfo.partyClass}")
 
-//    val formatter = new SimpleDateFormat("yyMMddhh")
-//    def instanceId = (formatter.format(new Date()).toInt  + new Random().nextInt(75)).toString
+    def getInstanceId: Future[String] = companyInfo.partyClass match {
+        case p: String if (p == zjfyw ||  p == zjfcw || p == rzf) => {
+          val queryModel = CompanyInfoQueryModel(companyInfo.companyName)
+          val getCompanyInfo: Future[CompanyInfoQueryResponse] = requestServer[CompanyInfoQueryModel, CompanyInfoQueryResponse](path = "user/company/info", method = "post", model = Some(queryModel))
 
-    val partyInstanceInfo = PartyInstanceInfo(party = companyInfo.partyClass, instanceId = companyInfo.companyId, companyName = companyInfo.companyName)
+          val instanceId = for {
+            r <- getCompanyInfo
+          } yield {
+            if (r.success == false)
+              throw BusinessException(r.message)
+            r.message
+          }
+          instanceId
+        }
+        case _ => {
+          val formatter = new SimpleDateFormat("yyMMddhh")
+          val instanceId: String = (formatter.format(new Date()).toInt + new Random().nextInt(75)).toString
+          Future.apply(instanceId)
+        }
+      }
+
+
+    def deal(instanceId: String): PartyInstanceInfo = {
+      PartyInstanceInfo(party = companyInfo.partyClass, instanceId = instanceId, companyName = companyInfo.companyName)
+    }
 
     for {
-      re <- createPartyInstance(partyInstanceInfo.toJson.toString)
+      id <- getInstanceId
+      pii = deal(id)
+      re <- createPartyInstance(pii.toJson.toString)
     } yield Result(data = Some(re), success = true)
   }
 

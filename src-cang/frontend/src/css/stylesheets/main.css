@@ -1,0 +1,163 @@
+@charset "UTF-8";
+/*  avalon */
+.ms-controller { visibility: hidden; }
+
+@keyframes spin { from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); } }
+
+@-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); } }
+
+/*
+SCSS variables are information about icon's compiled state, stored under its original file name
+
+.icon-home {
+  width: $icon-home-width;
+}
+
+The large array-like variables contain all information about a single icon
+$icon-home: x y offset_x offset_y width height total_width total_height image_path;
+
+At the bottom of this section, we provide information about the spritesheet itself
+$spritesheet: width height image $spritesheet-sprites;
+*/
+/*
+The provided mixins are intended to be used with the array-like variables
+
+.icon-home {
+  @include sprite-width($icon-home);
+}
+
+.icon-email {
+  @include sprite($icon-email);
+}
+
+Example usage in HTML:
+
+`display: block` sprite:
+<div class="icon-home"></div>
+
+To change `display` (e.g. `display: inline-block;`), we suggest using a common CSS class:
+
+// CSS
+.icon {
+  display: inline-block;
+}
+
+// HTML
+<i class="icon icon-home"></i>
+*/
+/*
+The `sprites` mixin generates identical output to the CSS template
+  but can be overridden inside of SCSS
+
+@include sprites($spritesheet-sprites);
+*/
+/* 公用: layout 布局 --------------------------- */
+body { margin: 0; padding: 0; }
+
+@keyframes spin { from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); } }
+
+@-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); } }
+
+.topnavbar .navbar-header .navbar-brand .ym-header-logo { padding: 7px 0px; }
+
+.topnavbar .navbar-header .navbar-brand .ym-header-logo img { width: 100px; height: 40px; }
+
+.topnavbar .navbar-header .navbar-brand .ym-header-logo-collapsed img { width: 42px; height: 40px; }
+
+.modalPublic .modal { z-index: 999; }
+
+.modalPublic .modal-dialog { width: 420px; margin: 0 auto; }
+
+.modalPublic .modal-dialog .modal-content { margin-top: 190px; }
+
+.modalPublic .modal-dialog .modal-content .modal-header { background: #f7f7f7; height: 48px; border-top: 2px solid #01b7ec; padding: 12px 0 0 15px; }
+
+.modalPublic .modal-dialog .modal-content .modal-header .modal-title { font-size: 18px; }
+
+.modalPublic .modal-dialog .modal-content .modal-header .close { font-size: 21px; font-weight: bold; line-height: 1; color: #000; text-shadow: 0 1px 0 #fff; font-family: inherit; margin-right: 10px; }
+
+.modalPublic .modal-dialog .modal-content .modal-body { min-height: 230px; text-align: center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .modalInfo { text-align: center; font-size: 18px; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .tip { padding: 10px 0 0 0px; display: inline-block; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .tip em { font-style: normal; color: #ff8233; font-size: 12px; text-align: left; line-height: 20px; display: block; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .bg_img { width: 58px; height: 58px; display: inline-block; margin: 15px 0 20px 0; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .dustbin { background: url("/static/admin/css/images/modal/drop.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .attention { background: url("/static/admin/css/images/modal/attention.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .personNo { background: url("/static/admin/css/images/modal/personNo.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .personYes { background: url("/static/admin/css/images/modal/personYes.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .yes { background: url("/static/admin/css/images/modal/yes.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .question { background: url("/static/admin/css/images/modal/question.png") no-repeat center; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .autoClose { text-align: center; padding-top: 20px; font-size: 14px; color: #999; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .autoClose .color-red { color: #fd6e35; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .sucClose { text-align: center; padding-top: 20px; font-size: 14px; color: #333; }
+
+.modalPublic .modal-dialog .modal-content .modal-body .sucClose a.color-blue { color: #00b7ec; }
+
+.modalPublic .modal-dialog .buttons { padding-top: 30px; text-align: center; padding-bottom: 8px; }
+
+.modalPublic .modal-dialog .buttons .btn { outline: none; }
+
+.modalPublic .modal-dialog .buttons .cancel { width: 100px; background: #c7c7c7; color: #ffffff; }
+
+.modalPublic .modal-dialog .buttons .cancel:hover { background-color: #dad8d8; }
+
+.modalPublic .modal-dialog .buttons .confirm { min-width: 100px; background: #1fb8ea; color: #ffffff; margin-left: 15px; }
+
+.modalPublic .modal-dialog .buttons .confirm:hover { background-color: #4cc6ee; }
+
+.modalPublic .modal-dialog .buttons .ml0 { margin-left: 0px; }
+
+.pad-t20 { padding-top: 20px; }
+
+@keyframes spin { from { transform: scale(1) rotate(0deg); }
+  to { transform: scale(1) rotate(360deg); } }
+
+@-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); } }
+
+.table-pagination span { margin: 4px 1px; padding: 9px 9px; display: block; float: left; }
+
+.table-pagination .separator { padding: 2px; margin: 4px 5px; height: 18px; border-left: 2px solid #ccc; }
+
+.table-pagination .table-pagination-first { background: url("/static/admin/css/images/ui-icons_256x240.png") no-repeat -80px -160px; }
+
+.table-pagination .table-pagination-prev { background: url("/static/admin/css/images/ui-icons_256x240.png") no-repeat -48px -160px; }
+
+.table-pagination .table-pagination-next { background: url("/static/admin/css/images/ui-icons_256x240.png") no-repeat -32px -160px; }
+
+.table-pagination .table-pagination-last { background: url("/static/admin/css/images/ui-icons_256x240.png") no-repeat -64px -160px; }
+
+.table-pagination .table-pagination-input { margin: 0px 1px; padding: 0px; }
+
+.table-pagination .table-pagination-total { margin: 1px 1px; padding: 0px 3px; float: right; }
+
+.table-pagination .select { margin-left: 5px; margin-top: 2px; }
+
+.table-pagination .disabled { opacity: 0.35; }
+
+.webuploader-container { margin-top: 4px; position: relative; }
+
+.webuploader-element-invisible { position: absolute !important; clip: rect(1px 1px 1px 1px); /* IE6, IE7 */ clip: rect(1px, 1px, 1px, 1px); }
+
+.webuploader-pick { position: relative; display: inline-block; cursor: pointer; background: #00b7ee; padding: 6px 16px; color: #fff; text-align: center; border-radius: 3px; overflow: hidden; }
+
+.webuploader-pick-hover { background: #00a2d4; }
+
+.webuploader-pick-disable { opacity: 0.6; pointer-events: none; }
