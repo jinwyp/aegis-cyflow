@@ -77,19 +77,14 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
           case file:
             BodyPart if file.name == "file" =>
             val fileName = file.getFilename().get()
-            processFile(fileName, fileData)
-            Future("path" -> "OK")
-          case data: BodyPart => data.toStrict(1.seconds)
+            val path = processFile(fileName, fileData)
+            Future("path" -> path)
+          case data: BodyPart => data.toStrict(2.seconds)
             .map(strict => data.name -> strict.entity.data.utf8String)
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
-//        onComplete(result) { data =>
-        //          complete(insert(data.get))
-        //        }
-        //result.flatMap(_.get("path"))
         onComplete(result) { data =>
-          complete(data.map(d => d.get("path").get))
+          complete(insert(data.get))
         }
-
       }
     }
   }
@@ -121,14 +116,14 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
     else 0
   }
 
-  def processFile(fileOriginName: String, fileData: Multipart.FormData): Unit = {
+  private def processFile(fileOriginName: String, fileData: Multipart.FormData): String = {
     val uuId = UUID.randomUUID().toString
     val dirPath = uuId.replace("-", "/")
     val newDir = new File(fileRootPath + dirPath)
     newDir.mkdirs()
     val filePath = fileRootPath + dirPath + "/" + fileOriginName
     val fileOutput = new FileOutputStream(filePath)
-    fileData.parts.mapAsync(1) {
+    val res = fileData.parts.mapAsync(1) {
       bodyPart =>
         def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
           val byteArray: Array[Byte] = byteString.toArray
@@ -136,7 +131,9 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
           array ++ byteArray
         }
         bodyPart.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
-    }.runFold(0)(_ + _.length)
+    }.runFold(0)(_ + _.length) + "Hello"
+    val path = uuId + fileOriginName + "." + res
+    path.substring(0, path.lastIndexOf("."))
   }
 
 
