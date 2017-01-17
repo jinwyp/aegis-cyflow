@@ -51,62 +51,54 @@
 
                             <tr>
                                 <th class="text-right ">仓库地址:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.storageAddress}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">我方与港口的历史合作状况:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.historicalCooperationDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">经营及堆存状况:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.operatingStorageDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">保管及进出库流程规范程度:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.portStandardDegree}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">监管配合状况:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.supervisionCooperateDetail}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">监管方案:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.supervisionScheme}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">结论:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
                                 <td colspan="3">{{@currentOrder.spData.supervisorInfo.finalConclusion}}</td>
                             </tr>
 
-                            <tr>
-                                <th class="text-right ">附件上传:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.supervisorInfo.applyCompanyName}}</td>
-                            </tr>
+                            <#--<tr>-->
+                                <#--<th class="text-right ">附件上传:</th>-->
+                                <#--&lt;#&ndash;<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>&ndash;&gt;-->
+                                <#--<td colspan="3">{{@currentOrder.spData.supervisorInfo.applyCompanyName}}</td>-->
+                            <#--</tr>-->
 
                             <tr>
                                 <th class="text-right ">是否需要补充材料的说明:</th>
-                                <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.supervisorInfo.applyCompanyName}}</td>
+                                <td colspan="3">{{@currentOrder.spData.supervisorInfo.supplyMaterialIntroduce}}</td>
                             </tr>
 
                             <tr>
                                 <th class="text-right ">审核意见:</th>
                                 <#--<td colspan="3">费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段费附加赛的减肥了圣诞节福利卡时间段</td>-->
-                                <td colspan="3">{{@currentOrder.spData.supervisorInfo.applyCompanyName}}</td>
+                                <td colspan="3">{{@currentOrder.spData.supervisorInfo.approveState}}</td>
                             </tr>
 
                         </table>

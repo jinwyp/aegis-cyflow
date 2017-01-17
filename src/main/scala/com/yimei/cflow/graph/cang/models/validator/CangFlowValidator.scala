@@ -74,6 +74,9 @@ object CangFlowValidator {
         investigationInfo.transitPort.get.length as "中转港口字段长度" is between(1, 100)
         investigationInfo.transportParty.get.length as "中转方字段长度" is between(1, 100)
         investigationInfo.upstreamContractCompany.length as "上游签约单位名称字段长度" is between(1, 100)
+        investigationInfo.supplyMaterialIntroduce.get.length as "补充材料说明字段长度" is between(1, 5000)
+        investigationInfo.approveState as "审核状态" is notNull
+        investigationInfo.approveState.length as "审核状态字段长度" is between(1, 20)
     }
 
   /** 开始流程 - 监管报告信息 **/
@@ -89,6 +92,9 @@ object CangFlowValidator {
         supervisorInfo.portStandardDegree.get.length as "保管及进出口流程规范程度字段长度" is between(1, 5000)
         supervisorInfo.supervisionCooperateDetail.get.length as "监管配合情况字段长度" is between(1, 5000)
         supervisorInfo.supervisionScheme.get.length as "监管方案字段长度" is between(1, 5000)
+        supervisorInfo.supplyMaterialIntroduce.get.length as "补充材料说明字段长度" is between(1, 5000)
+        supervisorInfo.approveState as "审核状态" is notNull
+        supervisorInfo.approveState.length as "审核状态字段长度" is between(1, 20)
     }
 
   /** 贸易商选择 港口, 监管, 资金方 业务人员, 财务 **/

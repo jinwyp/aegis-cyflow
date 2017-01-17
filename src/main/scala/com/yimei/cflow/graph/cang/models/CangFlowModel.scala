@@ -57,8 +57,10 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                                         businessTransferInfo: Option[String],             //业务流转信息
                                         businessRiskPoint: Option[String],                //业务风险点
                                         performanceCreditAbilityEval: Option[String],     //履约信用及能力评估
-                                        finalConclusion: Option[String])                  //综合意见/最终结论
-  implicit val startFlowInvestigationInfoFormat = jsonFormat19(StartFlowInvestigationInfo)
+                                        finalConclusion: Option[String],                  //综合意见/最终结论
+                                        supplyMaterialIntroduce: Option[String],          //补充材料说明
+                                        approveState: String)                             //审核状态
+  implicit val startFlowInvestigationInfoFormat = jsonFormat21(StartFlowInvestigationInfo)
 
   /** 监管报告信息 **/
   case class StartFlowSupervisorInfo(storageLocation: Option[String],             //煤炭仓储地
@@ -69,8 +71,10 @@ object CangFlowModel extends DefaultJsonProtocol with UserProtocol with Config {
                                      portStandardDegree: Option[String],          //保管及进出口流程规范程度
                                      supervisionCooperateDetail: Option[String],  //监管配合情况
                                      supervisionScheme: Option[String],           //监管方案
-                                     finalConclusion: Option[String])             //最终结论/综合意见
-  implicit val startFlowSupervisorInfoFormat = jsonFormat9(StartFlowSupervisorInfo)
+                                     finalConclusion: Option[String],             //最终结论/综合意见
+                                     supplyMaterialIntroduce: Option[String],     //补充材料说明
+                                     approveState: String)                        //审核状态
+  implicit val startFlowSupervisorInfoFormat = jsonFormat11(StartFlowSupervisorInfo)
 
   case class StartFlow(basicInfo: StartFlowBasicInfo,
                        investigationInfo: StartFlowInvestigationInfo,

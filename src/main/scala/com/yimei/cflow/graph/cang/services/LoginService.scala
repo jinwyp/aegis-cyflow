@@ -22,6 +22,7 @@ import com.yimei.cflow.graph.cang.config.Config
 import com.yimei.cflow.graph.cang.models.UserModel.{AddCompany, AddUser, CompanyInfoQueryModel, UpdateSelf, UpdateUser, UserChangePwd, UserData, UserLogin}
 import com.yimei.cflow.graph.cang.session.{MySession, Session}
 import com.yimei.cflow.config.CoreConfig._
+import com.yimei.cflow.graph.cang.models.DepositModel.CompanyAuditQueryResponse
 
 
 
@@ -31,37 +32,6 @@ import com.yimei.cflow.config.CoreConfig._
   * Created by xl on 16/12/26.
   */
 object LoginService extends PartyClient with UserClient with Config with PartyModelProtocol {
-
-  //融资方进入仓压
-  def financeSideEnter(userId: String, companyId: String, userInfo: AddUser): String = {
-//    log.info(s"get into financeSideEnter method: userId: ${userId}, companyId: ${companyId}, companyName: ${userInfo.companyName}")
-//
-//    val exist: Future[Boolean] = for {
-//      qpi <- queryPartyInstance(rzf, companyId)
-//      cu <- createPartyUser(zjf, qpi.ins, userId, userInfo.toJson.toString)
-//    } yield { qpi.toList.length > 0 }
-//
-//    val p = Promise[String]()
-//
-//    def add(exitst: Boolean): Future[String] = {
-//      if(!exitst){
-//        for {
-//          cpi <- createPartyInstance(PartyInstanceInfo(rzf, companyId, userInfo.companyName).toJson.toString)
-//          cu <- createPartyUser(rzf, cpi.instanceId, userId, userInfo.toJson.toString)
-//        } yield {
-//          "success"
-//        }
-//      }else{
-//        p.success("exist").future
-//      }
-//    }
-//
-//    for {
-//      e <- exist
-//      result <- add(e)
-//    } yield result
-    "hehe"
-  }
 
   //添加用户
   def addUser(userInfo: AddUser): Future[Result[State]] = {
@@ -88,20 +58,20 @@ object LoginService extends PartyClient with UserClient with Config with PartyMo
 
     def isYimeiUser(): Future[Boolean] = {
       //调用aegis-service接口,判断该资金方是否注册易煤网，并开通资金账户
-      val queryYimei = Promise[Boolean].success(true).future
-      for {
-        qym <- queryYimei
-      } yield {
-        if(qym == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
-      }
-
-      //已经调试通过，暂时先关闭对公司的是否开通资金账户的校验。todo
-//      val queryYimei: Future[CompanyAuditQueryResponse] = requestServer[String, CompanyAuditQueryResponse](path = "user/company/audit", paramters = Map("companyId" -> userInfo.companyId))
+//      val queryYimei = Promise[Boolean].success(true).future
 //      for {
 //        qym <- queryYimei
 //      } yield {
-//        if(qym.success == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
+//        if(qym == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
 //      }
+
+      //已经调试通过，暂时先关闭对公司的是否开通资金账户的校验。
+      val queryYimei: Future[CompanyAuditQueryResponse] = requestServer[String, CompanyAuditQueryResponse](path = "user/company/audit", paramters = Map("companyId" -> userInfo.companyId))
+      for {
+        qym <- queryYimei
+      } yield {
+        if(qym.success == true) true else throw BusinessException("该公司没有注册易煤网，或者没有开通资金账户！")
+      }
     }
 
 
