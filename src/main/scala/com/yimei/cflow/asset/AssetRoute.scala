@@ -69,7 +69,6 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
     path("file") {
       entity(as[Multipart.FormData]) { fileData =>
         // 多个文件
-
         val result: Future[Map[String, String]] = fileData.parts.mapAsync[(String, String)](1) {
           case file:
             BodyPart if file.name == "file" =>
