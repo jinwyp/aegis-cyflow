@@ -44,12 +44,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
       }
       onComplete(file) { f =>
         val url = f.map(f => f.url).get
-        val newFile = new File(fileRootPath + url)
-        println(newFile.getName)
-        println(newFile.getName)
-        println(newFile.getName)
-        println(newFile.getName)
-        getFromFile(newFile)
+        getFromFile(new File(fileRootPath + url))
       }
     }
   }
@@ -87,7 +82,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
           val o = for {
             r <- result
-            i <- insert(r)
+            i <- insertDB(r)
           } yield i
             complete(o)
         }
@@ -106,7 +101,7 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
       fileData.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
   }
 
-  def insert(data: Map[String, String]): Future[FileObj] = {
+  def insertDB(data: Map[String, String]): Future[FileObj] = {
     val url = data.get("path").get
     val party = data.get("role")
     val busi_type = data.getOrElse("busi_type", "default")
