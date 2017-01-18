@@ -6,7 +6,7 @@ import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.DaemonMaster
 import com.yimei.cflow.engine.graph.GraphLoader
-import com.yimei.cflow.swagger.CorsSupport
+//import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
 import com.yimei.cflow.config.CoreConfig._
 import scala.sys.process._
@@ -14,7 +14,9 @@ import scala.sys.process._
 /**
   * Created by hary on 16/12/3.
   */
-object RegressionTestJar extends App with ApplicationConfig with CorsSupport {
+object RegressionTestJar extends App with ApplicationConfig
+ // with CorsSupport
+{
 
   implicit val testTimeout = coreTimeout
   implicit val testEc = coreExecutor

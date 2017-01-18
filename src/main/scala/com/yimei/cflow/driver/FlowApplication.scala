@@ -14,13 +14,15 @@ import com.yimei.cflow.graph.ying.YingGraph
 import com.yimei.cflow.http.{ResourceRoute, _}
 import com.yimei.cflow.organ.routes.{GroupRoute, UserRoute}
 import com.yimei.cflow.config.CoreConfig._
-import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
+//import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 
 
 /**
   * Created by hary on 16/12/2.
   */
-object FlowApplication extends App with ApplicationConfig with CorsSupport {
+object FlowApplication extends App with ApplicationConfig
+ // with CorsSupport
+{
 
   // 1> 注册流程类型
   FlowRegistry.register(flow_ying, YingGraph)
@@ -37,9 +39,9 @@ object FlowApplication extends App with ApplicationConfig with CorsSupport {
     GroupRoute.route ~
     TaskRoute.route(proxy) ~
     AutoRoute.route(proxy) ~
-    ResourceRoute.route(proxy) ~
-    new SwaggerService().route ~
-    corsHandler(new SwaggerDocService(coreSystem).routes)
+    ResourceRoute.route(proxy)
+//    new SwaggerService().route ~
+//    corsHandler(new SwaggerDocService(coreSystem).routes)
 
 //  implicit val mysystem = coreSystem // @todo fixme
   Http().bindAndHandle(routes, "0.0.0.0", coreConfig.getInt("http.port"))
