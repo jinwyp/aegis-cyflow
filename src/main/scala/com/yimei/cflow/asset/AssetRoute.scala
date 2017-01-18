@@ -4,7 +4,6 @@ import java.io.FileOutputStream
 import java.util.UUID
 
 import akka.http.javadsl.model.Multipart.BodyPart
-import akka.http.scaladsl.common.StrictForm.FileData
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.Multipart
 import akka.http.scaladsl.server.Directives._
@@ -79,12 +78,12 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
           case data: BodyPart => data.toStrict(2.seconds)
             .map(strict => data.name -> strict.entity.data.utf8String)
         }.runFold(Map.empty[String, String])((map, tuple) => map + tuple)
-          val o = for {
-            r <- result
-            i <- insertDB(r)
-          } yield i
-            complete(o)
-        }
+        val o = for {
+          r <- result
+          i <- insertDB(r)
+        } yield i
+        complete(o)
+      }
     }
   }
 
@@ -92,12 +91,12 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
     val newDir = new File(fileRootPath + dirPath)
     newDir.mkdirs()
     val fileOutput = new FileOutputStream(fileRootPath + dirPath + "/" + filePath)
-      def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
-        val byteArray: Array[Byte] = byteString.toArray
-        fileOutput.write(byteArray)
-        array ++ byteArray
-      }
-      fileData.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
+    def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
+      val byteArray: Array[Byte] = byteString.toArray
+      fileOutput.write(byteArray)
+      array ++ byteArray
+    }
+    fileData.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
   }
 
   def insertDB(data: Map[String, String]): Future[FileObj] = {
