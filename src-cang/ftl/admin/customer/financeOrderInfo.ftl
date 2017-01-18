@@ -101,13 +101,13 @@
                                     </tr>
 
                                     <tr>
-                                        <th class="text-right">热值:</th>
+                                        <th class="text-right">热值(Qnet,ar):</th>
                                         <td>{{@currentOrder.spData.coalIndex_NCV || '--' }} </td>
 
-                                        <th class="text-right">收到基硫分:</th>
+                                        <th class="text-right">收到基硫分(Std):</th>
                                         <td>{{@currentOrder.spData.coalIndex_RS || '--' }} </td>
 
-                                        <th class="text-right">空干基挥发分:</th>
+                                        <th class="text-right">空干基挥发分(Vdaf):</th>
                                         <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
                                     </tr>
 
@@ -325,7 +325,7 @@
                                         <th>本次还款计息本金</th>
                                         <th>下次还款计息本金</th>
                                         <th>利息计息天数</th>
-                                        <th>利息 <br>(剩余本金 X 天 X 每日利息)</th>
+                                        <th>利息 (万元)<br>(剩余本金 X 天 X 每日利率)</th>
                                         <th>付款方</th>
                                         <th>收款方</th>
                                     </tr>
@@ -336,7 +336,7 @@
                                         <td>{{ paymentOrder.interestBearingCapital  }}  </td>
                                         <td>{{ paymentOrder.nextInterestBearingCapital}}  </td>
                                         <td>{{ paymentOrder.days}}  </td>
-                                        <td>{{ paymentOrder.interest }}  </td>
+                                        <td>{{ paymentOrder.interest | number}}  </td>
                                         <td>{{ @currentOrder.cyPartyMember.financer.companyName}} -  {{ @currentOrder.cyPartyMember.financer.phone}} </td>
                                         <td>{{ @currentOrder.cyPartyMember.trader.companyName}} - {{ @currentOrder.cyPartyMember.trader.userName}}  </td>
                                     </tr>

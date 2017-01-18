@@ -35,9 +35,9 @@ object ClientMain extends App with AdminProtocol with TaskProtocol with UserMode
 
 
   val sfi = StartFlowInvestigationInfo("阿里巴巴","阿里巴巴","企鹅","百度", Some("heheh "), Some("hahah"), Some("123"), Some("hhwh"), Some("wwww"),BigDecimal(1000),1,BigDecimal(0.01),
-    Some(Timestamp.from(Instant.now)), Some("heheh "), Some("hahah"), Some("123"), Some("hhwh"), Some("wwww"), Some("aaa"))
+    Some(Timestamp.from(Instant.now)), Some("heheh "), Some("hahah"), Some("123"), Some("hhwh"), Some("wwww"), Some("aaa"), Some("需要补充材料"), "审核通过")
 
-  val sfs = StartFlowSupervisorInfo(Some("上海"), Some("天空"), Some("1000弄"), Some("hehe"), Some("heihei"), Some("haha"), Some("Bukan"), Some("ssss"), Some("没意见"))
+  val sfs = StartFlowSupervisorInfo(Some("上海"), Some("天空"), Some("1000弄"), Some("hehe"), Some("heihei"), Some("haha"), Some("Bukan"), Some("ssss"), Some("没意见"), Some("需要补充材料"), "审核通过")
 
   val sflow = StartFlow(sf,sfi,sfs)
 
