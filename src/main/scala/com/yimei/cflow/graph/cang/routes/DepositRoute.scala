@@ -42,12 +42,12 @@ class DepositRoute extends DepositTable
 
         val exist = dbrun(deposit.filter{dpt =>
           dpt.flowId === dp.flowId &&
-            dpt.state === NOTIFIED
+            dpt.state =!= TRANSFERRED
         }.result)
 
         def addDeposit(exists: Seq[DepositEntity]): Future[DepositEntity] = {
           if(exists.length > 0) {
-            throw BusinessException("已经存在未缴纳的保证金记录")
+            throw BusinessException("已经存在未缴纳或者未确认到账的保证金记录")
           }
           dbrun(
             (deposit returning deposit.map(_.id) into ((dpst, id) => dpst.copy(id = id)) += DepositEntity(None, dp.flowId, dp.expectedAmount, 0, dp.state, dp.memo.getOrElse(""), operator, None, None))
@@ -97,9 +97,9 @@ class DepositRoute extends DepositTable
         myRequiredSession { s =>
           val operator = s.userName
           val update = if(amount.isDefined) {
-            deposit.filter(_.flowId === flowId).map(dp => (dp.state, dp.actuallyAmount , dp.operator, dp.ts_u)).update((state, amount.get, operator, Some(Timestamp.from(Instant.now))))
+            deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.actuallyAmount , dp.operator, dp.ts_u)).update((state, amount.get, operator, Some(Timestamp.from(Instant.now))))
           } else {
-            deposit.filter(_.flowId === flowId).map(dp => (dp.state, dp.operator, dp.ts_u)).update((state, operator, Some(Timestamp.from(Instant.now))))
+            deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.operator, dp.ts_u)).update((state, operator, Some(Timestamp.from(Instant.now))))
           }
 
           val result = dbrun(update) map { count =>
