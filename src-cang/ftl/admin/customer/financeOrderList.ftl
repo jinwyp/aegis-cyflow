@@ -121,14 +121,15 @@
                                                 <td>{{ order.cyPartyMember.financer.companyName || '--'}}</td>
                                                 <td>{{ order.spData.downstreamCompanyName || '--'}}</td>
                                                 <td>{{ order.spData.stockPort || '--'}}</td>
-                                                <td>{{ order.spData.coalAmount || '--'}}</td>
+                                                <td>{{ order.spData.coalAmount || 0 }}</td>
                                                 <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
                                                 <td>{{ order.spData.interestRate }}</td>
                                                 <td>{{ order.flowData.totalInterest|number}}</td>
-                                                <td>{{ order.flowData.depositValue || '--'}}</td>
-                                                <td>{{ order.flowData.returnValue || '--'}}</td>
-                                                <td>{{ order.flowData.repaymentValue || '--'}}</td>
-                                                <td>{{ order.flowData.loanValue || '--'}}</td>
+
+                                                <td>{{ order.flowData.depositValue || 0}}</td>
+                                                <td>{{ order.flowData.returnValue || 0}}</td>
+                                                <td>{{ order.flowData.repaymentValue || 0}}</td>
+                                                <td>{{ order.flowData.loanValue || 0 }}</td>
 
                                                 <td>{{ order.flowData.loanActualArrivalDate | date("yyyy-MM-dd") }}</td>
                                                 <td>{{ order.flowData.LastRepaymentDate | date("yyyy-MM-dd") }}</td>
