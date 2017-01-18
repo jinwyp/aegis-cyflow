@@ -99,7 +99,7 @@
                                         <td> {{@currentOrder.flowData.LastRepaymentDate | date("yyyy-MM-dd")}}</td>
                                     </tr>
 
-                                    <tr ms-if="|| @currentUser.role === @role.trader || @currentUser.role === @role.traderAccountant || @currentUser.role === @role.fundProvider || @currentUser.role === @role.fundProviderAccountant">
+                                    <tr ms-if="@currentUser.role === @role.trader || @currentUser.role === @role.traderAccountant || @currentUser.role === @role.fundProvider || @currentUser.role === @role.fundProviderAccountant">
                                         <th class="text-right">贸易商贷款利率:</th>
                                         <td>{{@currentOrder.flowData.loanFundProviderInterestRate }} </td>
 

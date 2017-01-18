@@ -105,7 +105,7 @@
                                                 <td class="text-center">质押总数量<br/>(吨)</td>
                                                 <td class="text-center">待赎回数量<br/>(吨)</td>
                                                 <td class="text-center">利率</td>
-                                                <td class="text-center">利息</td>
+                                                <td class="text-center">利息(万元)</td>
                                                 <td class="text-center">保证金金额<br/>(万元)</td>
                                                 <td class="text-center">已回款金额<br/>(万元)</td>
                                                 <td class="text-center">待还金额<br/>(万元)</td>
@@ -202,7 +202,7 @@
                                                 <td class="text-center">质押总数量<br/>(吨)</td>
                                                 <td class="text-center">待赎回数量<br/>(吨)</td>
                                                 <td class="text-center">利率</td>
-                                                <td class="text-center">利息</td>
+                                                <td class="text-center">利息(万元)</td>
                                                 <td class="text-center">保证金金额<br/>(万元)</td>
                                                 <td class="text-center">已回款金额<br/>(万元)</td>
                                                 <td class="text-center">待还金额<br/>(万元)</td>
