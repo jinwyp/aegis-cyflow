@@ -107,13 +107,12 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
   }
 
   def insert(data: Map[String, String]): Future[FileObj] = {
-    val path = data.get("path").get
+    val url = data.get("path").get
     val party = data.get("role")
     val busi_type = data.getOrElse("busi_type", "default")
     val description: String = data.getOrElse("description", "")
-    val uuId = path.substring(0, 36)
-    val originName = path.substring(37, path.length)
-    val url = uuId.replace("-", "/") + originName
+    val uuId = url.substring(0, 36).replace("/", "-")
+    val originName = url.substring(37, url.length)
     val suffix = originName.substring(originName.lastIndexOf('.') + 1)
     val fileType = getFileType(suffix)
     val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party, Some(description), url, originName, None)
