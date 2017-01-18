@@ -97,9 +97,17 @@ class DepositRoute extends DepositTable
         myRequiredSession { s =>
           val operator = s.userName
           val update = if(amount.isDefined) {
-            deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.actuallyAmount , dp.operator, dp.ts_u)).update((state, amount.get, operator, Some(Timestamp.from(Instant.now))))
+            if(state == TRANSFERRED){
+              deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.actuallyAmount , dp.operator, dp.ts_u)).update((state, amount.get, operator, Some(Timestamp.from(Instant.now))))
+            } else {
+              deposit.filter{ d => d.flowId === flowId && d.state === NOTIFIED}.map(dp => (dp.state, dp.actuallyAmount , dp.operator, dp.ts_u)).update((state, amount.get, operator, Some(Timestamp.from(Instant.now))))
+            }
           } else {
-            deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.operator, dp.ts_u)).update((state, operator, Some(Timestamp.from(Instant.now))))
+            if(state == TRANSFERRED){
+              deposit.filter{ d => d.flowId === flowId && d.state === ALREADYPAID}.map(dp => (dp.state, dp.operator, dp.ts_u)).update((state, operator, Some(Timestamp.from(Instant.now))))
+            } else {
+              deposit.filter{ d => d.flowId === flowId && d.state === NOTIFIED}.map(dp => (dp.state, dp.operator, dp.ts_u)).update((state, operator, Some(Timestamp.from(Instant.now))))
+            }
           }
 
           val result = dbrun(update) map { count =>
