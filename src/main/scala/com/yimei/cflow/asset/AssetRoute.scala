@@ -105,12 +105,12 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
     val url = data.get("path").get
     val party = data.get("role")
     val busi_type = data.getOrElse("busi_type", "default")
-    val description: String = data.getOrElse("description", "")
+    val description = data.get("description")
     val uuId = url.substring(0, 36).replace("/", "-")
     val originName = url.substring(37, url.length)
     val suffix = originName.substring(originName.lastIndexOf('.') + 1)
     val fileType = getFileType(suffix)
-    val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party, Some(description), url, originName, None)
+    val assetEntity: AssetEntity = new AssetEntity(None, uuId, fileType, busi_type, "username", party, description, url, originName, None)
     val temp: Future[Int] = dbrun(assetClass.insertOrUpdate(assetEntity)) recover {
       case _ => throw BusinessException(s"$url 上传失败")
     }
