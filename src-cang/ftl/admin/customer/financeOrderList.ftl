@@ -219,7 +219,7 @@
                                                 <td>{{ order.spData.financingDays || '--'}}</td>
                                                 <td>{{ order.spData.coalAmount || '--'}}</td>
                                                 <td>{{ order.flowData.redemptionAmountLeft || '--'}}</td>
-                                                <td>{{ order.loanFundProviderInterestRate || '--'}}</td>
+                                                <td>{{ order.flowData.loanFundProviderInterestRate || '--'}}</td>
                                                 <td>需要计算</td>
                                                 <td>{{ order.flowData.depositValue || '--'}}</td>
                                                 <td>{{ order.flowData.returnValue || '--'}}</td>
