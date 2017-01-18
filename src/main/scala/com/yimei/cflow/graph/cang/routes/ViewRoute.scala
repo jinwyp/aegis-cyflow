@@ -1,6 +1,6 @@
 package com.yimei.cflow.graph.cang.routes
 
-import javax.ws.rs.Path
+//import javax.ws.rs.Path
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -10,7 +10,7 @@ import akka.util.Timeout
 import com.yimei.cflow.api.models.flow.FlowProtocol
 import com.yimei.cflow.api.models.user.State
 import com.yimei.cflow.api.services.ServiceProxy
-import io.swagger.annotations._
+//import io.swagger.annotations._
 
 import scala.concurrent.duration._
 
@@ -19,7 +19,7 @@ import scala.concurrent.duration._
 /**
   * Created by hary on 16/12/7.
   */
-@Path("/cang")
+//@Path("/cang")
 class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
 
   implicit val timeout = ViewRoute.cangServiceTimeout // todo  why import User.userServiceTimeout does not work
@@ -27,21 +27,21 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
   /**
     * 为用户创建流程
     */
-  @ApiOperation(value = "flowState", notes = "", nickname = "创建流程", httpMethod = "POST")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "创建流程",
-      required = true,
-      dataType = "com.yimei.cflow.core.Cang.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "flowState", notes = "", nickname = "创建流程", httpMethod = "POST")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "创建流程",
+//      required = true,
+//      dataType = "com.yimei.cflow.core.Cang.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def postCang: Route = post {
     pathPrefix("flow") {
       pathEnd {
@@ -59,21 +59,21 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     *
     * @return
     */
-  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "查询用户状态",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "查询用户状态",
+//      required = true,
+//      dataType = "com.yimei.cflow.user.User.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def getCang: Route = get {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {
@@ -89,21 +89,21 @@ class ViewRoute(proxy: ActorRef) extends FlowProtocol with SprayJsonSupport {
     *
     * @return
     */
-  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "查询用户状态",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "flowState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "查询用户状态",
+//      required = true,
+//      dataType = "com.yimei.cflow.user.User.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[State]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def putCangPoints: Route = put {
     pathPrefix("flow" / Segment) { flowId =>
       pathEnd {

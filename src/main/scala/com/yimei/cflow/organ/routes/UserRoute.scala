@@ -3,7 +3,7 @@ package com.yimei.cflow.organ.routes
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
-import javax.ws.rs.Path
+//import javax.ws.rs.Path
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
@@ -22,7 +22,7 @@ import com.yimei.cflow.organ.db.{PartyInstanceTable, PartyUserTable, UserGroupTa
 import DBUtils._
 import com.yimei.cflow.graph.cang.exception.BusinessException
 import com.yimei.cflow.graph.cang.models.UserModel.{UserData, UserInfoList}
-import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
+//import io.swagger.annotations.{ApiImplicitParams, ApiOperation, ApiResponses, _}
 import slick.backend.DatabasePublisher
 import slick.dbio.Effect.Read
 import slick.lifted
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Path("/user/:userId")
+//@Path("/user/:userId")
 class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport with PartyUserTable with UserGroupTable with PartyInstanceTable with SessionProtocol{
 
   implicit val timeout = UserRoute.userServiceTimeout // todo  why import User.userServiceTimeout does not work
@@ -42,21 +42,21 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
   /**
     * 创建用户
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "创建用户", httpMethod = "POST")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "创建用户",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "userState", notes = "", nickname = "创建用户", httpMethod = "POST")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "创建用户",
+//      required = true,
+//      dataType = "com.yimei.cflow.user.User.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def postUser: Route = post {
     pathPrefix("user" / Segment / Segment  / Segment) { (party,instance_id,userId) =>
        {
@@ -100,21 +100,21 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     *
     * @return
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "查询用户状态",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "GET")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "查询用户状态",
+//      required = true,
+//      dataType = "com.yimei.cflow.user.User.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def getUser: Route = get {
     pathPrefix("user" / Segment / Segment  / Segment) { (party,instance_id,userId) =>
       pathEnd {
@@ -196,21 +196,21 @@ class UserRoute(proxy: ActorRef) extends UserModelProtocol with SprayJsonSupport
     *
     * @return
     */
-  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "PUT")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(
-      name = "body",
-      value = "查询用户状态",
-      required = true,
-      dataType = "com.yimei.cflow.user.User.State",
-      paramType = "body"
-    )
-    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
-    new ApiResponse(code = 500, message = "Internal server error")
-  ))
+//  @ApiOperation(value = "userState", notes = "", nickname = "查询用户状态", httpMethod = "PUT")
+//  @ApiImplicitParams(Array(
+//    new ApiImplicitParam(
+//      name = "body",
+//      value = "查询用户状态",
+//      required = true,
+//      dataType = "com.yimei.cflow.user.User.State",
+//      paramType = "body"
+//    )
+//    // new ApiImplicitParam(name = "orgId",     value = "组织Id", required = false, dataType = "string", paramType = "path"),
+//  ))
+//  @ApiResponses(Array(
+//    new ApiResponse(code = 200, message = "服务器应答", response = classOf[UserState]),
+//    new ApiResponse(code = 500, message = "Internal server error")
+//  ))
   def putUser: Route = put {
     pathPrefix("user" / Segment / Segment / Segment) { (party,instance_id,userId)  =>
       entity(as[UserInfo]) { user =>

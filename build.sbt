@@ -17,9 +17,10 @@ resolvers += "OSChina Maven Repository" at "http://maven.oschina.net/content/gro
 externalResolvers := Resolver.withDefaultResolvers(resolvers.value, mavenCentral = false)
 
 libraryDependencies ++= {
-  val akkaV = "2.4.11"
+  val akkaV = "2.4.16"
   val scalaTestV = "3.0.0"
   val slickVersion = "3.1.1"
+  val akkaHttp = "10.0.1"
   val circeV = "0.5.1"
   Seq(
 
@@ -39,11 +40,13 @@ libraryDependencies ++= {
     "org.fusesource.leveldbjni"   % "leveldbjni-all"   % "1.8",
 
     // akka-http
-    "com.typesafe.akka" %% "akka-http-core" % akkaV,
-    "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
-    "com.typesafe.akka" %% "akka-http-testkit" % akkaV % "test",
-    "com.typesafe.akka" % "akka-http-spray-json-experimental_2.11" % "2.4.11",
-    "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
+    "com.typesafe.akka" %% "akka-http-core" % akkaHttp,
+    "com.typesafe.akka" %% "akka-http" % akkaHttp,
+    "com.typesafe.akka" %% "akka-http-testkit" % akkaHttp % "test",
+    "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttp,
+    "com.typesafe.akka" %% "akka-http-jackson" % akkaHttp,
+    "com.typesafe.akka" %% "akka-http-xml" % akkaHttp,
+  //  "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.7.2",
     "com.softwaremill.akka-http-session" %% "core" % "0.3.0",
 
     // database: slick and flyway
@@ -60,7 +63,7 @@ libraryDependencies ++= {
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8",
 
     // camel integration
-    "com.typesafe.akka" %% "akka-camel"   % "2.4.11",
+    "com.typesafe.akka" %% "akka-camel"   % akkaV,
     "org.apache.camel"  %  "camel-jetty"  % "2.16.4",
     "org.apache.camel"  %  "camel-quartz" % "2.16.4",
 
@@ -109,6 +112,25 @@ import Resolvers._
 mainClass in reStart := Some("com.yimei.cflow.ServiceTest")
 
 assemblyMergeStrategy in assembly := {
+//  case e   =>
+//    println(s"!!!!!!!!!!!!!$e")
+//    MergeStrategy.first
+  case PathList(ps @ _*) if ps.last endsWith "MANIFEST.MF" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "DEPENDENCIES" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "INDEX.LIST" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "LICENSES.txt" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "pom.properties" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "reference.conf" => MergeStrategy.concat
+  case PathList(ps @ _*) if ps.last endsWith "pom.xml" => MergeStrategy.concat
+  case PathList(ps @ _*) if ps.last endsWith "component.properties" => MergeStrategy.concat
+  case PathList(ps @ _*) if ps.last endsWith "com.fasterxml.jackson.databind.Module" => MergeStrategy.concat
+  case PathList(ps @ _*) if ps.last endsWith "org.neo4j.kernel.Version" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "org.neo4j.kernel.extension.KernelExtensionFactory" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "TypeConverter" => MergeStrategy.rename
+  case PathList(ps @ _*) if ps.last endsWith "StaticLoggerBinder.class" => MergeStrategy.discard
+  case PathList(ps @ _*) if ps.last endsWith "StaticMDCBinder.class" => MergeStrategy.discard
+  case PathList(ps @ _*) if ps.last endsWith "StaticMarkerBinder.class" => MergeStrategy.discard
+  case PathList(ps @ _*) if ps.last endsWith "rootdoc.txt" => MergeStrategy.rename
   case PathList(ps @ _*) if Assembly.isReadme(ps.last) || Assembly.isLicenseFile(ps.last) =>  MergeStrategy.rename
   case _ => MergeStrategy.deduplicate
 }
