@@ -126,22 +126,6 @@ class AssetRoute extends AssetTable with SprayJsonSupport {
     else 0
   }
 
-  //
-  //  private def processFile1(dirPath: String, fileOriginName: String, fileData: Multipart.FormData) {
-  //    val newDir = new File(fileRootPath + dirPath)
-  //    newDir.mkdirs()
-  //    val fileOutput = new FileOutputStream(fileRootPath + dirPath + "/" + fileOriginName)
-  //    fileData.parts.mapAsync(1) {
-  //      bodyPart =>
-  //        def writeFileOnLocal(array: Array[Byte], byteString: ByteString): Array[Byte] = {
-  //          val byteArray: Array[Byte] = byteString.toArray
-  //          fileOutput.write(byteArray)
-  //          array ++ byteArray
-  //        }
-  //        bodyPart.entity.dataBytes.runFold(Array[Byte]())(writeFileOnLocal)
-  //    }.runFold(0)(_ + _.length)
-  //  }
-
 
   def route: Route = downloadFile ~ uploadFile
 }
