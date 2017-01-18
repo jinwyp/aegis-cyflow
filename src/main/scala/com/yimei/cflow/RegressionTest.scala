@@ -6,7 +6,7 @@ import com.yimei.cflow.config.ApplicationConfig
 import com.yimei.cflow.config.GlobalConfig._
 import com.yimei.cflow.engine.{DaemonMaster, FlowRegistry}
 import com.yimei.cflow.graph.ying.YingGraph
-import com.yimei.cflow.swagger.CorsSupport
+//import com.yimei.cflow.swagger.CorsSupport
 import com.yimei.cflow.util.{TestClient, TestUtil}
 import com.yimei.cflow.config.CoreConfig._
 
@@ -15,7 +15,9 @@ import scala.sys.process._
 /**
   * Created by hary on 16/12/3.
   */
-object RegressionTest extends App with ApplicationConfig with CorsSupport {
+object RegressionTest extends App with ApplicationConfig
+//  with CorsSupport
+{
 
   "rm -fr data/journal/*".!
   "rm -fr data/snapshots/*".!

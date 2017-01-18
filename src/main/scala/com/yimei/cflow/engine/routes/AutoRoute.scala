@@ -1,6 +1,6 @@
 package com.yimei.cflow.engine.routes
 
-import javax.ws.rs.Path
+//import javax.ws.rs.Path
 
 import akka.actor.ActorRef
 import akka.http.scaladsl.server.Directives._
@@ -12,7 +12,7 @@ import akka.http.scaladsl.server._
 
 
 
-@Path("/auto?flowId=:flowId&taskName=:taskName")
+//@Path("/auto?flowId=:flowId&taskName=:taskName")
 class AutoRoute(proxy: ActorRef) {
 
   def getData = path("data") {

@@ -88,6 +88,27 @@
                                         <td>{{@currentOrder.flowData.redemptionAmountLeft || 0}} </td>
                                     </tr>
 
+                                    <tr ms-if="@currentUser.role === @role.financer || @currentUser.role === @role.trader || @currentUser.role === @role.traderAccountant ">
+                                        <th class="text-right">贷款利率:</th>
+                                        <td>{{@currentOrder.spData.interestRate }} </td>
+
+                                        <th class="text-right">贷款利息:</th>
+                                        <td>{{@currentOrder.flowData.totalInterest|number}} </td>
+
+                                        <th class="text-right">实际结息时间:</th>
+                                        <td> {{@currentOrder.flowData.LastRepaymentDate | date("yyyy-MM-dd")}}</td>
+                                    </tr>
+
+                                    <tr ms-if="|| @currentUser.role === @role.trader || @currentUser.role === @role.traderAccountant || @currentUser.role === @role.fundProvider || @currentUser.role === @role.fundProviderAccountant">
+                                        <th class="text-right">贸易商贷款利率:</th>
+                                        <td>{{@currentOrder.flowData.loanFundProviderInterestRate }} </td>
+
+                                        <th class="text-right">贸易商贷款利息:</th>
+                                        <td>暂无 </td>
+
+                                        <th class="text-right"></th>
+                                        <td> </td>
+                                    </tr>
 
                                     <tr>
                                         <th class="text-right">港口已确认数量(吨):</th>
@@ -102,13 +123,13 @@
 
                                     <tr>
                                         <th class="text-right">热值(Qnet,ar):</th>
-                                        <td>{{@currentOrder.spData.coalIndex_NCV || '--' }} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_NCV || '--' }}  kcal/kg </td>
 
                                         <th class="text-right">收到基硫分(Std):</th>
-                                        <td>{{@currentOrder.spData.coalIndex_RS || '--' }} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_RS || '--' }} %</td>
 
                                         <th class="text-right">空干基挥发分(Vdaf):</th>
-                                        <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} </td>
+                                        <td>{{@currentOrder.spData.coalIndex_ADV || '--'}} %</td>
                                     </tr>
 
                                     <tr>
@@ -123,6 +144,9 @@
                                         <th class="text-right"></th>
                                         <td> </td>
                                     </tr>
+
+
+
                                 </table>
 
                             </div>

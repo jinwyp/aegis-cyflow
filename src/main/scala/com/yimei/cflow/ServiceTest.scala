@@ -14,7 +14,6 @@ import com.yimei.cflow.engine.{DaemonMaster, EngineRoute, FlowRegistry}
 import com.yimei.cflow.graph.cang.routes._
 import com.yimei.cflow.http._
 import com.yimei.cflow.organ.routes._
-import com.yimei.cflow.swagger.{CorsSupport, SwaggerDocService, SwaggerService}
 import com.yimei.cflow.util.TestClient
 import com.yimei.cflow.config.CoreConfig._
 import com.yimei.cflow.graph.cang.services.ScheduleTask._
@@ -22,7 +21,9 @@ import com.yimei.cflow.graph.cang.services.ScheduleTask._
 /**
   * Created by hary on 16/12/3.
   */
-object ServiceTest extends App with ApplicationConfig with CorsSupport with MyExceptionHandler {
+object ServiceTest extends App with ApplicationConfig
+  //with CorsSupport
+  with MyExceptionHandler {
 
 //  implicit val testTimeout = coreTimeout
 //  implicit val testEc = coreExecutor
@@ -53,8 +54,8 @@ object ServiceTest extends App with ApplicationConfig with CorsSupport with MyEx
       EngineRoute.route(proxy) ~
       AssetRoute.route
   } ~
-    new SwaggerService().route ~
-    corsHandler(new SwaggerDocService(coreSystem).routes) ~
+//    new SwaggerService().route ~
+//    corsHandler(new SwaggerDocService(coreSystem).routes) ~
     ResourceRoute.route(proxy) ~
     EditorRoute.route(proxy) ~
     pathPrefix("api"/"cang") {
