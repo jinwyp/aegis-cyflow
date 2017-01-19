@@ -104,7 +104,7 @@ var orderInfo = function () {
 
                     vm.errorFundProviderInterestRate = false;
 
-                    if (!vm.inputFundProviderInterestRate) {
+                    if (!vm.inputFundProviderInterestRate && status) {
                         vm.errorFundProviderInterestRate = true;
                         return ;
                     }else{
